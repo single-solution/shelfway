@@ -1,8 +1,8 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { manifest as notesManifest } from '@ss/contracts/testing';
+import { manifest as notesManifest } from '@shelfway/contracts/testing';
 import { closeMongoClients } from '../../../src/testing.js';
 import { startMongo } from '../../helpers.js';
-import { PASSWORD, bootPortal } from './boot.js';
+import { PASSWORD, bootPlatform } from './boot.js';
 
 vi.setConfig({ testTimeout: 60_000, hookTimeout: 180_000 });
 
@@ -23,7 +23,7 @@ afterAll(async () => {
 
 /** @param {string} name */
 const setUp = async (name) => {
-	const h = await bootPortal({ db: mongo.db(name) });
+	const h = await bootPlatform({ db: mongo.db(name) });
 	cleanups.push(h.close);
 	const owner = await h.owner();
 	const notes = await h.connect(notesManifest());

@@ -5,7 +5,7 @@
  * defined for the product's category, nearest first, else the one for every category); one per order field in both
  * orders files and one per customer field in the customers file (inactive fields too; unit fields stay out).
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { COLLECTIONS } from '../core/model.js';
 import { ALL, readyShop } from './helpers.js';

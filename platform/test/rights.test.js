@@ -14,12 +14,12 @@
  * launched; Defaults and Prices open only for Owners, with no website).
  */
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { manifest as notesManifest } from '@ss/contracts/testing';
+import { manifest as notesManifest } from '@shelfway/contracts/testing';
 import { closeMongoClients } from '../src/testing.js';
 import { startMongo } from './helpers.js';
 import { PASSWORD, boot as bootIdentity, setupMongo, teardownMongo } from './modules/identity/boot.js';
 import { FINANCE_ADMIN, M1, M2, OWNER_ADMIN, PRODUCT, SUPPORT_ADMIN, W1, W2, bootCommerce } from './modules/commerce/fixtures.js';
-import { bootPortal } from './modules/catalog/boot.js';
+import { bootPlatform } from './modules/catalog/boot.js';
 
 vi.setConfig({ testTimeout: 60_000, hookTimeout: 180_000 });
 
@@ -413,13 +413,13 @@ describe('rights: products on websites, switching features, credits, receipts an
 // catalog (dashboards and Products) with the real modules and a fake product
 
 describe('rights: product dashboards, Products, settings, defaults and prices', () => {
-	/** @type {Awaited<ReturnType<typeof bootPortal>> | null} */
+	/** @type {Awaited<ReturnType<typeof bootPlatform>> | null} */
 	let portal = null;
 	afterAll(async () => {
 		await portal?.close();
 	});
 	section(async () => {
-		const t = await bootPortal({ db: mongo.db('rights_catalog') });
+		const t = await bootPlatform({ db: mongo.db('rights_catalog') });
 		portal = t;
 		const owner = await t.owner();
 		const product = await t.connect(notesManifest());

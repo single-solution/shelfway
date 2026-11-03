@@ -124,7 +124,7 @@ describe('product blueprint', () => {
 
 describe('blueprint (the sheet)', () => {
 	it('names its schema and the reasons a product is missing', () => {
-		expect(BLUEPRINT_SCHEMA).toBe('ss.blueprint/1');
+		expect(BLUEPRINT_SCHEMA).toBe('shelfway.blueprint/1');
 		expect(BLUEPRINT_UNREACHABLE_REASONS).toEqual(['timeout', 'unreachable', 'refused', 'invalid']);
 	});
 
@@ -149,7 +149,7 @@ describe('blueprint (the sheet)', () => {
 
 	/** @type {Array<[string, (b: any) => unknown, string, string]>} */
 	const cases = [
-		['another schema', (b) => (b.schema = 'ss.blueprint/2'), '/schema', 'const'],
+		['another schema', (b) => (b.schema = 'shelfway.blueprint/2'), '/schema', 'const'],
 		['a server token value', (b) => (b.products[0].serverToken.value = 'eyJ.server'), '/products/0', 'oneOf'],
 		['a missing product with details', (b) => (b.products[1].features = []), '/products/1', 'oneOf'],
 		['an unknown reason', (b) => (b.products[1].reason = 'gone'), '/products/1', 'oneOf'],

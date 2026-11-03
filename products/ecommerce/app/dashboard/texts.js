@@ -1,10 +1,10 @@
 /**
  * The dashboard's words (US English, kept in this file; the dashboard is not translated, PLAN 0.6): Ecommerce's title
  * and its own words laid over the words every product dashboard shares (`dashboardTexts`). The server's page title
- * reads it too, so it comes from the `@ss/ui` root.
+ * reads it too, so it comes from the `@shelfway/ui` root.
  * @module
  */
-import { dashboardTexts } from '@ss/ui';
+import { dashboardTexts } from '@shelfway/ui';
 
 export const TEXTS = dashboardTexts({
 	title: 'Ecommerce',
@@ -26,7 +26,7 @@ export const TEXTS = dashboardTexts({
 		search: {
 			title: 'The Atlas Search index {index} is missing',
 			effect:
-				'Searches in the shop and in Chat use basic search until the index is created on ss_ecommerce_products and Atlas shows it ready. Last try {time}.',
+				'Searches in the shop and in Chat use basic search until the index is created on shelfway_ecommerce_products and Atlas shows it ready. Last try {time}.',
 			message: 'Atlas Search: {message}',
 			step: 'Create the Atlas Search index {index}',
 			ready: 'Answered {time}',
@@ -113,7 +113,7 @@ export const TEXTS = dashboardTexts({
 		},
 		nothing: 'No settings here for the features that are on.',
 		atlasNotice:
-			'Atlas Search needs the index {index} on the ss_ecommerce_products collection of your database, built and ready; until then basic search answers.',
+			'Atlas Search needs the index {index} on the shelfway_ecommerce_products collection of your database, built and ready; until then basic search answers.',
 		atlasDocs: 'How to create it',
 	},
 	lists: {
@@ -766,7 +766,7 @@ export const TEXTS = dashboardTexts({
 		adminHelp: 'Catalog, orders, promotions and customers widgets in your own admin.',
 		ticket: 'Ticket',
 		ticketHelp:
-			"Your server asks for a ticket for the admin widgets after checking its user and role. Keep the website's server token from the Portal in SS_SERVER_TOKEN, on your server only.",
+			"Your server asks for a ticket for the admin widgets after checking its user and role. Keep the website's server token from the Portal in SHELFWAY_SERVER_TOKEN, on your server only.",
 		site: 'Your site serves',
 		siteHelp:
 			'The sitemap index and its files, feeds, llms.txt and llms-full.txt, product and listing pages (meta, structured data and the 308 to a moved address) and policies are served by your own site from the API with the server token.',

@@ -1,10 +1,10 @@
 /**
  * Chat for the merchant's server (PLAN 0.8.10 K1–K9): the list settings through the settings API, the acting member
  * of staff of a server-token call (names on replies, the activity log, the staff list, `assigned=me`), visitor calls
- * from the server with `SS-Visitor-IP`, conversation counts equal to the list's lengths, activity labels and details,
+ * from the server with `Shelfway-Visitor-IP`, conversation counts equal to the list's lengths, activity labels and details,
  * and the website's Format and business time zone in the widget config and in text the server makes.
  */
-import { portalSectionsOf } from '@ss/app-kit/testing';
+import { portalSectionsOf } from '@shelfway/app-kit/testing';
 import { afterAll, describe, expect, it } from 'vitest';
 import { AI_REPLIES_PER_NETWORK_PER_DAY } from '../core/limits.js';
 import { AI_KEY, ORIGIN, ready, verifiedVisitor } from './helpers.js';
@@ -26,10 +26,10 @@ const start = async (on) => {
 
 /** The headers of a server call acting for Zoë of the merchant's staff. */
 const ZOE = Object.freeze({
-	'ss-actor-id': 'usr_zoe',
-	'ss-actor-name': encodeURIComponent('Zoë Laurent'),
-	'ss-actor-role': 'Support',
-	'ss-actor-email': 'zoe@shop.example.com',
+	'shelfway-actor-id': 'usr_zoe',
+	'shelfway-actor-name': encodeURIComponent('Zoë Laurent'),
+	'shelfway-actor-role': 'Support',
+	'shelfway-actor-email': 'zoe@shop.example.com',
 });
 
 /**
@@ -80,7 +80,7 @@ describe('list settings from the merchant’s server (K1)', () => {
 });
 
 describe('the acting member of staff (K2)', () => {
-	it('a server reply with SS-Actor headers carries that person; without them, Team', async () => {
+	it('a server reply with Shelfway-Actor headers carries that person; without them, Team', async () => {
 		const sys = await start(['visitor_chat', 'inbox', 'handoff']);
 		const v = sys.visitor();
 		const sent = await v('POST', '/v1/chat/messages', { text: 'Hello' });
@@ -141,7 +141,7 @@ describe('the acting member of staff (K2)', () => {
 			token: sys.server,
 			bare: true,
 			body: { text: 'x' },
-			headers: { 'ss-actor-id': 'usr_zoe', 'ss-actor-name': 'Zo%C3%AB' },
+			headers: { 'shelfway-actor-id': 'usr_zoe', 'shelfway-actor-name': 'Zo%C3%AB' },
 		});
 		expect(forged.status).toBe(403);
 		expect(forged.json.type).toMatch(/needs_signed_in_staff$/);
@@ -149,7 +149,7 @@ describe('the acting member of staff (K2)', () => {
 });
 
 describe('visitor calls from the merchant’s server (K3)', () => {
-	it('act for one visitor with SS-Guest and SS-Visitor-IP; AI limits per network count by that address', async () => {
+	it('act for one visitor with Shelfway-Guest and Shelfway-Visitor-IP; AI limits per network count by that address', async () => {
 		const sys = await start(['visitor_chat', 'ai_replies']);
 		await sys.connect('ai', AI_KEY);
 		// the network of 198.51.100.7 has one AI reply left of its day's AI_REPLIES_PER_NETWORK_PER_DAY
@@ -159,7 +159,7 @@ describe('visitor calls from the merchant’s server (K3)', () => {
 		const visit = (method, path, { body, ip, guest } = {}) =>
 			server(sys, method, path, {
 				...(body === undefined ? {} : { body }),
-				headers: { ...(ip ? { 'ss-visitor-ip': ip } : {}), ...(guest ? { 'ss-guest': guest } : {}) },
+				headers: { ...(ip ? { 'shelfway-visitor-ip': ip } : {}), ...(guest ? { 'shelfway-guest': guest } : {}) },
 			});
 		const unnamed = await visit('POST', '/v1/chat/messages', { body: { text: 'Hi' } });
 		expect(unnamed.status).toBe(400);

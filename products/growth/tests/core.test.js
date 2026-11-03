@@ -1,6 +1,6 @@
 import { noticeFor } from '../core/notices.js';
 import { DEFAULT_ACTIONS, DEFAULT_CATEGORIES, SHOP_FUNNEL, checkList, readList, zonedTimeOf } from '../core/lists.js';
-import { zonedParts } from '@ss/contracts/format';
+import { zonedParts } from '@shelfway/contracts/format';
 import { describe, expect, it } from 'vitest';
 import { PRESETS, buildReport, dayStart, daysOf, presetRange, rangeOf, topOf } from '../core/analytics.js';
 import {
@@ -1307,7 +1307,7 @@ describe('snippets', () => {
 			permissions: ['analytics.read'],
 		});
 		expect(snippets.pageScript).toContain('https://growth.example.dev/widget.js');
-		expect(snippets.admin).toContain('data-ss-growth="analytics_dashboard"');
+		expect(snippets.admin).toContain('data-shelfway-growth="analytics_dashboard"');
 		expect(snippets.admin).not.toContain('consent_banner');
 		expect(snippets.ticketNode).toContain('["analytics.read"]');
 		expect(snippets.notice).toContain('https://growth.example.dev/v1/notice?path=');

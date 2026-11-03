@@ -9,7 +9,7 @@ import manifest from '../manifest.json' with { type: 'json' };
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ADD_TO_CART_EVENT, STORAGE_KEYS, WIDGET_ATTRIBUTE, WIDGET_GLOBAL } from '../core/widgets.js';
 import { MAX_LINES, MAX_QUANTITY, createCartStore } from '../ui/cart-store.js';
-import { adminCall, createTicketSource } from '@ss/app-kit/widget';
+import { adminCall, createTicketSource } from '@shelfway/app-kit/widget';
 import { flush, growthEvents } from './ui-shop-helpers.js';
 
 const mounts = vi.hoisted(() => ({ visitor: /** @type {any[]} */ ([]), admin: /** @type {any[]} */ ([]) }));
@@ -123,7 +123,7 @@ describe('visitor widgets', () => {
 		const [, init] = /** @type {[unknown, RequestInit]} */ (fetch.mock.calls.at(-1));
 		expect(init.headers).toEqual({
 			authorization: 'Bearer browser-token',
-			'ss-sign-in': 'sign-in-1',
+			'shelfway-sign-in': 'sign-in-1',
 			'idempotency-key': 'k1',
 			'content-type': 'application/json',
 		});
@@ -159,14 +159,14 @@ describe('visitor widgets', () => {
 		expect(shop.guestOrders()).toEqual(['ord_2', 'ord_1']);
 		const headersOf = () => /** @type {any} */ (fetch.mock.calls.at(-1))[1].headers;
 		await shop.call('/v1/shop/orders/ord_1/pay', { method: 'POST', body: {} });
-		expect(headersOf()['ss-order-key']).toBe(first);
+		expect(headersOf()['shelfway-order-key']).toBe(first);
 		await shop.call('/v1/shop/reviews', { method: 'POST', body: { orderId: 'ord_2', lineId: 'oln_1', rating: 5 } });
-		expect(headersOf()['ss-order-key']).toBe(second);
+		expect(headersOf()['shelfway-order-key']).toBe(second);
 		await shop.document('/v1/shop/orders/ord_2/invoice');
-		expect(headersOf()['ss-order-key']).toBe(second);
+		expect(headersOf()['shelfway-order-key']).toBe(second);
 		for (const path of ['/v1/shop/orders/ord_9', '/v1/shop/orders', '/v1/shop/products/ord_1']) {
 			await shop.call(path);
-			expect(headersOf()['ss-order-key']).toBeUndefined();
+			expect(headersOf()['shelfway-order-key']).toBeUndefined();
 		}
 		// kept for the next pages: the newest 20
 		for (let n = 3; n <= 25; n += 1) shop.keepOrderKey(`ord_${n}`, first);
@@ -281,7 +281,7 @@ describe('visitor widgets', () => {
 		shop.addToCart({ productId: 'prd_1', quantity: 100_001 });
 		shop.addToCart({ productId: 'prd_9', variantId: 'var_9' });
 		await flush();
-		expect(events.of('ss:add_to_cart')).toEqual([
+		expect(events.of('shelfway:add_to_cart')).toEqual([
 			{
 				currency: 'USD',
 				value: 240000,
@@ -303,7 +303,7 @@ describe('visitor widgets', () => {
 		expect(events.seen.length).toBeGreaterThan(0);
 		for (const entry of events.seen)
 			expect(entry).toEqual({
-				name: 'ss:add_to_cart',
+				name: 'shelfway:add_to_cart',
 				detail: {
 					currency: 'USD',
 					value: 100000,

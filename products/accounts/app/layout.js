@@ -1,19 +1,19 @@
 import { Figtree, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
-import { ThemeScript } from '@ss/ui';
+import { ThemeScript } from '@shelfway/ui';
 import { TEXTS } from './dashboard/texts.js';
 import './globals.css';
 
-/** Unite faces for product dashboards (`@ss/ui` theme): text, display, mono. */
-const text = Figtree({ subsets: ['latin'], variable: '--ss-font-text', display: 'swap' });
+/** Unite faces for product dashboards (`@shelfway/ui` theme): text, display, mono. */
+const text = Figtree({ subsets: ['latin'], variable: '--shelfway-font-text', display: 'swap' });
 const display = Space_Grotesk({
 	subsets: ['latin'],
-	variable: '--ss-font-display',
+	variable: '--shelfway-font-display',
 	display: 'swap',
 	weight: ['500', '600', '700'],
 });
 const mono = JetBrains_Mono({
 	subsets: ['latin'],
-	variable: '--ss-font-mono',
+	variable: '--shelfway-font-mono',
 	display: 'swap',
 	weight: ['400', '500', '600'],
 });

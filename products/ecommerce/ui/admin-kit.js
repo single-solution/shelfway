@@ -29,17 +29,17 @@ import {
 	splitView,
 	toggle as kitToggle,
 	viewerOf,
-} from '@ss/app-kit/widget';
-import { SEO_PREVIEW_CSS } from '@ss/ui/seo-preview';
+} from '@shelfway/app-kit/widget';
+import { SEO_PREVIEW_CSS } from '@shelfway/ui/seo-preview';
 import { dayBounds } from '../core/durations.js';
 import { DURATION_UNITS, isDuration } from '../core/durations.js';
-import { fromDecimal, toDecimal } from '@ss/app-kit/widget';
+import { fromDecimal, toDecimal } from '@shelfway/app-kit/widget';
 import { problemKey } from './admin-problems.js';
 import { codeOf } from './problem-code.js';
 import { ADMIN_CSS } from './admin-styles.js';
 import { WIDGET_CSS } from './styles.js';
 
-/** @typedef {import('@ss/app-kit/widget').Answer} Answer status 0 when signed out or unreachable */
+/** @typedef {import('@shelfway/app-kit/widget').Answer} Answer status 0 when signed out or unreachable */
 /** @typedef {Node | string | null | undefined | false} Child */
 /** @typedef {{ value: string, label: string }} Choice */
 
@@ -165,7 +165,7 @@ export const wholeOf = (text) => {
  * @typedef {object} AdminInput
  * @property {HTMLElement} root
  * @property {import('./widget.js').WidgetConfig} config
- * @property {import('@ss/app-kit/widget').AdminApi} api
+ * @property {import('@shelfway/app-kit/widget').AdminApi} api
  * @property {Window & typeof globalThis} win
  * @property {(name: string, text: string, type?: string) => void} save hand a file to the browser
  * @property {(url: string) => void} open open an address in a new tab
@@ -452,7 +452,7 @@ const createKit = ({ root, config, api, win, save, open }) => {
 		groups += 1;
 		const choice = segmented(doc, {
 			label: attributes['aria-label'] ?? '',
-			name: `ss-pick-${groups}`,
+			name: `shelfway-pick-${groups}`,
 			items: choices,
 			value: choices.some((each) => each.value === value) ? value : (choices[0]?.value ?? ''),
 		});
@@ -643,7 +643,7 @@ const createKit = ({ root, config, api, win, save, open }) => {
 	 * A dialog for a secondary form, over the widget (a full-screen sheet on phones): `onSubmit` answers a problem text to
 	 * show, or nothing to close. A `confirmText` makes the submit button wait until it is typed (PLAN 0.6: destructive
 	 * actions behind a typed confirmation).
-	 * @param {Omit<import('@ss/app-kit/widget').DialogInput, 'closeLabel' | 'confirm'> & { confirmText?: string }} options
+	 * @param {Omit<import('@shelfway/app-kit/widget').DialogInput, 'closeLabel' | 'confirm'> & { confirmText?: string }} options
 	 */
 	const dialog = ({ confirmText = '', ...options }) =>
 		openDialog(root, {
@@ -718,18 +718,18 @@ const createKit = ({ root, config, api, win, save, open }) => {
 	});
 };
 
-/** @typedef {import('@ss/app-kit/widget').Tone} Tone */
+/** @typedef {import('@shelfway/app-kit/widget').Tone} Tone */
 /** @typedef {ReturnType<typeof createKit>} Kit */
 
 /**
  * Mount an admin widget: its shadow root, theme and CSS, a box with its title and the `Signed out` line, and its body.
  * @param {import('./widget.js').AdminMount} input
- * @param {string} name the widget's name on its host (`data-ss-mounted`)
+ * @param {string} name the widget's name on its host (`data-shelfway-mounted`)
  * @param {string} titleKey
  * @param {(kit: Kit, box: HTMLElement) => void} build fills the box
  */
 export const mountAdmin = ({ host, config, api, win, save, open }, name, titleKey, build) => {
-	host.setAttribute('data-ss-mounted', name);
+	host.setAttribute('data-shelfway-mounted', name);
 	mountWidget({
 		host,
 		theme: config.theme,

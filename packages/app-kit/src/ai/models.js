@@ -1,17 +1,17 @@
 /**
  * The AI providers and the shape of an AI key (PLAN 0.8.3 AI): OpenAI, Anthropic and Google Gemini built in, plus any
  * OpenAI-compatible service (base URL + key). The model is free text; the suggestions are kept in code (models are never
- * fetched live). Pure, so a dashboard form can use it in the browser too (`@ss/app-kit/ai`).
+ * fetched live). Pure, so a dashboard form can use it in the browser too (`@shelfway/app-kit/ai`).
  *
  * `checkAiConnection` accepts exactly what the Portal accepts for the website's AI key (the Portal's
  * `checkAiValue`): `{ provider, apiKey, model }` and, for a `compatible` service, its public https `baseUrl`; nothing else.
  * @module
  */
-import { AI_PROVIDERS } from '@ss/contracts';
+import { AI_PROVIDERS } from '@shelfway/contracts';
 
 export { AI_PROVIDERS };
 
-/** @typedef {import('@ss/contracts').AiProvider} AiProvider */
+/** @typedef {import('@shelfway/contracts').AiProvider} AiProvider */
 
 /** Suggested models per provider (free text is allowed). */
 export const MODEL_SUGGESTIONS = Object.freeze({

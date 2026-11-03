@@ -1,6 +1,6 @@
 /**
  * Admin Console URLs and the admin API paths it calls (ids are URL-encoded). Every admin route lives under `/admin`;
- * the admin session is the separate `__Host-ss_admin` cookie. Admins sign in on the one sign-in page (`/login`).
+ * the admin session is the separate `__Host-shelfway_admin` cookie. Admins sign in on the one sign-in page (`/login`).
  * @module
  */
 

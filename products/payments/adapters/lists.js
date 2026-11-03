@@ -22,7 +22,7 @@ export const LISTS = Object.freeze({
 /** @typedef {keyof typeof LISTS} ListName */
 
 /**
- * @param {{ store: import('@ss/app-kit').Store, now: () => number }} options
+ * @param {{ store: import('@shelfway/app-kit').Store, now: () => number }} options
  */
 export const createLists = ({ store, now }) => {
 	/** @param {string} websiteId @param {ListName} name */

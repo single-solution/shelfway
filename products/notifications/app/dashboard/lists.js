@@ -18,9 +18,9 @@ import {
 	TextArea,
 	describeProblem,
 	SaveBar,
-} from '@ss/ui';
+} from '@shelfway/ui';
 import { CHANNELS, FALLBACK_CHANNELS } from '../../core/channels.js';
-import { SaveOutcome, call, fill, useLoad } from '@ss/ui/dashboard';
+import { SaveOutcome, call, fill, useLoad } from '@shelfway/ui/dashboard';
 import { TEXTS } from './texts.js';
 
 const L = TEXTS.settings.lists;
@@ -64,7 +64,7 @@ function ListCard({ websiteId, name, title, help, off, blank, render, rows: toRo
 	const path = `/v1/dashboard/websites/${websiteId}/lists/${name}`;
 	const { answer, reload } = useLoad(path);
 	const [draft, setDraft] = useState(/** @type {T[] | null} */ (null));
-	const [result, setResult] = useState(/** @type {import('@ss/ui/dashboard').Answer | null} */ (null));
+	const [result, setResult] = useState(/** @type {import('@shelfway/ui/dashboard').Answer | null} */ (null));
 	if (!answer) return <SettingsCardSkeleton rows={2} />;
 	if (!answer.ok) return <Callout tone="danger">{describeProblem(answer.problem)}</Callout>;
 	const saved = /** @type {any[]} */ (answer.data.value);

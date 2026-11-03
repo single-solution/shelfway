@@ -74,7 +74,7 @@ const open = async (id) => {
 		</DashboardProvider>,
 	);
 	await settle();
-	click(/** @type {HTMLElement} */ (view.container.querySelector('[role="option"][data-ss-id="connection-mail"]')));
+	click(/** @type {HTMLElement} */ (view.container.querySelector('[role="option"][data-shelfway-id="connection-mail"]')));
 	return view;
 };
 

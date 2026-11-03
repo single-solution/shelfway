@@ -1,11 +1,11 @@
 /**
  * Website Setup sheets (PLAN.md, website setup sheet and setup advisor): one generated
- * `ss.blueprint/1` per website, for the admin and the merchant, and read-only share links for a client or a developer.
+ * `shelfway.blueprint/1` per website, for the admin and the merchant, and read-only share links for a client or a developer.
  *
  * - **Gather**: every product on the website (not removed) is asked for its part (`GET /v1/blueprint?websiteId=`, a
- *   call signed with the Portal key, `@ss/protocol` `signPortalCall`) at the same time, each within
+ *   call signed with the Portal key, `@shelfway/protocol` `signPlatformCall`) at the same time, each within
  *   {@link PRODUCT_ANSWER_MS}; a product that does not answer in time, refuses, or answers something that is not a
- *   product blueprint (`@ss/contracts`) shows as not reachable with the reason, and the sheet still renders. The
+ *   product blueprint (`@shelfway/contracts`) shows as not reachable with the reason, and the sheet still renders. The
  *   Portal adds the website's facts: domain, the allowed origins, each product's public browser token and install
  *   snippet, and that its server token is issued (never the token). Generated on request, never stored: kept in this
  *   instance's memory for {@link SHEET_CACHE_MS} per website (light on free plans).
@@ -24,19 +24,19 @@
  *   `website.setup_share_opened` at most once an hour per link (the system, on behalf of whoever holds the link).
  * @module
  */
-import { createId, validateProductBlueprint } from '@ss/contracts';
-import { isNetError, textOf } from '@ss/net';
-import { signPortalCall } from '@ss/protocol';
+import { createId, validateProductBlueprint } from '@shelfway/contracts';
+import { isNetError, textOf } from '@shelfway/net';
+import { signPlatformCall } from '@shelfway/protocol';
 import { isProblem, problem } from '../../infra/http.js';
-import { sha256Hex } from '@ss/protocol';
+import { sha256Hex } from '@shelfway/protocol';
 import { SETTINGS_ANSWERS } from './core/advisor.js';
 import { assembleSheet, productEntry, reasonOfStatus, sharedCopy } from './core/setup.js';
 import { PRODUCTS, SETUP_LINKS, SETUP_PROFILES } from './schema.js';
 
 /** @typedef {import('../../infra/modules.js').ModuleContext} ModuleContext */
 /** @typedef {import('../../infra/rbac.js').Actor} Actor */
-/** @typedef {import('@ss/contracts').Blueprint} Blueprint */
-/** @typedef {import('@ss/contracts').BusinessProfile} BusinessProfile */
+/** @typedef {import('@shelfway/contracts').Blueprint} Blueprint */
+/** @typedef {import('@shelfway/contracts').BusinessProfile} BusinessProfile */
 /** @typedef {import('./core/setup.js').GatheredProduct} GatheredProduct */
 /** @typedef {{ actor: Actor, requestId?: string | null, ip?: string | null }} Audited */
 
@@ -61,7 +61,7 @@ const NOT_SHARED = 'This share link does not exist, has expired or was revoked.'
 const base64url = (bytes) => Buffer.from(bytes).toString('base64url');
 
 /**
- * @param {{ ctx: ModuleContext, policy: import('@ss/net').OutboundPolicy,
+ * @param {{ ctx: ModuleContext, policy: import('@shelfway/net').OutboundPolicy,
  *   fetch: import('./service.js').SafeFetch }} options
  */
 export const createSetup = ({ ctx, policy, fetch }) => {
@@ -126,7 +126,7 @@ export const createSetup = ({ ctx, policy, fetch }) => {
 		const url = new URL(`${String(product.baseUrl).replace(/\/+$/, '')}/v1/blueprint`);
 		url.searchParams.set('websiteId', websiteId);
 		try {
-			const headers = await signPortalCall({
+			const headers = await signPlatformCall({
 				signer: ctx.keys.signer,
 				audience: productId,
 				method: 'GET',
@@ -239,10 +239,10 @@ export const createSetup = ({ ctx, policy, fetch }) => {
 		const url = new URL(`${String(product.baseUrl).replace(/\/+$/, '')}/v1/blueprint/features`);
 		url.searchParams.set('websiteId', websiteId);
 		const body = JSON.stringify({ features, admin: { id: actor.id, name: actor.name ?? actor.id, role: actor.role } });
-		/** @type {import('@ss/net').SafeResponse} */
+		/** @type {import('@shelfway/net').SafeResponse} */
 		let res;
 		try {
-			const headers = await signPortalCall({
+			const headers = await signPlatformCall({
 				signer: ctx.keys.signer,
 				audience: productId,
 				method: 'POST',
@@ -385,7 +385,7 @@ export const createSetup = ({ ctx, policy, fetch }) => {
 				{ merchantId, websiteId },
 				{ after: { linkId: link.linkId, expiresAt: link.expiresAt, values, install }, requestId, ip },
 			);
-			return { link, url: `${ctx.config.portalUrl}/shared-setup#key=${key}` };
+			return { link, url: `${ctx.config.platformUrl}/shared-setup#key=${key}` };
 		},
 
 		/**

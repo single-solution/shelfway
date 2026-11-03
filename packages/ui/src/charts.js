@@ -40,7 +40,7 @@ export function BarChart({ data, label, format = String, height = 160, className
 				viewBox={`0 0 ${width} ${height}`}
 				preserveAspectRatio="none"
 				className="h-40 w-full text-primary">
-				<line x1="0" y1={plot} x2={width} y2={plot} stroke="var(--ss-line-soft)" strokeWidth="1" />
+				<line x1="0" y1={plot} x2={width} y2={plot} stroke="var(--shelfway-line-soft)" strokeWidth="1" />
 				{data.map((d, i) => {
 					const h = max > 0 ? Math.max(d.value > 0 ? 2 : 0, (d.value / max) * (plot - 8)) : 0;
 					return (
@@ -55,7 +55,12 @@ export function BarChart({ data, label, format = String, height = 160, className
 								<title>{`${d.label}: ${format(d.value)}`}</title>
 							</rect>
 							{data.length <= 12 ? (
-								<text x={i * step + step / 2} y={height - 6} textAnchor="middle" fontSize="10" fill="var(--ss-muted)">
+								<text
+									x={i * step + step / 2}
+									y={height - 6}
+									textAnchor="middle"
+									fontSize="10"
+									fill="var(--shelfway-muted)">
 									{d.label}
 								</text>
 							) : null}

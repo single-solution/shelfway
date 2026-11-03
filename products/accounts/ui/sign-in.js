@@ -7,7 +7,7 @@
  * forms (PLAN 0.8.10 A2, A3, A6, A14).
  * @module
  */
-import { element, formatText, mountWidget } from '@ss/app-kit/widget';
+import { element, formatText, mountWidget } from '@shelfway/app-kit/widget';
 import { PROVIDERS } from '../core/widgets.js';
 import {
 	customInputs,
@@ -77,7 +77,7 @@ export const mountSignIn = ({ host, win, config, session, link = null }) => {
 		css: WIDGET_CSS,
 		render: (root) => {
 			const doc = /** @type {Document} */ (root.ownerDocument);
-			const make = fieldMaker(doc, 'ss-sign-in');
+			const make = fieldMaker(doc, 'shelfway-sign-in');
 			const box = element(doc, 'section', { class: 'box' });
 			root.append(box);
 			/**

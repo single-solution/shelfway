@@ -5,21 +5,21 @@
  * Portal's link to Accounts), Notifications' activity-log copies arriving in Accounts, "delete my account" erased in
  * Notifications through the Portal's link to Notifications, and the hourly charge.
  */
-import { staffSignIns } from '@ss/product-accounts/testing';
+import { staffSignIns } from '@shelfway/product-accounts/testing';
 import { createPublicKey, verify } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
 	createProductInstance as createAccounts,
 	manifest as accountsManifest,
 	strings as accountsStrings,
-} from '@ss/product-accounts/product';
-import { createRoutes as accountsRoutes } from '@ss/product-accounts/routes';
+} from '@shelfway/product-accounts/product';
+import { createRoutes as accountsRoutes } from '@shelfway/product-accounts/routes';
 import {
 	createProductInstance as createNotifications,
 	manifest as notifyManifest,
 	strings as notifyStrings,
-} from '@ss/product-notifications/product';
-import { createRoutes as notifyRoutes } from '@ss/product-notifications/routes';
+} from '@shelfway/product-notifications/product';
+import { createRoutes as notifyRoutes } from '@shelfway/product-notifications/routes';
 import { HOUR, startSystem } from './helpers.js';
 
 const ACCOUNTS = 'https://accounts.test';
@@ -42,7 +42,7 @@ let signedUp;
 /** The sign-in of a staff Owner of the website, once its database is connected. @type {(who?: { id?: string, name?: string, role?: string, email?: string }) => Promise<string>} */
 let staffSignIn;
 /** The headers of a staff member’s call from the website’s server. */
-const asStaff = async () => ({ 'ss-sign-in': await staffSignIn() });
+const asStaff = async () => ({ 'shelfway-sign-in': await staffSignIn() });
 
 beforeAll(async () => {
 	sys = await startSystem({
@@ -217,7 +217,7 @@ describe('Accounts on the real Portal', () => {
 		const exported = await sys.call('POST', '/v1/me/export', {
 			token: accountsTokens.browser,
 			origin: ORIGIN,
-			headers: { 'ss-sign-in': fresh.json.signIn },
+			headers: { 'shelfway-sign-in': fresh.json.signIn },
 		});
 		expect(exported.json.url).toContain(`/v1/exports/${websiteId}/`);
 		const file = await sys.call('GET', new URL(exported.json.url).pathname);
@@ -225,7 +225,7 @@ describe('Accounts on the real Portal', () => {
 		const asked = await sys.call('POST', '/v1/me/delete', {
 			token: accountsTokens.browser,
 			origin: ORIGIN,
-			headers: { 'ss-sign-in': fresh.json.signIn },
+			headers: { 'shelfway-sign-in': fresh.json.signIn },
 		});
 		expect(asked.status).toBe(202);
 		const approved = await sys.call('POST', `/v1/users/${signedUp.user.id}/deletion/approve`, {

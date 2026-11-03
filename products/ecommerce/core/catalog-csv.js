@@ -16,8 +16,8 @@ import { LIMITS, slugify } from './catalog.js';
 import { MILLI, quantityText } from './measure.js';
 import { attributeOf } from './catalog-query.js';
 import { lineageOf } from './catalog-taxonomy.js';
-import { fromDecimal, toDecimal } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
+import { fromDecimal, toDecimal } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
 import { spentKey } from './orders.js';
 
 /** @typedef {import('./model.js').ProductRecord} ProductRecord */
@@ -25,7 +25,7 @@ import { spentKey } from './orders.js';
 /** @typedef {import('./model.js').OrderRecord} OrderRecord */
 /** @typedef {import('./model.js').CustomerRecord} CustomerRecord */
 /** @typedef {import('./model.js').AttributeRecord} AttributeRecord */
-/** @typedef {import('@ss/contracts/csv').CsvCell} Cell */
+/** @typedef {import('@shelfway/contracts/csv').CsvCell} Cell */
 
 /** Most data rows of an import. */
 export const MAX_IMPORT_ROWS = 5000;

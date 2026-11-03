@@ -4,7 +4,7 @@ import path from 'node:path';
 import { MongoClient } from 'mongodb';
 
 /** A fresh, empty folder for one test. */
-export const tempDir = async () => mkdtemp(path.join(tmpdir(), 'ss-import-'));
+export const tempDir = async () => mkdtemp(path.join(tmpdir(), 'shelfway-import-'));
 
 /** @param {string} dir */
 export const removeDir = (dir) => rm(dir, { recursive: true, force: true });
@@ -22,7 +22,7 @@ export const freshDb = async () => {
 };
 
 /**
- * A product as `ss-import` sees it (PLAN 0.8.10 K1, K10), in memory: NDJSON upserts by key with a check (non-empty
+ * A product as `shelfway-import` sees it (PLAN 0.8.10 K1, K10), in memory: NDJSON upserts by key with a check (non-empty
  * `text` of at most 40 characters, for `notes`), dry runs, prune by key ranges (at most `pruneBatch` a call), finish
  * (in `finishPages` calls, each after the `next` of the one before, as Chat pages it), status with verification
  * totals, a count route, and the settings API (settings, Format and lists; the first write answers 429 when
@@ -104,11 +104,11 @@ export const fakeProduct = ({
 			return json(200, { key: `${feature}.${key}`, value, source: 'website' });
 		}
 		if (url.pathname === '/v1/format') {
-			// the Format is the Portal's: a product answers a write with 409 managed_by_portal; the importer sends none
+			// the Format is the Portal's: a product answers a write with 409 managed_by_platform; the importer sends none
 			calls.push({ method: write ? 'PUT' : 'GET', path: url.pathname, dryRun: false, records: 0, body: undefined });
 			if (!write) return json(200, { format, sources: formatSources });
 			return json(409, {
-				type: 'https://shop.test/problems/managed_by_portal',
+				type: 'https://shop.test/problems/managed_by_platform',
 				status: 409,
 				detail: 'This is set in the Portal: Website settings › Region and format.',
 			});

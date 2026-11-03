@@ -1,9 +1,9 @@
 /**
  * The notes feature's pure logic: checking a visitor's note and the note as the API answers it. No I/O, no DOM: the
- * API and the widgets share it. Email addresses follow the one rule of the whole suite (`@ss/contracts/email`).
+ * API and the widgets share it. Email addresses follow the one rule of the whole suite (`@shelfway/contracts/email`).
  * @module
  */
-import { normalizeEmail } from '@ss/contracts/email';
+import { normalizeEmail } from '@shelfway/contracts/email';
 
 /** Hard maximum of the `maxLength` setting (a limit is a setting within a maximum fixed in code, PLAN 0.4.2). */
 export const NOTE_MAX_LENGTH = 2000;

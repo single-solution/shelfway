@@ -5,7 +5,7 @@
  * once indexed stays indexed while it has any product (in stock or not), product `lastmod` follows content changes only
  * (never a stock change that leaves it on sale), and the sitemap lists the home page and dates the files of its index.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { SITEMAP_FILE_SIZE } from '../core/limits.js';
 import { COLLECTIONS } from '../core/model.js';

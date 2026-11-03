@@ -6,7 +6,7 @@
  * @module
  */
 import { ownConsents } from './consents.js';
-import { PLACE_PARTS, addressProblem, countryCodeOf, countryName, tidyPostcode } from '@ss/contracts/address';
+import { PLACE_PARTS, addressProblem, countryCodeOf, countryName, tidyPostcode } from '@shelfway/contracts/address';
 import { MAX_CHOICES } from './limits.js';
 import { ADDRESS_LIMITS } from './widgets.js';
 
@@ -204,7 +204,7 @@ export const checkCustomValues = (fields, input, { complete, current = {}, by })
 /**
  * Check the user's addresses (the whole list is saved at once) with the website's Profile settings (A11): at most
  * `max` addresses, the `required` fields filled, the last one kept with `keepOne`, and one default address (the first
- * when none is chosen). Each address follows its country's format (`@ss/contracts/address`, A1): the country kept as
+ * when none is chosen). Each address follows its country's format (`@shelfway/contracts/address`, A1): the country kept as
  * its ISO code (given as a code or an English name), the region and postal code filled where the country requires them
  * (never a postal code where it has none) and the postal code in the country's shape, kept upper case. An address
  * without a country is in `country` (the business country). Imports pass `byCountry: false`: an imported

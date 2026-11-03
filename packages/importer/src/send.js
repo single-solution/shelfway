@@ -1,5 +1,5 @@
 /**
- * `ss-import send`: posts what `read` wrote to the products (PLAN 0.8.10 K10), in import order, with each product's
+ * `shelfway-import send`: posts what `read` wrote to the products (PLAN 0.8.10 K10), in import order, with each product's
  * server token. First the website's settings and lists (`settings.json` and the per-store table, through the settings
  * API, K1; see `settings.js`), then each target's file to `POST <product>/v1/import/<collection>` (`?dryRun=1` for a
  * dry run), NDJSON cut into calls of at most 1,000 records and 4 MB. A failed record is reported with its file line;
@@ -14,7 +14,7 @@
  */
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { IMPORT_LIMITS } from '@ss/contracts';
+import { IMPORT_LIMITS } from '@shelfway/contracts';
 import { callProduct, importError, targetOf } from './http.js';
 import { compareKeyTexts, keyPayloadOf, keyTextOf, keyValuesOf } from './keys.js';
 import { MANIFEST_FILE } from './read.js';

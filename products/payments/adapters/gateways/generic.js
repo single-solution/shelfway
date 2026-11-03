@@ -8,7 +8,7 @@
  *   `cancel_url`, `notify_url`, `timestamp` (unix seconds) and `signature`: hex HMAC-SHA256 with the secret over every
  *   other field sorted by name as `name=value` joined by `&`.
  * - Notice: `POST <notify_url>` with JSON `{ paymentId, status: paid | failed | canceled, amount, currency, reference? }`
- *   and `SS-Signature: t=<unix seconds>,v1=<hex HMAC-SHA256 of "<t>.<body>">` (5 minutes).
+ *   and `Shelfway-Signature: t=<unix seconds>,v1=<hex HMAC-SHA256 of "<t>.<body>">` (5 minutes).
  * - Refund: `POST <refundUrl>` with JSON `{ refundId, paymentId, reference, amount, currency, reason }`, signed the same
  *   way; any 2xx answer is a refund (its JSON `reference`, if any, is kept).
  *
@@ -16,17 +16,17 @@
  * refundUrl?, currencies? }` (`slug`: its own key, so its id is `generic:<slug>`; `currencies`: comma-separated codes).
  * @module
  */
-import { checkUrl, createOutboundPolicy } from '@ss/net';
+import { checkUrl, createOutboundPolicy } from '@shelfway/net';
 import { CUSTOM_KEY } from '../../core/gateways.js';
-import { isCurrency, isPositiveAmount } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
-import { hmacSha256Hex, signWebhook, verifyWebhook } from '@ss/protocol';
+import { isCurrency, isPositiveAmount } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
+import { hmacSha256Hex, signWebhook, verifyWebhook } from '@shelfway/protocol';
 import { call, failure, ok2xx } from './types.js';
 
 /** @typedef {import('./types.js').GatewayAdapter} GatewayAdapter */
 
 /** The header of the generic adapter's signed notices and refund requests. */
-const SIGNATURE_HEADER = 'ss-signature';
+const SIGNATURE_HEADER = 'shelfway-signature';
 
 /**
  * The checkout fields' signature.
@@ -56,11 +56,11 @@ export const genericCurrencies = (keys) =>
 				.filter(isCurrency)
 		: [];
 
-/** @param {unknown} value @param {import('@ss/net').OutboundPolicy} policy */
+/** @param {unknown} value @param {import('@shelfway/net').OutboundPolicy} policy */
 const httpsAddress = (value, policy) => typeof value === 'string' && value.startsWith('https://') && checkUrl(value, policy).ok;
 
 /**
- * @param {import('@ss/net').OutboundPolicy} [policy] the product's outbound policy (addresses merchants enter)
+ * @param {import('@shelfway/net').OutboundPolicy} [policy] the product's outbound policy (addresses merchants enter)
  * @returns {GatewayAdapter}
  */
 export const createGeneric = (policy = createOutboundPolicy()) => {

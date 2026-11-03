@@ -11,11 +11,11 @@
 export const defaultRandomBytes = (length) => globalThis.crypto.getRandomValues(new Uint8Array(length));
 
 /**
- * Merchant database collection prefix of a product: `ss_<product id with - → _>_`.
+ * Merchant database collection prefix of a product: `shelfway_<product id with - → _>_`.
  * @param {string} productId
  * @returns {string}
  */
-export const collectionPrefix = (productId) => `ss_${productId.replace(/-/g, '_')}_`;
+export const collectionPrefix = (productId) => `shelfway_${productId.replace(/-/g, '_')}_`;
 
 /**
  * A copy of an object without some members.

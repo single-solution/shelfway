@@ -9,7 +9,7 @@ import { NO_KEYS } from '../adapters/catalog-store.js';
 import { COLLECTIONS } from '../core/model.js';
 
 /** @typedef {import('./service.js').Site} Site */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/model.js').ProductRecord} ProductRecord */
 /** @typedef {import('../core/model.js').CategoryRecord} CategoryRecord */
 /** @typedef {{ kind: 'product' | 'category', slug: string, url: string }} Moved */

@@ -7,8 +7,8 @@
  * 0.8.10 K4) with the same filters.
  * @module
  */
-import { countHandlers, created, paginate, problem } from '@ss/app-kit';
-import { createId } from '@ss/contracts';
+import { countHandlers, created, paginate, problem } from '@shelfway/app-kit';
+import { createId } from '@shelfway/contracts';
 import { fieldsOn } from '../adapters/catalog-store.js';
 import { createFulfillmentStore, customerFilter, markSeenBy } from '../adapters/fulfillment-store.js';
 import { givePoints } from '../adapters/ledger.js';

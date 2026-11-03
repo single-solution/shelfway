@@ -1,7 +1,7 @@
 import { createHash, createHmac, createDecipheriv } from 'node:crypto';
-import { createNetwork } from '@ss/app-kit/testing';
-import { createOutboundPolicy } from '@ss/net';
-import { signWebhook, verifyWebhook } from '@ss/protocol';
+import { createNetwork } from '@shelfway/app-kit/testing';
+import { createOutboundPolicy } from '@shelfway/net';
+import { signWebhook, verifyWebhook } from '@shelfway/protocol';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createAdapters, genericCurrencies } from '../adapters/gateways/index.js';
 import { forgetTokens } from '../adapters/gateways/paypal.js';
@@ -95,7 +95,7 @@ describe('Stripe', () => {
 		});
 		const sent = fake.calls.at(-1);
 		expect(sent?.headers['stripe-version']).toBe('2024-06-20');
-		expect(sent?.headers['idempotency-key']).toBe(`ss-${PAYMENT.id}`);
+		expect(sent?.headers['idempotency-key']).toBe(`shelfway-${PAYMENT.id}`);
 		const form = new URLSearchParams(sent?.body);
 		expect(form.get('line_items[0][price_data][unit_amount]')).toBe('250000');
 		expect(form.get('line_items[0][price_data][currency]')).toBe('usd');
@@ -184,7 +184,7 @@ describe('Stripe', () => {
 			await stripe.notice?.(
 				signed({
 					type: 'customer.subscription.deleted',
-					data: { object: { id: 'sub_x', status: 'active', metadata: { ss_subscription: 'sub_1' } } },
+					data: { object: { id: 'sub_x', status: 'active', metadata: { shelfway_subscription: 'sub_1' } } },
 				}),
 				keys,
 				ctx,
@@ -745,7 +745,7 @@ describe('PayFast (Pakistan)', () => {
 		expect(Object.fromEntries(new URLSearchParams(asked?.body))).toEqual({
 			MERCHANT_ID: '102',
 			SECURED_KEY: keys.securedKey,
-			BASKET_ID: `SS-TEST-${NOW / 1000}`,
+			BASKET_ID: `SHELFWAY-TEST-${NOW / 1000}`,
 			TXNAMT: '1',
 			CURRENCY_CODE: 'PKR',
 		});
@@ -1156,13 +1156,13 @@ describe('Rapid Gateway', () => {
 		const sent = fake.calls.at(-1);
 		expect(sent?.path).toBe('/v1/payments');
 		expect(sent?.headers.authorization).toBe(`Bearer ${keys.secretKey}`);
-		expect(sent?.headers['idempotency-key']).toBe(`ss-${PK_PAYMENT.id}`);
+		expect(sent?.headers['idempotency-key']).toBe(`shelfway-${PK_PAYMENT.id}`);
 		expect(JSON.parse(sent?.body ?? '{}')).toEqual({
 			amount: 2500,
 			currency: 'PKR',
 			methods: ['card', 'easypaisa', 'jazzcash', 'raast'],
 			customer: { phone: '+923001234567' },
-			metadata: { ss_payment: PK_PAYMENT.id, ss_website: PK_PAYMENT.websiteId },
+			metadata: { shelfway_payment: PK_PAYMENT.id, shelfway_website: PK_PAYMENT.websiteId },
 			return_url: URLS.return,
 			webhook_url: URLS.notify,
 		});
@@ -1194,7 +1194,13 @@ describe('Rapid Gateway', () => {
 		expect(fake.calls.at(-1)?.url).toBe('https://api.rapidgateway.pk/v1/payments');
 	});
 	it('trusts only webhooks signed with the webhook secret', async () => {
-		const body = { id: 'rp_1', status: 'succeeded', amount: 2500, currency: 'PKR', metadata: { ss_payment: PK_PAYMENT.id } };
+		const body = {
+			id: 'rp_1',
+			status: 'succeeded',
+			amount: 2500,
+			currency: 'PKR',
+			metadata: { shelfway_payment: PK_PAYMENT.id },
+		};
 		expect(await rapid.notice?.(hook(body), keys, ctx)).toEqual({
 			ok: true,
 			news: [
@@ -1275,7 +1281,7 @@ describe('generic adapter', () => {
 		/** @param {unknown} body */
 		const post = (body) => {
 			const text = JSON.stringify(body);
-			return incoming({ 'ss-signature': signWebhook({ body: text, secret: keys.secret, now: () => NOW }) }, text);
+			return incoming({ 'shelfway-signature': signWebhook({ body: text, secret: keys.secret, now: () => NOW }) }, text);
 		};
 		expect(
 			await generic.notice?.(
@@ -1312,7 +1318,7 @@ describe('generic adapter', () => {
 			});
 		expect(
 			await generic.notice?.(
-				incoming({ 'ss-signature': signWebhook({ body: 'x', secret: keys.secret, now: () => NOW }) }, 'x'),
+				incoming({ 'shelfway-signature': signWebhook({ body: 'x', secret: keys.secret, now: () => NOW }) }, 'x'),
 				keys,
 				ctx,
 			),
@@ -1332,7 +1338,7 @@ describe('generic adapter', () => {
 		const sent = fake.calls.at(-1);
 		expect(
 			verifyWebhook({
-				header: sent?.headers['ss-signature'] ?? null,
+				header: sent?.headers['shelfway-signature'] ?? null,
 				body: sent?.body ?? '',
 				secret: keys.secret,
 				now: () => NOW,

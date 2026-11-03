@@ -3,7 +3,7 @@
  * `{ ok: false, errors: [{ path, message }] }` and refuses unknown properties.
  * @module
  */
-import { isId } from '@ss/contracts';
+import { isId } from '@shelfway/contracts';
 
 /** @typedef {{ path: string, message: string }} FieldError */
 /**

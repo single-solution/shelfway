@@ -1,5 +1,5 @@
 /**
- * Growth's records in the merchant database (collections `ss_growth_<name>`, through the kit's tenant guard: every
+ * Growth's records in the merchant database (collections `shelfway_growth_<name>`, through the kit's tenant guard: every
  * query carries the website id; inserts are stamped with `websiteId`, `merchantId`, `createdAt` and `updatedAt`).
  * Nothing names a person: events are anonymous (PLAN 0.8.9 Privacy).
  *
@@ -17,12 +17,12 @@
  * and journeys are read from them when asked (nothing is kept per session besides the events).
  * @module
  */
-import { createId } from '@ss/contracts';
-import { noopLogger } from '@ss/net';
+import { createId } from '@shelfway/contracts';
+import { noopLogger } from '@shelfway/net';
 import { PRODUCT_METRICS } from '../core/product-performance.js';
 import { createDayCaps } from './day-caps.js';
 
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/events.js').KeptEvent} KeptEvent */
 /**
  * @typedef {{ id: string, type: string, path: string, at: Date, expiresAt: Date, data: Record<string, unknown>,
@@ -34,8 +34,8 @@ import { createDayCaps } from './day-caps.js';
 const JOURNEY_STEPS = 30;
 
 /**
- * The raw analytics events (`ss_growth_analytics_events`): not `events`, the collection the kit keeps for the events a
- * product publishes (`ss_<product>_events`), so Growth can publish events of its own without the two mixing.
+ * The raw analytics events (`shelfway_growth_analytics_events`): not `events`, the collection the kit keeps for the events a
+ * product publishes (`shelfway_<product>_events`), so Growth can publish events of its own without the two mixing.
  */
 const EVENTS = 'analytics_events';
 const TOTALS = 'totals';
@@ -49,7 +49,7 @@ const MAX_ROWS = 20_000;
 /** The metrics a report also gives per day. */
 const DAY_METRICS = Object.freeze(['visits', 'page_views']);
 
-/** Merchant database indexes (created on a website's first use). @type {import('@ss/app-kit').IndexDefinition[]} */
+/** Merchant database indexes (created on a website's first use). @type {import('@shelfway/app-kit').IndexDefinition[]} */
 export const INDEXES = [
 	{ collection: EVENTS, keys: { expiresAt: 1 }, name: 'expiry', expireAfterSeconds: 0 },
 	{ collection: EVENTS, keys: { websiteId: 1, at: -1, id: -1 }, name: 'newest' },

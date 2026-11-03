@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { createJwks, createKeyResolver, generateSigningKey, issueToken, verifyToken } from '@ss/protocol';
-import { createPortalKeys, createSecretBox, resealEach, sumCounts } from '../src/infra/crypto.js';
+import { createJwks, createKeyResolver, generateSigningKey, issueToken, verifyToken } from '@shelfway/protocol';
+import { createPlatformKeys, createSecretBox, resealEach, sumCounts } from '../src/infra/crypto.js';
 import { isPlatformError } from '../src/infra/errors.js';
-import { staticSecurityHeaders } from '@ss/net';
+import { staticSecurityHeaders } from '@shelfway/net';
 import { API_CSP, createNonce, pageCsp } from '../src/infra/security-headers.js';
 import { MERCHANT, WEBSITE } from './helpers.js';
 
@@ -24,7 +24,7 @@ describe('portal keys', () => {
 		const { privateJwk: previous } = await generateSigningKey({ kid: 'portal-old' });
 		const { privateJwk: token } = await generateSigningKey({ kid: 'token-new' });
 		const { privateJwk: tokenOld } = await generateSigningKey({ kid: 'token-old' });
-		const keys = createPortalKeys([current, previous], [token, tokenOld]);
+		const keys = createPlatformKeys([current, previous], [token, tokenOld]);
 		expect(keys.signer.kid).toBe('portal-new');
 		expect(keys.tokenSigner.kid).toBe('token-new');
 		const published = keys.publishedJwks();
@@ -34,7 +34,7 @@ describe('portal keys', () => {
 		const resolverOf = (prefix) =>
 			createKeyResolver({ jwks: createJwks(published.keys.filter((k) => k.kid.startsWith(prefix))) });
 
-		/** @param {import('@ss/protocol').Signer} signer */
+		/** @param {import('@shelfway/protocol').Signer} signer */
 		const issue = async (signer) =>
 			(
 				await issueToken({
@@ -46,7 +46,7 @@ describe('portal keys', () => {
 					kind: 'server',
 				})
 			).token;
-		const verify = (/** @type {string} */ value, /** @type {import('@ss/protocol').KeyResolver} */ keyResolver) =>
+		const verify = (/** @type {string} */ value, /** @type {import('@shelfway/protocol').KeyResolver} */ keyResolver) =>
 			verifyToken({ token: value, keyResolver, issuer: 'https://portal.test', productId: 'notes' });
 		// tokens signed by the token signer verify with the token keys only
 		const good = await issue(keys.tokenSigner);
@@ -55,10 +55,10 @@ describe('portal keys', () => {
 		// a token signed with the Portal key is never accepted as a token
 		await expect(verify(await issue(keys.signer), resolverOf('token-'))).rejects.toThrow();
 
-		expect(codeOf(() => createPortalKeys([], [token]))).toBe('config_invalid');
-		expect(codeOf(() => createPortalKeys([current], []))).toBe('config_invalid');
+		expect(codeOf(() => createPlatformKeys([], [token]))).toBe('config_invalid');
+		expect(codeOf(() => createPlatformKeys([current], []))).toBe('config_invalid');
 		const { privateJwk: clash } = await generateSigningKey({ kid: 'portal-new' });
-		expect(codeOf(() => createPortalKeys([current], [clash]))).toBe('config_invalid');
+		expect(codeOf(() => createPlatformKeys([current], [clash]))).toBe('config_invalid');
 	});
 });
 

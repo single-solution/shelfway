@@ -24,7 +24,7 @@ import {
 	describeProblem,
 	formatCredits,
 	useToast,
-} from '@ss/ui';
+} from '@shelfway/ui';
 import { MORE, SETUP, WEBSITE, WEBSITE_SETTINGS as T } from '../../texts/console.js';
 import { apiFetch } from '../client.js';
 import { Link } from '../link.js';
@@ -44,7 +44,7 @@ import { AddProductDrawer, dailyCostOf, twoStepOnOf, useOnce, websiteDot } from 
  * sheet, open the product dashboards and read the Website settings.
  * @typedef {{ manage: boolean, removeWebsite: boolean, tokens: boolean, open: boolean, settings: boolean }} WebsiteCan
  */
-/** @typedef {import('@ss/ui').PageStatus} SitePill */
+/** @typedef {import('@shelfway/ui').PageStatus} SitePill */
 
 /** No changes yet: one array, so a page without Recent changes does not reset its state on every render. */
 const NO_CHANGES = /** @type {any[]} */ ([]);
@@ -54,7 +54,7 @@ const NO_CHANGES = /** @type {any[]} */ ([]);
  * @property {any} website the website (`websiteId`, `merchantId`, `domain`)
  * @property {ProductCard[]} cards its products
  * @property {string} part the part of the address after the website (`website-parts.js`)
- * @property {import('@ss/ui').PageCrumb[]} crumbs the steps above the website's domain
+ * @property {import('@shelfway/ui').PageCrumb[]} crumbs the steps above the website's domain
  * @property {(part: string) => string} hrefOf the address of a part (`''` = the page)
  * @property {WebsiteCan} can
  * @property {Record<'success' | 'warning' | 'danger' | 'neutral', SitePill>} pills how the website's worst product status reads
@@ -142,7 +142,7 @@ export function WebsitePageView({
 	const [dialog, setDialog] = useState(/** @type {null | 'add' | 'removeWebsite'} */ (null));
 	const [removing, setRemoving] = useState(/** @type {ProductCard | null} */ (null));
 	const [busy, setBusy] = useState(false);
-	const [problem, setProblem] = useState(/** @type {import('@ss/ui/problems').Problem | null} */ (null));
+	const [problem, setProblem] = useState(/** @type {import('@shelfway/ui/problems').Problem | null} */ (null));
 	const [opening, setOpening] = useState(/** @type {string | null} */ (null));
 	/** Product waiting for password confirm before launch. */
 	const [launching, setLaunching] = useState(/** @type {ProductCard | null} */ (null));
@@ -351,7 +351,7 @@ export function WebsitePageView({
 			onClick: () => void window.open(routes.docs(), '_blank', 'noopener,noreferrer'),
 		},
 	];
-	/** @type {import('@ss/ui').PageActions} */
+	/** @type {import('@shelfway/ui').PageActions} */
 	const actions = {
 		...(onSetup
 			? { primary: { label: SETUP.download, icon: 'arrowDown', onClick: setupState.download } }
@@ -402,7 +402,7 @@ export function WebsitePageView({
 
 	// the pages of their own (Website settings, the Setup sheet) keep the inner navigation: back to the page, the Setup
 	// sheet, and the settings sections (a dot where a product still needs something, a count of links)
-	/** @type {import('@ss/ui').InnerNavGroup[]} */
+	/** @type {import('@shelfway/ui').InnerNavGroup[]} */
 	const groups = [
 		{
 			items: [
@@ -435,7 +435,7 @@ export function WebsitePageView({
 
 	/** @type {import('react').ReactNode} */
 	let body = null;
-	/** @type {import('@ss/ui').PageSection[] | undefined} */
+	/** @type {import('@shelfway/ui').PageSection[] | undefined} */
 	let sections;
 	if (!error && parsed && own === 'settings')
 		body = (

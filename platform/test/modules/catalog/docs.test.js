@@ -1,8 +1,8 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { manifest as notesManifest } from '@ss/contracts/testing';
+import { manifest as notesManifest } from '@shelfway/contracts/testing';
 import { closeMongoClients } from '../../../src/testing.js';
 import { startMongo } from '../../helpers.js';
-import { PORTAL_URL, bootPortal } from './boot.js';
+import { PLATFORM_URL, bootPlatform } from './boot.js';
 
 vi.setConfig({ testTimeout: 60_000, hookTimeout: 180_000 });
 
@@ -23,7 +23,7 @@ afterAll(async () => {
 
 /** @param {string} name */
 const boot = async (name) => {
-	const h = await bootPortal({ db: mongo.db(name) });
+	const h = await bootPlatform({ db: mongo.db(name) });
 	cleanups.push(h.close);
 	return h;
 };
@@ -107,8 +107,8 @@ describe('Docs hub (PLAN §10 B1, B2, B3)', () => {
 				'/v1/test': {
 					get: {
 						summary: 'Test operation',
-						'x-ss-auth': 'server',
-						'x-ss-permission': 'test.read',
+						'x-shelfway-auth': 'server',
+						'x-shelfway-permission': 'test.read',
 					},
 				},
 			},
@@ -135,8 +135,8 @@ describe('Docs hub (PLAN §10 B1, B2, B3)', () => {
 				{
 					productId: product.productId,
 					name: m.name,
-					docsUrl: `${PORTAL_URL}/docs/${product.productId}`,
-					openapiUrl: `${PORTAL_URL}/docs/${product.productId}/openapi.json`,
+					docsUrl: `${PLATFORM_URL}/docs/${product.productId}`,
+					openapiUrl: `${PLATFORM_URL}/docs/${product.productId}/openapi.json`,
 				},
 			],
 		});
@@ -161,10 +161,10 @@ describe('Docs hub (PLAN §10 B1, B2, B3)', () => {
 
 		const packRes = await owner.post(`/v1/merchants/${merchant.merchantId}/websites/${websiteId}/pack`, { code });
 		expect(packRes.status).toBe(200);
-		expect(packRes.json?.docsHubUrl).toBe(`${PORTAL_URL}/docs`);
+		expect(packRes.json?.docsHubUrl).toBe(`${PLATFORM_URL}/docs`);
 		expect(packRes.json?.products).toHaveLength(1);
 		const p = packRes.json?.products[0];
-		expect(p.docs).toBe(`${PORTAL_URL}/docs/${product.productId}`);
-		expect(p.openapi).toBe(`${PORTAL_URL}/docs/${product.productId}/openapi.json`);
+		expect(p.docs).toBe(`${PLATFORM_URL}/docs/${product.productId}`);
+		expect(p.openapi).toBe(`${PLATFORM_URL}/docs/${product.productId}/openapi.json`);
 	});
 });

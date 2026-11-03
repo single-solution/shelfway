@@ -34,7 +34,7 @@ const placeOrder = async ({ phone = '+447700900123', city = 'Springfield', stock
 			payment: 'cod',
 			address: { name: 'Sara', phone, line1: '1 Main Street', city, region: 'IL', postalCode: '62701', country: 'US' },
 		},
-		headers: { 'x-forwarded-for': `10.6.0.${users}`, 'ss-sign-in': token, 'idempotency-key': `e31-${users}` },
+		headers: { 'x-forwarded-for': `10.6.0.${users}`, 'shelfway-sign-in': token, 'idempotency-key': `e31-${users}` },
 	});
 	expect(placed.status).toBe(201);
 	return { item, userId: id, order: placed.json.order };
@@ -49,7 +49,7 @@ const stockOf = async (id) =>
 const asStaff = (method, path, staff) =>
 	shop.call(method, path, {
 		token: shop.server,
-		headers: { 'ss-actor-kind': 'staff', 'ss-actor-id': staff, 'ss-actor-name': staff },
+		headers: { 'shelfway-actor-kind': 'staff', 'shelfway-actor-id': staff, 'shelfway-actor-name': staff },
 	});
 
 beforeAll(async () => {

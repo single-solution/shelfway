@@ -22,7 +22,7 @@ const server = (method, path, body, as = null) =>
 	env.call(method, path, {
 		token: env.server,
 		...(body === undefined ? {} : { body }),
-		headers: as ? { 'ss-actor-id': as.id, 'ss-actor-name': encodeURIComponent(as.name) } : {},
+		headers: as ? { 'shelfway-actor-id': as.id, 'shelfway-actor-name': encodeURIComponent(as.name) } : {},
 	});
 /**
  * A visitor asks for a role. The answer never names the request, so its id is read from the staff list (the one new
@@ -44,7 +44,7 @@ const asUser = (id, name = 'Staff') => ({ id, name });
 /** The claims of a sign-in (other products read `phone_verified` from it). @param {string} signIn */
 const claimsOf = (signIn) => JSON.parse(Buffer.from(String(signIn.split('.')[1]), 'base64url').toString('utf8'));
 /** The code of a setup link. @param {string} url */
-const setupCodeOf = (url) => new URL(url).searchParams.get('ss_setup');
+const setupCodeOf = (url) => new URL(url).searchParams.get('shelfway_setup');
 
 /** @type {Record<string, any>} */
 const people = {};
@@ -188,7 +188,7 @@ describe('A4: staff and customer management', () => {
 			token: env.server,
 			bare: true,
 			body: { notes: 'set by the shop' },
-			headers: { 'ss-actor-id': 'ext_1', 'ss-actor-name': 'Ext' },
+			headers: { 'shelfway-actor-id': 'ext_1', 'shelfway-actor-name': 'Ext' },
 		});
 		expect(code(nobody)).toBe('needs_signed_in_staff');
 		expect((await server('PATCH', `/v1/users/${second.id}`, { blocked: false })).status).toBe(200);
@@ -412,9 +412,9 @@ describe('A3: staff-issued sign-in codes and setup links', () => {
 
 	it('a setup link sets a password (also without an email address) and signs in; a new link cancels the old', async () => {
 		const first = await server('POST', `/v1/users/${people.support.id}/setup-link`);
-		expect(first.json.url).toMatch(/^https:\/\/shop\.example\.com\/\?ss_setup=cod_/);
+		expect(first.json.url).toMatch(/^https:\/\/shop\.example\.com\/\?shelfway_setup=cod_/);
 		const second = await server('POST', `/v1/users/${people.support.id}/setup-link`);
-		const codeOf = (/** @type {string} */ url) => new URL(url).searchParams.get('ss_setup');
+		const codeOf = (/** @type {string} */ url) => new URL(url).searchParams.get('shelfway_setup');
 		expect(
 			code(await env.visitor('POST', '/v1/setup-links/accept', { code: codeOf(first.json.url), password: 'support pass 1' })),
 		).toBe('code_invalid');
@@ -461,7 +461,7 @@ describe('A3: staff-issued sign-in codes and setup links', () => {
 		const before = env.messages().length;
 		const invited = await server('POST', '/v1/users/invite', { phone: '+447700900099', name: 'Ivy', deliver: 'return' });
 		expect(invited.status).toBe(201);
-		expect(invited.json.invite.url).toMatch(/^https:\/\/shop\.example\.com\/join#ss_accounts_invite=cod_/);
+		expect(invited.json.invite.url).toMatch(/^https:\/\/shop\.example\.com\/join#shelfway_accounts_invite=cod_/);
 		expect(env.messages().length).toBe(before);
 		expect(code(await server('POST', '/v1/users/invite', { phone: '+447700900098', deliver: 'post' }))).toBe(
 			'validation_failed',
@@ -511,7 +511,7 @@ describe('A5: role requests', () => {
 		const invited = await env.admin(ticket, 'POST', `/v1/admin/role-requests/${asked.json.id}/invite`);
 		expect(invited.json.request).toMatchObject({ status: 'invited', invitedBy: { kind: 'staff', name: 'Sam Staff' } });
 		expect(invited.json.user).toMatchObject({ role: 'member', phone: '+447700900100' });
-		const setupCode = new URL(invited.json.setupLink.url).searchParams.get('ss_setup');
+		const setupCode = new URL(invited.json.setupLink.url).searchParams.get('shelfway_setup');
 		expect(code(await env.admin(ticket, 'POST', `/v1/admin/role-requests/${asked.json.id}/invite`))).toBe('conflict');
 		const done = await env.visitor('POST', '/v1/setup-links/accept', { code: setupCode, password: 'member pass 1' });
 		expect(done.json.user).toMatchObject({ role: 'member', phoneVerified: true });
@@ -596,7 +596,7 @@ describe('A5: role requests', () => {
 		await server('POST', `/v1/role-requests/${rae}/reopen`);
 		const again = await server('POST', `/v1/role-requests/${rae}/invite`);
 		expect(again.json).toMatchObject({ request: { status: 'invited' }, user: { id: invited.json.user.id } });
-		expect(again.json.setupLink.url).toMatch(/ss_setup=cod_/);
+		expect(again.json.setupLink.url).toMatch(/shelfway_setup=cod_/);
 
 		// the account is Sol's own: staff confirm the number on the user, and the role is given at once
 		const sol = await env.typedPhoneSignUp({

@@ -8,8 +8,8 @@
  * Connection `stripe`: `{ secretKey: sk_… | rk_…, webhookSecret: whsec_… }`. API version pinned with `Stripe-Version`.
  * @module
  */
-import { isObject } from '@ss/contracts/util';
-import { verifyWebhook } from '@ss/protocol';
+import { isObject } from '@shelfway/contracts/util';
+import { verifyWebhook } from '@shelfway/protocol';
 import { formBody } from '../util.js';
 import { call, failure, ok2xx } from './types.js';
 
@@ -64,7 +64,7 @@ export const stripe = {
 	start: async ({ payment, keys, urls, expiresAt }, ctx) => {
 		const answer = await call(ctx, `${STRIPE_API}/v1/checkout/sessions`, {
 			method: 'POST',
-			headers: headers(keys, `ss-${payment.id}`),
+			headers: headers(keys, `shelfway-${payment.id}`),
 			body: formBody({
 				mode: 'payment',
 				client_reference_id: payment.id,
@@ -74,9 +74,9 @@ export const stripe = {
 				'line_items[0][price_data][currency]': payment.currency.toLowerCase(),
 				'line_items[0][price_data][unit_amount]': payment.amount,
 				'line_items[0][price_data][product_data][name]': payment.description || payment.reference || payment.id,
-				'metadata[ss_payment]': payment.id,
-				'metadata[ss_website]': payment.websiteId,
-				'payment_intent_data[metadata][ss_payment]': payment.id,
+				'metadata[shelfway_payment]': payment.id,
+				'metadata[shelfway_website]': payment.websiteId,
+				'payment_intent_data[metadata][shelfway_payment]': payment.id,
 				...(payment.customer.email ? { customer_email: payment.customer.email } : {}),
 				// sent only when shorter than Stripe's own 24 hours, so a clock a little ahead never makes it refuse
 				...(expiresAt - ctx.now() < 24 * 3_600_000 ? { expires_at: Math.floor(expiresAt / 1000) } : {}),
@@ -130,7 +130,7 @@ export const stripe = {
 					news: [
 						{
 							kind: 'subscription',
-							subscriptionId: object.metadata?.ss_subscription ?? null,
+							subscriptionId: object.metadata?.shelfway_subscription ?? null,
 							ref: String(object.id ?? ''),
 							status: event.type === 'customer.subscription.deleted' ? 'canceled' : (object.status ?? null),
 						},
@@ -168,7 +168,7 @@ export const stripe = {
 		const answer = await call(ctx, `${STRIPE_API}/v1/refunds`, {
 			method: 'POST',
 			headers: headers(keys, refundId),
-			body: formBody({ payment_intent: payment.captureRef, amount, 'metadata[ss_refund]': refundId }),
+			body: formBody({ payment_intent: payment.captureRef, amount, 'metadata[shelfway_refund]': refundId }),
 		});
 		if (!ok2xx(answer.status) || answer.json?.status === 'failed' || answer.json?.status === 'canceled')
 			return { ok: false, message: answer.json?.error?.message ?? failure('Stripe', answer.status) };
@@ -177,7 +177,7 @@ export const stripe = {
 	subscribe: async ({ subscription, keys, urls }, ctx) => {
 		const answer = await call(ctx, `${STRIPE_API}/v1/checkout/sessions`, {
 			method: 'POST',
-			headers: headers(keys, `ss-${subscription.id}`),
+			headers: headers(keys, `shelfway-${subscription.id}`),
 			body: formBody({
 				mode: 'subscription',
 				client_reference_id: subscription.id,
@@ -185,7 +185,7 @@ export const stripe = {
 				cancel_url: urls.cancel,
 				'line_items[0][price]': subscription.plan,
 				'line_items[0][quantity]': 1,
-				'subscription_data[metadata][ss_subscription]': subscription.id,
+				'subscription_data[metadata][shelfway_subscription]': subscription.id,
 				...(subscription.customer.email ? { customer_email: subscription.customer.email } : {}),
 			}),
 		});

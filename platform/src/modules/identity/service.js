@@ -284,7 +284,7 @@ export const createIdentityService = (ctx, options = {}) => {
 			);
 			const listed = await tokens.list({ merchantId, websiteId, productIds: on.map((p) => p.productId) });
 			const catalog = ctx.service('catalog');
-			const docsHubUrl = /** @type {any} */ (ctx.config).docsHubUrl || `${ctx.config.portalUrl}/docs`;
+			const docsHubUrl = /** @type {any} */ (ctx.config).docsHubUrl || `${ctx.config.platformUrl}/docs`;
 			const products = [];
 			for (const item of on) {
 				const catProduct = await catalog.getProduct(item.productId).catch(() => null);

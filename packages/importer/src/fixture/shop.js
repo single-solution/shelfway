@@ -1,5 +1,5 @@
 /**
- * The example shop (`@ss/importer/fixture`): a small shop as an older shop system kept it, in one MongoDB database —
+ * The example shop (`@shelfway/importer/fixture`): a small shop as an older shop system kept it, in one MongoDB database —
  * ObjectId ids, prices in dollars, phones as typed, slugs where the products use ids, one customer saved twice, loyalty
  * transactions, chats with their messages inside them and daily analytics — and `SHOP_MAPPING`, which moves it into
  * Accounts, Ecommerce, Chat and Growth in import order (PLAN 0.8.10 Migration). A neutral example, no real store: the
@@ -8,7 +8,7 @@
  */
 import { createHash } from 'node:crypto';
 import { ObjectId } from 'mongodb';
-import { normalizePhone } from '@ss/contracts/phone';
+import { normalizePhone } from '@shelfway/contracts/phone';
 import { defineMapping } from '../mapping.js';
 
 /** The example shop's calling code: its phones were typed nationally (the products read them with business.json). */

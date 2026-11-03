@@ -78,7 +78,7 @@ describe('the acting user is the staff member of a verified sign-in (K2)', () =>
 		const forged = await call('POST', '/v1/server/actions', {
 			token: server.token,
 			bare: true,
-			headers: { 'ss-actor-id': 'usr_7', 'ss-actor-name': 'Alex%20M.', 'ss-actor-role': 'Owner' },
+			headers: { 'shelfway-actor-id': 'usr_7', 'shelfway-actor-name': 'Alex%20M.', 'shelfway-actor-role': 'Owner' },
 		});
 		expect(forged.status).toBe(403);
 		expect(await forged.json()).toMatchObject({ type: 'https://notes.example.dev/problems/needs_signed_in_staff' });
@@ -92,7 +92,12 @@ describe('the acting user is the staff member of a verified sign-in (K2)', () =>
 		const next = await call('POST', '/v1/server/actions', {
 			token: server.token,
 			bare: true,
-			headers: { 'ss-sign-in': signIn, 'ss-actor-id': 'usr_boss', 'ss-actor-name': 'The%20Boss', 'ss-actor-role': 'Owner' },
+			headers: {
+				'shelfway-sign-in': signIn,
+				'shelfway-actor-id': 'usr_boss',
+				'shelfway-actor-name': 'The%20Boss',
+				'shelfway-actor-role': 'Owner',
+			},
 		});
 		expect(next.status).toBe(200);
 		expect((await next.json()).actor).toMatchObject({ kind: 'user', id: 'usr_real', name: 'Real Rita' });
@@ -100,13 +105,13 @@ describe('the acting user is the staff member of a verified sign-in (K2)', () =>
 		const malformed = await call('POST', '/v1/server/actions', {
 			token: server.token,
 			bare: true,
-			headers: { 'ss-sign-in': signIn, 'ss-actor-id': 'usr_7' },
+			headers: { 'shelfway-sign-in': signIn, 'shelfway-actor-id': 'usr_7' },
 		});
 		expect(malformed.status).toBe(200);
 		await settle();
 		const { client, db } = await openDb(dbName);
 		expect(
-			await db.collection('ss_notes_staff').findOne({ id: 'usr_7' }, { projection: { _id: 0, lastSeenAt: 0 } }),
+			await db.collection('shelfway_notes_staff').findOne({ id: 'usr_7' }, { projection: { _id: 0, lastSeenAt: 0 } }),
 		).toMatchObject({
 			websiteId,
 			id: 'usr_7',
@@ -114,8 +119,8 @@ describe('the acting user is the staff member of a verified sign-in (K2)', () =>
 			role: 'Owner',
 			email: 'alex@shop.example.com',
 		});
-		expect(await db.collection('ss_notes_staff').countDocuments({ id: 'usr_boss' })).toBe(0);
-		const entries = await db.collection('ss_notes_activity').find({}).sort({ at: 1 }).toArray();
+		expect(await db.collection('shelfway_notes_staff').countDocuments({ id: 'usr_boss' })).toBe(0);
+		const entries = await db.collection('shelfway_notes_activity').find({}).sort({ at: 1 }).toArray();
 		expect(entries.map((entry) => entry.actor)).toEqual([
 			{ kind: 'user', id: 'usr_7', name: 'Alex M.', role: 'Owner' },
 			{ kind: 'user', id: 'usr_real', name: 'Real Rita', role: 'owner' },
@@ -136,7 +141,7 @@ describe('the acting user is the staff member of a verified sign-in (K2)', () =>
 		expect((await call('GET', '/v1/inbox/open', { token: server.token, staff })).status).toBe(200);
 		await settle();
 		const { client, db } = await openDb(dbName);
-		expect(await db.collection('ss_notes_staff').countDocuments({ id: 'usr_8', name: 'Noor' })).toBe(1);
+		expect(await db.collection('shelfway_notes_staff').countDocuments({ id: 'usr_8', name: 'Noor' })).toBe(1);
 		await client.close();
 	});
 });
@@ -147,7 +152,7 @@ describe('visitor calls from the merchant’s server (K3)', () => {
 		await switchOn(['notes']);
 		const fromServer = await call('GET', '/v1/visitor/whoami', {
 			token: server.token,
-			headers: { 'ss-visitor-ip': '203.0.113.9', 'x-forwarded-for': '198.51.100.1' },
+			headers: { 'shelfway-visitor-ip': '203.0.113.9', 'x-forwarded-for': '198.51.100.1' },
 		});
 		expect(fromServer.status).toBe(200);
 		expect(fromServer.headers.get('access-control-allow-origin')).toBeNull();
@@ -156,13 +161,13 @@ describe('visitor calls from the merchant’s server (K3)', () => {
 			visitor: { server: true, ip: '203.0.113.9' },
 			clientIp: '203.0.113.9',
 		});
-		const noIp = await call('GET', '/v1/visitor/whoami', { token: server.token, headers: { 'ss-visitor-ip': 'nope' } });
+		const noIp = await call('GET', '/v1/visitor/whoami', { token: server.token, headers: { 'shelfway-visitor-ip': 'nope' } });
 		expect(await noIp.json()).toEqual({ kind: 'server', visitor: { server: true, ip: null }, clientIp: 'unknown' });
 		// a browser cannot claim to be a visitor of the server
 		const fromBrowser = await call('GET', '/v1/visitor/whoami', {
 			token: browser.token,
 			origin: SITE,
-			headers: { 'ss-visitor-ip': '203.0.113.9', 'x-forwarded-for': '198.51.100.1' },
+			headers: { 'shelfway-visitor-ip': '203.0.113.9', 'x-forwarded-for': '198.51.100.1' },
 		});
 		expect(await fromBrowser.json()).toEqual({
 			kind: 'browser',
@@ -176,7 +181,7 @@ describe('visitor calls from the merchant’s server (K3)', () => {
 		await settle();
 		expect(await store.get('widget', websiteId)).toMatchObject({ websiteId });
 		await store.delete('widget', websiteId);
-		await call('GET', '/v1/visitor/whoami', { token: server.token, headers: { 'ss-visitor-ip': '203.0.113.9' } });
+		await call('GET', '/v1/visitor/whoami', { token: server.token, headers: { 'shelfway-visitor-ip': '203.0.113.9' } });
 		await settle();
 		expect(await store.get('widget', websiteId)).toBeNull();
 	});
@@ -190,7 +195,7 @@ describe('visitor calls from the merchant’s server (K3)', () => {
 		const named = await call('POST', '/v1/visitor/whoami', {
 			token: server.token,
 			body: {},
-			headers: { 'ss-visitor-ip': '2001:db8::1', 'ss-actor-id': 'u1', 'ss-actor-name': 'Sam' },
+			headers: { 'shelfway-visitor-ip': '2001:db8::1', 'shelfway-actor-id': 'u1', 'shelfway-actor-name': 'Sam' },
 		});
 		expect(named.status).toBe(200);
 		// a visitor call has no staff member: the actor headers are ignored
@@ -201,7 +206,7 @@ describe('visitor calls from the merchant’s server (K3)', () => {
 		const { call, server, browser, switchOn, store, websiteId, clock } = await setup({ routes: routes() });
 		await switchOn(['notes']);
 		const visit = (/** @type {string} */ ip) =>
-			call('GET', '/v1/visitor/whoami', { token: server.token, headers: { 'ss-visitor-ip': ip } });
+			call('GET', '/v1/visitor/whoami', { token: server.token, headers: { 'shelfway-visitor-ip': ip } });
 		// the browser window is 2 per website: the server's calls do not count in it, nor it in theirs
 		for (const ip of ['203.0.113.1', '203.0.113.2', '203.0.113.3', '203.0.113.4']) expect((await visit(ip)).status).toBe(200);
 		expect((await call('GET', '/v1/visitor/whoami', { token: browser.token, origin: SITE })).status).toBe(200);
@@ -228,7 +233,7 @@ describe('visitor calls from the merchant’s server (K3)', () => {
 				await call('POST', '/v1/visitor/whoami', {
 					token: server.token,
 					body: {},
-					headers: { 'ss-visitor-ip': '203.0.113.6' },
+					headers: { 'shelfway-visitor-ip': '203.0.113.6' },
 				})
 			).status,
 		).toBe(200);

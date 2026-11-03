@@ -4,10 +4,10 @@
  * two-step is on), and every one is logged. A stolen session cookie shows nothing.
  */
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { manifest as notesManifest } from '@ss/contracts/testing';
+import { manifest as notesManifest } from '@shelfway/contracts/testing';
 import { closeMongoClients } from '../../../src/testing.js';
 import { startMongo } from '../../helpers.js';
-import { PASSWORD, bootPortal, codeOf } from '../catalog/boot.js';
+import { PASSWORD, bootPlatform, codeOf } from '../catalog/boot.js';
 
 vi.setConfig({ testTimeout: 60_000, hookTimeout: 180_000 });
 
@@ -27,7 +27,7 @@ afterAll(async () => {
 });
 
 const setUp = async () => {
-	const h = await bootPortal({ db: mongo.db('token_confirmation') });
+	const h = await bootPlatform({ db: mongo.db('token_confirmation') });
 	cleanups.push(h.close);
 	const owner = await h.owner();
 	await h.connect(notesManifest());

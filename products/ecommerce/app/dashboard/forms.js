@@ -8,7 +8,7 @@
  * @module
  */
 import { useState } from 'react';
-import { Button, FieldGrid, Input, TextArea } from '@ss/ui';
+import { Button, FieldGrid, Input, TextArea } from '@shelfway/ui';
 import { TEXTS } from './texts.js';
 
 const N = TEXTS.connections.fields;

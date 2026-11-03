@@ -1,9 +1,9 @@
 /**
- * `ss app validate` — checks a product against the product standard (PLAN 0.4.13, 0.11, 0.10):
+ * `shelfway app validate` — checks a product against the product standard (PLAN 0.4.13, 0.11, 0.10):
  *
  * - the layout: the folders `core/ server/ adapters/ ui/ app/ strings/ schemas/ tests/ docs/` and the files every product
  *   needs (`anatomy.missing`);
- * - `manifest.json` (local `$ref`s bundled) against `@ss/contracts` `validateManifest` (`manifest.*`);
+ * - `manifest.json` (local `$ref`s bundled) against `@shelfway/contracts` `validateManifest` (`manifest.*`);
  * - the routes in `server/`: every route has a valid auth, every browser-token, server-token and ticket route belongs to
  *   a feature of the manifest, permissions exist, dashboard routes stay under `/v1/dashboard/` with no live-ops
  *   segments (`routes.configure`), and the widget script and the docs are public routes (`routes.*`);
@@ -23,7 +23,7 @@
  */
 import { builtinModules } from 'node:module';
 import path from 'node:path';
-import { validateManifest } from '@ss/contracts';
+import { validateManifest } from '@shelfway/contracts';
 import { isObject, parseJson } from '../fsutil.js';
 import { loadManifest, problemOf } from '../manifest.js';
 import { OPENAPI_FILE, WIDGET_ENTRY, assetStates } from '../assets.js';
@@ -35,7 +35,7 @@ import { findCssReferences, findDomGlobals, findImports, findStringKeys, lex } f
 /** @typedef {import('../manifest.js').Problem} Problem */
 /** @typedef {import('../project.js').ProjectFiles} ProjectFiles */
 /** @typedef {import('../routes.js').ScannedRoute} ScannedRoute */
-/** @typedef {import('@ss/contracts').Manifest} Manifest */
+/** @typedef {import('@shelfway/contracts').Manifest} Manifest */
 
 /** Folders (ending with `/`) and files every product has (PLAN 0.4.13, 0.10). */
 const ANATOMY = Object.freeze([
@@ -75,15 +75,15 @@ const DATA_LAYERS = Object.freeze(['strings', 'schemas', 'docs', ROOT]);
 /**
  * Import direction per layer: the layers a file may import code from, whether it may import data files (`.json` in
  * strings/, schemas/, docs/ or the root) and the packages it may use (`null` = any listed package). An entry with a
- * subpath (`@ss/app-kit/widget`) admits exactly that subpath, a bare name the whole package. `core/` is pure logic;
- * `ui/` is bundled into the browser script (the widget kit, and the SEO preview `@ss/ui` draws without React).
+ * subpath (`@shelfway/app-kit/widget`) admits exactly that subpath, a bare name the whole package. `core/` is pure logic;
+ * `ui/` is bundled into the browser script (the widget kit, and the SEO preview `@shelfway/ui` draws without React).
  * @type {Readonly<Record<string, { layers: readonly string[], data: boolean, packages: readonly string[] | null }>>}
  */
 const IMPORT_POLICY = Object.freeze({
-	core: { layers: ['core'], data: false, packages: ['@ss/contracts'] },
+	core: { layers: ['core'], data: false, packages: ['@shelfway/contracts'] },
 	server: { layers: ['server', 'core', 'adapters'], data: true, packages: null },
 	adapters: { layers: ['adapters', 'core'], data: true, packages: null },
-	ui: { layers: ['ui', 'core'], data: false, packages: ['@ss/app-kit/widget', '@ss/ui/seo-preview'] },
+	ui: { layers: ['ui', 'core'], data: false, packages: ['@shelfway/app-kit/widget', '@shelfway/ui/seo-preview'] },
 	app: { layers: ['app', 'server', 'adapters', 'core'], data: true, packages: null },
 });
 
@@ -495,11 +495,11 @@ const checkRoutes = (routes, manifest) => {
 
 /**
  * package.json wiring every product needs to work on its own (in the monorepo and once split into its own repository):
- * the kit it is built on, its tooling (`@ss/cli`, `@ss/config`) and its scripts (PLAN 0.10).
+ * the kit it is built on, its tooling (`@shelfway/cli`, `@shelfway/config`) and its scripts (PLAN 0.10).
  */
 const PACKAGE_WIRING = Object.freeze({
-	dependencies: Object.freeze(['@ss/app-kit']),
-	devDependencies: Object.freeze(['@ss/cli', '@ss/config']),
+	dependencies: Object.freeze(['@shelfway/app-kit']),
+	devDependencies: Object.freeze(['@shelfway/cli', '@shelfway/config']),
 	scripts: Object.freeze(['check', 'test', 'lint', 'typecheck', 'format', 'format:check', 'dev', 'build', 'start', 'validate']),
 });
 
@@ -654,7 +654,7 @@ const checkAssets = async (files, manifest) => {
 				problemOf({
 					rule: state.file === OPENAPI_FILE ? 'assets.openapi' : 'assets.widget',
 					file: state.file,
-					message: 'out of date with the sources: run ss app assets',
+					message: 'out of date with the sources: run shelfway app assets',
 				}),
 			);
 	} catch (error) {

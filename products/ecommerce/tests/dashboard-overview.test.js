@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 /**
- * Ecommerce's Overview on the shared `@ss/ui` pattern (PLAN 0.6 "Overviews talk"): the kit's greeting, Needs you, setup
+ * Ecommerce's Overview on the shared `@shelfway/ui` pattern (PLAN 0.6 "Overviews talk"): the kit's greeting, Needs you, setup
  * and Recent changes, with Ecommerce's own items judged from setup only — the currency and country the Portal's website
  * settings still lack (a link to the Portal, not a form here), Payments (recommended) with checkout, the Atlas Search index, staff alerts
  * that reach nobody or link nowhere, and bank transfer recorded by staff without bank details — each with its button to
@@ -8,7 +8,7 @@
  */
 import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, click, render } from '@ss/ui/testing';
+import { cleanup, click, render } from '@shelfway/ui/testing';
 import { TABS } from '../app/dashboard/tabs.js';
 import { defaultPaymentMethods, newAccount } from '../core/payment-methods.js';
 import { inDashboard } from './dashboard-provider.js';

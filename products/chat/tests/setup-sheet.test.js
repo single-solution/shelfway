@@ -1,4 +1,4 @@
-import { validateManifest, validateProductBlueprint } from '@ss/contracts';
+import { validateManifest, validateProductBlueprint } from '@shelfway/contracts';
 import { describe, expect, it } from 'vitest';
 import guide from '../docs/guide.json' with { type: 'json' };
 import nextConfig from '../next.config.js';
@@ -247,7 +247,7 @@ describe('the website Setup sheet', () => {
 		);
 		// escaped like every value
 		expect(docs.text).toContain(
-			'<p><strong>What your website builds.</strong> In your admin, place &#60;div data-ss-chat=&#34;inbox&#34;&#62;&#60;/div&#62;',
+			'<p><strong>What your website builds.</strong> In your admin, place &#60;div data-shelfway-chat=&#34;inbox&#34;&#62;&#60;/div&#62;',
 		);
 	});
 

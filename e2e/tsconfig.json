@@ -1,5 +1,5 @@
 {
-	"extends": "@ss/config/tsconfig.base.json",
+	"extends": "@shelfway/config/tsconfig.base.json",
 	"include": [
 		"tests/**/*.js",
 		"fixtures/*/core/**/*.js",

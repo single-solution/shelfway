@@ -8,8 +8,8 @@
  * `Cannot be shown: regenerate`), the Usage page, and what each role sees.
  */
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { ToastProvider } from '@ss/ui';
-import { act, cleanup, keydown, render, type } from '@ss/ui/testing';
+import { ToastProvider } from '@shelfway/ui';
+import { act, cleanup, keydown, render, type } from '@shelfway/ui/testing';
 import { closeMongoClients } from '../../src/testing.js';
 import * as admin from '../../src/console/admin/loaders.js';
 import { AdminWebsiteView, SITE_PILLS } from '../../src/console/admin/views/merchants.js';

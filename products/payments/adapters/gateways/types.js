@@ -3,10 +3,10 @@
  * and where the gateway has them `notice`, `returned`, `status`, `expire`, `subscribe`, `subscriptionStatus` and
  * `cancelSubscription`). Every adapter sends the payer to the gateway's own page or form, so card details never reach
  * Payments, and reports what the gateway confirmed only after checking its signature or asking the gateway server to
- * server. Calls go through the outbound `send` (`@ss/net`).
+ * server. Calls go through the outbound `send` (`@shelfway/net`).
  * @module
  */
-import { isNetError } from '@ss/net';
+import { isNetError } from '@shelfway/net';
 import { GATEWAY_TIMEOUT_MS, jsonOf } from '../util.js';
 
 /** @typedef {import('../util.js').OutboundSend} OutboundSend */
@@ -70,7 +70,7 @@ import { GATEWAY_TIMEOUT_MS, jsonOf } from '../util.js';
  * One gateway call: the status and JSON answer; status 0 when the gateway could not be reached.
  * @param {GatewayContext} ctx
  * @param {string} url
- * @param {import('@ss/net').SafeFetchInit} init
+ * @param {import('@shelfway/net').SafeFetchInit} init
  * @returns {Promise<{ status: number, json: any, text: string }>}
  */
 export const call = async (ctx, url, init) => {

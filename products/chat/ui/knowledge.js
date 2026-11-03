@@ -4,19 +4,19 @@
  * Pages are fetched when added and by Fetch again, never on a schedule. A part whose route answers 403 hides itself.
  * @module
  */
-import { adminCall, block, element, formatText, mountWidget } from '@ss/app-kit/widget';
+import { adminCall, block, element, formatText, mountWidget } from '@shelfway/app-kit/widget';
 import { buttonOf, fieldMaker, formPart, isInvalid, setHidden, textsOf, webAddress, whenOf } from './common.js';
 import { WIDGET_CSS } from './styles.js';
 
 /**
- * @param {{ host: HTMLElement, win: Window, api: import('@ss/app-kit/widget').AdminApi, config: import('./common.js').WidgetConfig }} input
+ * @param {{ host: HTMLElement, win: Window, api: import('@shelfway/app-kit/widget').AdminApi, config: import('./common.js').WidgetConfig }} input
  */
 export const mountKnowledge = ({ host, win, api, config }) => {
 	const t = textsOf(config);
 	const when = whenOf(config, win);
 	/**
 	 * What to tell staff when a call failed: the widget's own texts, never the server's detail.
-	 * @param {import('@ss/app-kit/widget').Answer} answer
+	 * @param {import('@shelfway/app-kit/widget').Answer} answer
 	 * @param {string} [invalid] the text of a refused value (`validation_failed`) for this action
 	 */
 	const failure = (answer, invalid = 'common.error') => {
@@ -43,7 +43,7 @@ export const mountKnowledge = ({ host, win, api, config }) => {
 		css: WIDGET_CSS,
 		render: (root) => {
 			const doc = /** @type {Document} */ (root.ownerDocument);
-			const make = fieldMaker(doc, 'ss-knowledge');
+			const make = fieldMaker(doc, 'shelfway-knowledge');
 			/** @type {string | null} */
 			let cursor = null;
 			/** @type {any} */
@@ -54,7 +54,7 @@ export const mountKnowledge = ({ host, win, api, config }) => {
 			const q = make.field('input', t('knowledge.search'), { type: 'search', maxlength: '200' });
 			// the merchant's own collections (C21): a filter, and the names offered while typing one
 			const filter = make.field('select', t('knowledge.collectionFilter'));
-			const known = element(doc, 'datalist', { id: 'ss-knowledge-collections' });
+			const known = element(doc, 'datalist', { id: 'shelfway-knowledge-collections' });
 			search.append(q.wrap, filter.wrap, element(doc, 'button', { type: 'submit' }, t('knowledge.searchButton')), known);
 			const note = element(doc, 'p', { class: 'status', role: 'status' });
 			const list = element(doc, 'ul');
@@ -66,7 +66,7 @@ export const mountKnowledge = ({ host, win, api, config }) => {
 			const text = make.field('textarea', t('knowledge.entryText'), { rows: '6', maxlength: '20000', required: '' });
 			const collection = make.field('input', t('knowledge.collection'), {
 				maxlength: '60',
-				list: 'ss-knowledge-collections',
+				list: 'shelfway-knowledge-collections',
 			});
 			const language = make.field('input', t('knowledge.language'), { maxlength: '20' });
 			const heading = element(doc, 'h3', {}, t('knowledge.add'));

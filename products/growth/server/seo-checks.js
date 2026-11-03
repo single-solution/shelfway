@@ -9,7 +9,7 @@
  * the sitemap: a product, a category, a landing or listing page and a glossary page when the site has them. It adds
  * the Web Vitals visitors measured (28 days) and the 404 log's addresses without a redirect rule (90 days), both from
  * the merchant database. Every read is limited (time, size, a few at a time, one deadline for the run; `adapters/
- * web.js`), and the outbound safety rules of `@ss/net` apply.
+ * web.js`), and the outbound safety rules of `@shelfway/net` apply.
  *
  * The last full run is kept (`adapters/seo-reports.js`): the widget shows it when it opens, and a full run asked
  * within {@link MIN_INTERVAL_MS} of it answers it (`cached: true`) instead of reading the site again. Each check
@@ -17,7 +17,7 @@
  * Google's Rich Results Test for its page.
  * @module
  */
-import { defineRoute, formatText, ok, problem } from '@ss/app-kit';
+import { defineRoute, formatText, ok, problem } from '@shelfway/app-kit';
 import { shiftDay } from '../core/analytics.js';
 import { searchParamsOf } from '../core/config.js';
 import { dayOf } from '../core/events.js';
@@ -71,7 +71,7 @@ const MAX_SITEMAP_FILES = 3;
 /** Redirect rules whose old path is tried on the live site. */
 const MAX_RULE_PROBES = 3;
 /** The segment a wildcard rule is tried with on the live site (G14). */
-const WILDCARD_SAMPLE = 'ss-growth-check';
+const WILDCARD_SAMPLE = 'shelfway-growth-check';
 /** Days of Web Vitals (as Google's own field data) and of the 404 log a run reads. */
 const VITAL_DAYS = 28;
 const NOT_FOUND_DAYS = 90;

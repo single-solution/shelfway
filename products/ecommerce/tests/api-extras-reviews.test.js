@@ -5,14 +5,14 @@
  * the names of each group; margin below zero; the summary with statuses; the return rate; every report as JSON and
  * as CSV through both twins; and product cards with photos in the wishlist and compare.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { COLLECTIONS } from '../core/model.js';
 import { STORAGE, readyShop, storedAttribute, storedBrand, storedCategory } from './helpers.js';
 
 /** @type {Awaited<ReturnType<typeof readyShop>>} */
 let shop;
-/** @type {import('@ss/app-kit').WebsiteData} */
+/** @type {import('@shelfway/app-kit').WebsiteData} */
 let data;
 /** @type {string} */
 let ticket;

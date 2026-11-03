@@ -26,6 +26,7 @@ export function Form({ onSubmit, busy: busyProp = false, className, children, ..
 	const rows = useContext(FieldLayoutContext) === 'row';
 	const [running, setRunning] = useState(false);
 	const live = useRef(true);
+	const formRef = useRef(/** @type {HTMLFormElement | null} */ (null));
 	useEffect(() => {
 		live.current = true;
 		return () => {
@@ -33,8 +34,21 @@ export function Form({ onSubmit, busy: busyProp = false, className, children, ..
 		};
 	}, []);
 	const busy = busyProp || running;
+
+	const focusFirstInvalid = () => {
+		setTimeout(() => {
+			if (formRef.current) {
+				const invalid = /** @type {HTMLElement | null} */ (formRef.current.querySelector('[aria-invalid="true"]'));
+				if (invalid && typeof invalid.focus === 'function') {
+					invalid.focus();
+				}
+			}
+		}, 0);
+	};
+
 	return (
 		<form
+			ref={formRef}
 			noValidate
 			aria-busy={busy || undefined}
 			className={cx('@container min-w-0', className)}
@@ -42,10 +56,14 @@ export function Form({ onSubmit, busy: busyProp = false, className, children, ..
 				event.preventDefault();
 				if (busy) return;
 				const out = /** @type {unknown} */ (onSubmit(event));
-				if (!out || typeof (/** @type {{ then?: unknown }} */ (out).then) !== 'function') return;
+				if (!out || typeof (/** @type {{ then?: unknown }} */ (out).then) !== 'function') {
+					focusFirstInvalid();
+					return;
+				}
 				setRunning(true);
 				const done = () => {
 					if (live.current) setRunning(false);
+					focusFirstInvalid();
 				};
 				/** @type {Promise<unknown>} */ (out).then(done, done);
 			}}

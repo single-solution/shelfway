@@ -52,7 +52,7 @@ const place = async (lines) => {
 		token: shop.browser,
 		origin: ORIGIN,
 		body: { lines, payment: 'cod', address: ADDRESS },
-		headers: { 'x-forwarded-for': `10.9.0.${ip}`, 'ss-sign-in': token, 'idempotency-key': `measure-${ip}` },
+		headers: { 'x-forwarded-for': `10.9.0.${ip}`, 'shelfway-sign-in': token, 'idempotency-key': `measure-${ip}` },
 	});
 	return { answer, token };
 };
@@ -233,14 +233,14 @@ describe('orders', () => {
 			return shop.call('POST', '/v1/shop/returns', {
 				token: shop.browser,
 				origin: ORIGIN,
-				headers: { 'ss-sign-in': token, 'idempotency-key': `claim-${quantity}` },
+				headers: { 'shelfway-sign-in': token, 'idempotency-key': `claim-${quantity}` },
 				body: { orderId: order.id, kind: 'return', lines: [{ lineId: order.lines[0].id, quantity }], reason: 'Too much' },
 			});
 		};
 		const returnable = await shop.call('GET', `/v1/shop/orders/${order.id}/returnable`, {
 			token: shop.browser,
 			origin: ORIGIN,
-			headers: { 'ss-sign-in': token },
+			headers: { 'shelfway-sign-in': token },
 		});
 		expect(returnable.json.lines[0]).toMatchObject({
 			claimable: 2500,

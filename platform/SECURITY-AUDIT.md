@@ -1,6 +1,6 @@
 # Portal + products — security surface audit (planning only)
 
-**Scope:** identity, sessions, CSRF, RBAC, step-up, product tokens/tickets, staff-on-site, show-vs-hide, `@ss/net` SSRF, rate/payload limits, import abuse, gaps vs PLAN **A5** / **C**.  
+**Scope:** identity, sessions, CSRF, RBAC, step-up, product tokens/tickets, staff-on-site, show-vs-hide, `@shelfway/net` SSRF, rate/payload limits, import abuse, gaps vs PLAN **A5** / **C**.  
 **Not done here:** product runtime code changes. Paths are concrete; “UI hides” never replaces “server denies.”
 
 **Related:** `PLAN.md` §7–§8, §10 A5/C · `platform/PORTAL-AUDIT.md` (UX) · `packages/app-kit/API.md` (kit contract).
@@ -18,7 +18,7 @@
 | `allows()` fail-closed / configure≠operate (kit + tests) | **Strong in kit**; **LIVE_OPS denylist incomplete (C1)**                                           |
 | Merchant placement write                                 | **Gap (A3)** — merchants lack `products_on_websites.write`                                         |
 | Docs / pack / Share                                      | Share sheet never returns server token; pack + OTP step-up **planned (A2/A5)**                     |
-| `@ss/net` outbound                                       | **Strong SSRF posture**                                                                            |
+| `@shelfway/net` outbound                                 | **Strong SSRF posture**                                                                            |
 | Thin / honesty gaps                                      | Password step-up UX · LIVE_OPS list · merchant write · OTP-required path for merchants without 2FA |
 
 ---
@@ -27,7 +27,7 @@
 
 | Threat                       | Control (where)                                                                                                                                                                                                                                                                 |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Password guessing / stuffing | `createLoginThrottle` — 5 fails / 15m → lock (doubles to 24h); 50 fails / IP / 15m. HMAC’d ids. `platform/src/infra/auth.js` `DEFAULT_THROTTLE` · wired in `platform/src/portal.js` · used by `proveLogin` / `signIn` in `platform/src/modules/identity/accounts.js`            |
+| Password guessing / stuffing | `createLoginThrottle` — 5 fails / 15m → lock (doubles to 24h); 50 fails / IP / 15m. HMAC’d ids. `platform/src/infra/auth.js` `DEFAULT_THROTTLE` · wired in `platform/src/platform.js` · used by `proveLogin` / `signIn` in `platform/src/modules/identity/accounts.js`          |
 | Auth endpoint flood          | `AUTH_LIMIT` = 60/min on sign-in, 2FA, first-admin, forgot/reset, etc. `platform/src/modules/identity/routes.js`                                                                                                                                                                |
 | Stolen session cookie        | HttpOnly + SameSite=Lax (+ Secure / `__Host-` when secure). `serializeCookie` in `platform/src/infra/auth.js`. Mutations need CSRF (`checkCsrf` + same-origin). Critical ops need **fresh confirm** (`accounts.confirm` → password + code if TOTP).                             |
 | CSRF from evil site          | `checkCsrf` in `platform/src/infra/auth.js`; applied for cookie auth in `platform/src/infra/http.js` (~L615). Safe methods skip; mutations need `Sec-Fetch-Site: same-origin` and/or matching `Origin`. Combined with JSON-only bodies.                                         |
@@ -41,7 +41,7 @@
 | Suspended merchant           | Cannot sign in (`merchant_suspended`); setup/reset gated on `status === 'active'`.                                                                                                                                                                                              |
 | Last Owner removed           | `keepAnOwner` in `platform/src/modules/identity/admins.js`.                                                                                                                                                                                                                     |
 | Oversized bodies / hang      | Default `maxBodyBytes` 1 MiB (`http.js` / config); many routes tighter (catalog launch 1–8 KiB, website connections 4 KiB, system mail 400 KiB, commerce up to 256 KiB). `readBody` refuses over cap → `payload_too_large`.                                                     |
-| Cross-tenant DB read/write   | `buildOps` merchant filter/guard (`platform/src/infra/db.js`); modules cannot touch foreign collections (`createPortal` composition).                                                                                                                                           |
+| Cross-tenant DB read/write   | `buildOps` merchant filter/guard (`platform/src/infra/db.js`); modules cannot touch foreign collections (`createPlatform` composition).                                                                                                                                         |
 
 ### Admin vs merchant (identity plane)
 
@@ -167,15 +167,15 @@ Bare server token ⇒ deny. Server routes must declare exactly one of `permissio
 
 ## 5. Staff on merchant site (Accounts roles + tickets)
 
-| Concern               | Control                                                                                                                                                     |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Who is staff          | Accounts roles/permissions (`products/accounts/core/roles.js`); kit adds `settings.manage`, `connections.manage`, `audit.read` (`KIT_PERMISSIONS`)          |
-| Calling product APIs  | Server token **+** `SS-Sign-In` (Accounts identity JWT); `checkStaff` verifies website audience / session / role (`staff.js`, Accounts `verifyStaffSignIn`) |
-| Actor spoofing        | Old `SS-Actor-*` headers **ignored**; actor = verified sign-in subject                                                                                      |
-| Cross-website sign-in | Audience = websiteId; wrong site → `invalid_sign_in` / audience                                                                                             |
-| Ticket path           | Merchant’s own page: server mints ticket after checking _their_ session; ticket origin must match admin page origin                                         |
-| Role `*`              | Owner-equivalent on that product                                                                                                                            |
-| Two-step on roles     | Accounts can require 2FA per role (UI `roles-admin.js`) — product-side, not Portal RBAC                                                                     |
+| Concern               | Control                                                                                                                                                           |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Who is staff          | Accounts roles/permissions (`products/accounts/core/roles.js`); kit adds `settings.manage`, `connections.manage`, `audit.read` (`KIT_PERMISSIONS`)                |
+| Calling product APIs  | Server token **+** `Shelfway-Sign-In` (Accounts identity JWT); `checkStaff` verifies website audience / session / role (`staff.js`, Accounts `verifyStaffSignIn`) |
+| Actor spoofing        | Old `Shelfway-Actor-*` headers **ignored**; actor = verified sign-in subject                                                                                      |
+| Cross-website sign-in | Audience = websiteId; wrong site → `invalid_sign_in` / audience                                                                                                   |
+| Ticket path           | Merchant’s own page: server mints ticket after checking _their_ session; ticket origin must match admin page origin                                               |
+| Role `*`              | Owner-equivalent on that product                                                                                                                                  |
+| Two-step on roles     | Accounts can require 2FA per role (UI `roles-admin.js`) — product-side, not Portal RBAC                                                                           |
 
 Portal admins are **not** site staff; they launch configure via Portal launch token, not Accounts tickets.
 
@@ -204,34 +204,34 @@ Portal admins are **not** site staff; they launch configure via Portal launch to
 
 ## 7. Abuse scenarios → required control
 
-| Scenario                                                         | Required control (present or gap)                                                                                                                                                                                                                                                                                                                              |
-| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Stolen Portal cookie**                                         | CSRF blocks cross-site POST; cannot launch/reveal/change connections without password(+OTP). **Gap:** password step-up phishing UX; A5 OTP strengthens “something you have.” Session lifetime / revoke-all on password change.                                                                                                                                 |
-| **Stolen browser token**                                         | Widget/visitor surface only; no staff, no tickets, no connections. Rotate via regenerate if needed.                                                                                                                                                                                                                                                            |
-| **Stolen server token**                                          | Runtime routes only if marked `runtime`; configure needs staff sign-in; tickets need attacker to also control staff identity or mint with stolen server **from allowed origin flows**. Revoke jti / regenerate. Cross-website: token bound to websiteId+productId.                                                                                             |
-| **Stolen ticket**                                                | 15m TTL; origin-bound; permission subset; website+product bound. Short window.                                                                                                                                                                                                                                                                                 |
-| **Stolen Accounts staff sign-in JWT**                            | Session checks + expiry; product verifies iss/aud/jwks; password change ends sessions (`endedByPassword`).                                                                                                                                                                                                                                                     |
-| **Cross-website**                                                | Tokens/tickets/sign-ins carry websiteId; tenant DB guards; connections `forProduct` checks placement.                                                                                                                                                                                                                                                          |
-| **SSRF** (Portal → product URL, connections probe, setup gather) | `@ss/net` `safeFetch` + `checkUrl`/`checkHost`/`classifyAddress`: block private/metadata/loopback/link-local/CGNAT/…; https required unless allowlisted; DNS rebinding via `guardedLookup`; redirects same-origin only; timeout + `maxBytes`. `packages/net/src/{policy,fetch,address,lookup}.js`. Production Portal: empty allowHosts for connections policy. |
-| **DoS / hang**                                                   | Body caps; route rate limits (fail closed to local window if store fails — `http.js`); login throttle; connection fetch caps; setup gather timeout 5s / answer 512 KiB (`setup.js`); net timeouts.                                                                                                                                                             |
-| **Import abuse**                                                 | `ss-import` is **ops CLI**, not a deployed Portal surface (PLAN ban: deploying `ss-import`). Abuse = whoever has env + network to product import endpoints. Mitigate: don’t expose import HTTP publicly; batch finish limits in `packages/importer/src/send.js`; treat credentials like server tokens.                                                         |
-| **First-admin after Owners exist**                               | Refused (`conflict`); unique index.                                                                                                                                                                                                                                                                                                                            |
-| **Share link leak**                                              | No server token; optional omit values/install; revoke; key only in fragment; open audit throttled 1/h.                                                                                                                                                                                                                                                         |
-| **Inactive product still placed**                                | Secrets not delivered; add-product blocked for new placements.                                                                                                                                                                                                                                                                                                 |
+| Scenario                                                         | Required control (present or gap)                                                                                                                                                                                                                                                                                                                                    |
+| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Stolen Portal cookie**                                         | CSRF blocks cross-site POST; cannot launch/reveal/change connections without password(+OTP). **Gap:** password step-up phishing UX; A5 OTP strengthens “something you have.” Session lifetime / revoke-all on password change.                                                                                                                                       |
+| **Stolen browser token**                                         | Widget/visitor surface only; no staff, no tickets, no connections. Rotate via regenerate if needed.                                                                                                                                                                                                                                                                  |
+| **Stolen server token**                                          | Runtime routes only if marked `runtime`; configure needs staff sign-in; tickets need attacker to also control staff identity or mint with stolen server **from allowed origin flows**. Revoke jti / regenerate. Cross-website: token bound to websiteId+productId.                                                                                                   |
+| **Stolen ticket**                                                | 15m TTL; origin-bound; permission subset; website+product bound. Short window.                                                                                                                                                                                                                                                                                       |
+| **Stolen Accounts staff sign-in JWT**                            | Session checks + expiry; product verifies iss/aud/jwks; password change ends sessions (`endedByPassword`).                                                                                                                                                                                                                                                           |
+| **Cross-website**                                                | Tokens/tickets/sign-ins carry websiteId; tenant DB guards; connections `forProduct` checks placement.                                                                                                                                                                                                                                                                |
+| **SSRF** (Portal → product URL, connections probe, setup gather) | `@shelfway/net` `safeFetch` + `checkUrl`/`checkHost`/`classifyAddress`: block private/metadata/loopback/link-local/CGNAT/…; https required unless allowlisted; DNS rebinding via `guardedLookup`; redirects same-origin only; timeout + `maxBytes`. `packages/net/src/{policy,fetch,address,lookup}.js`. Production Portal: empty allowHosts for connections policy. |
+| **DoS / hang**                                                   | Body caps; route rate limits (fail closed to local window if store fails — `http.js`); login throttle; connection fetch caps; setup gather timeout 5s / answer 512 KiB (`setup.js`); net timeouts.                                                                                                                                                                   |
+| **Import abuse**                                                 | `shelfway-import` is **ops CLI**, not a deployed Portal surface (PLAN ban: deploying `shelfway-import`). Abuse = whoever has env + network to product import endpoints. Mitigate: don’t expose import HTTP publicly; batch finish limits in `packages/importer/src/send.js`; treat credentials like server tokens.                                                   |
+| **First-admin after Owners exist**                               | Refused (`conflict`); unique index.                                                                                                                                                                                                                                                                                                                                  |
+| **Share link leak**                                              | No server token; optional omit values/install; revoke; key only in fragment; open audit throttled 1/h.                                                                                                                                                                                                                                                               |
+| **Inactive product still placed**                                | Secrets not delivered; add-product blocked for new placements.                                                                                                                                                                                                                                                                                                       |
 
 ---
 
 ## 8. Access matrix (who can what) — condensed
 
-| Actor                 | Portal configure launch | Reveal server token   | Connections write          | Add product on site | Global connect | Credits  | Site staff operate   |
-| --------------------- | ----------------------- | --------------------- | -------------------------- | ------------------- | -------------- | -------- | -------------------- |
-| Owner admin           | ✓ + step-up             | ✓ + step-up           | ✓ + step-up                | ✓                   | ✓              | ✓        | via launch only      |
-| Support               | ✓ + step-up             | —                     | ✓ + step-up                | ✓                   | —              | —        | via launch           |
-| Finance               | —                       | —                     | —                          | —                   | —              | ✓ add    | —                    |
-| Merchant              | ✓ + step-up             | ✓ + step-up           | ✓ + step-up                | **planned A3**      | —              | read own | —                    |
-| Site staff (Accounts) | —                       | —                     | via product APIs + sign-in | —                   | —              | —        | tickets / SS-Sign-In |
-| Developer             | —                       | pack after A2/A5      | —                          | —                   | —              | —        | —                    |
-| Product (assertion)   | protocol routes         | receives sealed opens | N/A                        | N/A                 | N/A            | N/A      | N/A                  |
+| Actor                 | Portal configure launch | Reveal server token   | Connections write          | Add product on site | Global connect | Credits  | Site staff operate         |
+| --------------------- | ----------------------- | --------------------- | -------------------------- | ------------------- | -------------- | -------- | -------------------------- |
+| Owner admin           | ✓ + step-up             | ✓ + step-up           | ✓ + step-up                | ✓                   | ✓              | ✓        | via launch only            |
+| Support               | ✓ + step-up             | —                     | ✓ + step-up                | ✓                   | —              | —        | via launch                 |
+| Finance               | —                       | —                     | —                          | —                   | —              | ✓ add    | —                          |
+| Merchant              | ✓ + step-up             | ✓ + step-up           | ✓ + step-up                | **planned A3**      | —              | read own | —                          |
+| Site staff (Accounts) | —                       | —                     | via product APIs + sign-in | —                   | —              | —        | tickets / Shelfway-Sign-In |
+| Developer             | —                       | pack after A2/A5      | —                          | —                   | —              | —        | —                          |
+| Product (assertion)   | protocol routes         | receives sealed opens | N/A                        | N/A                 | N/A            | N/A      | N/A                        |
 
 ---
 
@@ -246,7 +246,7 @@ Portal admins are **not** site staff; they launch configure via Portal launch to
 7. **Finance** — no launch, no tokens, no connections; verify with API not only nav.
 8. **Support** — no `tokens.reveal`.
 9. **Secrets in blueprint/share** — `set: true` / `hideSecrets`; share never includes server token string.
-10.   **Outbound** — only through `@ss/net` policies; no raw `fetch` to merchant-controlled URLs.
+10.   **Outbound** — only through `@shelfway/net` policies; no raw `fetch` to merchant-controlled URLs.
 11.   **Throttle + body caps** — auth and connection fetches are limited; don’t “fix by removing limits.”
 12.   **Merchant write placement** — not shipped yet (**A3**); don’t document as done.
 13.   **Docs hub** — public, no tokens (PLAN).
@@ -275,7 +275,7 @@ Portal admins are **not** site staff; they launch configure via Portal launch to
 
 From code + PLAN §7 “Shipped”:
 
-- Typed credentials (browser / server / link / ticket / launch / dashboard) with kind checks in `@ss/protocol`
+- Typed credentials (browser / server / link / ticket / launch / dashboard) with kind checks in `@shelfway/protocol`
 - Configure ≠ operate enforced in kit route rules + cross-credential tests
 - `allows()` fail-closed (never bare server token)
 - Catalog-inactive + placement gates on secret delivery
@@ -284,7 +284,7 @@ From code + PLAN §7 “Shipped”:
 - CSRF + SameSite=Lax HttpOnly cookies + JSON-only bodies
 - Login throttle (account + IP) with hashed identifiers
 - Sealed secrets (`secretBox` AAD) for server tokens, connections, TOTP
-- `@ss/net` SSRF defenses (address classification, lookup guard, redirect policy, size/time limits)
+- `@shelfway/net` SSRF defenses (address classification, lookup guard, redirect policy, size/time limits)
 - Tenant repository guards; module collection ownership
 - Share setup: fragment key, no server token, revoke, audit
 - Session revoke-all on password reset/change; suspended merchant lockout
@@ -296,7 +296,7 @@ From code + PLAN §7 “Shipped”:
 
 | Topic                                           | Path                                                |
 | ----------------------------------------------- | --------------------------------------------------- |
-| Portal composition                              | `platform/src/portal.js`                            |
+| Portal composition                              | `platform/src/platform.js`                          |
 | Sessions, cookies, TOTP helpers, throttle, CSRF | `platform/src/infra/auth.js`                        |
 | HTTP authz, body, CSRF apply, rate limit        | `platform/src/infra/http.js`                        |
 | RBAC                                            | `platform/src/infra/rbac.js`                        |

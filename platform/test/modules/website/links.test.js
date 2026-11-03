@@ -3,12 +3,12 @@
  * need, with the scopes the manifests allow, and nobody pastes a token. A link is revoked when a product leaves.
  */
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { manifest as notesManifest } from '@ss/contracts/testing';
-import { createKeyResolver, verifyToken } from '@ss/protocol';
+import { manifest as notesManifest } from '@shelfway/contracts/testing';
+import { createKeyResolver, verifyToken } from '@shelfway/protocol';
 import { closeMongoClients } from '../../../src/testing.js';
 import { startMongo } from '../../helpers.js';
-import { PASSWORD, PORTAL_URL, bootPortal, codeOf } from '../catalog/boot.js';
-import { validateWebsiteConnections } from '@ss/contracts';
+import { PASSWORD, PLATFORM_URL, bootPlatform, codeOf } from '../catalog/boot.js';
+import { validateWebsiteConnections } from '@shelfway/contracts';
 
 vi.setConfig({ testTimeout: 60_000, hookTimeout: 180_000 });
 
@@ -65,7 +65,7 @@ const NOTIFICATIONS = product('notifications', {
  * @param {string} name
  */
 const setUp = async (name) => {
-	const h = await bootPortal({ db: mongo.db(name) });
+	const h = await bootPlatform({ db: mongo.db(name) });
 	cleanups.push(h.close);
 	const rawOwner = await h.owner();
 	const ecommerce = await h.connect(ECOMMERCE);
@@ -147,7 +147,7 @@ const setUp = async (name) => {
 		verifyToken({
 			token,
 			keyResolver: createKeyResolver({ jwks: h.portal.shared.keys.publishedJwks() }),
-			issuer: PORTAL_URL,
+			issuer: PLATFORM_URL,
 			productId: callee,
 			kind: 'link',
 			...(caller ? { caller } : {}),

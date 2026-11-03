@@ -1,13 +1,13 @@
 /**
- * The `import` feature's records (pure; PLAN 0.8.10 K10, Migration step 8, G8): a day of daily totals as `ss-import`
+ * The `import` feature's records (pure; PLAN 0.8.10 K10, Migration step 8, G8): a day of daily totals as `shelfway-import`
  * sends it, rebuilt from another system's analytics — `{ day: 'YYYY-MM-DD', part: 0, totals: { <metric>: { <key as
  * text>: { c, s? } } } }`, the day in the business time zone (K8). Each metric must be one Growth counts, with keys of
  * the form it writes them (`events.js`), a whole count of 0 or more and a finite sum (only metrics that keep a sum);
  * unknown fields are refused by name. The adapter escapes the keys as the day's document stores them.
  * @module
  */
-import { isCurrency } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
+import { isCurrency } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
 import { isDay } from './analytics.js';
 import { BROWSERS, DEVICES, DIRECT, SYSTEMS, VITALS, pathOf } from './events.js';
 

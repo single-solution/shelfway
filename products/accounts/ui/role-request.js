@@ -8,7 +8,7 @@
 
 /** The one text of every answer. */
 export const PRIVATE_OUTCOME = 'request.received';
-import { element, mountWidget } from '@ss/app-kit/widget';
+import { element, mountWidget } from '@shelfway/app-kit/widget';
 import { datesOf, errorText, fieldMaker, say, textsOf } from './common.js';
 import { WIDGET_CSS } from './styles.js';
 
@@ -27,7 +27,7 @@ export const mountRoleRequest = ({ host, win, config, call }) => {
 		css: WIDGET_CSS,
 		render: (root) => {
 			const doc = /** @type {Document} */ (root.ownerDocument);
-			const make = fieldMaker(doc, 'ss-request');
+			const make = fieldMaker(doc, 'shelfway-request');
 			const box = element(doc, 'section', { class: 'box' });
 			const form = element(doc, 'form', { class: 'grid' });
 			const role = make.field('select', t('request.role'));

@@ -9,7 +9,7 @@
 import { VITALS, ratingOf } from './events.js';
 import { SEO_LIMITS } from './limits.js';
 import { allNodesOf, numbersIn, robotsAllows, robotsGroupsOf, scanHtml, typesOf } from './seo-scan.js';
-import { pathMatches } from '@ss/contracts/text';
+import { pathMatches } from '@shelfway/contracts/text';
 import { ORGANIZATION_TYPES } from './schema-types.js';
 import { pathOfUrl } from './seo.js';
 

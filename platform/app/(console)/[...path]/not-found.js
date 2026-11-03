@@ -1,4 +1,4 @@
-import { ButtonLink, Page } from '@ss/ui';
+import { ButtonLink, Page } from '@shelfway/ui';
 import { Link } from '../../../src/console/link.js';
 import { routes } from '../../../src/console/paths.js';
 import { CONSOLE } from '../../../src/texts/console.js';

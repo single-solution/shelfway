@@ -5,7 +5,7 @@
  *   concurrent instances agree), its private part sealed with `ENCRYPTION_KEY` (PLAN 0.4.8, K-21). A key that no
  *   longer opens (`ENCRYPTION_KEY` lost) leaves the product not connected until the owner connects it again from the
  *   Portal, which makes a new key;
- * - `state/connection`: `{ portalUrl, jwks, baseUrl, connectedAt }`, written when a Portal proves it holds the
+ * - `state/connection`: `{ platformUrl, jwks, baseUrl, connectedAt }`, written when a Portal proves it holds the
  *   deployer's `CONNECT_SECRET`. The Portal URL and its keys are pinned; `baseUrl` is this product's own address.
  *   Connecting again replaces it: whoever holds the secret is the authority;
  * - `state/prices`: the last accepted price list `{ version, features, pending }` (`pending`: a price report after a
@@ -14,7 +14,7 @@
  * Each instance re-reads the connection at most once a second while unconnected and every 30 seconds once connected.
  * @module
  */
-import { manifestPriceList } from '@ss/contracts';
+import { manifestPriceList } from '@shelfway/contracts';
 import {
 	createConnectResponse,
 	createKeyResolver,
@@ -23,21 +23,21 @@ import {
 	isLocalOrigin,
 	toPublicJwk,
 	verifyConnectRequest,
-} from '@ss/protocol';
-import { createPortalClient } from './portal-client.js';
+} from '@shelfway/protocol';
+import { createPlatformClient } from './platform-client.js';
 import { problem } from './http/results.js';
 import { openKey, resealKey, sealKey } from './sealing.js';
 import { kitError } from './util.js';
 
-/** @typedef {import('@ss/contracts').Manifest} Manifest */
-/** @typedef {import('@ss/contracts').PriceList} PriceList */
+/** @typedef {import('@shelfway/contracts').Manifest} Manifest */
+/** @typedef {import('@shelfway/contracts').PriceList} PriceList */
 /** @typedef {import('./stores/types.js').Store} Store */
-/** @typedef {import('./portal-client.js').PortalClient} PortalClient */
-/** @typedef {import('@ss/protocol').KeyResolver} KeyResolver */
+/** @typedef {import('./platform-client.js').PortalClient} PortalClient */
+/** @typedef {import('@shelfway/protocol').KeyResolver} KeyResolver */
 
 /**
  * @typedef {object} ActiveConnection
- * @property {string} portalUrl pinned Portal URL (issuer of tokens and launches)
+ * @property {string} platformUrl pinned Portal URL (issuer of tokens and launches)
  * @property {string} baseUrl this product's own address
  * @property {PortalClient} client
  * @property {KeyResolver} portalKeys resolver over the pinned Portal keys
@@ -77,7 +77,7 @@ export const featuresDiffer = (a, b) => {
 /**
  * @param {{ store: Store, manifest: Manifest, connectSecret: string, sealer: import('./sealing.js').Sealer,
  *   fetch: typeof globalThis.fetch, now: () => number, randomBytes: (length: number) => Uint8Array,
- *   nodeEnv: string | undefined, logger: import('@ss/net').Logger }} options
+ *   nodeEnv: string | undefined, logger: import('@shelfway/net').Logger }} options
  */
 export const createConnection = ({ store, manifest, connectSecret, sealer, fetch, now, randomBytes, nodeEnv, logger }) => {
 	const productId = manifest.id;
@@ -90,8 +90,8 @@ export const createConnection = ({ store, manifest, connectSecret, sealer, fetch
 	 * @param {Record<string, any>} privateJwk
 	 */
 	const activate = (doc, privateJwk) => {
-		const client = createPortalClient({
-			portalUrl: doc.portalUrl,
+		const client = createPlatformClient({
+			platformUrl: doc.platformUrl,
 			productId,
 			signer: createSigner(/** @type {any} */ (privateJwk)),
 			fetch,
@@ -111,7 +111,7 @@ export const createConnection = ({ store, manifest, connectSecret, sealer, fetch
 			maxStaleMs: Number.MAX_SAFE_INTEGER,
 			now,
 		});
-		current = { portalUrl: doc.portalUrl, baseUrl: doc.baseUrl, client, portalKeys, doc };
+		current = { platformUrl: doc.platformUrl, baseUrl: doc.baseUrl, client, portalKeys, doc };
 	};
 
 	/** Load the connection (cached per instance). */
@@ -174,7 +174,7 @@ export const createConnection = ({ store, manifest, connectSecret, sealer, fetch
 		store.put('state', 'prices', { version: list.version, features: list.features, pending, at: now() });
 
 	/**
-	 * `POST /.well-known/ss-connect`.
+	 * `POST /.well-known/shelfway-connect`.
 	 * @param {{ headers: Headers, rawBody: string }} input
 	 * @returns {Promise<import('./http/results.js').RouteResult | Response>}
 	 */
@@ -198,11 +198,11 @@ export const createConnection = ({ store, manifest, connectSecret, sealer, fetch
 		// the Portal's last accepted version wins when it is higher: the next report continues from it
 		const prices = { version: Math.max(base.version, request.priceListVersion), features: base.features };
 		await savePrices(prices, accepted?.pending ?? false);
-		const doc = { portalUrl: request.portalUrl, jwks: request.jwks, baseUrl: request.baseUrl, connectedAt: now() };
+		const doc = { platformUrl: request.platformUrl, jwks: request.jwks, baseUrl: request.baseUrl, connectedAt: now() };
 		await store.put('state', 'connection', doc);
 		activate(doc, privateJwk);
 		checkedAt = now();
-		logger.info('connected to the Portal', { portalUrl: request.portalUrl });
+		logger.info('connected to the Portal', { platformUrl: request.platformUrl });
 		const answer = createConnectResponse({
 			secret: connectSecret,
 			productId,

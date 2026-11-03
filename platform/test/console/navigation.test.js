@@ -7,8 +7,8 @@
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as hooks from 'next/dist/shared/lib/hooks-client-context.shared-runtime.js';
-import { act, cleanup, render } from '@ss/ui/testing';
-import { Input } from '@ss/ui';
+import { act, cleanup, render } from '@shelfway/ui/testing';
+import { Input } from '@shelfway/ui';
 import { createConsoleApi } from '../../src/console/api.js';
 import { Link, NavLink } from '../../src/console/link.js';
 import { FilterForm, useNavigation } from '../../src/console/navigation.js';
@@ -60,11 +60,13 @@ describe('loading skeletons', () => {
 		const page = render(at('/admin/merchants/mer_a/websites/web_a', <ConsoleLoading area="admin" />));
 		expect(page.container.textContent).toBe('Loading the page');
 		expect(page.container.querySelector('[aria-busy="true"]')).not.toBeNull();
-		expect(page.container.querySelectorAll('.ss-shimmer').length).toBeGreaterThan(3);
+		expect(page.container.querySelectorAll('.shelfway-shimmer').length).toBeGreaterThan(3);
 		page.unmount();
 		const list = render(at('/admin/merchants', <ConsoleLoading area="admin" />));
 		expect(list.container.textContent).toContain('Merchants'); // the menu entry's own title, at once
-		expect(list.container.querySelectorAll('.ss-shimmer').length).toBeGreaterThan(list.container.querySelectorAll('li').length);
+		expect(list.container.querySelectorAll('.shelfway-shimmer').length).toBeGreaterThan(
+			list.container.querySelectorAll('li').length,
+		);
 		list.unmount();
 		const settings = render(at('/admin/settings', <ConsoleLoading area="admin" />));
 		expect(settings.container.textContent).toBe('Loading the pageSettings');
@@ -87,8 +89,8 @@ describe('console links and filter forms', () => {
 		);
 		const [plain, nav] = [...container.querySelectorAll('a')];
 		expect(plain?.className).toBe('plain');
-		expect(plain?.querySelector('.ss-pending-hint')).toBeNull();
-		expect(nav?.querySelector('.ss-pending-hint')).not.toBeNull();
+		expect(plain?.querySelector('.shelfway-pending-hint')).toBeNull();
+		expect(nav?.querySelector('.shelfway-pending-hint')).not.toBeNull();
 	});
 
 	it('a filter form opens the page with its filled fields as the query, without a page load', () => {
@@ -147,7 +149,7 @@ describe('the console API of one page render', () => {
 			if (url.pathname === '/v1/empty-error') return new Response('', { status: 500 });
 			return Response.json({ items: [url.pathname] });
 		};
-		const api = createConsoleApi({ handle, baseUrl: 'https://portal.test', cookie: 'ss_admin=x' });
+		const api = createConsoleApi({ handle, baseUrl: 'https://portal.test', cookie: 'shelfway_admin=x' });
 		const [a, b] = await Promise.all([api.get('/v1/things'), api.get('/v1/things')]);
 		expect(a).toEqual({ ok: true, status: 200, data: { items: ['/v1/things'] } });
 		expect(b).toEqual(a);

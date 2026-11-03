@@ -7,7 +7,7 @@
  * chat (reply alerts, C6).
  * @module
  */
-import { created, noContent, problem } from '@ss/app-kit';
+import { created, noContent, problem } from '@shelfway/app-kit';
 import {
 	deviceOf,
 	guestLimitReached,

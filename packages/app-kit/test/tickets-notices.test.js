@@ -51,7 +51,10 @@ describe('tickets', () => {
 		expect(await ok.json()).toEqual({ user: USER });
 		await settle();
 		const { client, db } = await openDb(dbName);
-		expect(await db.collection('ss_notes_staff').findOne({ id: 'u1' })).toMatchObject({ name: 'Sam Staff', email: USER.email });
+		expect(await db.collection('shelfway_notes_staff').findOne({ id: 'u1' })).toMatchObject({
+			name: 'Sam Staff',
+			email: USER.email,
+		});
 		await client.close();
 		expect((await call('GET', '/v1/inbox', { token: ticket, origin: 'https://other.example.com' })).status).toBe(401);
 		expect((await call('GET', '/v1/inbox', { token: ticket })).status).toBe(401);
@@ -188,11 +191,13 @@ describe('notices', () => {
 
 	it('refuses unsigned and replayed notices', async () => {
 		const { call, portal, websiteId, handler } = await setup();
-		expect((await call('POST', '/.well-known/ss-events', { body: { type: 'status.changed', websiteId } })).status).toBe(401);
+		expect((await call('POST', '/.well-known/shelfway-events', { body: { type: 'status.changed', websiteId } })).status).toBe(
+			401,
+		);
 		const signed = await portal.signNotice({ type: 'status.changed', websiteId }, 'notes');
 		const send = () =>
 			handler(
-				new Request('https://notes.example.dev/.well-known/ss-events', {
+				new Request('https://notes.example.dev/.well-known/shelfway-events', {
 					method: 'POST',
 					headers: signed.headers,
 					body: signed.body,
@@ -206,7 +211,7 @@ describe('notices', () => {
 		const { portal, websiteId, handler } = await setup();
 		const signed = await portal.signNotice({ type: 'status.changed', websiteId }, 'other');
 		const res = await handler(
-			new Request('https://notes.example.dev/.well-known/ss-events', {
+			new Request('https://notes.example.dev/.well-known/shelfway-events', {
 				method: 'POST',
 				headers: signed.headers,
 				body: signed.body,
@@ -217,7 +222,7 @@ describe('notices', () => {
 		expect(
 			(
 				await handler(
-					new Request('https://notes.example.dev/.well-known/ss-events', {
+					new Request('https://notes.example.dev/.well-known/shelfway-events', {
 						method: 'POST',
 						headers: right.headers,
 						body: right.body,

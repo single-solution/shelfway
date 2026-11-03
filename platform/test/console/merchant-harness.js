@@ -4,18 +4,18 @@
  * merchants, websites, connected fake products, products on websites, credits).
  */
 import { vi } from 'vitest';
-import { manifest } from '@ss/contracts/testing';
-import { createPortal } from '../../src/portal.js';
+import { manifest } from '@shelfway/contracts/testing';
+import { createPlatform } from '../../src/platform.js';
 import { systemModule } from '../../src/modules/system/index.js';
 import { createCatalogModule } from '../../src/modules/catalog/index.js';
 import { createIdentityModule } from '../../src/modules/identity/index.js';
 import { commerceModule } from '../../src/modules/commerce/index.js';
 import { websiteModule } from '../../src/modules/website/index.js';
 import { createConsoleApi } from '../../src/console/api.js';
-import { act, byLabel, type } from '@ss/ui/testing';
+import { act, byLabel, type } from '@shelfway/ui/testing';
 import { totpCode } from '../../src/infra/auth.js';
 import { createSystemStore } from '../../src/infra/system.js';
-import { ENCRYPTION_KEY, PORTAL_URL, createTestLogger, testConfig } from '../helpers.js';
+import { ENCRYPTION_KEY, PLATFORM_URL, createTestLogger, testConfig } from '../helpers.js';
 import { startFakeProduct } from '../modules/catalog/fakes/product.js';
 
 const sleep = (/** @type {number} */ ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -155,7 +155,7 @@ export const shows = (snippet) => document.body.textContent?.replace(/\s+/g, ' '
 
 /**
  * A browser for one Portal: `fetch` goes to `portal.handle` with this browser's cookies (same origin).
- * @param {import('../../src/portal.js').Portal} portal
+ * @param {import('../../src/platform.js').Portal} portal
  * @param {string} [password] the password of the person (a test types it into the confirmation of a server token)
  */
 export const browserOf = (portal, password = 'correct horse battery') => {
@@ -176,12 +176,12 @@ export const browserOf = (portal, password = 'correct horse battery') => {
 	};
 	/** @type {typeof fetch} */
 	const fetchImpl = async (input, init = {}) => {
-		const url = new URL(String(input), PORTAL_URL);
+		const url = new URL(String(input), PLATFORM_URL);
 		const method = init.method ?? 'GET';
 		const headers = new Headers(/** @type {any} */ (init.headers));
 		if (jar.size > 0) headers.set('cookie', cookie());
 		if (method !== 'GET') {
-			headers.set('origin', PORTAL_URL);
+			headers.set('origin', PLATFORM_URL);
 			headers.set('sec-fetch-site', 'same-origin');
 		}
 		const response = await portal.handle(
@@ -205,12 +205,12 @@ export const browserOf = (portal, password = 'correct horse battery') => {
 	 * @returns {Promise<import('../../src/console/api.js').ApiResult>}
 	 */
 	const write = async (method, path, body) => {
-		const headers = new Headers({ origin: PORTAL_URL, 'sec-fetch-site': 'same-origin' });
+		const headers = new Headers({ origin: PLATFORM_URL, 'sec-fetch-site': 'same-origin' });
 		if (jar.size > 0) headers.set('cookie', cookie());
 		if (body !== undefined) headers.set('content-type', 'application/json');
 		if (method === 'POST') headers.set('idempotency-key', globalThis.crypto.randomUUID());
 		const response = await portal.handle(
-			new Request(new URL(path, PORTAL_URL), {
+			new Request(new URL(path, PLATFORM_URL), {
 				method,
 				headers,
 				...(body === undefined ? {} : { body: JSON.stringify(body) }),
@@ -226,7 +226,7 @@ export const browserOf = (portal, password = 'correct horse battery') => {
 	/** This browser's own API calls: reads as a server-rendered page makes them, and changes. */
 	const api = {
 		/** @param {string} path */
-		get: (path) => createConsoleApi({ handle: portal.handle, baseUrl: PORTAL_URL, cookie: cookie() || null }).get(path),
+		get: (path) => createConsoleApi({ handle: portal.handle, baseUrl: PLATFORM_URL, cookie: cookie() || null }).get(path),
 		/** @param {string} path @param {unknown} [body] */
 		post: (path, body) => write('POST', path, body),
 		request: write,
@@ -302,7 +302,7 @@ export const createWorld = async ({ db }) => {
 	const mail = [];
 	const mailer = { available: true, send: async (/** @type {any} */ m) => void mail.push(m) };
 	// work right after responses runs at once (emails and notices follow the request that caused them)
-	const portal = createPortal({
+	const portal = createPlatform({
 		config: await testConfig(),
 		db,
 		modules: testModules({ mailer }),
@@ -325,7 +325,7 @@ export const createWorld = async ({ db }) => {
 	const ownerBrowser = browserOf(portal, 'owner password 123!');
 	const first = await ownerBrowser.api.post('/v1/auth/first-admin', {
 		name: 'Olivia Owner',
-		email: 'olivia@ss.test',
+		email: 'olivia@shelfway.test',
 		password: 'owner password 123!',
 	});
 	if (!first.ok) throw new Error(`first admin: ${JSON.stringify(first.problem)}`);
@@ -354,7 +354,7 @@ export const createWorld = async ({ db }) => {
 	 */
 	const adminOf = async (role) => {
 		invited += 1;
-		const email = `${role}-${invited}@ss.test`;
+		const email = `${role}-${invited}@shelfway.test`;
 		const r = await ownerBrowser.api.post('/v1/admin/admins', { email, role, password: 'owner password 123!' });
 		if (!r.ok) throw new Error(`invite: ${JSON.stringify(r.problem)}`);
 		const b = browserOf(portal, 'admin password 123!');
@@ -384,7 +384,7 @@ export const createWorld = async ({ db }) => {
 	 * @param {{ active?: boolean }} [state]
 	 */
 	const connect = async (options = {}, { active = true } = {}) => {
-		const product = await startFakeProduct({ manifest: productManifest(options), portalUrl: PORTAL_URL });
+		const product = await startFakeProduct({ manifest: productManifest(options), platformUrl: PLATFORM_URL });
 		products.push(product);
 		const r = await ownerBrowser.api.post('/v1/admin/products', { url: product.url, secret: product.secret });
 		if (!r.ok) throw new Error(`connect: ${JSON.stringify(r.problem)}`);
@@ -410,7 +410,7 @@ export const createWorld = async ({ db }) => {
 	const switchFeatures = async (product, websiteId, on) => {
 		reports += 1;
 		const response = await portal.handle(
-			new Request(`${PORTAL_URL}/v1/product/websites/${websiteId}/features`, {
+			new Request(`${PLATFORM_URL}/v1/product/websites/${websiteId}/features`, {
 				method: 'PUT',
 				headers: { 'content-type': 'application/json', authorization: `Bearer ${await product.assertion()}` },
 				body: JSON.stringify({ version: reports, on, adminId: owner.adminId, adminName: owner.name }),

@@ -37,7 +37,7 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false }) {
 				</Link>
 				<nav aria-label="Main">
 					<a href={isCurrentHome ? '#products' : '/#products'}>Features</a>
-					<Link href="/docs" style={isDocs ? { color: 'var(--ss-primary)', fontWeight: 600 } : undefined}>
+					<Link href="/docs" style={isDocs ? { color: 'var(--shelfway-primary)', fontWeight: 600 } : undefined}>
 						Docs
 					</Link>
 				</nav>

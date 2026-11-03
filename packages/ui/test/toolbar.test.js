@@ -219,7 +219,7 @@ describe('Toolbar select mode', () => {
 			/>,
 		);
 		expect(container.querySelector('input[type="search"]')).toBeNull();
-		expect(container.querySelector('[data-ss-bulk]')).not.toBeNull();
+		expect(container.querySelector('[data-shelfway-bulk]')).not.toBeNull();
 		expect(container.querySelector('[role="status"]')?.textContent).toBe('3 selected');
 		expect(container.textContent).toContain('Suspend');
 		click(byText(container, 'Select all', 'button'));

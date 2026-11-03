@@ -1,5 +1,5 @@
 /**
- * CSV (RFC 4180) for every export and import (`@ss/contracts/csv`). Pure and browser-safe (no Node.js imports), so
+ * CSV (RFC 4180) for every export and import (`@shelfway/contracts/csv`). Pure and browser-safe (no Node.js imports), so
  * servers and admin widgets write and read files the same way.
  *
  * Writer: a UTF-8 byte order mark first (spreadsheet apps then read names in any language right), CRLF after every

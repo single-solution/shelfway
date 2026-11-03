@@ -9,8 +9,8 @@
  * Connection `jazzcash`: `{ merchantId, password, integritySalt, sandbox? }`.
  * @module
  */
-import { isObject } from '@ss/contracts/util';
-import { constantTimeEqual, hmacSha256Hex } from '@ss/protocol';
+import { isObject } from '@shelfway/contracts/util';
+import { constantTimeEqual, hmacSha256Hex } from '@shelfway/protocol';
 import { formFields } from '../util.js';
 
 /** @typedef {import('./types.js').GatewayAdapter} GatewayAdapter */

@@ -46,7 +46,7 @@ const asShopper = async (method, path, body) => {
 		token: shop.browser,
 		origin: ORIGIN,
 		...(body === undefined ? {} : { body }),
-		headers: { 'ss-sign-in': token, 'x-forwarded-for': `10.9.${Math.floor(visits / 200)}.${visits % 200}` },
+		headers: { 'shelfway-sign-in': token, 'x-forwarded-for': `10.9.${Math.floor(visits / 200)}.${visits % 200}` },
 	});
 };
 
@@ -342,7 +342,7 @@ describe('checkout options of the flow', () => {
 						country: 'US',
 					},
 				},
-				headers: { 'ss-sign-in': token, 'idempotency-key': key, 'x-forwarded-for': `10.10.0.${visits % 200}` },
+				headers: { 'shelfway-sign-in': token, 'idempotency-key': key, 'x-forwarded-for': `10.10.0.${visits % 200}` },
 			});
 			expect(placed.status).toBe(201);
 			return /** @type {string} */ (placed.json.order.id);
@@ -420,7 +420,7 @@ describe('checkout options of the flow', () => {
 						},
 					},
 					headers: {
-						'ss-sign-in': await shop.signIn({ id: SHOPPER }),
+						'shelfway-sign-in': await shop.signIn({ id: SHOPPER }),
 						'idempotency-key': 'no-confirm-1',
 						'x-forwarded-for': `10.11.0.${visits % 200}`,
 					},

@@ -8,9 +8,9 @@
  * customers.manage, catalog.edit), for a ticket and for a server call with a staff sign-in alike.
  * @module
  */
-import { createId } from '@ss/contracts';
-import { csvRecords, parseCsv, toCsv } from '@ss/contracts/csv';
-import { allows, defineRoute, problem } from '@ss/app-kit';
+import { createId } from '@shelfway/contracts';
+import { csvRecords, parseCsv, toCsv } from '@shelfway/contracts/csv';
+import { allows, defineRoute, problem } from '@shelfway/app-kit';
 import {
 	NO_KEYS,
 	attributesOf,
@@ -68,7 +68,7 @@ import { SERVER_LIMITS, bodyOf } from './service.js';
 /** @typedef {import('../core/catalog-csv.js').ImportGroup} ImportGroup */
 /** @typedef {import('../core/catalog-csv.js').UpdateRow} UpdateRow */
 /** @typedef {{ stale: UpdateRow[], next: ReturnType<typeof updatedVariants> }} UpdateOutcome */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 
 /**
  * The tool permissions (`csv.run`, `bulk.run`) open the tools, not the data they work on: a file or a change also needs the
@@ -905,7 +905,7 @@ export const createCatalogTools = (product, service, common) => {
 			path: '/v1/csv/products',
 			auth: 'server',
 			permission: 'csv.run',
-			feature: 'catalog',
+			feature: 'csv',
 			rateLimit: SERVER_LIMITS,
 			handler: exportProducts,
 		}),
@@ -914,7 +914,7 @@ export const createCatalogTools = (product, service, common) => {
 			path: '/v1/csv/products',
 			auth: 'server',
 			permission: 'csv.run',
-			feature: 'catalog',
+			feature: 'csv',
 			maxBodyBytes: IMPORT_BYTES,
 			rateLimit: SERVER_LIMITS,
 			handler: importProducts,
@@ -924,7 +924,7 @@ export const createCatalogTools = (product, service, common) => {
 			path: '/v1/csv/orders',
 			auth: 'server',
 			permission: 'csv.run',
-			feature: 'catalog',
+			feature: 'csv',
 			rateLimit: SERVER_LIMITS,
 			handler: exportOrders,
 		}),
@@ -933,7 +933,7 @@ export const createCatalogTools = (product, service, common) => {
 			path: '/v1/csv/customers',
 			auth: 'server',
 			permission: 'csv.run',
-			feature: 'catalog',
+			feature: 'csv',
 			rateLimit: SERVER_LIMITS,
 			handler: exportCustomers,
 		}),
@@ -977,7 +977,7 @@ export const createCatalogTools = (product, service, common) => {
 			path: '/v1/products/bulk',
 			auth: 'server',
 			permission: 'bulk.run',
-			feature: 'catalog',
+			feature: 'bulk_actions',
 			rateLimit: SERVER_LIMITS,
 			handler: bulk,
 		}),

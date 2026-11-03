@@ -101,7 +101,7 @@ const start = async ({
 	const api = startWidget({ window, script: script(token), ...time });
 	await api.ready;
 	await flush();
-	const host = document.querySelector('[data-ss-chat="chat"]');
+	const host = document.querySelector('[data-shelfway-chat="chat"]');
 	const root = /** @type {ShadowRoot} */ (host ? shadow(host) : null);
 	const $ = (/** @type {string} */ selector) => /** @type {HTMLElement} */ (root.querySelector(selector));
 	const type = async (/** @type {string} */ text) => {
@@ -1075,7 +1075,7 @@ describe('product cards', () => {
 			asked.push(/** @type {CustomEvent} */ (event).detail);
 			event.preventDefault();
 		};
-		window.addEventListener('ss-ecommerce:add-to-cart', cart);
+		window.addEventListener('shelfway-ecommerce:add-to-cart', cart);
 		const add = /** @type {HTMLAnchorElement} */ (cards[0]?.querySelector('a.add'));
 		expect(add.textContent).toBe(TEXTS['chat.addToCart']);
 		const click = new window.MouseEvent('click', { bubbles: true, cancelable: true, composed: true });
@@ -1086,7 +1086,7 @@ describe('product cards', () => {
 		buttonIn(/** @type {HTMLElement} */ (cards[1]), TEXTS['chat.addToCart']).click();
 		// an item with limits adds its least, in its own unit (EU)
 		expect(asked.at(-1)).toEqual({ productId: 'prd_2', variantId: null, quantity: 1500, measured: true });
-		window.removeEventListener('ss-ecommerce:add-to-cart', cart);
+		window.removeEventListener('shelfway-ecommerce:add-to-cart', cart);
 		document.documentElement.lang = '';
 	});
 

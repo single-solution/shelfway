@@ -3,7 +3,7 @@
  * declared in `schemas/messages.json` with US-English default words, and every send carries them, so a new website
  * gets its sign-in codes, reset links and invites before the merchant writes a template.
  */
-import { validateMessageDefaults } from '@ss/contracts';
+import { validateMessageDefaults } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import declaration from '../schemas/messages.json' with { type: 'json' };
 import { ALL, ORIGIN, setup } from './helpers.js';

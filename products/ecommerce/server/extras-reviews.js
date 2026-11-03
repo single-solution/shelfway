@@ -1,14 +1,14 @@
 /**
  * Reviews (feature `reviews`, PLAN 0.8.8: only after delivery, with moderation): a signed-in shopper whose delivered
  * order holds the product writes one review of it; with `per: order_line` (E34) one review per order line instead,
- * written from the order page by the order's owner (their sign-in, or a guest's order key in `SS-Order-Key`, E21).
+ * written from the order page by the order's owner (their sign-in, or a guest's order key in `Shelfway-Order-Key`, E21).
  * Visitors read the approved ones with the rating summary, `pageSize` at a time, each with `verified` (written from an
  * order), the variant bought and the name as `nameFormat` shows it; the merchant's staff (or server) approve, reject,
  * set back to pending, reply and delete. The product's `rating` is kept right on every change.
  * @module
  */
-import { createId } from '@ss/contracts';
-import { countHandlers, created, defineRoute, noContent, ok, paginate, problem } from '@ss/app-kit';
+import { createId } from '@shelfway/contracts';
+import { countHandlers, created, defineRoute, noContent, ok, paginate, problem } from '@shelfway/app-kit';
 import { keyOpens } from '../adapters/crypto.js';
 import { answerCounts, refreshRating, reviewSummary, userIdsOf } from '../adapters/extras-store.js';
 import { afterFilter, keyOf, sortOf } from '../core/extras-pages.js';
@@ -30,14 +30,14 @@ import { activeProduct } from './seo-reads.js';
 
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/model.js').ReviewRecord & { createdAt: Date, updatedAt: Date }} StoredReview */
 /** @typedef {import('../core/model.js').OrderRecord} OrderRecord */
 /** @typedef {import('../core/model.js').ReviewRecord} ReviewRecord */
 
 const NEWEST = REVIEW_SORTS.newest;
 /** The header a guest's order key comes in (E21). */
-const ORDER_KEY_HEADER = 'ss-order-key';
+const ORDER_KEY_HEADER = 'shelfway-order-key';
 /** What a review needs of its order. */
 const ORDER_FIELDS = { projection: { _id: 0, id: 1, customer: 1, accessKeyHash: 1, deliveredAt: 1, lines: 1 } };
 

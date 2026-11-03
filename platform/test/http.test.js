@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createProblemFactory } from '@ss/contracts';
+import { createProblemFactory } from '@shelfway/contracts';
 import { can } from '../src/infra/rbac.js';
 import {
 	INFRA_PROBLEMS,
@@ -330,7 +330,7 @@ describe('request pipeline', () => {
 				method: 'GET',
 				path: '/v1/settings',
 				auth: 'admin',
-				permission: 'portal_settings.write',
+				permission: 'platform_settings.write',
 				handler: () => ({ ok: true }),
 			},
 			{

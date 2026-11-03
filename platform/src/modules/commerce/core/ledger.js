@@ -9,7 +9,7 @@
  * are worked out live (`core/money.js`).
  * @module
  */
-import { canonicalJson, sha256Hex } from '@ss/protocol';
+import { canonicalJson, sha256Hex } from '@shelfway/protocol';
 
 const LEDGER_TYPES = Object.freeze(/** @type {const} */ (['receipt', 'day_charge']));
 /** @typedef {typeof LEDGER_TYPES[number]} LedgerType */
@@ -45,7 +45,7 @@ const LEDGER_TYPES = Object.freeze(/** @type {const} */ (['receipt', 'day_charge
  * @param {string} merchantId
  * @returns {string}
  */
-export const genesisHash = (merchantId) => sha256Hex(`ss-ledger-genesis\u0000${merchantId}`);
+export const genesisHash = (merchantId) => sha256Hex(`shelfway-ledger-genesis\u0000${merchantId}`);
 
 /**
  * @param {unknown} value

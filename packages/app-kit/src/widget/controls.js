@@ -32,7 +32,7 @@ import { element } from './dom.js';
 /** Ids of the controls, unique on the page, so a label always finds its input. */
 let ids = 0;
 /** @param {string} prefix */
-const nextId = (prefix) => `ss-${prefix}-${(ids += 1)}`;
+const nextId = (prefix) => `shelfway-${prefix}-${(ids += 1)}`;
 
 /**
  * The native input of a choice with its options set.

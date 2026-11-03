@@ -1,5 +1,5 @@
 /**
- * Text helpers every unit shares (`@ss/contracts/text`): HTML escaping and character references, the widget script
+ * Text helpers every unit shares (`@shelfway/contracts/text`): HTML escaping and character references, the widget script
  * tag, the support contact channels, path patterns and the Luhn check digit. Pure and browser-safe (no Node.js
  * imports), so servers, products' `core/` and widget bundles use the same code.
  * @module

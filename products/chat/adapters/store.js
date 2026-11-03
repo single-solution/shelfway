@@ -1,20 +1,20 @@
 /**
- * Chat's records in the merchant database (collections `ss_chat_<name>`, through the kit's tenant guard: every query
+ * Chat's records in the merchant database (collections `shelfway_chat_<name>`, through the kit's tenant guard: every query
  * carries the website id; inserts are stamped with `websiteId`, `merchantId`, `createdAt` and `updatedAt`).
  *
  * - `conversations` and `messages` (separate, ordered by a per-conversation `seq`); never deleted because of age
  * - `guests`: guest device keys (hash only), removed by a TTL index when the device forgets them
- * - `staff`: the merchant's staff named in tickets or by the verified `SS-Sign-In` of server calls (the kit records
+ * - `staff`: the merchant's staff named in tickets or by the verified `Shelfway-Sign-In` of server calls (the kit records
  *   them), or assigned from Accounts, with presence and max chats
  * - `leads`, `saved_replies`, `entries` (knowledge), `pages` (website pages and their text), `chunks` (retrieval)
  * - `usage`: AI token counts per day and month window (and the month's cost alert)
  * - `activity`: the activity log (the kit writes it)
  * @module
  */
-import { createId } from '@ss/contracts';
-import { normalizePhone } from '@ss/contracts/phone';
+import { createId } from '@shelfway/contracts';
+import { normalizePhone } from '@shelfway/contracts/phone';
 
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/conversation.js').ConversationRecord} ConversationRecord */
 /** @typedef {import('../core/conversation.js').MessageRecord} MessageRecord */
 /**
@@ -45,7 +45,7 @@ const PAGES = 'pages';
 const CHUNKS = 'chunks';
 const USAGE = 'usage';
 
-/** Merchant database indexes (created on a website's first use). @type {import('@ss/app-kit').IndexDefinition[]} */
+/** Merchant database indexes (created on a website's first use). @type {import('@shelfway/app-kit').IndexDefinition[]} */
 export const INDEXES = [
 	{ collection: CONVERSATIONS, keys: { websiteId: 1, id: 1 }, name: 'by_id', unique: true },
 	{

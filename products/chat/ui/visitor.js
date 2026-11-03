@@ -1,9 +1,9 @@
 /**
- * The visitor side of the API: the browser token, the Accounts sign-in from `SSChat.identify()` (memory only, sent as
- * `SS-Sign-In`) and the guest key (localStorage with its expiry, sent as `SS-Guest`). Never cookies or URLs.
+ * The visitor side of the API: the browser token, the Accounts sign-in from `ShelfwayChat.identify()` (memory only, sent as
+ * `Shelfway-Sign-In`) and the guest key (localStorage with its expiry, sent as `Shelfway-Guest`). Never cookies or URLs.
  * @module
  */
-import { requestJson } from '@ss/app-kit/widget';
+import { requestJson } from '@shelfway/app-kit/widget';
 import { GUEST_REMEMBER_DAYS } from '../core/limits.js';
 import { GUEST_HEADER, GUEST_STORAGE_KEY, SIGN_IN_HEADER } from '../core/widgets.js';
 
@@ -48,7 +48,7 @@ export const createVisitor = ({ win, base, token, now }) => {
 		},
 		/**
 		 * @param {string} method @param {string} path @param {unknown} [body]
-		 * @returns {Promise<import('@ss/app-kit/widget').Answer>}
+		 * @returns {Promise<import('@shelfway/app-kit/widget').Answer>}
 		 */
 		call: (method, path, body) => {
 			const key = guestKey();

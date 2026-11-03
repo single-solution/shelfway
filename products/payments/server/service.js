@@ -6,8 +6,8 @@
  * through Notifications right after (`after()`) the request that made them, retried on later requests for that website.
  * @module
  */
-import { problem } from '@ss/app-kit';
-import { originAllowed } from '@ss/protocol';
+import { problem } from '@shelfway/app-kit';
+import { originAllowed } from '@shelfway/protocol';
 import {
 	CUSTOM_GATEWAY_CONNECTIONS,
 	GATEWAY_CONNECTIONS,
@@ -48,7 +48,7 @@ import { createStore } from '../adapters/store.js';
  */
 /**
  * Who did it: a member of the merchant's staff (a ticket's user, or the acting user a server-token call names with
- * verified `SS-Sign-In`, PLAN 0.8.10 K2), or the server.
+ * verified `Shelfway-Sign-In`, PLAN 0.8.10 K2), or the server.
  * @typedef {{ kind: string, id: string, name?: string, role?: string }} Actor
  */
 

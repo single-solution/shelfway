@@ -1,11 +1,11 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { manifest as notesManifest } from '@ss/contracts/testing';
+import { manifest as notesManifest } from '@shelfway/contracts/testing';
 import { closeMongoClients } from '../../../src/testing.js';
 import { startMongo } from '../../helpers.js';
-import { PASSWORD, bootPortal, codeOf } from './boot.js';
+import { PASSWORD, bootPlatform, codeOf } from './boot.js';
 
 /**
- * @param {Awaited<ReturnType<typeof bootPortal>>} h
+ * @param {Awaited<ReturnType<typeof bootPlatform>>} h
  * @param {any} client
  * @param {string} email
  * @param {string} path
@@ -38,7 +38,7 @@ afterAll(async () => {
  * @param {string} name
  */
 const setUp = async (name) => {
-	const h = await bootPortal({
+	const h = await bootPlatform({
 		db: mongo.db(name),
 		settings: {
 			branding: { name: 'Acme Portal', accent: '#112233' },

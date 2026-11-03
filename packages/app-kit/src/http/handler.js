@@ -5,7 +5,7 @@
  *   connect, except `none` routes) → body with a byte cap (413) → auth (for the `browser`, `server` and `ticket` routes the
  *   token is checked first and the body read after it, so a call with no or a bad token never has its body read) → status
  *   of the product on the website (403
- *   `product_unavailable`, 503 `portal_unreachable`) → feature (403 `feature_off`) → merchant database (403
+ *   `product_unavailable`, 503 `platform_unreachable`) → feature (403 `feature_off`) → merchant database (403
  *   `database_not_connected`) → JSON (415/400) → rate limits (429) → `Idempotency-Key` (the first answer again, or 409)
  *   → handler → RFC 9457 problems for every error.
  *
@@ -22,7 +22,7 @@
  * sign-in of a staff member whose role grants it) or `staff` (any verified staff member). The acting person is the one
  * that verified sign-in names (`ctx.actor`); no header the caller wrote is ever taken as a person. A bare server token on
  * a staff route is 403 `needs_signed_in_staff`, a sign-in of another website, an expired or a forged one 401
- * `invalid_sign_in`, a role without the permission 403 `forbidden`. A visitor call from the merchant's server names its visitor with `SS-Visitor-IP`
+ * `invalid_sign_in`, a role without the permission 403 `forbidden`. A visitor call from the merchant's server names its visitor with `Shelfway-Visitor-IP`
  * (required on writes, else 400 `visitor_ip_required`), counts in its own window of 3,000 requests per minute per
  * route per website instead of the browser one, keeps the per-visitor limits (by that address) and never counts as
  * widget installed.
@@ -39,11 +39,11 @@ import {
 	isProtocolError,
 	originAllowed,
 	sha256Hex,
-	verifyPortalCall,
+	verifyPlatformCall,
 	verifyToken,
-} from '@ss/protocol';
-import { createId } from '@ss/contracts';
-import { clientIpOf, createLocalWindows } from '@ss/net';
+} from '@shelfway/protocol';
+import { createId } from '@shelfway/contracts';
+import { clientIpOf, createLocalWindows } from '@shelfway/net';
 import { KIT_PERMISSIONS, SIGN_IN_DETAIL, checkStaff } from '../staff.js';
 import { isDatabaseUnavailable } from '../data.js';
 import { requestSignIn, requestStaffSignIn } from '../identity.js';
@@ -77,37 +77,37 @@ import { compileRoutes, matchPath, matchRoute, splitPath } from './routes.js';
  * @property {string | null} origin the canonical Origin header, if any
  * @property {string | null} websiteId
  * @property {string | null} merchantId
- * @property {import('@ss/contracts').StatusResponse | null} status the status response of the website
- * @property {import('@ss/protocol').TokenClaims | null} token browser or server token claims
- * @property {import('@ss/protocol').TicketClaims | null} ticket
+ * @property {import('@shelfway/contracts').StatusResponse | null} status the status response of the website
+ * @property {import('@shelfway/protocol').TokenClaims | null} token browser or server token claims
+ * @property {import('@shelfway/protocol').TicketClaims | null} ticket
  * @property {import('../actor.js').ActingUser | null} actor the member of the merchant's staff whose verified
- *   `SS-Sign-In` a staff route of the server token was called with (never a header the caller wrote), else null
+ *   `Shelfway-Sign-In` a staff route of the server token was called with (never a header the caller wrote), else null
  * @property {{ can: (permission: string) => boolean } | null} staff the verified staff member of a staff route of the
  *   server token: `can(key)` says whether their role grants the product's permission `key`; null on any other call. Guards
  *   inside handlers ask `allows(ctx, key)` (staff.js), which reads the ticket's permissions or this
  * @property {() => Promise<import('../identity.js').RequestSignIn | null>} signIn the visitor's Accounts sign-in from
- *   `SS-Sign-In`, verified once per request for the website of the request's own token (`{ ok: true, token, user, claims }`,
+ *   `Shelfway-Sign-In`, verified once per request for the website of the request's own token (`{ ok: true, token, user, claims }`,
  *   `{ ok: false, code }`, or null without the header). On a browser route the merchant's server called for a visitor
  *   (`visitor.server`), a sign-in that is not valid never reaches the route: 401 `invalid_sign_in` (`cause`: the failure,
  *   for example `audience`, `expired`, `signature`), or 503 `accounts_unavailable`. A browser call keeps a wrong or
  *   expired sign-in as none.
  * @property {() => Promise<import('../identity.js').RequestSignIn | null>} staffSignIn the sign-in of a staff member from
- *   `SS-Sign-In`, verified once for the request's website by the product's own way (`staff.js`): the keys of the website's
+ *   `Shelfway-Sign-In`, verified once for the request's website by the product's own way (`staff.js`): the keys of the website's
  *   Accounts, fetched through the link, or Accounts' own keys, session and live role. The staff routes of the server token use it; null
  *   without the header
  * @property {{ server: boolean, ip: string | null }} visitor on browser routes: `server` when the merchant's server
- *   called with the server token for one visitor (K3), `ip` that visitor's `SS-Visitor-IP` (null when not sent)
- * @property {string} clientIp the visitor's address for per-visitor limits and risk checks: `SS-Visitor-IP` on a
+ *   called with the server token for one visitor (K3), `ip` that visitor's `Shelfway-Visitor-IP` (null when not sent)
+ * @property {string} clientIp the visitor's address for per-visitor limits and risk checks: `Shelfway-Visitor-IP` on a
  *   server-token visitor call, else the address the hosting layer saw (`X-Real-IP`, else the last `X-Forwarded-For` hop;
  *   `unknown` when there is none)
  * @property {import('../dashboard.js').Session | null} session dashboard session
  * @property {(task: () => Promise<unknown>) => void} after run work right after the response
- * @property {() => Promise<import('@ss/contracts').WebsiteSettings>} website the website's settings from the Portal
+ * @property {() => Promise<import('@shelfway/contracts').WebsiteSettings>} website the website's settings from the Portal
  *   (business facts, brand and theme, region and Format, pages, team), frozen; an empty document at version 0 while the
  *   Portal holds none (then the product uses its own values). Memory, then the product database: never the Portal on the
  *   hot path. Needs a website request
  * @property {() => Promise<import('../data.js').WebsiteData>} data the website's merchant database (tenant guard)
- * @property {import('@ss/net').Logger} log
+ * @property {import('@shelfway/net').Logger} log
  */
 
 /** Per-request `after()` schedulers registered by adapters (`toNextRoute`). */
@@ -135,12 +135,13 @@ const IN_PROGRESS_MS = 5 * 60_000;
 const REPLAY_MAX_CHARS = 64 * 1024;
 /** Answer headers a repeat does not get again. */
 const NOT_REPLAYED = new Set(['set-cookie']);
-// `ss-sign-in`: a visitor's Accounts sign-in next to the browser token (signed-in visitor routes);
-// `ss-guest`: a Chat guest's device key (Chat's guest visitor routes); `ss-order-key`: a guest order's key (Ecommerce)
-const CORS_HEADERS = 'authorization, content-type, idempotency-key, ss-guest, ss-order-key, ss-sign-in, x-request-id';
+// `shelfway-sign-in`: a visitor's Accounts sign-in next to the browser token (signed-in visitor routes);
+// `shelfway-guest`: a Chat guest's device key (Chat's guest visitor routes); `shelfway-order-key`: a guest order's key (Ecommerce)
+const CORS_HEADERS =
+	'authorization, content-type, idempotency-key, shelfway-guest, shelfway-order-key, shelfway-sign-in, x-request-id';
 /** Visitor calls from the merchant's server: their own window per route per website (PLAN 0.8.10 K3, code constant). */
 export const SERVER_VISITOR_LIMIT = Object.freeze({ limit: 3000, windowSeconds: 60 });
-const VISITOR_IP_HEADER = 'ss-visitor-ip';
+const VISITOR_IP_HEADER = 'shelfway-visitor-ip';
 const LAST_SEEN_EVERY_MS = 60 * 60_000;
 const STAFF_EVERY_MS = 10 * 60_000;
 const NO_FRAMES = Object.freeze({ 'x-frame-options': 'DENY', 'content-security-policy': "frame-ancestors 'none'" });
@@ -258,7 +259,7 @@ export const createRequestHandler = (kit, routes, options = {}) => {
 	 */
 	const render = (result, requestId, instance) => {
 		if (isProblem(result)) {
-			/** @type {import('@ss/contracts').Problem} */
+			/** @type {import('@shelfway/contracts').Problem} */
 			let doc;
 			try {
 				const { reason, ...extensions } = result.extensions ?? {};
@@ -267,7 +268,7 @@ export const createRequestHandler = (kit, routes, options = {}) => {
 					...(result.errors === undefined ? {} : { errors: result.errors }),
 					...(reason === undefined
 						? {}
-						: { reason: /** @type {import('@ss/contracts').ProductUnavailableReason} */ (reason) }),
+						: { reason: /** @type {import('@shelfway/contracts').ProductUnavailableReason} */ (reason) }),
 					requestId,
 					instance,
 				});
@@ -295,21 +296,21 @@ export const createRequestHandler = (kit, routes, options = {}) => {
 	 * @param {CompiledRoute} r
 	 * @param {Request} request
 	 * @param {string | null} rawOrigin
-	 * @returns {Promise<import('@ss/protocol').TokenClaims | null>}
+	 * @returns {Promise<import('@shelfway/protocol').TokenClaims | null>}
 	 */
 	const verifyWebsiteToken = async (r, request, rawOrigin) => {
 		const kind = r.auth === 'browser' && rawOrigin !== null ? 'browser' : 'server';
 		if (kind === 'server' && rawOrigin !== null) return null;
 		const token = bearerOf(request.headers.get('authorization'));
 		if (!token) return null;
-		const { portalUrl, portalKeys } = kit.connection.active();
+		const { platformUrl, portalKeys } = kit.connection.active();
 		// a route that names a scope also takes a link key; every other route takes the server token alone
 		const link = kind === 'server' && r.scope !== undefined && kindClaimed(token) === 'link';
 		try {
 			const claims = await verifyToken({
 				token,
 				keyResolver: portalKeys,
-				issuer: portalUrl,
+				issuer: platformUrl,
 				productId: manifest.id,
 				kind: link ? 'link' : kind,
 				isRevoked: kit.status.isRevoked,
@@ -557,7 +558,7 @@ export const createRequestHandler = (kit, routes, options = {}) => {
 					ctx.visitor = { server: true, ip: known };
 					ctx.clientIp = known ?? 'unknown';
 					if (method !== 'GET' && method !== 'HEAD' && known === null)
-						return fail(problem('visitor_ip_required', `Send the visitor's IP address in SS-Visitor-IP.`));
+						return fail(problem('visitor_ip_required', `Send the visitor's IP address in Shelfway-Visitor-IP.`));
 				}
 			} else if (r.auth === 'ticket') {
 				const ticket = bearerOf(request.headers.get('authorization')) ?? '';
@@ -574,7 +575,7 @@ export const createRequestHandler = (kit, routes, options = {}) => {
 			} else if (r.auth === 'portal') {
 				const { portalKeys } = kit.connection.active();
 				try {
-					await verifyPortalCall({
+					await verifyPlatformCall({
 						headers: request.headers,
 						audience: manifest.id,
 						method,
@@ -723,7 +724,7 @@ export const createRequestHandler = (kit, routes, options = {}) => {
 				duplicateKey = `idem:${sha256Hex(`${principal}\n${r.id}\n${ctx.idempotencyKey}`)}`;
 				// a server call for a verified shopper counts by who they are, so a retry with a renewed sign-in is the same request
 				const verified = ctx.visitor.server ? await ctx.signIn() : null;
-				const signedIn = verified?.ok ? `user:${verified.user.id}` : (request.headers.get('ss-sign-in') ?? '');
+				const signedIn = verified?.ok ? `user:${verified.user.id}` : (request.headers.get('shelfway-sign-in') ?? '');
 				// an anonymous visitor (no ticket, staff member, session, sign-in or visitor key of its own) is named by the address
 				// too, so two of them who send the same key and body never share a stored answer (SR-1-8); a trusted server or the
 				// Portal is not, and a visitor key keeps a retry from a new address (a phone changing networks) a replay
@@ -733,16 +734,16 @@ export const createRequestHandler = (kit, routes, options = {}) => {
 					!ctx.actor &&
 					!ctx.session &&
 					signedIn === '' &&
-					!request.headers.get('ss-guest') &&
-					!request.headers.get('ss-order-key');
+					!request.headers.get('shelfway-guest') &&
+					!request.headers.get('shelfway-order-key');
 				fingerprint = sha256Hex(
 					[
 						method,
 						`${pathname}${url.search}`,
 						ctx.ticket?.user?.id ?? '',
 						ctx.actor?.id ?? '',
-						request.headers.get('ss-guest') ?? '',
-						request.headers.get('ss-order-key') ?? '',
+						request.headers.get('shelfway-guest') ?? '',
+						request.headers.get('shelfway-order-key') ?? '',
 						signedIn,
 						anonymous ? `ip:${ctx.clientIp}` : '',
 						ctx.rawBody,

@@ -3,7 +3,7 @@
  * routes (PLAN 0.8.8). Delivered orders are placed with the ledger and moved to delivered directly, so this part is
  * tested on its own.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { givePoints, loyaltyAccount, placeOrder } from '../adapters/ledger.js';
 import { INDEXES } from '../adapters/product.js';
@@ -17,7 +17,7 @@ import { DOMAIN, PAYMENTS, readyShop, STORAGE, storedAttribute, storedOrder, sto
 
 /** @type {Awaited<ReturnType<typeof readyShop>>} */
 let shop;
-/** @type {import('@ss/app-kit').WebsiteData} */
+/** @type {import('@shelfway/app-kit').WebsiteData} */
 let data;
 /** @type {string} */
 let ticket;

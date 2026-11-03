@@ -325,10 +325,10 @@ describe('product page content', () => {
 		expect(main().classList.contains('blur')).toBe(false);
 		expect(main().hasAttribute('width')).toBe(false);
 		// the gold variant's own photo replaces the gallery, from its first photo
-		await setValue($(host, '#ss-page-option-0'), 'Gold');
+		await setValue($(host, '#shelfway-page-option-0'), 'Gold');
 		expect(main().getAttribute('src')).toBe('https://cdn.example.com/gold-d.webp');
 		expect($$(host, '.thumbs')).toHaveLength(0);
-		await setValue($(host, '#ss-page-option-0'), 'Black');
+		await setValue($(host, '#shelfway-page-option-0'), 'Black');
 		expect(main().getAttribute('src')).toBe('https://cdn.example.com/front-d.webp');
 	});
 
@@ -375,7 +375,7 @@ describe('product page content', () => {
 			},
 		});
 		const host = await mountPage(fake, 'phone', { catalog: { lowStockShown: 5 } });
-		const condition = $(host, '#ss-page-option-1');
+		const condition = $(host, '#shelfway-page-option-1');
 		expect(condition.closest('.field').querySelector('label').textContent).toBe(text('page.condition'));
 		expect([...condition.options].map((/** @type {any} */ o) => o.textContent)).toEqual([
 			'Like new',
@@ -442,13 +442,13 @@ describe('product page content', () => {
 			},
 		});
 		const host = await mountPage(fake);
-		expect($(host, '#ss-page-option-0').closest('.field').textContent).toContain('Color');
-		expect($(host, '#ss-page-option-1').closest('.field').textContent).toContain('Size');
+		expect($(host, '#shelfway-page-option-0').closest('.field').textContent).toContain('Color');
+		expect($(host, '#shelfway-page-option-1').closest('.field').textContent).toContain('Size');
 		// the first variant that can be bought is shown first
-		expect($(host, '#ss-page-option-0').value).toBe('Red');
-		expect($(host, '#ss-page-option-1').value).toBe('M');
-		await setValue($(host, '#ss-page-option-0'), 'Blue');
-		expect($(host, '#ss-page-option-1').value).toBe('S');
+		expect($(host, '#shelfway-page-option-0').value).toBe('Red');
+		expect($(host, '#shelfway-page-option-1').value).toBe('M');
+		await setValue($(host, '#shelfway-page-option-0'), 'Blue');
+		expect($(host, '#shelfway-page-option-1').value).toBe('S');
 		expect(textOf(host)).toContain('USD 900.00');
 		await click(buttonOf(host, text('page.addToCart')));
 		expect(fake.cart.state().lines).toEqual([{ productId: 'prd_1', variantId: 'var_bs', quantity: 1 }]);
@@ -567,7 +567,7 @@ describe('product page content', () => {
 		const host = await mountPage(fake);
 		expect(textOf(host)).toContain(text('alerts.priceActive'));
 		expect(() => buttonOf(host, text('alerts.priceDrop'))).toThrow();
-		await setValue($(host, '#ss-page-option-0'), 'Gold');
+		await setValue($(host, '#shelfway-page-option-0'), 'Gold');
 		expect(textOf(host)).toContain(text('alerts.stockActive'));
 		// one read per sign-in, shared
 		expect(fake.all('GET /v1/shop/alerts')).toHaveLength(1);

@@ -7,7 +7,7 @@
  * - **TLS** is required (implicit TLS, or `requireTLS` STARTTLS) and certificates are verified against the host name,
  *   TLS 1.2 or later. Only hosts on the development allowlist (the outbound policy's `allowHosts`, emptied by app-kit in
  *   production) may talk plain SMTP.
- * - **SSRF:** the host is checked up front (`@ss/net` `checkHost`, ports 25/465/587/2525 unless allowlisted). Each
+ * - **SSRF:** the host is checked up front (`@shelfway/net` `checkHost`, ports 25/465/587/2525 unless allowlisted). Each
  *   send resolves the host once through `resolveVetted` (every DNS answer classified) and connects to the vetted IP,
  *   with the host name as TLS `servername`, so there is no second resolution between the check and the connection.
  * - **Timeouts:** connection 10 s, greeting 10 s, socket 30 s by default.
@@ -17,16 +17,16 @@
  *   credentials or the server's reply text.
  * @module
  */
-import { isEmailAddress, normalizeEmail } from '@ss/contracts/email';
-import { isObject } from '@ss/contracts/util';
-import { checkHost, isNetError, resolveVetted } from '@ss/net';
+import { isEmailAddress, normalizeEmail } from '@shelfway/contracts/email';
+import { isObject } from '@shelfway/contracts/util';
+import { checkHost, isNetError, resolveVetted } from '@shelfway/net';
 
 /** `Name <address>`: a display name of up to 128 characters (no quotes, backslashes or line breaks), then the address. */
 const DISPLAY = /^([^<>\r\n"\\]{0,128}?)\s*<([^<>\s]+)>$/;
 
 /**
  * A sender or reply-to mailbox: `address` or `Name <address>` on one line, the address one that every sending path can
- * deliver to (the one email rule of `@ss/contracts/email`; it is sent as given).
+ * deliver to (the one email rule of `@shelfway/contracts/email`; it is sent as given).
  * @param {unknown} value
  * @returns {value is string}
  */
@@ -114,7 +114,7 @@ const nodemailerTransport = (options) =>
 /**
  * Normalized connection settings of an SMTP descriptor.
  * @param {Record<string, unknown>} descriptor
- * @param {import('@ss/net').OutboundPolicy} policy
+ * @param {import('@shelfway/net').OutboundPolicy} policy
  * @returns {{ host: string, port: number, secure: boolean, allowlisted: boolean, ip: boolean, username: string,
  *   password: string }}
  */
@@ -188,7 +188,7 @@ const mailOf = (message) => {
 };
 
 /**
- * @param {{ descriptor: Record<string, unknown>, policy: import('@ss/net').OutboundPolicy,
+ * @param {{ descriptor: Record<string, unknown>, policy: import('@shelfway/net').OutboundPolicy,
  *   createTransport?: CreateSmtpTransport, timeouts?: { connectionMs?: number, greetingMs?: number, socketMs?: number } }} options
  *   `createTransport` replaces nodemailer's (tests); `timeouts` in milliseconds
  */

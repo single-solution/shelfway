@@ -1,10 +1,10 @@
 /**
  * Small helpers of the gateway adapters: form encoding and reading gateway answers (comparing and signing are
- * `@ss/protocol`'s).
+ * `@shelfway/protocol`'s).
  * @module
  */
 
-/** @typedef {(url: string, init?: import('@ss/net').SafeFetchInit) => Promise<import('@ss/net').SafeResponse>} OutboundSend */
+/** @typedef {(url: string, init?: import('@shelfway/net').SafeFetchInit) => Promise<import('@shelfway/net').SafeResponse>} OutboundSend */
 
 /** Timeout of one gateway call. */
 export const GATEWAY_TIMEOUT_MS = 15_000;
@@ -27,7 +27,7 @@ export const phpUrlencode = (text) =>
 
 /**
  * The JSON of a gateway answer, or null.
- * @param {import('@ss/net').SafeResponse} response
+ * @param {import('@shelfway/net').SafeResponse} response
  * @returns {any}
  */
 export const jsonOf = (response) => {

@@ -1,27 +1,27 @@
 import { Figtree, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 import { headers } from 'next/headers.js';
-import { ThemeScript } from '@ss/ui';
+import { ThemeScript } from '@shelfway/ui';
 import { DEFAULT_SETTINGS } from '../src/infra/config.js';
-import { portalBranding } from './_lib/server.js';
+import { platformBranding } from './_lib/server.js';
 import './globals.css';
 
 /** Unite faces for the whole Portal (site + console): text, display titles/figures, mono ids/paths. */
-const text = Figtree({ subsets: ['latin'], variable: '--ss-font-text', display: 'swap' });
+const text = Figtree({ subsets: ['latin'], variable: '--shelfway-font-text', display: 'swap' });
 const display = Space_Grotesk({
 	subsets: ['latin'],
-	variable: '--ss-font-display',
+	variable: '--shelfway-font-display',
 	display: 'swap',
 });
 const mono = JetBrains_Mono({
 	subsets: ['latin'],
-	variable: '--ss-font-mono',
+	variable: '--shelfway-font-mono',
 	display: 'swap',
 	weight: ['400', '500', '600'],
 });
 
 /** Browser tab titles carry the Branding name (Settings → Branding); its default while the Portal cannot be read. */
 export async function generateMetadata() {
-	const name = await portalBranding().then(
+	const name = await platformBranding().then(
 		(branding) => String(branding.name),
 		() => DEFAULT_SETTINGS.branding.name,
 	);

@@ -1,5 +1,5 @@
 /**
- * @ss/contracts is bundled into browser code (dashboards and widgets): no source file may import a Node built-in, or
+ * @shelfway/contracts is bundled into browser code (dashboards and widgets): no source file may import a Node built-in, or
  * `next build` fails with "does not support external modules (node:…)".
  */
 import { readdir, readFile } from 'node:fs/promises';

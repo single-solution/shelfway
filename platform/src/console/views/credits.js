@@ -20,7 +20,7 @@ import {
 	describeProblem,
 	formatCredits,
 	usePaged,
-} from '@ss/ui';
+} from '@shelfway/ui';
 import { BILLING, MORE } from '../../texts/console.js';
 import { Link } from '../link.js';
 import { useNavigation } from '../navigation.js';

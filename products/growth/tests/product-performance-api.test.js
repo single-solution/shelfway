@@ -48,8 +48,8 @@ afterAll(async () => {
 describe('product performance', () => {
 	it('counts each product in the day’s one totals document; the raw events keep ids and quantities', async () => {
 		const db = await env.merchantDb();
-		expect(await db.collection('ss_growth_totals').countDocuments()).toBe(1);
-		const purchase = await db.collection('ss_growth_analytics_events').findOne({ type: 'purchase' });
+		expect(await db.collection('shelfway_growth_totals').countDocuments()).toBe(1);
+		const purchase = await db.collection('shelfway_growth_analytics_events').findOne({ type: 'purchase' });
 		expect(purchase?.data.items).toEqual([{ id: 'prd_mug', variantId: 'var_1', quantity: 2 }]);
 	});
 

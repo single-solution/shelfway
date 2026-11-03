@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const SERVER_ONLY = [/['"]@ss\/net['"]/, /infra\/(config|db|http|auth|crypto|system|logger)\.js['"]/, /['"]node:/];
+const SERVER_ONLY = [/['"]@shelfway\/net['"]/, /infra\/(config|db|http|auth|crypto|system|logger)\.js['"]/, /['"]node:/];
 
 /** @param {string} dir @returns {Promise<string[]>} */
 const filesOf = async (dir) =>

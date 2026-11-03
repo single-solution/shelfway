@@ -6,22 +6,22 @@ attachments, ratings, transcripts, staff alerts, moderation, reports and Ecommer
 `manifest.json`, the public docs at `/docs`.
 
 Besides Chat's own routes, the merchant's server gets the kit's routes (PLAN.md 0.8.10): the settings API with Chat's
-lists (`GET|PUT /v1/lists/tools|flows|custom_fields|page_rules|fallback_answers|redaction_patterns|teams|office_hours|office_exceptions|page_types|upload_types|booking_questions|booking_services|tags|topics|priorities`), the `SS-Actor-*` headers (replies, changes and
+lists (`GET|PUT /v1/lists/tools|flows|custom_fields|page_rules|fallback_answers|redaction_patterns|teams|office_hours|office_exceptions|page_types|upload_types|booking_questions|booking_services|tags|topics|priorities`), the `Shelfway-Actor-*` headers (replies, changes and
 knowledge edits then carry that member of staff instead of no name, which the widget shows as the text `chat.staff`), visitor routes with the server token and
-`SS-Visitor-IP`, conversation counts (`GET /v1/conversations/count` and `/counts?by=status|waiting|guest|unread`, ticket
+`Shelfway-Visitor-IP`, conversation counts (`GET /v1/conversations/count` and `/counts?by=status|waiting|guest|unread`, ticket
 twins under `/v1/admin/`), the activity log (`GET /v1/activity`) and the Format (`GET /v1/format`; the Format, the theme, the business facts, the sign-in page and the alert people are the Portal's Website settings).
 
 ## Import
 
 The `import` feature (price 0; our admins switch it on for a migration and off after it) takes another system's chats
-from `ss-import`, with the server token only (PLAN.md 0.8.10 K10). Nothing is sent: no message, event, alert, AI call or
+from `shelfway-import`, with the server token only (PLAN.md 0.8.10 K10). Nothing is sent: no message, event, alert, AI call or
 activity copy; each call writes one activity entry with its counts.
 
 - `POST /v1/import/<collection>?dryRun=1` takes NDJSON (at most 1,000 records or 4 MB per call) of Chat's own record
   shapes, times as ISO 8601 text. A record replaces the stored one with its key, so every step can be re-run. In order:
    - `staff` by `id` (an Accounts user id): `name`, `email`, `presence`, `maxChats`.
    - `guests` by `keyHash`, the SHA-256 (hex) of the old guest cookie value, with the guest `id` (`guest_…`) its
-     conversations name. The old value sent as `SS-Guest` (any key of 16–128 of `A–Z a–z 0–9 - _`) then reaches the
+     conversations name. The old value sent as `Shelfway-Guest` (any key of 16–128 of `A–Z a–z 0–9 - _`) then reaches the
      guest's conversation. `expireAt` defaults to the Guest chat setting's days from now.
    - `conversations` by `id` (`conv_…`): the visitor (`{ kind: 'guest' | 'user', id }`), contact, `status` (`open`,
      `awaiting_visitor`, `resolved`), waiting and handoff times, the AI pause with who and when, `assignedTo` (an imported
@@ -36,7 +36,7 @@ activity copy; each call writes one activity entry with its counts.
   and sets its counters, preview, last message time and the read marks behind its unread counts. It takes 100
   conversations per call: call again with `?after=<next>` while `more` is true. Running it again changes nothing.
 - `POST /v1/import/<collection>/prune` removes imported records the source no longer has; `GET /v1/import/status`
-  answers the counts and the sums `ss-import verify` compares (`conversations`, `messages`, `conversations.<status>`,
+  answers the counts and the sums `shelfway-import verify` compares (`conversations`, `messages`, `conversations.<status>`,
   `conversations.waiting`).
 
 ## Environment
@@ -55,13 +55,13 @@ Exactly three variables, and one optional while the encryption key changes (`.en
 Each deployable has its own port, so all run at once: the Portal 3000, Accounts 3001, Notifications 3002, Chat 3003,
 Payments 3004, Ecommerce 3005, Growth 3006. This product runs on **3003**.
 
-1. One local MongoDB for everything (keep it running): `pnpm --filter @ss/platform db:local` (kept in
+1. One local MongoDB for everything (keep it running): `pnpm --filter @shelfway/platform db:local` (kept in
    `platform/.mongo-data`) or `db:memory` (lost on stop). Start the Portal as its README says.
 2. `products/chat/.env.local` (git-ignored), each secret random and different (make one with
    `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`):
 
    ```bash
-   MONGODB_URI=mongodb://127.0.0.1:27999/ss_chat?replicaSet=testset
+   MONGODB_URI=mongodb://127.0.0.1:27999/shelfway_chat?replicaSet=testset
    CONNECT_SECRET=<random>
    ENCRYPTION_KEY=<random>
    ```
@@ -82,4 +82,4 @@ does: only public https addresses and TLS databases.
 ## Scripts
 
 `pnpm dev` and `pnpm build` regenerate `openapi.json` and `server/widget-script.js` first; `pnpm check` runs format, lint,
-typecheck and tests with coverage; `pnpm validate` runs `ss app validate`.
+typecheck and tests with coverage; `pnpm validate` runs `shelfway app validate`.

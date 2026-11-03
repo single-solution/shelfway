@@ -1,10 +1,10 @@
 /**
- * Building blocks of Accounts' admin widgets beside the kit's (`@ss/app-kit/widget` dialogs, More menu and status
+ * Building blocks of Accounts' admin widgets beside the kit's (`@shelfway/app-kit/widget` dialogs, More menu and status
  * badges; PLAN 0.6, 0.8.10): filter chips that carry counts, detail cards laid out as a masonry and a copy button.
  * Every text is set as text, never as HTML.
  * @module
  */
-import { element } from '@ss/app-kit/widget';
+import { element } from '@shelfway/app-kit/widget';
 
 /**
  * Filter chips, each with its count; the picked one is pressed.

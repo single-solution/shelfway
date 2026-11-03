@@ -6,7 +6,7 @@
  * keeps the same way.
  * @module
  */
-import { isId } from '@ss/contracts';
+import { isId } from '@shelfway/contracts';
 
 /** Joins the values of a key of several fields. */
 const SEPARATOR = '\u001f';

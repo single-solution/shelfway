@@ -2,7 +2,7 @@
  * Fake modules implementing the INTERFACES.md functions commerce depends on (identity and catalog). State lives in a
  * mutable `world` the tests change directly.
  */
-import { createKeyResolver } from '@ss/protocol';
+import { createKeyResolver } from '@shelfway/protocol';
 import { testSessionActor } from '../../../helpers.js';
 import { problem } from '../../../../src/infra/http.js';
 import { defineModule } from '../../../../src/infra/modules.js';

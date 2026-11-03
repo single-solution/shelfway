@@ -1,9 +1,9 @@
 /**
- * Typed errors of `@ss/net`. Messages never contain credentials, response bodies or upstream error text.
+ * Typed errors of `@shelfway/net`. Messages never contain credentials, response bodies or upstream error text.
  * @module
  */
 
-/** Every error code `@ss/net` throws. */
+/** Every error code `@shelfway/net` throws. */
 export const NET_ERROR_CODES = Object.freeze(
 	/** @type {const} */ (['bad_url', 'ssrf_blocked', 'timeout', 'too_large', 'redirect_refused', 'aborted', 'network']),
 );

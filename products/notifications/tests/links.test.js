@@ -2,7 +2,7 @@
  * The links of a message (SR-7-3): a value a product names in `linkValues` goes into a message only as an https
  * address on the website's own hosts; plain text stays plain.
  */
-import { portalSectionsOf } from '@ss/app-kit/testing';
+import { portalSectionsOf } from '@shelfway/app-kit/testing';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { isOwnLink } from '../core/links.js';
 import { ORIGIN, setup } from './helpers.js';

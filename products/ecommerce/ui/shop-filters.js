@@ -201,7 +201,7 @@ export const filterControls = ({ doc, t, filters, facets, known, currency, amoun
 		control.addEventListener('change', () => {
 			onChange('category', { category: control.value });
 		});
-		parts.push(field(doc, 'ss-grid-category', t('grid.category'), control));
+		parts.push(field(doc, 'shelfway-grid-category', t('grid.category'), control));
 	}
 
 	/**
@@ -293,8 +293,8 @@ export const filterControls = ({ doc, t, filters, facets, known, currency, amoun
 				doc,
 				'div',
 				{ class: 'row' },
-				field(doc, 'ss-grid-min', t('grid.minPrice', { currency }), priceInput('minPrice', facets?.price?.min)),
-				field(doc, 'ss-grid-max', t('grid.maxPrice', { currency }), priceInput('maxPrice', facets?.price?.max)),
+				field(doc, 'shelfway-grid-min', t('grid.minPrice', { currency }), priceInput('minPrice', facets?.price?.min)),
+				field(doc, 'shelfway-grid-max', t('grid.maxPrice', { currency }), priceInput('maxPrice', facets?.price?.max)),
 			),
 		);
 	}
@@ -348,7 +348,7 @@ export const filterControls = ({ doc, t, filters, facets, known, currency, amoun
 		control.addEventListener('change', () => {
 			onChange('load', { deal: control.value });
 		});
-		parts.push(field(doc, 'ss-grid-deal', t('grid.deal'), control));
+		parts.push(field(doc, 'shelfway-grid-deal', t('grid.deal'), control));
 	}
 
 	/** @param {'inStock' | 'featured'} key @param {string} text */

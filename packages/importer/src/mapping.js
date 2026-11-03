@@ -11,14 +11,14 @@
  * - lookup tables: a step notes keys of its records (`lookups`, a slug for example) and later steps find the record by
  *   them (`ctx.lookup`), since the stores refer by slug where the products refer by id;
  * - a per-collection key (`key`, default `id`): `customerId`, `userId`, `key`, `day` + `part` …;
- * - verification sums (`sums`): what each record adds to the totals `ss-import verify` compares with the product's;
+ * - verification sums (`sums`): what each record adds to the totals `shelfway-import verify` compares with the product's;
  * - the website's settings and lists (`settings`), read from the store and applied through the products' settings API.
  *
- * Ids are deterministic: `<prefix>_<the source ObjectId's 24 hex digits>` (accepted by `@ss/contracts`' id pattern), so
+ * Ids are deterministic: `<prefix>_<the source ObjectId's 24 hex digits>` (accepted by `@shelfway/contracts`' id pattern), so
  * references and old links map without a lookup and every run gives the same ids.
  * @module
  */
-import { isId } from '@ss/contracts';
+import { isId } from '@shelfway/contracts';
 import { DEFAULT_KEY, KEY_FIELD } from './keys.js';
 
 /**

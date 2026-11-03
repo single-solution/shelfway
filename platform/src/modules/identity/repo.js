@@ -3,7 +3,7 @@
  * service file shares: one-time tokens, audit, sessions and second-factor checks.
  * @module
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { findRecoveryCode, verifyTotp } from '../../infra/auth.js';
 import { problem } from '../../infra/http.js';
 import { afterResponse } from '../../infra/request-scope.js';

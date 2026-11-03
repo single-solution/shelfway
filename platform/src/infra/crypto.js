@@ -1,6 +1,6 @@
 /**
- * Portal cryptography. Signatures and JWKS come from `@ss/protocol` (never re-implemented); this module adds the
- * sealing of the Portal's stored secrets with `ENCRYPTION_KEY` (PLAN 0.4.8), in the one format of `@ss/protocol`.
+ * Portal cryptography. Signatures and JWKS come from `@shelfway/protocol` (never re-implemented); this module adds the
+ * sealing of the Portal's stored secrets with `ENCRYPTION_KEY` (PLAN 0.4.8), in the one format of `@shelfway/protocol`.
  *
  * Signing keys (generated on first start, `infra/system.js`): the first key signs; every configured key is published
  * in the JWKS so tokens signed by the previous key keep verifying during the overlap. Browser and server tokens are
@@ -11,15 +11,15 @@
  * never the key itself), bound to the caller's AAD (e.g. `{ websiteId, productId }`).
  * @module
  */
-import { createJwks, createSealer, createSigner, toPublicJwk } from '@ss/protocol';
+import { createJwks, createSealer, createSigner, toPublicJwk } from '@shelfway/protocol';
 import { platformError } from './errors.js';
-import { isObject } from '@ss/contracts/util';
-import { canonicalJson } from '@ss/protocol';
+import { isObject } from '@shelfway/contracts/util';
+import { canonicalJson } from '@shelfway/protocol';
 import { defaultRandomBytes } from './util.js';
 
-/** @typedef {import('@ss/protocol').PrivateJwk} PrivateJwk */
-/** @typedef {import('@ss/protocol').Signer} Signer */
-/** @typedef {import('@ss/protocol').Jwks} Jwks */
+/** @typedef {import('@shelfway/protocol').PrivateJwk} PrivateJwk */
+/** @typedef {import('@shelfway/protocol').Signer} Signer */
+/** @typedef {import('@shelfway/protocol').Jwks} Jwks */
 
 /**
  * Portal signing keys: the first Portal key signs launches, notices and calls to products; browser and server tokens
@@ -29,9 +29,9 @@ import { defaultRandomBytes } from './util.js';
  * sign, so tokens they signed keep working.
  * @param {ReadonlyArray<PrivateJwk>} signingKeys
  * @param {ReadonlyArray<PrivateJwk>} tokenSigningKeys
- * @param {{ signing?: ReadonlyArray<import('@ss/protocol').PublicJwk>, token?: ReadonlyArray<import('@ss/protocol').PublicJwk> }} [publishedOnly]
+ * @param {{ signing?: ReadonlyArray<import('@shelfway/protocol').PublicJwk>, token?: ReadonlyArray<import('@shelfway/protocol').PublicJwk> }} [publishedOnly]
  */
-export const createPortalKeys = (signingKeys, tokenSigningKeys, publishedOnly = {}) => {
+export const createPlatformKeys = (signingKeys, tokenSigningKeys, publishedOnly = {}) => {
 	if (!Array.isArray(signingKeys) || signingKeys.length === 0)
 		throw platformError('config_invalid', 'at least one signing key is required');
 	if (!Array.isArray(tokenSigningKeys) || tokenSigningKeys.length === 0)
@@ -51,7 +51,7 @@ export const createPortalKeys = (signingKeys, tokenSigningKeys, publishedOnly = 
 		publishedJwks: () => published,
 	});
 };
-/** @typedef {ReturnType<typeof createPortalKeys>} PortalKeys */
+/** @typedef {ReturnType<typeof createPlatformKeys>} PortalKeys */
 
 /**
  * The text a sealed value is bound to: the caller's AAD object (non-empty strings) as canonical JSON.
@@ -64,13 +64,13 @@ const aadText = (aad) => {
 		if (typeof value !== 'string' || value.length === 0)
 			throw platformError('invalid_argument', `aad.${key} must be a non-empty string`);
 	}
-	return `ss-data.v1|${canonicalJson(aad)}`;
+	return `shelfway-data.v1|${canonicalJson(aad)}`;
 };
 
 /**
  * Encryption of the Portal's stored secrets that must be read back (PLAN 0.4.8: server tokens, the SMTP password,
  * two-step secrets and the private signing keys) with `ENCRYPTION_KEY`, which is used for nothing else and never
- * stored: the one sealing format of `@ss/protocol` (`ss2.<keyId>.<iv>.<tag>.<data>`, label `portal`, bound to the
+ * stored: the one sealing format of `@shelfway/protocol` (`ss2.<keyId>.<iv>.<tag>.<data>`, label `portal`, bound to the
  * caller's AAD object). While the owner changes the key, `ENCRYPTION_KEY_PREVIOUS` opens what the old key sealed and
  * Settings → Encryption key → Re-seal (`reseal`) moves it to the new key. A value no key opens fails with
  * `decrypt_failed`: callers treat it as not set (a server token then cannot be shown).

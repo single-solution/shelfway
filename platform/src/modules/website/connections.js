@@ -9,7 +9,7 @@
  * - **Secrets can be written, never read**: a value is checked, sealed with `ENCRYPTION_KEY` (AAD: website, name and the
  *   value's own counter) and kept. No route returns it to a person: the console gets `set: true | false` and, per
  *   product, how the product's own test of the value went. Activity and e-mails never carry a value.
- * - **Each product gets its own database**: the same connection string with the database name `ss_<productId>`
+ * - **Each product gets its own database**: the same connection string with the database name `shelfway_<productId>`
  *   (`databaseNameFor`; an Owner may name another for one product, for a store that must keep a single database) and keeps
  *   its own folder in the bucket (`<prefix><productId>/<websiteId>/`). Only a product that needs a connection
  *   (manifest `needs`) is given it.
@@ -25,8 +25,8 @@
  *   value), raises the website's `connectionsVersion`, tells the products on the website and e-mails the merchant.
  * @module
  */
-import { AI_PROVIDERS, WEBSITE_CONNECTIONS, databaseNameFor, isDatabaseName, storageFolderFor } from '@ss/contracts';
-import { checkUrl, createOutboundPolicy, isSafeMongoUri } from '@ss/net';
+import { AI_PROVIDERS, WEBSITE_CONNECTIONS, databaseNameFor, isDatabaseName, storageFolderFor } from '@shelfway/contracts';
+import { checkUrl, createOutboundPolicy, isSafeMongoUri } from '@shelfway/net';
 import { resealEach } from '../../infra/crypto.js';
 import { problem } from '../../infra/http.js';
 import { isDuplicateKey } from '../../infra/util.js';
@@ -34,7 +34,7 @@ import { CONNECTIONS, PRODUCT_FETCHES } from './schema.js';
 
 /** @typedef {import('../../infra/modules.js').ModuleContext} ModuleContext */
 /** @typedef {import('../../infra/rbac.js').Actor} Actor */
-/** @typedef {import('@ss/contracts').WebsiteConnectionName} WebsiteConnectionName */
+/** @typedef {import('@shelfway/contracts').WebsiteConnectionName} WebsiteConnectionName */
 /** @typedef {{ actor: Actor, requestId?: string | null, ip?: string | null }} Audited */
 
 /** A product may fetch the secrets of one website this many times in an hour. */
@@ -72,7 +72,7 @@ const sealAad = (name, websiteId, v) => ({ websiteId, name, v: String(v), purpos
 /**
  * Check a MongoDB connection string entered by a person. The message never repeats the value.
  * @param {unknown} value
- * @param {import('@ss/net').OutboundPolicy} policy
+ * @param {import('@shelfway/net').OutboundPolicy} policy
  * @returns {{ ok: true, value: string } | { ok: false, message: string }}
  */
 export const checkDatabaseValue = (value, policy) => {
@@ -91,7 +91,7 @@ export const checkDatabaseValue = (value, policy) => {
  * `endpoint`, `forcePathStyle`, `prefix` and `publicBaseUrl` (the public https address of the bucket's root, such as a CDN in
  * front of it; not a secret). Nothing else is kept.
  * @param {unknown} value
- * @param {import('@ss/net').OutboundPolicy} policy
+ * @param {import('@shelfway/net').OutboundPolicy} policy
  * @returns {{ ok: true, value: Record<string, string | boolean> } | { ok: false, message: string, field?: string }}
  */
 export const checkStorageValue = (value, policy) => {
@@ -175,7 +175,7 @@ export const checkStorageValue = (value, policy) => {
  * Check the website's AI provider key entered by a person: `{ provider, apiKey, model }` and, for a `compatible` service,
  * its https `baseUrl`. Nothing else is kept. The message never repeats the key.
  * @param {unknown} value
- * @param {import('@ss/net').OutboundPolicy} policy
+ * @param {import('@shelfway/net').OutboundPolicy} policy
  * @returns {{ ok: true, value: Record<string, string> } | { ok: false, message: string, field?: string }}
  */
 export const checkAiValue = (value, policy) => {
@@ -221,7 +221,7 @@ export const createConnections = (ctx, { notifyProducts }) => {
 	const catalog = () => ctx.service('catalog');
 	const policy = createOutboundPolicy({
 		allowHosts: ctx.config.isProduction ? [] : [...ctx.config.outbound.allowHosts],
-		userAgent: 'ss-portal/1',
+		userAgent: 'shelfway-platform/1',
 	});
 
 	/**

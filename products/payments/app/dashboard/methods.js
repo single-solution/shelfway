@@ -27,16 +27,20 @@ import {
 	Select,
 	TextArea,
 	SaveBar,
-} from '@ss/ui';
+} from '@shelfway/ui';
 import { BANK_ROW_LABELS, METHOD_KINDS, METHOD_LIMITS, methodReady } from '../../core/methods.js';
-import { Loaded, SaveOutcome, call, fill, useLoad } from '@ss/ui/dashboard';
+import { Loaded, SaveOutcome, call, fill, useLoad } from '@shelfway/ui/dashboard';
 import { TEXTS } from './texts.js';
 
 const M = TEXTS.methods;
 
 /** The icon of each kind of method's row. */
 const KIND_ICONS = Object.freeze(
-	/** @type {Record<string, import('@ss/ui').IconName>} */ ({ pay_first: 'creditCard', on_delivery: 'bag', at_pickup: 'home' }),
+	/** @type {Record<string, import('@shelfway/ui').IconName>} */ ({
+		pay_first: 'creditCard',
+		on_delivery: 'bag',
+		at_pickup: 'home',
+	}),
 );
 
 /** @typedef {import('../../core/methods.js').ManualMethod} ManualMethod */
@@ -240,7 +244,7 @@ export function MethodsEditor({ websiteId, bare = false }) {
 		);
 	const [draft, setDraft] = useState(/** @type {ManualMethod[] | null} */ (null));
 	const [opened, setOpened] = useState(/** @type {number | null} */ (null));
-	const [result, setResult] = useState(/** @type {import('@ss/ui/dashboard').Answer | null} */ (null));
+	const [result, setResult] = useState(/** @type {import('@shelfway/ui/dashboard').Answer | null} */ (null));
 	/** @type {ManualMethod[]} */
 	const saved = answer?.ok ? answer.data.value : [];
 	const methods = draft ?? saved;

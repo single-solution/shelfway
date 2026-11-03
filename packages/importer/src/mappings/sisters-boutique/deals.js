@@ -20,7 +20,7 @@
  * - uses: `usageLimit` ≤ 0 or missing is no limit (IMP-34); `used` is `usageCount`.
  *
  * Rules the products cannot hold (buy X get Y, which SB never applies; nested condition shapes the editor does not
- * write; more than 10 groups, IMP-12) leave the offer out: `ss-import read` counts it under "left out".
+ * write; more than 10 groups, IMP-12) leave the offer out: `shelfway-import read` counts it under "left out".
  * @module
  */
 import { created, iso, isObject, paisa, photoOf, seoOf, text } from './common.js';

@@ -8,7 +8,7 @@
  */
 import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { byLabel, byText, cleanup, click, keydown, render, type } from '@ss/ui/testing';
+import { byLabel, byText, cleanup, click, keydown, render, type } from '@shelfway/ui/testing';
 import { CouriersEditor, TaxRulesEditor, UnitStatesEditor, ZonesEditor, BookingSchedulesEditor } from '../app/dashboard/lists.js';
 import { ReasonsEditor } from '../app/dashboard/merchant-lists.js';
 import {

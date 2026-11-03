@@ -4,7 +4,7 @@ import { createAccountsDouble } from '../src/testing.js';
 import { DOMAIN, productRoutes, setup } from './helpers.js';
 
 const SITE = `https://${DOMAIN}`;
-const IP = { 'ss-visitor-ip': '203.0.113.9' };
+const IP = { 'shelfway-visitor-ip': '203.0.113.9' };
 
 /** Routes that show who the request acts for. */
 const routes = () => [
@@ -69,23 +69,26 @@ const connected = async () => {
 	return ctx;
 };
 
-describe('acting as a signed-in shopper from the website’s server (SS-Sign-In on a server-token call)', () => {
+describe('acting as a signed-in shopper from the website’s server (Shelfway-Sign-In on a server-token call)', () => {
 	it('acts as the shopper of a valid sign-in, exactly as a browser call with that sign-in would', async () => {
 		const { call, server, browser, accounts, websiteId } = await connected();
 		const signIn = await accounts.signIn({ websiteId, sub: 'usr_shopper1', email: 'sana@example.com' });
-		const fromServer = await call('GET', '/v1/visitor/me', { token: server.token, headers: { ...IP, 'ss-sign-in': signIn } });
+		const fromServer = await call('GET', '/v1/visitor/me', {
+			token: server.token,
+			headers: { ...IP, 'shelfway-sign-in': signIn },
+		});
 		expect(fromServer.status).toBe(200);
 		expect(await fromServer.json()).toEqual({ signIn: { id: 'usr_shopper1', email: 'sana@example.com' }, actor: null });
 		const fromBrowser = await call('GET', '/v1/visitor/me', {
 			token: browser.token,
 			origin: SITE,
-			headers: { 'ss-sign-in': signIn },
+			headers: { 'shelfway-sign-in': signIn },
 		});
 		expect((await fromBrowser.json()).signIn).toEqual({ id: 'usr_shopper1', email: 'sana@example.com' });
 		const write = await call('POST', '/v1/visitor/orders', {
 			token: server.token,
 			body: {},
-			headers: { ...IP, 'ss-sign-in': signIn },
+			headers: { ...IP, 'shelfway-sign-in': signIn },
 		});
 		expect(await write.json()).toEqual({ placedBy: 'usr_shopper1' });
 	});
@@ -94,7 +97,7 @@ describe('acting as a signed-in shopper from the website’s server (SS-Sign-In 
 		const { call, server, accounts, websiteId } = await connected();
 		const signIn = await accounts.signIn({ websiteId, sub: 'usr_a', phone: '+15550100', phone_verified: true });
 		const body = await (
-			await call('GET', '/v1/visitor/claims', { token: server.token, headers: { ...IP, 'ss-sign-in': signIn } })
+			await call('GET', '/v1/visitor/claims', { token: server.token, headers: { ...IP, 'shelfway-sign-in': signIn } })
 		).json();
 		expect(body).toEqual({ phoneVerified: true, emailVerified: false, token: signIn });
 	});
@@ -104,14 +107,14 @@ describe('acting as a signed-in shopper from the website’s server (SS-Sign-In 
 		const none = await call('GET', '/v1/visitor/me', { token: server.token, headers: IP });
 		expect(none.status).toBe(200);
 		expect(await none.json()).toEqual({ signIn: null, actor: null });
-		const empty = await call('GET', '/v1/visitor/me', { token: server.token, headers: { ...IP, 'ss-sign-in': '  ' } });
+		const empty = await call('GET', '/v1/visitor/me', { token: server.token, headers: { ...IP, 'shelfway-sign-in': '  ' } });
 		expect((await empty.json()).signIn).toBeNull();
 	});
 
 	it('refuses a sign-in made for another website', async () => {
 		const { call, server, accounts } = await connected();
 		const other = await accounts.signIn({ websiteId: 'web_someone_else', sub: 'usr_shopper1' });
-		const refused = await call('GET', '/v1/visitor/me', { token: server.token, headers: { ...IP, 'ss-sign-in': other } });
+		const refused = await call('GET', '/v1/visitor/me', { token: server.token, headers: { ...IP, 'shelfway-sign-in': other } });
 		expect(refused.status).toBe(401);
 		expect(await refused.json()).toMatchObject({
 			type: 'https://notes.example.dev/problems/invalid_sign_in',
@@ -121,7 +124,7 @@ describe('acting as a signed-in shopper from the website’s server (SS-Sign-In 
 		const write = await call('POST', '/v1/visitor/orders', {
 			token: server.token,
 			body: {},
-			headers: { ...IP, 'ss-sign-in': other },
+			headers: { ...IP, 'shelfway-sign-in': other },
 		});
 		expect(write.status).toBe(401);
 	});
@@ -130,10 +133,13 @@ describe('acting as a signed-in shopper from the website’s server (SS-Sign-In 
 		const { call, server, accounts, websiteId, clock } = await connected();
 		const signIn = await accounts.signIn({ websiteId, sub: 'usr_shopper1' });
 		expect(
-			(await call('GET', '/v1/visitor/me', { token: server.token, headers: { ...IP, 'ss-sign-in': signIn } })).status,
+			(await call('GET', '/v1/visitor/me', { token: server.token, headers: { ...IP, 'shelfway-sign-in': signIn } })).status,
 		).toBe(200);
 		clock.advance(16 * 60_000);
-		const refused = await call('GET', '/v1/visitor/me', { token: server.token, headers: { ...IP, 'ss-sign-in': signIn } });
+		const refused = await call('GET', '/v1/visitor/me', {
+			token: server.token,
+			headers: { ...IP, 'shelfway-sign-in': signIn },
+		});
 		expect(refused.status).toBe(401);
 		expect(await refused.json()).toMatchObject({ cause: 'expired' });
 	});
@@ -147,7 +153,10 @@ describe('acting as a signed-in shopper from the website’s server (SS-Sign-In 
 			['usr_shopper1', 'malformed'],
 			['a.b.c', 'malformed'],
 		])) {
-			const refused = await call('GET', '/v1/visitor/me', { token: server.token, headers: { ...IP, 'ss-sign-in': value } });
+			const refused = await call('GET', '/v1/visitor/me', {
+				token: server.token,
+				headers: { ...IP, 'shelfway-sign-in': value },
+			});
 			expect(refused.status).toBe(401);
 			expect(await refused.json()).toMatchObject({ cause });
 		}
@@ -158,7 +167,7 @@ describe('acting as a signed-in shopper from the website’s server (SS-Sign-In 
 		const bare = await call('POST', '/v1/visitor/orders', {
 			token: server.token,
 			body: { userId: 'usr_shopper1' },
-			headers: { ...IP, 'ss-user-id': 'usr_shopper1', 'ss-shopper-id': 'usr_shopper1' },
+			headers: { ...IP, 'shelfway-user-id': 'usr_shopper1', 'shelfway-shopper-id': 'usr_shopper1' },
 		});
 		expect(await bare.json()).toEqual({ placedBy: null });
 	});
@@ -169,7 +178,7 @@ describe('acting as a signed-in shopper from the website’s server (SS-Sign-In 
 		const signIn = await ctx.accounts.signIn({ websiteId: ctx.websiteId, sub: 'usr_shopper1' });
 		const refused = await ctx.call('GET', '/v1/visitor/me', {
 			token: ctx.server.token,
-			headers: { ...IP, 'ss-sign-in': signIn },
+			headers: { ...IP, 'shelfway-sign-in': signIn },
 		});
 		expect(refused.status).toBe(401);
 		expect(await refused.json()).toMatchObject({ cause: 'accounts_not_connected' });
@@ -178,13 +187,13 @@ describe('acting as a signed-in shopper from the website’s server (SS-Sign-In 
 	it('answers 503 while Accounts cannot be asked for its keys', async () => {
 		const { call, server, accounts, websiteId, clock } = await connected();
 		const first = await accounts.signIn({ websiteId, sub: 'usr_a' });
-		expect((await call('GET', '/v1/visitor/me', { token: server.token, headers: { ...IP, 'ss-sign-in': first } })).status).toBe(
-			200,
-		);
+		expect(
+			(await call('GET', '/v1/visitor/me', { token: server.token, headers: { ...IP, 'shelfway-sign-in': first } })).status,
+		).toBe(200);
 		accounts.setFailing(true);
 		clock.advance(11 * 60_000);
 		const fresh = await accounts.signIn({ websiteId, sub: 'usr_b' });
-		const down = await call('GET', '/v1/visitor/me', { token: server.token, headers: { ...IP, 'ss-sign-in': fresh } });
+		const down = await call('GET', '/v1/visitor/me', { token: server.token, headers: { ...IP, 'shelfway-sign-in': fresh } });
 		expect(down.status).toBe(503);
 		expect(await down.json()).toMatchObject({ type: 'https://notes.example.dev/problems/accounts_unavailable' });
 	});
@@ -195,7 +204,7 @@ describe('acting as a signed-in shopper from the website’s server (SS-Sign-In 
 		const browserCall = await call('GET', '/v1/visitor/me', {
 			token: browser.token,
 			origin: SITE,
-			headers: { 'ss-sign-in': other },
+			headers: { 'shelfway-sign-in': other },
 		});
 		expect(browserCall.status).toBe(200);
 		expect((await browserCall.json()).signIn).toMatchObject({ ok: false, code: 'audience' });
@@ -206,27 +215,31 @@ describe('acting as a signed-in shopper from the website’s server (SS-Sign-In 
 		const signIn = await accounts.signIn({ websiteId, sub: 'usr_shopper1' });
 		const named = await call('GET', '/v1/visitor/me', {
 			token: server.token,
-			headers: { ...IP, 'ss-sign-in': signIn, 'ss-actor-id': 'usr_staff1', 'ss-actor-name': 'Alex' },
+			headers: { ...IP, 'shelfway-sign-in': signIn, 'shelfway-actor-id': 'usr_staff1', 'shelfway-actor-name': 'Alex' },
 		});
 		expect(await named.json()).toEqual({ signIn: { id: 'usr_shopper1', email: null }, actor: null });
 		// a half set of them is no longer an error: they mean nothing
 		const half = await call('GET', '/v1/visitor/me', {
 			token: server.token,
-			headers: { ...IP, 'ss-sign-in': signIn, 'ss-actor-id': 'usr_staff1' },
+			headers: { ...IP, 'shelfway-sign-in': signIn, 'shelfway-actor-id': 'usr_staff1' },
 		});
 		expect(half.status).toBe(200);
 		expect((await half.json()).actor).toBeNull();
 		// a shopper's sign-in is no staff: a staff route refuses it
-		const staff = await call('GET', '/v1/inbox/open', { token: server.token, bare: true, headers: { 'ss-sign-in': signIn } });
+		const staff = await call('GET', '/v1/inbox/open', {
+			token: server.token,
+			bare: true,
+			headers: { 'shelfway-sign-in': signIn },
+		});
 		expect(staff.status).toBe(403);
 	});
 
-	it('is read on server routes only when asked for: SS-Sign-In never changes a staff call', async () => {
+	it('is read on server routes only when asked for: Shelfway-Sign-In never changes a staff call', async () => {
 		const { call, server, accounts, websiteId } = await connected();
 		const signIn = await accounts.signIn({ websiteId, sub: 'usr_shopper1' });
-		const staff = await call('GET', '/v1/server/me', { token: server.token, headers: { 'ss-sign-in': signIn } });
+		const staff = await call('GET', '/v1/server/me', { token: server.token, headers: { 'shelfway-sign-in': signIn } });
 		expect(staff.status).toBe(200);
-		const bad = await call('GET', '/v1/server/me', { token: server.token, headers: { 'ss-sign-in': 'junk' } });
+		const bad = await call('GET', '/v1/server/me', { token: server.token, headers: { 'shelfway-sign-in': 'junk' } });
 		expect(bad.status).toBe(200);
 	});
 
@@ -236,7 +249,7 @@ describe('acting as a signed-in shopper from the website’s server (SS-Sign-In 
 			call('POST', '/v1/visitor/orders', {
 				token: server.token,
 				body: {},
-				headers: { ...IP, 'ss-sign-in': await accounts.signIn({ websiteId, sub }), 'idempotency-key': 'order-1' },
+				headers: { ...IP, 'shelfway-sign-in': await accounts.signIn({ websiteId, sub }), 'idempotency-key': 'order-1' },
 			});
 		const first = await post('usr_a');
 		expect(first.status).toBe(200);
@@ -249,7 +262,7 @@ describe('acting as a signed-in shopper from the website’s server (SS-Sign-In 
 	it('takes sign-ins only once the website’s Accounts token is pasted: a product declares the connection by itself', async () => {
 		const { call, server, switchOn } = await setup({ routes: routes() });
 		await switchOn(['notes']);
-		const sign = { ...IP, 'ss-sign-in': 'a-sign-in-of-the-product-itself' };
+		const sign = { ...IP, 'shelfway-sign-in': 'a-sign-in-of-the-product-itself' };
 		const found = await call('GET', '/v1/visitor/me', { token: server.token, headers: sign });
 		expect(found.status).toBe(401);
 		expect(await found.json()).toMatchObject({ cause: 'accounts_not_connected' });

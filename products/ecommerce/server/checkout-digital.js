@@ -7,8 +7,8 @@
  * files of a paid order through 5-minute signed links, counted per order line up to the download limit.
  * @module
  */
-import { problem } from '@ss/app-kit';
-import { createId } from '@ss/contracts';
+import { problem } from '@shelfway/app-kit';
+import { createId } from '@shelfway/contracts';
 import { productTypes } from '../adapters/catalog-store.js';
 import { createOrdersStore } from '../adapters/orders-store.js';
 import {

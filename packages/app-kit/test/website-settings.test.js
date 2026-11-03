@@ -7,8 +7,8 @@
  * theme or the Format in a product.
  */
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_FORMAT } from '@ss/contracts/format';
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
+import { DEFAULT_FORMAT } from '@shelfway/contracts/format';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import { defineRoute } from '../src/index.js';
 import { manifest, productRoutes, setup } from './helpers.js';
 
@@ -107,9 +107,9 @@ describe('while the Portal holds no settings for the website (version 0: not set
 		expect(theme.theme).toMatchObject({ mode: 'auto', radius: 8 });
 		expect(Object.values(theme.sources)).toEqual(['built-in', 'built-in', 'built-in', 'built-in', 'built-in']);
 		const put = await x.call('PUT', '/v1/theme', { token: x.server.token, body: { mode: 'light' } });
-		expect([put.status, (await put.json()).type.split('/').pop()]).toEqual([409, 'managed_by_portal']);
+		expect([put.status, (await put.json()).type.split('/').pop()]).toEqual([409, 'managed_by_platform']);
 		const format = await (await x.call('PUT', '/v1/format', { token: x.server.token, body: { wholeUnits: true } })).json();
-		expect(format.type.split('/').pop()).toBe('managed_by_portal');
+		expect(format.type.split('/').pop()).toBe('managed_by_platform');
 		expect(await x.store.list('settings', { websiteId: x.websiteId })).toEqual([]);
 	});
 
@@ -238,7 +238,7 @@ describe('when the Portal holds settings', () => {
 });
 
 describe('a server token cannot change them', () => {
-	it('the theme and the Format answer 409 managed_by_portal for the merchant’s server (with a staff sign-in), the dashboard and the global defaults stay out of it', async () => {
+	it('the theme and the Format answer 409 managed_by_platform for the merchant’s server (with a staff sign-in), the dashboard and the global defaults stay out of it', async () => {
 		const x = await prepare();
 		await x.save();
 		await x.product.business(x.websiteId);
@@ -251,7 +251,7 @@ describe('a server token cannot change them', () => {
 			expect([bare.status, (await bare.json()).type.split('/').pop()]).toEqual([403, 'needs_signed_in_staff']);
 			// …and with one it still cannot: the Portal owns them
 			const signedIn = await x.call('PUT', path, { token: x.server.token, body });
-			expect([signedIn.status, (await signedIn.json()).type.split('/').pop()]).toEqual([409, 'managed_by_portal']);
+			expect([signedIn.status, (await signedIn.json()).type.split('/').pop()]).toEqual([409, 'managed_by_platform']);
 		}
 		// the dashboard has no form for them any more: no route saves either (the Format is only read, for its dates)
 		for (const kind of /** @type {const} */ (['merchant', 'admin'])) {
@@ -268,7 +268,7 @@ describe('a server token cannot change them', () => {
 		}
 		// the refusal names the Portal and where to change it
 		const refused = await (await x.call('PUT', '/v1/theme', { token: x.server.token, body: { mode: 'light' } })).json();
-		expect(refused).toMatchObject({ portalUrl: x.portal.url, section: 'Brand and look' });
+		expect(refused).toMatchObject({ platformUrl: x.portal.url, section: 'Brand and look' });
 		// nothing was written
 		const theme = await (await x.call('GET', '/v1/theme', { token: x.server.token })).json();
 		expect(theme.theme.mode).toBe('dark');
@@ -289,7 +289,7 @@ describe('a server token cannot change them', () => {
 		const x = await prepare();
 		await x.save();
 		const forged = await x.handler(
-			new Request(`https://notes.example.dev/.well-known/ss-events`, {
+			new Request(`https://notes.example.dev/.well-known/shelfway-events`, {
 				method: 'POST',
 				headers: { 'content-type': 'application/json' },
 				body: JSON.stringify({ type: 'website.settings_changed', websiteId: x.websiteId }),

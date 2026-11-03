@@ -111,7 +111,7 @@ describe('a staff sign-in', () => {
 		const refused = await env.call('PUT', '/v1/templates', {
 			token: env.server,
 			bare: true,
-			headers: { 'ss-sign-in': other },
+			headers: { 'shelfway-sign-in': other },
 			body: TEMPLATE,
 		});
 		expect([refused.status, await typeOf(refused)]).toEqual([401, 'invalid_sign_in']);

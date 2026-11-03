@@ -15,9 +15,9 @@
  * website's Format, dates in the business time zone (PLAN 0.8.10 K7, K8). No I/O.
  * @module
  */
-import { addressLines as placeLines, countryName } from '@ss/contracts/address';
-import { formatDate, formatMoney } from '@ss/contracts/format';
-import { escapeHtml } from '@ss/contracts/text';
+import { addressLines as placeLines, countryName } from '@shelfway/contracts/address';
+import { formatDate, formatMoney } from '@shelfway/contracts/format';
+import { escapeHtml } from '@shelfway/contracts/text';
 import { durationText } from './durations.js';
 import { fieldPlaceholders, fieldValuesShown, unitsShown } from './fields.js';
 import { isSlug } from './catalog.js';
@@ -65,7 +65,7 @@ const fieldLines = (order, context, place) =>
  * ({@link documentWordsOf}), the invoice's columns ({@link invoiceColumnsOf}), the website's Format and business time
  * zone, and the merchant fields.
  * @typedef {{ business: BusinessLike, texts: InvoiceTexts, words: DocumentWords, columns: string[],
- *   format: import('@ss/contracts/format').Format, timeZone: string, fields: DocumentFields }} DocumentContext
+ *   format: import('@shelfway/contracts/format').Format, timeZone: string, fields: DocumentFields }} DocumentContext
  */
 
 /**
@@ -265,7 +265,7 @@ const businessBlock = (business, seller = '') =>
 		.join('')}${seller}</div>`;
 
 /**
- * The delivery address as its country writes it (`@ss/contracts/address`), the country by name.
+ * The delivery address as its country writes it (`@shelfway/contracts/address`), the country by name.
  * @param {NonNullable<OrderRecord['address']>} address
  */
 const addressBlock = (address) =>

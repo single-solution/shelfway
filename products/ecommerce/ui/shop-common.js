@@ -7,12 +7,12 @@
  * texts (E12), the mount with the shop's CSS and the dispatch of Growth's browser events (`../core/growth-events.js`).
  * @module
  */
-import { DEFAULT_FORMAT, element, formatDate, formatMoney, formatText, mountWidget, viewerOf } from '@ss/app-kit/widget';
+import { DEFAULT_FORMAT, element, formatDate, formatMoney, formatText, mountWidget, viewerOf } from '@shelfway/app-kit/widget';
 import { CONTACT_LINK, RICH_DROPPED, RICH_SYNONYMS, RICH_TAGS } from '../core/catalog-content.js';
 import { GUEST_IDENTITIES } from '../core/guests.js';
 import { COMPARE_MAX_PRODUCTS, RETURN_PHOTO_MAX_MB } from '../core/limits.js';
 import { MAX_PAGE_SIZE } from '../core/model.js';
-import { fromDecimal, isCurrency, toDecimal } from '@ss/app-kit/widget';
+import { fromDecimal, isCurrency, toDecimal } from '@shelfway/app-kit/widget';
 import { SHOP_CSS } from './shop-styles.js';
 import { WIDGET_CSS } from './styles.js';
 
@@ -290,7 +290,7 @@ export const problemText = (config, prefix, code, fallback) => {
  * @param {{ host: HTMLElement, config: WidgetConfig, name: string, render: (root: HTMLElement) => void | (() => void) }} input
  */
 export const mountShop = ({ host, config, name, render }) => {
-	host.setAttribute('data-ss-mounted', name);
+	host.setAttribute('data-shelfway-mounted', name);
 	return mountWidget({ host, theme: config.theme, customCss: config.customCss, css: WIDGET_CSS + SHOP_CSS, render });
 };
 

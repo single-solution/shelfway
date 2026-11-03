@@ -1,8 +1,8 @@
 import { mergeConfig } from 'vitest/config';
-import { defineUnitConfig } from '@ss/config/vitest';
+import { defineUnitConfig } from '@shelfway/config/vitest';
 
 /**
- * System tests, and the test product's own tests (`fixtures/notes/tests`, as `ss app init` writes them). No coverage
+ * System tests, and the test product's own tests (`fixtures/notes/tests`, as `shelfway app init` writes them). No coverage
  * here: this workspace has no source of its own (each unit enforces its coverage in its own run).
  */
 export default mergeConfig(

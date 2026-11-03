@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import '@ss/ui/theme.css';
+@import '@shelfway/ui/theme.css';
 
 /* the component library lives outside this project: scan its sources for classes */
-@source '../node_modules/@ss/ui/src';
+@source '../node_modules/@shelfway/ui/src';

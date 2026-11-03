@@ -2,7 +2,7 @@
  * Shared ESLint flat config: the functional-core rules every unit follows (no classes, no `console`, no mutation of
  * inputs, strict equality), plus a JSX variant for React components written in `.js` files.
  *
- *   import { createEslintConfig } from '@ss/config/eslint';
+ *   import { createEslintConfig } from '@shelfway/config/eslint';
  *   export default createEslintConfig({ jsx: ['app/**\/*.js'], browserJsx: ['src/console/**\/*.js'] });
  * @module
  */

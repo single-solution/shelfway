@@ -11,7 +11,7 @@
  */
 import { usePathname, useRouter } from 'next/navigation.js';
 import { createContext, useContext, useEffect, useState, useTransition } from 'react';
-import { AppShell, Icon, SwitcherSelect, ToastProvider, cx, formatCredits, useNavigationProgress } from '@ss/ui';
+import { AppShell, Icon, SwitcherSelect, ToastProvider, cx, formatCredits, useNavigationProgress } from '@shelfway/ui';
 import { BILLING, MERCHANT, WEBSITE } from '../../texts/console.js';
 import { apiFetch } from '../client.js';
 import { Link, NavLink } from '../link.js';
@@ -38,7 +38,7 @@ export function FrameBilling({ billing }) {
 /** The look of a footer row (the same for the balance and the help link). @param {boolean} rail */
 const footerRowClass = (rail) =>
 	cx(
-		'ss-motion ss-press flex h-9 items-center gap-2.5 rounded-control text-sm font-medium text-fg/80 hover:bg-surface-2 hover:text-fg',
+		'shelfway-motion shelfway-press flex h-9 items-center gap-2.5 rounded-control text-sm font-medium text-fg/80 hover:bg-surface-2 hover:text-fg',
 		'focus-visible:outline-2 focus-visible:outline-focus',
 		rail ? 'justify-center' : 'px-2.5',
 	);
@@ -101,7 +101,7 @@ const creditsMark = (billing) => {
  * while the balance needs attention.
  * @param {string} pathname
  * @param {any} [billing]
- * @returns {import('@ss/ui').NavSection[]}
+ * @returns {import('@shelfway/ui').NavSection[]}
  */
 export const merchantSections = (pathname, billing = null) => {
 	/** @param {string} href */
@@ -182,7 +182,7 @@ export function ConsoleShell({ me, websites, billing: frameBilling, children, br
 	const pickWebsite = (next) => startSwitch(() => router.push(next ? routes.website(next) : routes.websites()));
 	const helpChannel = branding.support?.channels?.[0];
 	const accountName = merchant?.ownerName || merchant?.name || merchant?.email || '';
-	/** @type {import('@ss/ui').MenuItem[]} */
+	/** @type {import('@shelfway/ui').MenuItem[]} */
 	const accountItems = [
 		{ label: MERCHANT.menu.account, onSelect: () => router.push(routes.account()) },
 		{ label: MERCHANT.signOut, onSelect: () => void signOut(), danger: true },

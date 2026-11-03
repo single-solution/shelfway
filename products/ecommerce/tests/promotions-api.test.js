@@ -2,7 +2,7 @@
  * Promotions routes: the merchant's coupons, deals and bundles (server token and admin tickets), loyalty accounts,
  * the shopper's deals, quotes and points, data rights, the widget settings and `loadOffers`.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { givePoints } from '../adapters/ledger.js';
 import { insertOffers, loadOffers } from '../adapters/promotions-store.js';
@@ -11,7 +11,7 @@ import { readyShop } from './helpers.js';
 
 /** @type {Awaited<ReturnType<typeof readyShop>>} */
 let shop;
-/** @type {import('@ss/app-kit').WebsiteData} */
+/** @type {import('@shelfway/app-kit').WebsiteData} */
 let data;
 /** @type {import('../core/model.js').ProductRecord} */
 let phone;

@@ -5,13 +5,13 @@ Ecommerce, Growth), plus a **public Docs hub** for builders. Merchants add websi
 **developer pack**; site developers and AIs build from the pack + Docs hub and **never** need Portal access.
 `PLAN.md` is the binding plan — start with its **How to use** and **Don’t miss** sections so nothing is overlooked.
 
-| Folder              | What it is                                                                        | Deployed                 |
-| ------------------- | --------------------------------------------------------------------------------- | ------------------------ |
-| `platform/`         | the Portal (merchant console, admin console at `/admin`, API)                     | yes, one deployment      |
-| `products/<id>/`    | the six products                                                                  | yes, one deployment each |
-| `packages/`         | the shared kit (`app-kit`, `protocol`, `contracts`, `net`, `ui`, `cli`, `config`) | no, built into the above |
-| `packages/importer` | `ss-import`: moves a store's records into the products (see PLAN — Migration)     | no, a command-line tool  |
-| `e2e/`              | system tests: the products against the real Portal                                | no                       |
+| Folder              | What it is                                                                          | Deployed                 |
+| ------------------- | ----------------------------------------------------------------------------------- | ------------------------ |
+| `platform/`         | the Portal (merchant console, admin console at `/admin`, API)                       | yes, one deployment      |
+| `products/<id>/`    | the six products                                                                    | yes, one deployment each |
+| `packages/`         | the shared kit (`app-kit`, `protocol`, `contracts`, `net`, `ui`, `cli`, `config`)   | no, built into the above |
+| `packages/importer` | `shelfway-import`: moves a store's records into the products (see PLAN — Migration) | no, a command-line tool  |
+| `e2e/`              | system tests: the products against the real Portal                                  | no                       |
 
 Every folder is a unit that builds and checks on its own, so it can be split into its own repository later.
 Each deployable's README lists its environment variables and how to deploy it.
@@ -27,22 +27,22 @@ pnpm check
 
 `pnpm check` checks the root files' format, then runs every unit's own `check` (format, lint, typecheck and tests with
 coverage of 90 % lines, 90 % functions and 85 % branches). Tests start their own in-memory MongoDB. CI runs the same per
-unit, plus `next build` for deployables and `ss app validate` for products. `pnpm format` writes the format of the
-root files and of every unit, `pnpm validate` runs `ss app validate` on every product, and
+unit, plus `next build` for deployables and `shelfway app validate` for products. `pnpm format` writes the format of the
+root files and of every unit, `pnpm validate` runs `shelfway app validate` on every product, and
 `pnpm --filter <unit> <script>` runs one unit's script.
 
 ## Adding a product (outside this monorepo)
 
 Do **not** clone this repository to start a new product. This tree is the Portal plus the six first-party products.
-Start a product with the published CLI — it writes a standalone package (`pnpm-workspace.yaml`, pinned `@ss/*`
+Start a product with the published CLI — it writes a standalone package (`pnpm-workspace.yaml`, pinned `@shelfway/*`
 versions), not a fork of `products/`:
 
 ```bash
-npx @ss/cli app init my-product --id my-product --name "My Product"
+npx @shelfway/cli app init my-product --id my-product --name "My Product"
 cd my-product && pnpm install && pnpm check
 ```
 
-`ss app validate` enforces the product standard (layout, routes, configure ≠ operate). See `packages/cli/README.md`.
+`shelfway app validate` enforces the product standard (layout, routes, configure ≠ operate). See `packages/cli/README.md`.
 
 ## Deploying
 

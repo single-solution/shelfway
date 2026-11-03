@@ -12,7 +12,7 @@
  * journeys from the raw events, judged when it is read.
  * @module
  */
-import { zonedDay, zonedDayStart } from '@ss/contracts/format';
+import { zonedDay, zonedDayStart } from '@shelfway/contracts/format';
 import { VITALS } from './events.js';
 
 /** Rows of each top list, unless the request asks for more (`top`, at most {@link MAX_TOP}). */

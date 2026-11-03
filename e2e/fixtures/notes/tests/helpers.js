@@ -1,5 +1,5 @@
 /**
- * Test harness: this product on the kit, connected to the kit's fake Portal (`@ss/app-kit/testing`), with one website,
+ * Test harness: this product on the kit, connected to the kit's fake Portal (`@shelfway/app-kit/testing`), with one website,
  * its two tokens, dashboard sessions, a merchant database on the run's MongoDB (`TEST_MONGODB_URI`, entered in the Portal
  * as a merchant does: the product gets it from there) and an Accounts double for the sign-ins of the staff (linked in
  * the Portal, never pasted): a staff route of the server token needs the sign-in of a signed-in staff member
@@ -16,7 +16,7 @@ import {
 	createNetwork,
 	portalConnector,
 	staffCaller,
-} from '@ss/app-kit/testing';
+} from '@shelfway/app-kit/testing';
 import apiJson from '../schemas/api.json' with { type: 'json' };
 import { createProductInstance, manifest } from '../adapters/product.js';
 import { createRoutes } from '../server/routes.js';
@@ -80,7 +80,7 @@ export const setup = async ({ start = Date.parse('2026-10-01T10:00:00Z') } = {})
 	 *   (a staff Owner otherwise)
 	 */
 	const call = async (method, path, { token, origin, body, cookie, headers = {}, bare = false, staff } = {}) => {
-		if (token === server && !bare && headers['ss-sign-in'] === undefined && headers['ss-visitor-ip'] === undefined)
+		if (token === server && !bare && headers['shelfway-sign-in'] === undefined && headers['shelfway-visitor-ip'] === undefined)
 			// eslint-disable-next-line no-param-reassign -- the harness signs the staff member in
 			headers = await staffHeaders({ headers, staff });
 		const response = await handler(

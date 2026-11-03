@@ -28,7 +28,7 @@ import { truncate } from '../core/text.js';
 import { dayKey, dayStart, monthKey, zoneOr } from '../core/time.js';
 import { checkArguments, checkTools, slotRange, toolOutput } from '../core/tools.js';
 
-const MESSAGES = /** @type {import('@ss/app-kit').AiMessage[]} */ ([
+const MESSAGES = /** @type {import('@shelfway/app-kit').AiMessage[]} */ ([
 	{ role: 'system', content: 'Rules' },
 	{ role: 'user', content: 'Hi' },
 	{ role: 'assistant', content: 'Let me check', toolCalls: [{ id: 'c1', name: 'stock', arguments: { sku: 'A' } }] },
@@ -38,7 +38,7 @@ const MESSAGES = /** @type {import('@ss/app-kit').AiMessage[]} */ ([
 ]);
 describe('the answer loop', () => {
 	it('the answer loop: deadline, budget, provider errors, empty and language failures', async () => {
-		/** @param {string} text @returns {{ ok: true, value: import('@ss/app-kit').AiResult }} */
+		/** @param {string} text @returns {{ ok: true, value: import('@shelfway/app-kit').AiResult }} */
 		const ok = (text) => ({ ok: true, value: { text, toolCalls: [], usage: { input: 0, output: 0 }, finish: null } });
 		/** @type {import('../core/assistant.js').AssistantDeps} */
 		const deps = {

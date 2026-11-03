@@ -5,7 +5,7 @@
  * image sizes Ecommerce writes, and description HTML cleaned again: no script, no style, no event attribute. No I/O.
  * @module
  */
-import { escapeHtml } from '@ss/contracts/text';
+import { escapeHtml } from '@shelfway/contracts/text';
 import { cleanHtml } from './catalog-content.js';
 
 /**

@@ -6,7 +6,7 @@
  * @module
  */
 import { useState } from 'react';
-import { Button, Checkbox, FieldGrid, Input, Select, TextArea } from '@ss/ui';
+import { Button, Checkbox, FieldGrid, Input, Select, TextArea } from '@shelfway/ui';
 import { TEXTS } from './texts.js';
 
 /** @typedef {{ name: string, type?: 'text' | 'password' | 'number' | 'checkbox' | 'textarea' | 'select', options?: string[], optional?: boolean }} Field */

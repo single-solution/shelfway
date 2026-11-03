@@ -1,6 +1,6 @@
 /**
  * Addresses in the admin widgets (staff order edits, customers' saved addresses): one editor and one written form, both
- * by the address's country (`@ss/contracts/address`: its order and its labels such as State, Province or ZIP code).
+ * by the address's country (`@shelfway/contracts/address`: its order and its labels such as State, Province or ZIP code).
  * @module
  */
 import {

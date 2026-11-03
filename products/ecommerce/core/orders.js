@@ -12,7 +12,7 @@ import { CLOSED_ROLES, moveOf, nextStatuses, statusOf } from './flow.js';
 import { ID_PREFIX, STATUS_ROLES } from './model.js';
 import { MAX_MEASURED, measureView, piecesOf } from './measure.js';
 import { checkAttachmentInputs } from './attachments.js';
-import { isPositiveAmount } from '@ss/contracts/format';
+import { isPositiveAmount } from '@shelfway/contracts/format';
 import { LIST_KEY } from './named-lists.js';
 import { MAX_TRACKING, cleanTracking, hasControl } from './couriers.js';
 import { OTHER_WAY, VIA_PAYMENTS, isMethodKey } from './payment-methods.js';
@@ -128,7 +128,7 @@ export const serverNote = (code, note, values) => ({ note, code, ...(values ? { 
 
 /**
  * Who made a history entry, as the entry keeps it: the actor's name and kind (`staff`: a ticket's user; `user`: the
- * member of the staff a server call carries as its verified `SS-Sign-In`; `server`: the server token, named `Server`), so
+ * member of the staff a server call carries as its verified `Shelfway-Sign-In`; `server`: the server token, named `Server`), so
  * the widgets tell the server from a member of the staff of the same name.
  * @param {{ kind: string, name?: string }} actor
  */

@@ -4,7 +4,7 @@
  * `category_brand_facet`, `landingUrl` takes `{facet}` and
  * `{value}`, and `GET /v1/seo/listing` reads `attr.<slug>=` as a facet.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { checkLanding, comboKey, comboOfKey, comboStock, isAutomatic, landingFor, landingLink } from '../core/landings.js';
 import { ORIGIN, readyShop } from './helpers.js';

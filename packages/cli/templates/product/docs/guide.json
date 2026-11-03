@@ -13,6 +13,6 @@
 		]
 	},
 	"build": {
-		"notes": "Add the widget script with your browser token to your pages and place <div data-ss-{{id}}=\"note_form\"></div> where visitors leave notes. For your staff, place the inbox widget in your admin with a ticket from your server (permission notes.read), or read the notes from your server with GET /v1/notes and the server token."
+		"notes": "Add the widget script with your browser token to your pages and place <div data-shelfway-{{id}}=\"note_form\"></div> where visitors leave notes. For your staff, place the inbox widget in your admin with a ticket from your server (permission notes.read), or read the notes from your server with GET /v1/notes and the server token."
 	}
 }

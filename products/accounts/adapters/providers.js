@@ -1,5 +1,5 @@
 /**
- * Outside services, always through `@ss/net` with the merchant's own keys (PLAN 0.8.6):
+ * Outside services, always through `@shelfway/net` with the merchant's own keys (PLAN 0.8.6):
  *
  * - **Google** (OpenID Connect, authorization code with PKCE), **Apple** (Sign in with Apple, `form_post`, the client
  *   secret an ES256 JWT signed with the merchant's key) and **Facebook** (Login, Graph API with `appsecret_proof`).
@@ -10,10 +10,10 @@
  * @module
  */
 import { createHash, createPrivateKey, sign as cryptoSign } from 'node:crypto';
-import { hmacSha256Hex } from '@ss/protocol';
+import { hmacSha256Hex } from '@shelfway/protocol';
 import { sha1Upper } from './crypto.js';
 
-/** @typedef {(url: string, init?: import('@ss/net').SafeFetchInit) => Promise<import('@ss/net').SafeResponse>} Send */
+/** @typedef {(url: string, init?: import('@shelfway/net').SafeFetchInit) => Promise<import('@shelfway/net').SafeResponse>} Send */
 /** @typedef {'google' | 'apple' | 'facebook'} Provider */
 /** @typedef {{ subject: string, email: string | null, name: string }} ProviderIdentity */
 
@@ -36,7 +36,7 @@ const PWNED_RANGE = 'https://api.pwnedpasswords.com/range/';
 /** @param {unknown} value @returns {Record<string, any>} */
 const objectOf = (value) => (typeof value === 'object' && value !== null ? /** @type {Record<string, any>} */ (value) : {});
 
-/** @param {import('@ss/net').SafeResponse} response */
+/** @param {import('@shelfway/net').SafeResponse} response */
 const jsonOf = (response) => {
 	try {
 		return objectOf(JSON.parse(response.body.toString('utf8')));

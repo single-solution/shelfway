@@ -1,18 +1,18 @@
 /**
- * The Portal's authentication modes, as `http.js` authenticators. All cryptography is `@ss/protocol`'s.
+ * The Platform's authentication modes, as `http.js` authenticators. All cryptography is `@shelfway/protocol`'s.
  *
  * | mode       | credential                                 | verified by                                                               |
  * | ---------- | ------------------------------------------ | ------------------------------------------------------------------------- |
- * | `admin`    | `__Host-ss_admin` session cookie           | session store; a pending two-step setup only reaches `mfa: false` routes  |
- * | `merchant` | `__Host-ss_merchant` session cookie        | session store                                                             |
- * | `product`  | `Authorization: Bearer <client assertion>` | `verifyAssertion` (product keys port, shared replay store, aud = `PORTAL_URL`) |
+ * | `admin`    | `__Host-shelfway_admin` session cookie     | session store; a pending two-step setup only reaches `mfa: false` routes  |
+ * | `merchant` | `__Host-shelfway_merchant` session cookie  | session store                                                             |
+ * | `product`  | `Authorization: Bearer <client assertion>` | `verifyAssertion` (product keys port, shared replay store, aud = `PLATFORM_URL`) |
  *
  * Ports (provided by modules, see `modules/README.md`): `sessionActor(session) → Actor | null` (default: the session
  * without a role) and `productKeys(productId) → KeyResolver | null` (default: none — every assertion is refused).
  * `productCalled(productId)` (optional) runs after every request a product made.
  * @module
  */
-import { verifyAssertion } from '@ss/protocol';
+import { verifyAssertion } from '@shelfway/protocol';
 import { actorFromSession, readCookie, sessionCookieName } from './auth.js';
 import { problem } from './http.js';
 import { memoize } from './request-scope.js';
@@ -22,8 +22,8 @@ import { memoize } from './request-scope.js';
 /** @typedef {import('./auth.js').Session} Session */
 /** @typedef {import('./auth.js').Sessions} Sessions */
 /** @typedef {import('./rbac.js').Actor} Actor */
-/** @typedef {import('@ss/protocol').KeyResolver} KeyResolver */
-/** @typedef {import('@ss/protocol').ReplayStore} ReplayStore */
+/** @typedef {import('@shelfway/protocol').KeyResolver} KeyResolver */
+/** @typedef {import('@shelfway/protocol').ReplayStore} ReplayStore */
 
 /**
  * @typedef {object} AuthPorts
@@ -49,13 +49,13 @@ const bearerOf = (request) => {
  *   sessions: Sessions,
  *   replayStore: ReplayStore,
  *   ports?: AuthPorts,
- *   portalUrl: string,
+ *   platformUrl: string,
  *   cookieSecure: boolean,
  *   now?: () => number,
- * }} options `portalUrl` (`PORTAL_URL`) is the audience of client assertions; `cookieSecure` names the cookies
+ * }} options `platformUrl` (`PLATFORM_URL`) is the audience of client assertions; `cookieSecure` names the cookies
  * @returns {Record<Exclude<AuthMode, 'public'>, Authenticator>}
  */
-export const createAuthenticators = ({ sessions, replayStore, ports = {}, portalUrl, cookieSecure, now = Date.now }) => {
+export const createAuthenticators = ({ sessions, replayStore, ports = {}, platformUrl, cookieSecure, now = Date.now }) => {
 	const sessionActor = ports.sessionActor ?? actorFromSession;
 
 	/**
@@ -86,7 +86,7 @@ export const createAuthenticators = ({ sessions, replayStore, ports = {}, portal
 			const { productId } = await verifyAssertion({
 				token,
 				keyResolverForProduct: productKeys,
-				audience: portalUrl,
+				audience: platformUrl,
 				replayStore,
 				now,
 			});

@@ -176,7 +176,7 @@ describe('visitor push-permission widget', () => {
 		expect(statusOf(host)).toBe(strings['push.ask']);
 		button(host, strings['push.enable']).click();
 		await flush();
-		expect(serviceWorker.register).toHaveBeenCalledWith('/ss-notifications-sw.js');
+		expect(serviceWorker.register).toHaveBeenCalledWith('/shelfway-notifications-sw.js');
 		expect(sent[0]).toEqual({ subscription: subscription.toJSON() });
 		expect(window.localStorage.getItem(SUBSCRIBER_STORAGE_KEY)).toBe('sub_1');
 		expect(announced).toEqual(['sub_1']);

@@ -52,14 +52,14 @@ describe('ListColumn rows', () => {
 
 	it('draws one highlight and moves it to the picked row', () => {
 		const { container, rerender } = render(column({ selected: 'acme' }));
-		const bar = /** @type {HTMLElement} */ (container.querySelector('[data-ss-indicator]'));
-		expect(container.querySelectorAll('[data-ss-indicator]')).toHaveLength(1);
+		const bar = /** @type {HTMLElement} */ (container.querySelector('[data-shelfway-indicator]'));
+		expect(container.querySelectorAll('[data-shelfway-indicator]')).toHaveLength(1);
 		expect(bar.style.opacity).toBe('1');
 		expect(bar.style.transform).toContain('translateY');
 		rerender(column({ selected: 'cedar' }));
-		expect(container.querySelectorAll('[data-ss-indicator]')).toHaveLength(1);
+		expect(container.querySelectorAll('[data-shelfway-indicator]')).toHaveLength(1);
 		expect(bar.className).toContain('transition-[transform');
-		expect(bar.className).toContain('duration-(--ss-motion)');
+		expect(bar.className).toContain('duration-(--shelfway-motion)');
 		rerender(column({ selected: 'nobody' }));
 		expect(bar.style.opacity).toBe('0');
 	});
@@ -68,12 +68,12 @@ describe('ListColumn rows', () => {
 		vi.useFakeTimers();
 		const { container } = render(column());
 		const first = options(container)[0];
-		expect(first?.className).toContain('ss-stagger');
-		expect(first?.style.getPropertyValue('--ss-i')).toBe('0');
+		expect(first?.className).toContain('shelfway-stagger');
+		expect(first?.style.getPropertyValue('--shelfway-i')).toBe('0');
 		act(() => {
 			vi.advanceTimersByTime(STAGGER.rows * STAGGER.step + 500);
 		});
-		expect(options(container)[0]?.className).not.toContain('ss-stagger');
+		expect(options(container)[0]?.className).not.toContain('shelfway-stagger');
 	});
 
 	it('selects with a click, and with Enter or Space on the focused row', () => {
@@ -505,7 +505,7 @@ describe('ListColumn selection', () => {
 		const selectBtn = [...container.querySelectorAll('button')].find((b) => b.textContent === 'Select');
 		expect(selectBtn).not.toBeUndefined();
 		click(/** @type {HTMLElement} */ (selectBtn));
-		expect(container.querySelector('[data-ss-bulk]')).not.toBeNull();
+		expect(container.querySelector('[data-shelfway-bulk]')).not.toBeNull();
 		expect(container.textContent).toContain('0 selected');
 
 		const checkAcme = container.querySelector('button[aria-label="Select Acme Shop"]');
@@ -522,7 +522,7 @@ describe('ListColumn selection', () => {
 		const doneBtn = [...container.querySelectorAll('button')].find((b) => b.textContent === 'Done');
 		expect(doneBtn).not.toBeUndefined();
 		click(/** @type {HTMLElement} */ (doneBtn));
-		expect(container.querySelector('[data-ss-bulk]')).toBeNull();
+		expect(container.querySelector('[data-shelfway-bulk]')).toBeNull();
 	});
 
 	it('starts select mode directly by clicking a row checkbox', () => {
@@ -579,7 +579,7 @@ describe('ListColumn selection', () => {
 		const selectBtn = [...container.querySelectorAll('button')].find((b) => b.textContent === 'Select');
 		expect(selectBtn).not.toBeUndefined();
 		click(/** @type {HTMLElement} */ (selectBtn));
-		expect(container.querySelector('[data-ss-bulk]')).not.toBeNull();
+		expect(container.querySelector('[data-shelfway-bulk]')).not.toBeNull();
 		expect(container.querySelector('[data-testid="count"]')?.textContent).toBe('0');
 
 		const checkAcme = container.querySelector('button[aria-label="Select Acme Shop"]');
@@ -598,7 +598,7 @@ describe('ListColumn selection', () => {
 
 		const doneBtn = [...container.querySelectorAll('button')].find((b) => b.textContent === 'Done');
 		click(/** @type {HTMLElement} */ (doneBtn));
-		expect(container.querySelector('[data-ss-bulk]')).toBeNull();
+		expect(container.querySelector('[data-shelfway-bulk]')).toBeNull();
 		expect(container.querySelector('[data-testid="count"]')?.textContent).toBe('0');
 	});
 

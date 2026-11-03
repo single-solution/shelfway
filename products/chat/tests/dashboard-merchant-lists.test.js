@@ -8,7 +8,7 @@
  */
 import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { byText, cleanup, click, render, type } from '@ss/ui/testing';
+import { byText, cleanup, click, render, type } from '@shelfway/ui/testing';
 import {
 	BookingQuestionsEditor,
 	BookingServicesEditor,

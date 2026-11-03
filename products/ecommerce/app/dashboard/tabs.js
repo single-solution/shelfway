@@ -1,13 +1,13 @@
 'use client';
 /**
- * Ecommerce's parts of the dashboard tabs (PLAN 0.4.3, 0.8.8), on the shared tabs of `@ss/ui/dashboard`: the Overview's
+ * Ecommerce's parts of the dashboard tabs (PLAN 0.4.3, 0.8.8), on the shared tabs of `@shelfway/ui/dashboard`: the Overview's
  * own items, its settings sections (Settings and Defaults), and the developer snippets with the catalog and SEO guide,
  * above which the connections (the courier connection form with its hint; the database, the storage and the AI provider
  * key are the Portal's).
  * @module
  */
 import { Fragment } from 'react';
-import { Button, ButtonLink, CodeBlock, LocalTime, Section, Stat, TextLink } from '@ss/ui';
+import { Button, ButtonLink, CodeBlock, LocalTime, Section, Stat, TextLink } from '@shelfway/ui';
 import {
 	DefaultsTab,
 	DevelopersTab,
@@ -17,7 +17,7 @@ import {
 	useLoad,
 	useSetupSteps,
 	wantsSettings,
-} from '@ss/ui/dashboard';
+} from '@shelfway/ui/dashboard';
 import manifest from '../../manifest.json' with { type: 'json' };
 import { paidByHand } from '../../core/payment-methods.js';
 import { SEARCH_INDEX_DEFINITION } from '../../core/search.js';
@@ -29,7 +29,7 @@ import { TEXTS } from './texts.js';
 /** @param {unknown} value */
 const asList = (value) => (Array.isArray(value) ? value : []);
 
-/** @type {ReadonlyArray<import('@ss/ui/dashboard').SetupRequirement>} */
+/** @type {ReadonlyArray<import('@shelfway/ui/dashboard').SetupRequirement>} */
 const SETUP = Object.freeze([
 	{
 		key: 'product-url',
@@ -114,9 +114,9 @@ const SETUP = Object.freeze([
 	},
 ]);
 
-/** @typedef {import('@ss/ui/dashboard').TabProps} TabProps */
-/** @typedef {import('@ss/ui/dashboard').Connection} Connection */
-/** @typedef {import('@ss/ui/dashboard').Answer} Answer */
+/** @typedef {import('@shelfway/ui/dashboard').TabProps} TabProps */
+/** @typedef {import('@shelfway/ui/dashboard').Connection} Connection */
+/** @typedef {import('@shelfway/ui/dashboard').Answer} Answer */
 
 /**
  * Fill `{name}` placeholders with text or elements (a `<LocalTime>`), as children.
@@ -156,7 +156,7 @@ const settingOf = (answer, feature, key) => {
  * with Staff alerts, someone to alert and the admin page they
  * link to; and how many of the connections the features need are ready. `/connections` is read only with checkout or
  * Staff alerts, `/search-index` and `/settings` only with the catalog.
- * @type {import('@ss/ui/dashboard').UseOverviewMore}
+ * @type {import('@shelfway/ui/dashboard').UseOverviewMore}
  */
 const useShopOverview = (overview, { websiteId, open }) => {
 	const base = `/v1/dashboard/websites/${websiteId}`;
@@ -164,8 +164,8 @@ const useShopOverview = (overview, { websiteId, open }) => {
 	const on = overview?.ok ? overview.data.featuresOn : [];
 	const shop = on.includes('checkout');
 	const catalog = on.includes('catalog');
-	// staff alerts demoted under Checkout — load Connections whenever checkout is on
-	const connections = useLoad(shop ? `${base}/connections` : null);
+	const alertsOn = on.includes('staff_alerts');
+	const connections = useLoad(shop || alertsOn ? `${base}/connections` : null);
 	const search = useLoad(catalog ? `${base}/search-index` : null);
 	const settings = useLoad(catalog || wantsSettings(overview, SETUP) ? `${base}/settings` : null);
 	// the settings and lists the switched-on features need to be set, as steps with a button to their section
@@ -175,7 +175,7 @@ const useShopOverview = (overview, { websiteId, open }) => {
 	const O = TEXTS.overview;
 	/** The Settings section of a feature, for a button that opens it. @param {string} feature */
 	const sectionOf = (feature) => {
-		/** @type {import('@ss/ui/dashboard').FeatureSettings | undefined} */
+		/** @type {import('@shelfway/ui/dashboard').FeatureSettings | undefined} */
 		const found = settings.answer?.ok
 			? settings.answer.data.features.find((/** @type {{ key: string }} */ item) => item.key === feature)
 			: undefined;
@@ -197,9 +197,9 @@ const useShopOverview = (overview, { websiteId, open }) => {
 	const payments = shop && !needed.some((item) => item.name === 'link_payments') ? connection('link_payments') : null;
 	const messages = shop && !needed.some((item) => item.name === 'link_notifications') ? connection('link_notifications') : null;
 	const ready = needed.filter((item) => item.status === 'connected').length;
-	/** @type {import('@ss/ui').Need[]} */
+	/** @type {import('@shelfway/ui').Need[]} */
 	const needs = [];
-	/** @type {NonNullable<import('@ss/ui/dashboard').OverviewMore['steps']>} */
+	/** @type {NonNullable<import('@shelfway/ui/dashboard').OverviewMore['steps']>} */
 	const steps = [];
 	if (payments) {
 		if (payments.status !== 'connected')
@@ -230,7 +230,7 @@ const useShopOverview = (overview, { websiteId, open }) => {
 			onSelect: () => open('developers', 'connection-link_notifications'),
 		});
 	// the Atlas Search index, while the shop or Chat searches with Atlas (E14)
-	/** @type {NonNullable<import('@ss/ui/dashboard').OverviewMore['steps']>[number] | null} */
+	/** @type {NonNullable<import('@shelfway/ui/dashboard').OverviewMore['steps']>[number] | null} */
 	let searchStep = null;
 	/** @type {SearchIndex | null} */
 	const atlas = catalog && search.answer?.ok && search.answer.data?.search === 'atlas' ? search.answer.data : null;
@@ -355,7 +355,7 @@ function Developers(props) {
 		permissions: manifest.permissions.map((permission) => permission.key),
 	});
 	const D = TEXTS.developers;
-	/** @param {string} id @param {string} title @param {string} help @param {import('react').ReactNode} body @param {import('@ss/ui').IconName} icon @param {import('react').ReactNode} [actions] */
+	/** @param {string} id @param {string} title @param {string} help @param {import('react').ReactNode} body @param {import('@shelfway/ui').IconName} icon @param {import('react').ReactNode} [actions] */
 	const part = (id, title, help, body, icon, actions) => ({
 		id,
 		label: title,
@@ -405,7 +405,7 @@ function Developers(props) {
 				part(
 					'search-index',
 					D.searchIndex,
-					fill(D.searchIndexHelp, { collection: 'ss_ecommerce_products' }),
+					fill(D.searchIndexHelp, { collection: 'shelfway_ecommerce_products' }),
 					<CodeBlock code={JSON.stringify(SEARCH_INDEX_DEFINITION, null, 2)} />,
 					'database',
 					<TextLink className="text-sm" href="/docs#atlas-search">

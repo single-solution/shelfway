@@ -1,5 +1,5 @@
 /**
- * `@ss/contracts/testing` — fresh, valid fixtures. Each call returns a new object so tests may mutate freely.
+ * `@shelfway/contracts/testing` — fresh, valid fixtures. Each call returns a new object so tests may mutate freely.
  * @module
  */
 

@@ -8,7 +8,7 @@
  * the unique `seq` index keeps the chain linear even if a lease expired.
  * @module
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { problem } from '../../../infra/http.js';
 import { chainEntries, createChainVerifier, entryHash, genesisHash } from '../core/ledger.js';
 

@@ -2,7 +2,7 @@
  * The catalog with every feature on (PLAN 0.8.8): stock locations, CSV import and export, bulk actions and AI copy;
  * and the catalog with only some features on (feature switches, storage not connected).
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { COLLECTIONS } from '../core/model.js';
 import { AI, UNIT_TYPES, readyShop, setup } from './helpers.js';
@@ -501,7 +501,11 @@ describe('AI copy', () => {
 			['DELETE', undefined],
 		])) {
 			const attempt = await small.dashboard(owner, method, `${base}/ai`, body);
-			expect([method, attempt.status, String(attempt.json.type).split('/').pop()]).toEqual([method, 409, 'managed_by_portal']);
+			expect([method, attempt.status, String(attempt.json.type).split('/').pop()]).toEqual([
+				method,
+				409,
+				'managed_by_platform',
+			]);
 		}
 		await small.connect('ai', { provider: 'compatible', baseUrl: AI, apiKey: 'sk-test-123456', model: 'm' });
 		expect(await item()).toMatchObject({ managed: true, set: true, status: 'connected' });

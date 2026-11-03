@@ -14,7 +14,7 @@ import {
 	statusWithRole,
 } from '../core/flow.js';
 import { allocate, percentOf } from '../core/money.js';
-import { fromDecimal, isAmount, toDecimal } from '@ss/contracts/format';
+import { fromDecimal, isAmount, toDecimal } from '@shelfway/contracts/format';
 import { readyShop } from './helpers.js';
 
 describe('the order flow', () => {

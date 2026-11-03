@@ -1,8 +1,8 @@
 /**
  * Moving another system's analytics into Growth (PLAN 0.8.10 K10, Migration step 8, G8): the `import` feature's
  * routes for the merchant's server take days of daily totals in their readable form, check every metric, key and
- * value, write each day as its document of `ss_growth_totals` (keys escaped), replace a re-imported day (live totals of
- * that day included), prune what the source no longer has, answer the sums `ss-import verify` compares, and the
+ * value, write each day as its document of `shelfway_growth_totals` (keys escaped), replace a re-imported day (live totals of
+ * that day included), prune what the source no longer has, answer the sums `shelfway-import verify` compares, and the
  * existing report reads the imported days.
  */
 import { afterAll, describe, expect, it } from 'vitest';
@@ -159,7 +159,7 @@ describe('import of daily totals (K10, G8)', () => {
 		const first = await sys.send([dayOf('2024-03-01', 5), dayOf('2024-03-02', 7), dayOf('2026-10-01', 2)]);
 		expect(first.json).toEqual({ inserted: 2, updated: 1, failed: [], dryRun: false });
 		const db = await sys.merchantDb();
-		const stored = await db.collection('ss_growth_totals').findOne({ day: '2024-03-01' }, { projection: { _id: 0 } });
+		const stored = await db.collection('shelfway_growth_totals').findOne({ day: '2024-03-01' }, { projection: { _id: 0 } });
 		expect(stored).toMatchObject({ websiteId: sys.websiteId, day: '2024-03-01', part: 0 });
 		// keys escaped as the live writes escape them, no sum while it is 0
 		expect(stored?.totals.page).toEqual({ '_/lamps': { c: 10 }, '_/lamps/a%2Eb%24c': { c: 5 } });

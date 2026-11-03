@@ -1,6 +1,6 @@
 /**
  * The product page blocks (visitor widget `product_page`, feature catalog; PLAN 0.8.8 Shopper widgets, 0.8.10 E3–E13):
- * placed as `<div data-ss-ecommerce="product_page" data-product="<id or slug>"></div>`. A product whose slug changed
+ * placed as `<div data-shelfway-ecommerce="product_page" data-product="<id or slug>"></div>`. A product whose slug changed
  * answers `moved` (`kind: 'product'`), and the page reads it again by its new slug (the widget runs on the merchant's
  * page, which does the redirect for search engines); a retired product that leads to its category (`kind: 'category'`)
  * shows as not available with a link to the category.
@@ -16,8 +16,8 @@
  * shows with Stop; a guest gives a phone while the `alerts` setting `guests` allows; a price-drop alert names an
  * optional price while `targetPrice` allows, EN-1), the wishlist and compare toggles, the specs, the rich description
  * (rebuilt from the allowed tags) or the plain one, the video, the FAQs and the reviews block (`reviews`).
- * Growth's events (PLAN 0.8.9): `ss:view_item` once when the product is shown (the variant it opens at; a variant
- * change does not fire it again) and `ss:add_to_cart` on each Add to cart, at the price shown.
+ * Growth's events (PLAN 0.8.9): `shelfway:view_item` once when the product is shown (the variant it opens at; a variant
+ * change does not fire it again) and `shelfway:add_to_cart` on each Add to cart, at the price shown.
  * @module
  */
 import { GROWTH_EVENTS, growthItem, itemsDetail } from '../core/growth-events.js';
@@ -329,7 +329,7 @@ export const mountProductPage = async ({ host, config, shop, win }) => {
 							added = false;
 							refresh();
 						});
-						return field(doc, `ss-page-option-${i}`, axis.grade ? t('page.condition') : axis.label, control);
+						return field(doc, `shelfway-page-option-${i}`, axis.grade ? t('page.condition') : axis.label, control);
 					});
 					pickers.replaceChildren(...groups);
 				};
@@ -371,7 +371,7 @@ export const mountProductPage = async ({ host, config, shop, win }) => {
 						};
 						input.addEventListener('change', () => setAmount(toThousandths(input.value) ?? quantity));
 						parts.push(
-							h(doc, 'label', { for: 'ss-page-qty' }, t('page.amount', { unit })),
+							h(doc, 'label', { for: 'shelfway-page-qty' }, t('page.amount', { unit })),
 							h(
 								doc,
 								'div',
@@ -397,7 +397,7 @@ export const mountProductPage = async ({ host, config, shop, win }) => {
 								}),
 							),
 						);
-						input.id = 'ss-page-qty';
+						input.id = 'shelfway-page-qty';
 					} else if (!booking) {
 						const input = /** @type {HTMLInputElement} */ (
 							h(doc, 'input', {
@@ -419,7 +419,7 @@ export const mountProductPage = async ({ host, config, shop, win }) => {
 						/** @param {number} step */
 						const stepBy = (step) => setPieces(quantity + step * limits.step);
 						parts.push(
-							h(doc, 'label', { for: 'ss-page-qty' }, t('page.quantity')),
+							h(doc, 'label', { for: 'shelfway-page-qty' }, t('page.quantity')),
 							h(
 								doc,
 								'div',
@@ -431,7 +431,7 @@ export const mountProductPage = async ({ host, config, shop, win }) => {
 						);
 						if (limits.step > 1 || limits.min > 1)
 							parts.push(h(doc, 'p', { class: 'hint' }, t('page.quantityHelp', { step: limits.step, min: limits.min })));
-						input.id = 'ss-page-qty';
+						input.id = 'shelfway-page-qty';
 					}
 					const ready = current !== null && buyable(current) && (!booking || slot !== null);
 					const add = button(
@@ -468,7 +468,7 @@ export const mountProductPage = async ({ host, config, shop, win }) => {
 					const input = /** @type {HTMLInputElement} */ (h(doc, 'input', { ...attributes, 'data-focus': id }));
 					input.value = typed.get(id) ?? '';
 					input.addEventListener('input', () => void typed.set(id, input.value));
-					return field(doc, `ss-page-${id}`, label, input);
+					return field(doc, `shelfway-page-${id}`, label, input);
 				};
 
 				/**

@@ -10,8 +10,8 @@
  * @module
  */
 import { createCipheriv } from 'node:crypto';
-import { fromDecimal, toDecimal } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
+import { fromDecimal, toDecimal } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
 import { formFields } from '../util.js';
 import { pakistanTime, shortRef } from './jazzcash.js';
 import { call, ok2xx } from './types.js';

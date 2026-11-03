@@ -30,7 +30,7 @@ jobs:
          - run: pnpm audit --prod --audit-level high
 
    # every unit on its own (PLAN 0.10): its own check (format, lint, typecheck, tests with coverage thresholds),
-   # plus `next build` for deployables and `ss app validate` for products.
+   # plus `next build` for deployables and `shelfway app validate` for products.
    units:
       runs-on: ubuntu-latest
       outputs:

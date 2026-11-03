@@ -7,7 +7,7 @@
  * @module
  */
 import { consentMonthsOf } from './consent.js';
-import { zonedParts } from '@ss/contracts/format';
+import { zonedParts } from '@shelfway/contracts/format';
 import { readList, zonedTimeOf } from './lists.js';
 import { noticeFor } from './notices.js';
 import { isIndexNowKey, keyLocationOf } from './seo.js';

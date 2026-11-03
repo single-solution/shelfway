@@ -26,7 +26,7 @@ import {
 	describeProblem,
 	fieldErrors,
 	useToast,
-} from '@ss/ui';
+} from '@shelfway/ui';
 import { ADMIN, MORE, TWO_STEP } from '../../../texts/console.js';
 import { Link } from '../../link.js';
 import { useNavigation } from '../../navigation.js';
@@ -36,7 +36,7 @@ import { ActivityTable } from '../../views/login-settings.js';
 import { adminApi, adminRoutes } from '../paths.js';
 import { AdminProblem, adminCan } from './shell.js';
 
-/** @typedef {import('@ss/ui').Problem} Problem */
+/** @typedef {import('@shelfway/ui').Problem} Problem */
 
 const ROLE_OPTIONS = Object.freeze([
 	{ value: 'owner', label: ADMIN.roles.owner },

@@ -3,7 +3,7 @@
  * loyalty options, guest checkout with order keys, payment and delivery options, COD options, bank transfers recorded
  * by staff with the shopper's proof, and whole-unit amounts.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { CART_MAX_LINES, CART_MAX_QUANTITY, ORDER_BURST_LIMIT, ORDER_BURST_WINDOW_MINUTES } from '../core/limits.js';
 import { COLLECTIONS } from '../core/model.js';
@@ -37,9 +37,9 @@ const visit = (method, path, { body, signIn, key, orderKey } = {}) => {
 		body,
 		headers: {
 			'x-forwarded-for': `10.9.${(ip >> 8) & 255}.${ip & 255}`,
-			...(signIn ? { 'ss-sign-in': signIn } : {}),
+			...(signIn ? { 'shelfway-sign-in': signIn } : {}),
 			...(key ? { 'idempotency-key': key } : {}),
-			...(orderKey ? { 'ss-order-key': orderKey } : {}),
+			...(orderKey ? { 'shelfway-order-key': orderKey } : {}),
 		},
 	});
 };
@@ -804,7 +804,7 @@ describe('the way back from Payments (E22)', () => {
 					.at(-1)?.body,
 			),
 		);
-		expect(create.returnUrl).toBe(`${ORIGIN}/?ss_order=${placed.json.order.id}`);
+		expect(create.returnUrl).toBe(`${ORIGIN}/?shelfway_order=${placed.json.order.id}`);
 		expect(create.cancelUrl).toBe(create.returnUrl);
 	});
 

@@ -5,8 +5,8 @@
  */
 /* global document */
 import { act, createElement } from 'react';
-import { click } from '@ss/ui/testing';
-import { DashboardProvider } from '@ss/ui/dashboard';
+import { click } from '@shelfway/ui/testing';
+import { DashboardProvider } from '@shelfway/ui/dashboard';
 import manifest from '../manifest.json' with { type: 'json' };
 import { TEXTS } from '../app/dashboard/texts.js';
 
@@ -20,7 +20,7 @@ export const drawerOf = () => /** @type {HTMLElement} */ (document.querySelector
  * The rows of a list, in order.
  * @param {HTMLElement} root
  */
-export const rowsOf = (root) => /** @type {HTMLElement[]} */ ([...root.querySelectorAll('[data-ss-row]')]);
+export const rowsOf = (root) => /** @type {HTMLElement[]} */ ([...root.querySelectorAll('[data-shelfway-row]')]);
 
 /** @param {Element} row the name of a row (its title) */
 const titleOf = (row) => row.querySelector('span.truncate')?.textContent ?? '';

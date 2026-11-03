@@ -1,7 +1,7 @@
 'use client';
 /**
  * The loading skeleton of both consoles (each console's `loading.js`): shown at once when a link is clicked, while the
- * next page is on the way, with the progress bar on top. It is the `@ss/ui` skeleton of the layout the page will have
+ * next page is on the way, with the progress bar on top. It is the `@shelfway/ui` skeleton of the layout the page will have
  * (layout contract 2026-10-17): the same header, inner navigation, toolbar, body and footer areas at the same sizes, so
  * nothing jumps when the page arrives. A list is a toolbar over a table with a footer; a page with parts has its
  * inner navigation; the Overview is tiles and cards; the public account pages are a sign-in card. A page that is
@@ -9,7 +9,15 @@
  * @module
  */
 import { usePathname } from 'next/navigation.js';
-import { PageSkeleton, RouteProgress, RowListSkeleton, SettingsCardSkeleton, SkeletonBlock, StatGridSkeleton, cx } from '@ss/ui';
+import {
+	PageSkeleton,
+	RouteProgress,
+	RowListSkeleton,
+	SettingsCardSkeleton,
+	SkeletonBlock,
+	StatGridSkeleton,
+	cx,
+} from '@shelfway/ui';
 import { ADMIN, CONSOLE, MERCHANT } from '../../texts/console.js';
 import { PUBLIC_PATHS } from '../paths.js';
 import { Link } from '../link.js';
@@ -64,7 +72,7 @@ export const shapeOf = (area, pathname) => {
 function AuthSkeleton() {
 	return (
 		<div className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-4 px-4">
-			<SkeletonBlock className="mx-auto h-9 w-9 rounded-control [--ss-skeleton:var(--ss-surface-3)]" />
+			<SkeletonBlock className="mx-auto h-9 w-9 rounded-control [--shelfway-skeleton:var(--shelfway-surface-3)]" />
 			<div className={cx('space-y-3 rounded-card border border-line bg-surface p-5')}>
 				<SkeletonBlock className="h-5 w-40" />
 				<SkeletonBlock className="h-4 w-full" />

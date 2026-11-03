@@ -1,11 +1,11 @@
 /**
  * My account (PLAN 0.8.6): what a signed-in user does with their own account through the browser token plus their
- * sign-in (`SS-Sign-In` header): profile and addresses, devices, password, two-step, consents, download my data, delete
+ * sign-in (`Shelfway-Sign-In` header): profile and addresses, devices, password, two-step, consents, download my data, delete
  * my account and the Orders tab.
  * @module
  */
-import { problem } from '@ss/app-kit';
-import { constantTimeEqual, randomToken, sha256Hex } from '@ss/protocol';
+import { problem } from '@shelfway/app-kit';
+import { constantTimeEqual, randomToken, sha256Hex } from '@shelfway/protocol';
 import { checkCustomValues, checkName, selfView } from '../core/profile.js';
 import { CODE_ATTEMPTS, CODE_MINUTES } from '../core/limits.js';
 import { generateRecoveryCodes, generateTotpSecret, matchRecoveryCode, totpUri, verifyTotp } from '../adapters/crypto.js';
@@ -338,7 +338,7 @@ export const createAccount = (product, service, flows) => {
 		const parsed = parseSecret(token);
 		const serving = /^web_[0-9a-z]{10,64}$/.test(websiteId) ? await product.serving(websiteId, { after: ctx.after }) : null;
 		if (!parsed || !serving?.ok) return problem('not_found', 'This link is not valid or has expired.');
-		/** @type {import('@ss/app-kit').WebsiteData} */
+		/** @type {import('@shelfway/app-kit').WebsiteData} */
 		let data;
 		try {
 			data = await product.data.forWebsite(websiteId, { merchantId: serving.status.merchantId });

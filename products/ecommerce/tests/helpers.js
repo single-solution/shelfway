@@ -1,5 +1,5 @@
 /**
- * Test harness: Ecommerce on the kit, connected to the kit's fake Portal (`@ss/app-kit/testing`), with one website,
+ * Test harness: Ecommerce on the kit, connected to the kit's fake Portal (`@shelfway/app-kit/testing`), with one website,
  * its two tokens, dashboard sessions, a merchant database on the run's MongoDB replica set (`TEST_MONGODB_URI`, so
  * transactions work), the kit's Accounts double (shopper sign-ins and public keys), and fakes for every other address:
  * Notifications, Payments, an S3 bucket, a courier API, an AI provider and the website's settings in the Portal. Every
@@ -9,7 +9,7 @@
  * answer does not fit its description (feeds, sitemaps, llms.txt and CSV files are text: only their status is checked).
  * @module
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import {
 	apiChecker,
 	createAccountsDouble,
@@ -19,8 +19,8 @@ import {
 	portalConnector,
 	portalSectionsOf,
 	staffCaller,
-} from '@ss/app-kit/testing';
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
+} from '@shelfway/app-kit/testing';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import apiJson from '../schemas/api.json' with { type: 'json' };
 import { createProductInstance, manifest } from '../adapters/product.js';
 import { createRoutes } from '../server/routes.js';
@@ -180,14 +180,14 @@ export const storedAttribute = (given) => {
 /**
  * A connected product with one website.
  * @param {{ start?: number, business?: Record<string, unknown>,
- *   store?: (store: import('@ss/app-kit').Store) => import('@ss/app-kit').Store }} [options] `business`: more business
+ *   store?: (store: import('@shelfway/app-kit').Store) => import('@shelfway/app-kit').Store }} [options] `business`: more business
  *   facts the merchant saved in the Portal's Website settings (its country, currency …); `store` wraps the product
  *   database (a test can make a read fail)
  */
 export const setup = async ({
 	start = Date.parse('2026-10-05T10:00:00Z'),
 	business = {},
-	store = (/** @type {import('@ss/app-kit').Store} */ given) => given,
+	store = (/** @type {import('@shelfway/app-kit').Store} */ given) => given,
 } = {}) => {
 	let t = start;
 	const now = () => t;
@@ -342,7 +342,7 @@ export const setup = async ({
 	 *   website's server with a staff Owner signed in otherwise)
 	 */
 	const call = async (method, path, { token, origin, body, cookie, headers = {}, bare = false, staff } = {}) => {
-		if (token === server && !bare && headers['ss-sign-in'] === undefined && headers['ss-visitor-ip'] === undefined)
+		if (token === server && !bare && headers['shelfway-sign-in'] === undefined && headers['shelfway-visitor-ip'] === undefined)
 			// eslint-disable-next-line no-param-reassign -- the harness signs the staff member in
 			headers = await staffHeaders({ headers, staff });
 		const response = await handler(
@@ -447,7 +447,7 @@ export const setup = async ({
 
 	/**
 	 * The merchant saves website settings in the Portal (Website settings): the product is told and fetches them.
-	 * @param {Partial<Pick<import('@ss/contracts').WebsiteSettings, 'business' | 'brand' | 'region' | 'pages' | 'team'>>} sections
+	 * @param {Partial<Pick<import('@shelfway/contracts').WebsiteSettings, 'business' | 'brand' | 'region' | 'pages' | 'team'>>} sections
 	 */
 	const setWebsite = async (sections) => {
 		Object.assign(site, sections);
@@ -613,7 +613,7 @@ export const setup = async ({
 			token: browser,
 			origin,
 			body,
-			headers: { ...(token ? { 'ss-sign-in': token } : {}), ...(key ? { 'idempotency-key': key } : {}) },
+			headers: { ...(token ? { 'shelfway-sign-in': token } : {}), ...(key ? { 'idempotency-key': key } : {}) },
 		});
 
 	/** A ticket for the admin widgets. @param {string[]} [permissions] @param {{ id: string, name: string, email: string }} [user] */

@@ -4,11 +4,11 @@
  * the blocked, approval, consent and two-step checks before a session starts.
  * @module
  */
-import { problem } from '@ss/app-kit';
-import { createId } from '@ss/contracts';
-import { phoneInCountries } from '@ss/contracts/phone';
-import { normalizeEmail } from '@ss/contracts/email';
-import { constantTimeEqual, randomToken, sha256Hex } from '@ss/protocol';
+import { problem } from '@shelfway/app-kit';
+import { createId } from '@shelfway/contracts';
+import { phoneInCountries } from '@shelfway/contracts/phone';
+import { normalizeEmail } from '@shelfway/contracts/email';
+import { constantTimeEqual, randomToken, sha256Hex } from '@shelfway/protocol';
 import { labelOf, valuesOf } from '../core/activity.js';
 import { checkCustomValues, checkName, identityOfMethod, resetsByEmail, selfView } from '../core/profile.js';
 import { sessionEnd } from '../core/roles.js';
@@ -828,9 +828,8 @@ export const createFlows = (product, service) => {
 			});
 		if (!/^web_[0-9a-z]{10,64}$/.test(websiteId)) return page(400, 'This sign-in link is not valid.');
 		const serving = await product.serving(websiteId, { after: ctx.after });
-		if (!serving.ok || !(await product.featuresOn(websiteId)).includes(provider))
-			return page(404, 'Sign-in is not available right now.');
-		/** @type {import('@ss/app-kit').WebsiteData} */
+		if (!serving.ok) return page(404, 'Sign-in is not available right now.');
+		/** @type {import('@shelfway/app-kit').WebsiteData} */
 		let data;
 		try {
 			data = await product.data.forWebsite(websiteId, { merchantId: serving.status.merchantId });
@@ -846,6 +845,7 @@ export const createFlows = (product, service) => {
 			ip: String(ctx.clientIp || 'unknown'),
 			after: ctx.after,
 		});
+		if (!(await service.isMethodOn(s, provider))) return page(404, 'Sign-in is not available right now.');
 		const pending = await s.store.oauth.take(state);
 		if (!pending || pending.provider !== provider) return page(400, 'This sign-in has expired. Start again.');
 		const back = (/** @type {string} */ fragment) =>

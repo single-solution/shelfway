@@ -1,15 +1,15 @@
 // The Portal's only route handler. next.config.js rewrites /v1/*, /branding/logo and /.well-known/jwks.json here
 // (public paths unchanged); the module router serves /v1 and /branding.
 import { after } from 'next/server.js';
-import { isDatabaseUnavailable } from '@ss/net';
+import { isDatabaseUnavailable } from '@shelfway/net';
 import { isPlatformError } from '../../../src/infra/errors.js';
 import { toNextRoute } from '../../../src/infra/http.js';
-import { getPortal } from '../../../src/runtime.js';
+import { getPlatform } from '../../../src/runtime.js';
 
 export const dynamic = 'force-dynamic';
 
 /** Endpoints outside the module router (GET/HEAD only): the published JWKS. */
-const SYSTEM = /** @type {Record<string, (portal: import('../../../src/portal.js').Portal) => Response>} */ ({
+const SYSTEM = /** @type {Record<string, (portal: import('../../../src/platform.js').Portal) => Response>} */ ({
 	'/.well-known/jwks.json': (portal) => portal.jwks(),
 });
 
@@ -34,7 +34,7 @@ const notReady = (error) => {
 
 export const { GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS } = toNextRoute(
 	async (request) => {
-		const portal = await getPortal().catch((error) => error);
+		const portal = await getPlatform().catch((error) => error);
 		if (portal instanceof Error) return notReady(portal);
 		const path = new URL(request.url).pathname.replace(/^\/api(?=\/)/, '');
 		const system = Object.hasOwn(SYSTEM, path) ? SYSTEM[path] : undefined;

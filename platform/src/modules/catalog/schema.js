@@ -48,7 +48,7 @@ export const collections = Object.freeze([
 		module: 'catalog',
 		name: SETUP_PROFILES,
 		description:
-			"The business profile of a website's Setup sheet (`_id` = websiteId): the answers its advisor recommends features from (`@ss/contracts` business profile: what it sells, how shoppers pay, delivery, sign-in, chat, messages, marketing, offers, moving, countries and languages). Removed when every answer is cleared.",
+			"The business profile of a website's Setup sheet (`_id` = websiteId): the answers its advisor recommends features from (`@shelfway/contracts` business profile: what it sells, how shoppers pay, delivery, sign-in, chat, messages, marketing, offers, moving, countries and languages). Removed when every answer is cleared.",
 		tenant: 'merchant',
 		indexes: [{ keys: { merchantId: 1, _id: 1 } }],
 	}),

@@ -1,12 +1,12 @@
 import { readFile } from 'node:fs/promises';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createKeyResolver, issueToken, verifyToken } from '@ss/protocol';
+import { createKeyResolver, issueToken, verifyToken } from '@shelfway/protocol';
 import { DEFAULT_SETTINGS, buildConfig, loadConfig, loadEnv, parsePortalUrl } from '../src/infra/config.js';
-import { createPortalKeys } from '../src/infra/crypto.js';
+import { createPlatformKeys } from '../src/infra/crypto.js';
 import { isPlatformError } from '../src/infra/errors.js';
 import { createSystemStore, generateSecrets, secretsOf } from '../src/infra/system.js';
 import { testSystemState } from '../src/testing.js';
-import { ENCRYPTION_KEY, PORTAL_URL, startMongo, testEnv, testSystem } from './helpers.js';
+import { ENCRYPTION_KEY, PLATFORM_URL, startMongo, testEnv, testSystem } from './helpers.js';
 
 /** @type {Awaited<ReturnType<typeof startMongo>>} */
 let mongo;
@@ -30,7 +30,7 @@ const problemsOf = (fn) => {
 
 const PROD = {
 	NODE_ENV: 'production',
-	PORTAL_URL: 'https://portal.example.com',
+	PLATFORM_URL: 'https://portal.example.com',
 	ENCRYPTION_KEY,
 };
 
@@ -40,9 +40,9 @@ describe('loadEnv: the database, the Portal address and the encryption key (PLAN
 		expect(env).toMatchObject({
 			env: 'test',
 			isProduction: false,
-			portalUrl: PORTAL_URL,
+			platformUrl: PLATFORM_URL,
 			encryptionKey: ENCRYPTION_KEY,
-			mongo: { uri: 'mongodb://127.0.0.1:27017/ss_portal_test', dbName: 'ss_portal_test', maxPoolSize: 5 },
+			mongo: { uri: 'mongodb://127.0.0.1:27017/shelfway_platform_test', dbName: 'shelfway_platform_test', maxPoolSize: 5 },
 			logLevel: 'info',
 			maxBodyBytes: 1024 * 1024,
 		});
@@ -55,17 +55,17 @@ describe('loadEnv: the database, the Portal address and the encryption key (PLAN
 		expect(loadEnv({ ...(await testEnv()), ...PROD, NODE_ENV: 'staging' }).env).toBe('production');
 	});
 
-	it('requires the database, PORTAL_URL and ENCRYPTION_KEY; reports every problem without values', () => {
+	it('requires the database, PLATFORM_URL and ENCRYPTION_KEY; reports every problem without values', () => {
 		expect(problemsOf(() => loadEnv({ NODE_ENV: 'production' }))).toEqual([
 			'MONGODB_URI is required',
-			'PORTAL_URL is required',
+			'PLATFORM_URL is required',
 			'ENCRYPTION_KEY is required',
 		]);
 		expect(
 			loadEnv({
 				NODE_ENV: 'production',
-				MONGODB_URI: 'mongodb+srv://u:p@cluster.example.net/ss_portal',
-				PORTAL_URL: 'https://portal.example.com',
+				MONGODB_URI: 'mongodb+srv://u:p@cluster.example.net/shelfway_platform',
+				PLATFORM_URL: 'https://portal.example.com',
 				ENCRYPTION_KEY,
 			}).env,
 		).toBe('production');
@@ -77,13 +77,13 @@ describe('loadEnv: the database, the Portal address and the encryption key (PLAN
 			expect(problems).toEqual(expect.arrayContaining([expect.stringContaining(name)]));
 		expect(
 			problemsOf(() =>
-				loadEnv({ NODE_ENV: 'test', MONGODB_URI: 'mongodb://h/bad%20name!', PORTAL_URL: 'https://p.test', ENCRYPTION_KEY }),
+				loadEnv({ NODE_ENV: 'test', MONGODB_URI: 'mongodb://h/bad%20name!', PLATFORM_URL: 'https://p.test', ENCRYPTION_KEY }),
 			),
 		).toEqual([expect.stringContaining('invalid database')]);
 		// a malformed escape in the database name is reported the same way, never thrown as it is
 		expect(
 			problemsOf(() =>
-				loadEnv({ NODE_ENV: 'test', MONGODB_URI: 'mongodb://h/shop%zz', PORTAL_URL: 'https://p.test', ENCRYPTION_KEY }),
+				loadEnv({ NODE_ENV: 'test', MONGODB_URI: 'mongodb://h/shop%zz', PLATFORM_URL: 'https://p.test', ENCRYPTION_KEY }),
 			),
 		).toEqual([expect.stringContaining('invalid database')]);
 	});
@@ -94,7 +94,7 @@ describe('loadEnv: the database, the Portal address and the encryption key (PLAN
 				MONGODB_URI: 'mongodb+srv://user:pass@cluster.example.net/?retryWrites=true',
 			}),
 		);
-		expect(env.mongo.dbName).toBe('ss_portal');
+		expect(env.mongo.dbName).toBe('shelfway_platform');
 		expect(env.outbound.allowHosts).toEqual(['localhost', '127.0.0.1', '::1']);
 		expect(loadEnv({ ...(await testEnv()), ...PROD }).outbound.allowHosts).toEqual([]);
 	});
@@ -102,7 +102,7 @@ describe('loadEnv: the database, the Portal address and the encryption key (PLAN
 	it('documents exactly the three variables of PLAN 0.11, the optional previous key and the optional log level', async () => {
 		const example = await readFile(new URL('../.env.example', import.meta.url), 'utf8');
 		const names = example.split('\n').flatMap((line) => /^([A-Z][A-Z0-9_]*)=/.exec(line)?.[1] ?? []);
-		expect(names).toEqual(['MONGODB_URI', 'PORTAL_URL', 'ENCRYPTION_KEY', 'ENCRYPTION_KEY_PREVIOUS', 'LOG_LEVEL']);
+		expect(names).toEqual(['MONGODB_URI', 'PLATFORM_URL', 'ENCRYPTION_KEY', 'ENCRYPTION_KEY_PREVIOUS', 'LOG_LEVEL']);
 		const env = await testEnv();
 		expect(loadEnv(env).previousEncryptionKey).toBeNull();
 		const previous = 'previous-encryption-key-0123456789abcdef';
@@ -118,7 +118,7 @@ describe('loadEnv: the database, the Portal address and the encryption key (PLAN
 describe('buildConfig: environment + system state', () => {
 	it('joins the generated secrets and the recorded settings', async () => {
 		const config = loadConfig(await testEnv(), { ...(await testSystem()), settings: undefined });
-		expect(config.portalUrl).toBe('https://portal.test');
+		expect(config.platformUrl).toBe('https://portal.test');
 		expect(config.cookieSecure).toBe(true);
 		expect(config.problemBaseUri).toBe('https://portal.test/problems/');
 		expect(config.signingKeys.map((k) => k.kid)).toEqual(['portal-2026-10', 'portal-2026-04']);
@@ -130,9 +130,9 @@ describe('buildConfig: environment + system state', () => {
 		expect(config.sessionMs).toBe(12 * 3_600_000);
 	});
 
-	it('the Portal address is PORTAL_URL only: https, an origin with nothing after it (PLAN 0.8.1, 0.11)', async () => {
-		const local = loadConfig(await testEnv({ PORTAL_URL: 'http://localhost:4000' }), await testSystem());
-		expect(local.portalUrl).toBe('http://localhost:4000');
+	it('the Portal address is PLATFORM_URL only: https, an origin with nothing after it (PLAN 0.8.1, 0.11)', async () => {
+		const local = loadConfig(await testEnv({ PLATFORM_URL: 'http://localhost:4000' }), await testSystem());
+		expect(local.platformUrl).toBe('http://localhost:4000');
 		expect(local.cookieSecure).toBe(false);
 		expect(parsePortalUrl('https://Portal.Example.com', true)).toEqual({ ok: true, value: 'https://portal.example.com' });
 		expect(parsePortalUrl('https://portal.example.com:8443', true)).toEqual({
@@ -156,7 +156,7 @@ describe('buildConfig: environment + system state', () => {
 			expect(parsePortalUrl(bad, false).ok).toBe(false);
 		// production: https always, even for localhost
 		expect(parsePortalUrl('http://localhost', true).ok).toBe(false);
-		expect(parsePortalUrl(undefined, true)).toEqual({ ok: false, message: 'PORTAL_URL is required' });
+		expect(parsePortalUrl(undefined, true)).toEqual({ ok: false, message: 'PLATFORM_URL is required' });
 	});
 
 	it('takes the recorded settings over the defaults; Session length sets the one session lifetime', async () => {
@@ -296,13 +296,13 @@ describe('system store (secrets generated on first start, settings recorded late
 		expect(lost.signingKeys[0]?.kid).not.toBe(first.signingKeys[0]?.kid);
 		expect(lost.publishedOnly?.signing.map((k) => k.kid)).toEqual([first.signingKeys[0]?.kid]);
 		expect(lost.publishedOnly?.token.map((k) => k.kid)).toEqual([first.tokenSigningKeys[0]?.kid]);
-		const keys = createPortalKeys(lost.signingKeys, lost.tokenSigningKeys, lost.publishedOnly);
+		const keys = createPlatformKeys(lost.signingKeys, lost.tokenSigningKeys, lost.publishedOnly);
 		expect(keys.publishedJwks().keys).toHaveLength(4);
 		// a token the old key signed still verifies; new tokens are signed by the new key
-		const old = createPortalKeys(first.signingKeys, first.tokenSigningKeys);
+		const old = createPlatformKeys(first.signingKeys, first.tokenSigningKeys);
 		const issued = await issueToken({
 			signer: old.tokenSigner,
-			issuer: PORTAL_URL,
+			issuer: PLATFORM_URL,
 			websiteId: 'web_1',
 			domain: 'shop.example.com',
 			productId: 'notes',
@@ -311,7 +311,7 @@ describe('system store (secrets generated on first start, settings recorded late
 		const claims = await verifyToken({
 			token: issued.token,
 			keyResolver: createKeyResolver({ jwks: keys.publishedJwks() }),
-			issuer: PORTAL_URL,
+			issuer: PLATFORM_URL,
 			productId: 'notes',
 		});
 		expect(claims.websiteId).toBe('web_1');

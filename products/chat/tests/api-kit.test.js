@@ -3,7 +3,7 @@
  * signing secret, data rights, the AI connections (the backup provider's test, the Portal's main key), the public docs
  * and widget script.
  */
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import { afterAll, describe, expect, it } from 'vitest';
 import { ADMIN_ORIGIN, AI, AI_KEY, BASE, ORIGIN, STORAGE_KEY, ready, setup } from './helpers.js';
 
@@ -170,13 +170,13 @@ describe('widgets and docs', () => {
 		// the API reference: what each call takes and answers, from schemas/api.json; the route tables link to it
 		for (const part of [
 			'<a href="#op-get-v1-admin-conversations-count"><code>GET /v1/admin/conversations/count</code></a>',
-			'<section class="ss-api-op" id="op-post-v1-chat-messages"><h3><code>POST /v1/chat/messages</code> Send a visitor message</h3>',
+			'<section class="shelfway-api-op" id="op-post-v1-chat-messages"><h3><code>POST /v1/chat/messages</code> Send a visitor message</h3>',
 			'<td><code>wait</code></td><td>query</td><td>&#34;1&#34; | &#34;true&#34;</td><td>no</td>',
 			'<td><code>replyPending</code></td><td>boolean</td><td>no</td>',
 			'<td><code>status</code></td><td>query</td><td>&#34;open&#34; | &#34;awaiting_visitor&#34; | &#34;resolved&#34;</td>',
-			'<section class="ss-api-op" id="op-post-v1-import-collection"><h3><code>POST /v1/import/{collection}</code> Import records (NDJSON)</h3>',
+			'<section class="shelfway-api-op" id="op-post-v1-import-collection"><h3><code>POST /v1/import/{collection}</code> Import records (NDJSON)</h3>',
 			'id="schema-ChatConversation"',
-			'<tr><td><code>SS-Guest</code></td><td>header</td><td>string</td><td>no</td>',
+			'<tr><td><code>Shelfway-Guest</code></td><td>header</td><td>string</td><td>no</td>',
 			'<h2 id="import">Import</h2>',
 		])
 			expect(docs.text).toContain(part);
@@ -275,7 +275,7 @@ describe('dashboard', () => {
 			['DELETE', undefined],
 		])) {
 			const attempt = await sys.dashboard(owner, method, `${base}/ai`, body);
-			expect([method, attempt.status, attempt.json.type.split('/').pop()]).toEqual([method, 409, 'managed_by_portal']);
+			expect([method, attempt.status, attempt.json.type.split('/').pop()]).toEqual([method, 409, 'managed_by_platform']);
 		}
 		await sys.connect('ai', AI_KEY);
 		expect(await item()).toMatchObject({ managed: true, set: true, status: 'connected' });

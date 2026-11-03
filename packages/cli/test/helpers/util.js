@@ -9,7 +9,7 @@ const run = promisify(execFile);
 const require = createRequire(import.meta.url);
 
 /** @param {string} [prefix] */
-export const tempDir = (prefix = 'ss-cli-') => mkdtemp(path.join(tmpdir(), prefix));
+export const tempDir = (prefix = 'shelfway-cli-') => mkdtemp(path.join(tmpdir(), prefix));
 
 /** @param {string} dir */
 export const removeDir = (dir) => rm(dir, { recursive: true, force: true });
@@ -38,10 +38,10 @@ const packageDir = (name) => path.dirname(require.resolve(`${name}/package.json`
 
 /** What a generated product's tests need, linked from this package's own dependencies instead of installed. */
 const TEST_PACKAGES = Object.freeze([
-	'@ss/app-kit',
-	'@ss/config',
-	'@ss/contracts',
-	'@ss/ui',
+	'@shelfway/app-kit',
+	'@shelfway/config',
+	'@shelfway/contracts',
+	'@shelfway/ui',
 	'react',
 	'react-dom',
 	'vitest',

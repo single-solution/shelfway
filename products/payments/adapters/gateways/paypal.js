@@ -8,9 +8,9 @@
  * Connection `paypal`: `{ clientId, secret, webhookId, sandbox? }` (`sandbox`: the merchant's PayPal sandbox app).
  * @module
  */
-import { fromDecimal, toDecimal } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
-import { sha256Hex } from '@ss/protocol';
+import { fromDecimal, toDecimal } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
+import { sha256Hex } from '@shelfway/protocol';
 import { formBody } from '../util.js';
 import { call, failure, ok2xx } from './types.js';
 
@@ -213,7 +213,7 @@ export const paypal = {
 					},
 				},
 			},
-			`ss-${payment.id}`,
+			`shelfway-${payment.id}`,
 		);
 		const url = linkOf(answer.json?.links, ['payer-action', 'approve']);
 		if (!ok2xx(answer.status) || !url) return { kind: 'error', message: failure('PayPal', answer.status) };
@@ -228,7 +228,7 @@ export const paypal = {
 		const order = await api(keys, ctx, 'GET', `/v2/checkout/orders/${ref}`);
 		if (!ok2xx(order.status)) return null;
 		if (order.json?.status !== 'APPROVED' || payment.status === 'voided') return orderNews(order.json, payment.id);
-		const captured = await api(keys, ctx, 'POST', `/v2/checkout/orders/${ref}/capture`, {}, `ss-${payment.id}-capture`);
+		const captured = await api(keys, ctx, 'POST', `/v2/checkout/orders/${ref}/capture`, {}, `shelfway-${payment.id}-capture`);
 		return ok2xx(captured.status) ? orderNews(captured.json, payment.id) : null;
 	},
 	notice: async (incoming, keys, ctx) => {
@@ -320,7 +320,7 @@ export const paypal = {
 					shipping_preference: 'NO_SHIPPING',
 				},
 			},
-			`ss-${subscription.id}`,
+			`shelfway-${subscription.id}`,
 		);
 		const url = linkOf(answer.json?.links, ['approve']);
 		if (!ok2xx(answer.status) || !url) return { kind: 'error', message: failure('PayPal', answer.status) };

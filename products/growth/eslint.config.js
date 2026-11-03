@@ -1,4 +1,4 @@
-import { createEslintConfig } from '@ss/config/eslint';
+import { createEslintConfig } from '@shelfway/config/eslint';
 
 // ui/ runs in browsers (bundled into widget.js), app/ holds the dashboard's React components and the dashboard test
 // and the list test render them

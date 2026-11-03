@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 /* global document, window */
-import { LABEL_KINDS } from '@ss/contracts/address';
+import { LABEL_KINDS } from '@shelfway/contracts/address';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import manifest from '../manifest.json' with { type: 'json' };
 import strings from '../strings/en.json' with { type: 'json' };
@@ -820,7 +820,7 @@ describe('social sign-in and links', () => {
 		];
 		const { server } = await start(
 			{ 'POST /v1/sign-in/exchange': () => /** @type {Response} */ (outcomes.shift()) },
-			{ features: ['google'], hash: 'ss_accounts_code=hand.over' },
+			{ features: ['google'], hash: 'shelfway_accounts_code=hand.over' },
 		);
 		expect(window.location.hash).toBe('');
 		expect(`${window.location.pathname}${window.location.search}`).toBe(PAGE);
@@ -847,14 +847,14 @@ describe('social sign-in and links', () => {
 
 	it('shows why a social sign-in did not work, and a failed or pending link', async () => {
 		const host = place('sign_in');
-		await start({}, { features: ['google'], hash: 'ss_accounts_error=canceled' });
+		await start({}, { features: ['google'], hash: 'shelfway_accounts_error=canceled' });
 		expect(statusIn(shadow(host))).toBe(strings['error.canceled']);
 		vi.restoreAllMocks();
 		document.body.replaceChildren();
 		const again = place('sign_in');
 		await start(
 			{ 'POST /v1/sign-in/email': () => problem(400, 'code_invalid') },
-			{ features: ['email_code'], hash: 'ss_accounts_link=magic.link' },
+			{ features: ['email_code'], hash: 'shelfway_accounts_link=magic.link' },
 		);
 		expect(statusIn(shadow(again))).toBe(strings['error.code_invalid']);
 		vi.restoreAllMocks();
@@ -862,7 +862,7 @@ describe('social sign-in and links', () => {
 		const third = place('sign_in');
 		await start(
 			{ 'POST /v1/sign-in/exchange': () => answer(200, { status: 'pending' }) },
-			{ features: ['google'], hash: 'ss_accounts_code=x' },
+			{ features: ['google'], hash: 'shelfway_accounts_code=x' },
 		);
 		expect(heading(third)).toBe(strings['pending.title']);
 	});
@@ -870,7 +870,7 @@ describe('social sign-in and links', () => {
 	it('a magic link signs in even without a sign-in widget on the page', async () => {
 		const { server, widget } = await start(
 			{ 'POST /v1/sign-in/email': () => answer(200, signedIn()) },
-			{ features: ['email_code'], hash: 'ss_accounts_link=magic.link' },
+			{ features: ['email_code'], hash: 'shelfway_accounts_link=magic.link' },
 		);
 		expect(server.last('POST /v1/sign-in/email')?.body).toMatchObject({ link: 'magic.link' });
 		expect(widget.user()).toEqual(USER);
@@ -878,7 +878,7 @@ describe('social sign-in and links', () => {
 		window.sessionStorage.setItem(BINDING_STORAGE_KEY, 'k'.repeat(32));
 		const next = await start(
 			{ 'POST /v1/sign-in/exchange': () => answer(200, signedIn({ signIn: 'sig-x' })) },
-			{ features: ['google'], hash: 'ss_accounts_code=c' },
+			{ features: ['google'], hash: 'shelfway_accounts_code=c' },
 		);
 		expect(await next.widget.getSignIn()).toBe('sig-x');
 		expect(next.server.last('POST /v1/sign-in/exchange')?.body).toEqual({ code: 'c', binding: 'k'.repeat(32) });
@@ -889,7 +889,7 @@ describe('social sign-in and links', () => {
 		const host = place('sign_in');
 		const { server } = await start(
 			{ 'POST /v1/sign-in/email': () => answer(200, signedIn()) },
-			{ features: ['email_code'], hash: 'ss_accounts_link=magic.link' },
+			{ features: ['email_code'], hash: 'shelfway_accounts_link=magic.link' },
 		);
 		expect(server.last('POST /v1/sign-in/email')?.body).toMatchObject({ link: 'magic.link', remember: false });
 		expect(heading(host)).toBe(strings['signedIn.title']);
@@ -900,7 +900,7 @@ describe('social sign-in and links', () => {
 		const outcomes = [problem(400, 'code_invalid'), answer(204)];
 		const { server } = await start(
 			{ 'POST /v1/password/reset': () => /** @type {Response} */ (outcomes.shift()) },
-			{ features: ['phone_code', 'email_password'], hash: 'ss_accounts_reset=reset.token' },
+			{ features: ['phone_code', 'email_password'], hash: 'shelfway_accounts_reset=reset.token' },
 		);
 		const root = shadow(host);
 		expect(heading(host)).toBe(strings['reset.title']);
@@ -919,7 +919,7 @@ describe('social sign-in and links', () => {
 			{ 'POST /v1/invites/accept': () => answer(200, signedIn({ remember: true })) },
 			{
 				features: ['email_password'],
-				hash: 'ss_accounts_invite=invite.token',
+				hash: 'shelfway_accounts_invite=invite.token',
 				settings: {
 					consents: [
 						{
@@ -957,7 +957,7 @@ describe('social sign-in and links', () => {
 			{ 'POST /v1/invites/accept': () => answer(200, signedIn()) },
 			{
 				features: ['phone_password'],
-				hash: 'ss_accounts_invite=invite.token',
+				hash: 'shelfway_accounts_invite=invite.token',
 				settings: {
 					passwordMinLength: null,
 					phonePassword: { signUp: true, minLength: 6, selfReset: 'code', forgotUrl: '' },
@@ -977,7 +977,7 @@ describe('social sign-in and links', () => {
 			{},
 			{
 				features: ['email_password', 'phone_password'],
-				hash: 'ss_accounts_invite=invite.token',
+				hash: 'shelfway_accounts_invite=invite.token',
 				settings: {
 					passwordMinLength: 10,
 					phonePassword: { signUp: true, minLength: 6, selfReset: 'code', forgotUrl: '' },
@@ -1799,7 +1799,7 @@ describe('admin widgets', () => {
 				'POST /v1/admin/users/usr_1/sign-in-code': () => answer(200, { code: '123456', expiresAt: at(900_000) }),
 				'POST /v1/admin/users/usr_1/setup-link': () => problem(403, 'forbidden'),
 				'POST /v1/admin/users/usr_2/setup-link': () =>
-					answer(200, { url: 'https://shop.example.com/?ss_setup=x', expiresAt: at(0) }),
+					answer(200, { url: 'https://shop.example.com/?shelfway_setup=x', expiresAt: at(0) }),
 				'POST /v1/admin/users/usr_1/deletion/approve': () => answer(200, {}),
 				'POST /v1/admin/users/usr_1/deletion/reject': () => answer(200, ana),
 				'DELETE /v1/admin/users/usr_1': () => answer(200, { deleted: true, pending: [] }),
@@ -2062,7 +2062,7 @@ describe('admin widgets', () => {
 					}),
 				'PATCH /v1/admin/users/usr_2': () => answer(200, { ...bo, blocked: null }),
 				'POST /v1/admin/users/usr_2/setup-link': () =>
-					answer(200, { url: 'https://shop.example.com/?ss_setup=abc', expiresAt: at(0) }),
+					answer(200, { url: 'https://shop.example.com/?shelfway_setup=abc', expiresAt: at(0) }),
 				'POST /v1/admin/users': ({ body }) => {
 					if (body.email === 'taken@example.com') return problem(409, 'already_exists');
 					created = true;
@@ -2088,7 +2088,7 @@ describe('admin widgets', () => {
 					return answer(200, {
 						request: {},
 						user: {},
-						setupLink: { url: 'https://shop.example.com/?ss_setup=nia', expiresAt: at(0) },
+						setupLink: { url: 'https://shop.example.com/?shelfway_setup=nia', expiresAt: at(0) },
 					});
 				},
 				'POST /v1/admin/role-requests/rrq_3/invite': () => {
@@ -2175,7 +2175,7 @@ describe('admin widgets', () => {
 			await click(buttonIn(row, label));
 		};
 		await rowMenu(0, strings['requests.invite']);
-		expect(dialog().querySelector('.code')?.textContent).toBe('https://shop.example.com/?ss_setup=nia');
+		expect(dialog().querySelector('.code')?.textContent).toBe('https://shop.example.com/?shelfway_setup=nia');
 		await click(buttonIn(dialog(), strings['users.close']));
 		await rowMenu(0, strings['requests.decline']);
 		expect(statusIn(part)).toBe(strings['error.conflict']);
@@ -2218,7 +2218,7 @@ describe('admin widgets', () => {
 					answer(200, {
 						request: {},
 						user: {},
-						setupLink: { url: 'https://shop.example.com/?ss_setup=fresh', expiresAt: at(0) },
+						setupLink: { url: 'https://shop.example.com/?shelfway_setup=fresh', expiresAt: at(0) },
 					}),
 				'POST /v1/admin/role-requests/rrq_6/setup-link': () => answer(200, { request: {}, user: {}, setupLink: null }),
 				'POST /v1/admin/role-requests/rrq_6/decline': () => answer(200, {}),
@@ -2239,7 +2239,7 @@ describe('admin widgets', () => {
 		await click(buttonIn(invited, strings['requests.newLink']));
 		const dialog = /** @type {HTMLElement} */ (root.querySelector('.dialog'));
 		expect(dialog.textContent).toContain('New link for Ivo');
-		expect(dialog.querySelector('.code')?.textContent).toBe('https://shop.example.com/?ss_setup=fresh');
+		expect(dialog.querySelector('.code')?.textContent).toBe('https://shop.example.com/?shelfway_setup=fresh');
 		await click(buttonIn(dialog, strings['users.close']));
 		const expired = await menuOf(1);
 		expect(labels(expired)).toEqual([strings['requests.newLink'], strings['requests.reopen'], strings['requests.decline']]);
@@ -2734,7 +2734,7 @@ describe('Phase 2 options in the widgets (PLAN 0.8.10)', () => {
 		expect(server.last('POST /v1/sign-in/phone')?.body).toMatchObject({ phone: '+447700900567', code: '654321' });
 	});
 
-	it('a setup link (?ss_setup=) sets the password and signs in; the code leaves the address bar', async () => {
+	it('a setup link (?shelfway_setup=) sets the password and signs in; the code leaves the address bar', async () => {
 		const host = place('sign_in');
 		const { server } = await start(
 			{
@@ -2743,7 +2743,11 @@ describe('Phase 2 options in the widgets (PLAN 0.8.10)', () => {
 						? problem(422, 'weak_password', { rule: 'too_short', minLength: 8 })
 						: answer(200, signedIn()),
 			},
-			{ features: ['phone_password'], settings: { phonePassword: PHONE_RULES }, page: '/account?ss_setup=cod_1.secret&x=1' },
+			{
+				features: ['phone_password'],
+				settings: { phonePassword: PHONE_RULES },
+				page: '/account?shelfway_setup=cod_1.secret&x=1',
+			},
 		);
 		expect(window.location.search).toBe('?x=1');
 		const root = shadow(host);
@@ -2766,7 +2770,7 @@ describe('Phase 2 options in the widgets (PLAN 0.8.10)', () => {
 				'POST /v1/setup-links/lookup': () =>
 					answer(200, { status: 'valid', name: 'Nia Lane', phoneLast4: '0222', expiresAt: at(86_400_000) }),
 			},
-			{ features: ['phone_password'], settings: { phonePassword: PHONE_RULES }, page: '/account?ss_setup=cod_1.secret' },
+			{ features: ['phone_password'], settings: { phonePassword: PHONE_RULES }, page: '/account?shelfway_setup=cod_1.secret' },
 		);
 		expect(shadow(host).textContent).toContain('Hi Nia Lane! Finish setting up your account: choose a password.');
 		expect(shadow(host).textContent).toContain('For the phone number ending in 0222.');
@@ -2777,7 +2781,11 @@ describe('Phase 2 options in the widgets (PLAN 0.8.10)', () => {
 			const ended = place('sign_in');
 			await start(
 				{ 'POST /v1/setup-links/lookup': () => answer(200, { status }) },
-				{ features: ['phone_password'], settings: { phonePassword: PHONE_RULES }, page: '/account?ss_setup=cod_2.secret' },
+				{
+					features: ['phone_password'],
+					settings: { phonePassword: PHONE_RULES },
+					page: '/account?shelfway_setup=cod_2.secret',
+				},
 			);
 			expect(heading(ended)).toBe(strings['setup.endedTitle']);
 			expect(shadow(ended).textContent).toContain(strings[`setup.${status}`]);
@@ -2792,7 +2800,7 @@ describe('Phase 2 options in the widgets (PLAN 0.8.10)', () => {
 		const plain = place('sign_in');
 		await start(
 			{ 'POST /v1/setup-links/lookup': () => answer(200, { status: 'valid', name: '', phoneLast4: null, expiresAt: at(0) }) },
-			{ features: ['phone_password'], settings: { phonePassword: PHONE_RULES }, page: '/account?ss_setup=cod_3.secret' },
+			{ features: ['phone_password'], settings: { phonePassword: PHONE_RULES }, page: '/account?shelfway_setup=cod_3.secret' },
 		);
 		expect(shadow(plain).textContent).toContain(strings['setup.help']);
 		expect(shadow(plain).textContent).not.toContain('ending in');
@@ -2808,7 +2816,7 @@ describe('Phase 2 options in the widgets (PLAN 0.8.10)', () => {
 				'POST /v1/setup-links/lookup': () => new Promise((resolve) => (release = resolve)),
 				'POST /v1/setup-links/accept': () => problem(422, 'code_invalid'),
 			},
-			{ features: ['phone_password'], settings: { phonePassword: PHONE_RULES }, page: '/account?ss_setup=cod_4.secret' },
+			{ features: ['phone_password'], settings: { phonePassword: PHONE_RULES }, page: '/account?shelfway_setup=cod_4.secret' },
 		);
 		fieldIn(shadow(late), strings['fields.password']).value = 'long enough';
 		await submit(buttonIn(shadow(late), strings['setup.submit']));

@@ -1,5 +1,5 @@
 /**
- * `@ss/ui/testing` — minimal DOM test helpers on react-dom/client + jsdom (no Testing Library): render into a detached
+ * `@shelfway/ui/testing` — minimal DOM test helpers on react-dom/client + jsdom (no Testing Library): render into a detached
  * container attached to `document.body`, fire events inside `act`, query by role/label/text. Needs a DOM: run the test
  * file in the `jsdom` environment (`// @vitest-environment jsdom`).
  * @module

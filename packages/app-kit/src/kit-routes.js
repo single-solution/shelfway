@@ -1,8 +1,8 @@
 /**
  * The routes the kit serves for every product (besides the dashboard API in `dashboard.js`):
  *
- * - `POST /.well-known/ss-connect` (none): the connect handshake (PLAN 0.4.12 row 1);
- * - `POST /.well-known/ss-events` (none, signed by the Portal): notices (0.4.12); `status.changed` drops the cached
+ * - `POST /.well-known/shelfway-connect` (none): the connect handshake (PLAN 0.4.12 row 1);
+ * - `POST /.well-known/shelfway-events` (none, signed by the Portal): notices (0.4.12); `status.changed` drops the cached
  *   status and fetches it again right after the answer; `website.settings_changed` fetches the Portal's website
  *   settings again right after the answer;
  * - `POST /v1/tickets` (server token and the verified sign-in of a staff member): tickets for admin widgets (0.4.5). The
@@ -20,9 +20,9 @@
  *   route, so a stopped product or a missing database renders nothing.
  * @module
  */
-import { validateDataRightsRequest } from '@ss/contracts';
-import { CONNECT_PATH, NOTICE_PATH, isProtocolError, ticketOriginAllowed, verifyNotice } from '@ss/protocol';
-import { isObject } from '@ss/contracts/util';
+import { validateDataRightsRequest } from '@shelfway/contracts';
+import { CONNECT_PATH, NOTICE_PATH, isProtocolError, ticketOriginAllowed, verifyNotice } from '@shelfway/protocol';
+import { isObject } from '@shelfway/contracts/util';
 import { defineRoute } from './http/routes.js';
 import { noContent, problem } from './http/results.js';
 import { KIT_PERMISSIONS, grantedOf } from './staff.js';
@@ -60,7 +60,7 @@ const WEBSITE_COLLECTIONS = /** @type {const} */ ([
 	'changes',
 	'status',
 	'website_settings',
-	'portal_connections',
+	'platform_connections',
 	'widget',
 ]);
 
@@ -86,7 +86,7 @@ export const createKitRoutes = (kit, hooks) => {
 	/** @param {RequestContext} ctx */
 	const notice = async (ctx) => {
 		if (!kit.connection.connected()) return problem('unavailable', 'This product is not connected to a Portal yet.');
-		/** @type {import('@ss/protocol').Notice} */
+		/** @type {import('@shelfway/protocol').Notice} */
 		let body;
 		try {
 			body = await verifyNotice({
@@ -126,7 +126,7 @@ export const createKitRoutes = (kit, hooks) => {
 			try {
 				await kit.status.syncRevocations();
 			} catch {
-				return problem('portal_unreachable', 'The revocation list cannot be fetched right now.');
+				return problem('platform_unreachable', 'The revocation list cannot be fetched right now.');
 			}
 		}
 		if (body.type === 'sessions.revoked') await kit.dashboard.endSessions(body.subject);
@@ -168,7 +168,7 @@ export const createKitRoutes = (kit, hooks) => {
 				user: /** @type {{ id: string, name: string, email: string }} */ (user),
 				origin: /** @type {string} */ (origin),
 				permissions: kept,
-				tokenId: /** @type {import('@ss/protocol').TokenClaims} */ (ctx.token).jti,
+				tokenId: /** @type {import('@shelfway/protocol').TokenClaims} */ (ctx.token).jti,
 			});
 		} catch (error) {
 			if (!isProtocolError(error)) throw error;
@@ -222,7 +222,7 @@ export const createKitRoutes = (kit, hooks) => {
 	 */
 	const widgetConfig = async (ctx) => {
 		const websiteId = /** @type {string} */ (ctx.websiteId);
-		const status = /** @type {import('@ss/contracts').StatusResponse} */ (ctx.status);
+		const status = /** @type {import('@shelfway/contracts').StatusResponse} */ (ctx.status);
 		const [texts, { theme }, { format }, { business }, { on }, settings] = await Promise.all([
 			kit.settings.texts(websiteId),
 			kit.settings.themeOf(websiteId),

@@ -4,7 +4,7 @@
  * redirect rules (one count, only while Redirects is on and the merchant database is connected) and what the website
  * builds for each feature that is on, also shown in each feature of the docs.
  */
-import { adviseFeatures, validateManifest, validateProductBlueprint } from '@ss/contracts';
+import { adviseFeatures, validateManifest, validateProductBlueprint } from '@shelfway/contracts';
 import { afterAll, describe, expect, it } from 'vitest';
 import guide from '../docs/guide.json' with { type: 'json' };
 import nextConfig from '../next.config.js';
@@ -97,7 +97,7 @@ describe('the website Setup sheet', () => {
 		expect((await partOf(env)).summaries).toEqual([
 			{
 				title: 'Tags after consent',
-				text: "Meta pixel, Google tags, TikTok pixel, Custom scripts. The consent banner is off, so they wait until your own consent tool passes the visitor's choice on with SSGrowth.consent.set().",
+				text: "Meta pixel, Google tags, TikTok pixel, Custom scripts. The consent banner is off, so they wait until your own consent tool passes the visitor's choice on with ShelfwayGrowth.consent.set().",
 			},
 		]);
 
@@ -121,7 +121,7 @@ describe('the website Setup sheet', () => {
 			expect((await partOf(env)).summaries).toEqual([
 				{
 					title: 'Tags after consent',
-					text: "TikTok pixel. The consent banner is off, so they wait until your own consent tool passes the visitor's choice on with SSGrowth.consent.set().",
+					text: "TikTok pixel. The consent banner is off, so they wait until your own consent tool passes the visitor's choice on with ShelfwayGrowth.consent.set().",
 				},
 			]);
 		});
@@ -137,7 +137,7 @@ describe('the website Setup sheet', () => {
 		const counted = await env.operationsDuring(async () => {
 			part = await partOf(env);
 		});
-		expect(counted).toEqual({ total: 1, names: ['aggregate ss_growth_redirects'] });
+		expect(counted).toEqual({ total: 1, names: ['aggregate shelfway_growth_redirects'] });
 		expect(validateProductBlueprint(part).ok).toBe(true);
 		expect(part.summaries).toEqual([
 			{ title: 'Tags after consent', text: 'No marketing tags are on.' },
@@ -155,7 +155,7 @@ describe('the website Setup sheet', () => {
 			'<p><strong>What your website builds.</strong> Your server or edge middleware applies the rules before it answers a request',
 		);
 		// every value is escaped
-		expect(html).toContain('or where you place &#60;div data-ss-growth=&#34;notice_bar&#34;&#62;&#60;/div&#62;.');
+		expect(html).toContain('or where you place &#60;div data-shelfway-growth=&#34;notice_bar&#34;&#62;&#60;/div&#62;.');
 		// a feature with no route or widget of its own (5 of the 15) shows no empty table or list
 		expect(html).not.toContain('<tbody></tbody>');
 		expect(html).not.toContain('<ul></ul>');

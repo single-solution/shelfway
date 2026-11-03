@@ -7,7 +7,7 @@
  * says so instead of showing a form the server would refuse.
  * @module
  */
-import { field as kitField, segmented } from '@ss/app-kit/widget';
+import { field as kitField, segmented } from '@shelfway/app-kit/widget';
 import { button, field, formatsOf, h, problemText, select, settingsOf } from './shop-common.js';
 import { codeOf } from './problem-code.js';
 
@@ -251,7 +251,7 @@ export const renderReviews = ({ box, t, shop, config, productId }) => {
 				shop,
 				config,
 				target: { productId },
-				idPrefix: 'ss-review',
+				idPrefix: 'shelfway-review',
 				heading: t('reviews.write'),
 				onDone: (status) => {
 					write.replaceChildren(

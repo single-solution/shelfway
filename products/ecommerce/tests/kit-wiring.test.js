@@ -1,10 +1,10 @@
 /**
  * Ecommerce on the store-conversion kit (PLAN 0.8.10 K1–K9): the list settings through the kit's settings API, the
- * staff member a server-token call names in its `SS-Actor-*` headers on order, claim, refund and catalog records,
+ * staff member a server-token call names in its `Shelfway-Actor-*` headers on order, claim, refund and catalog records,
  * visitor calls from the merchant's server, counts that equal their lists, the Format and the business time zone in
  * server texts and order numbers and report days, and labeled activity entries.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { dayBounds } from '../core/durations.js';
 import { DEFAULT_FLOW } from '../core/flow.js';
@@ -20,9 +20,9 @@ let ticket;
 
 /** A member of the staff named by the merchant's server (K2). */
 const ACTOR = Object.freeze({
-	'ss-actor-id': 'usr_ali0001',
-	'ss-actor-name': encodeURIComponent('Ali Khān'),
-	'ss-actor-role': encodeURIComponent('Store manager'),
+	'shelfway-actor-id': 'usr_ali0001',
+	'shelfway-actor-name': encodeURIComponent('Ali Khān'),
+	'shelfway-actor-role': encodeURIComponent('Store manager'),
 });
 
 beforeAll(async () => {
@@ -232,7 +232,7 @@ describe('K2 and K9: the acting staff member and labeled activity', () => {
 			token: shop.server,
 			bare: true,
 			body: { to: 'packed' },
-			headers: { 'ss-actor-id': 'usr_x', 'ss-actor-name': 'X' },
+			headers: { 'shelfway-actor-id': 'usr_x', 'shelfway-actor-name': 'X' },
 		});
 		expect(forged.status).toBe(403);
 		expect(codeOf(forged)).toBe('needs_signed_in_staff');
@@ -277,17 +277,19 @@ describe('K2 and K9: the acting staff member and labeled activity', () => {
 			shop.callsTo(PAYMENTS).findLast((c) => c.path === '/v1/payments/pay_kitrefund/refunds')
 		);
 		// Payments takes the staff member from their verified sign-in, never from headers that name them
-		const claims = JSON.parse(Buffer.from(String(call.headers['ss-sign-in']).split('.')[1] ?? '', 'base64url').toString());
+		const claims = JSON.parse(
+			Buffer.from(String(call.headers['shelfway-sign-in']).split('.')[1] ?? '', 'base64url').toString(),
+		);
 		expect(claims).toMatchObject({ sub: 'usr_ali0001', name: 'Ali Khān' });
-		expect(call.headers['ss-actor-id']).toBeUndefined();
+		expect(call.headers['shelfway-actor-id']).toBeUndefined();
 		expect((await activityOf(paid.id))[0]).toMatchObject({ action: 'order.refunded', detail: 'Refunded USD 2.50' });
 		await shop.api('POST', `/v1/orders/${paid.id}/refunds`, { amount: 100, reason: 'Again' });
 		const plainCall = /** @type {import('./helpers.js').Call} */ (
 			shop.callsTo(PAYMENTS).findLast((c) => c.path === '/v1/payments/pay_kitrefund/refunds')
 		);
-		expect(plainCall.headers['ss-actor-id']).toBeUndefined();
+		expect(plainCall.headers['shelfway-actor-id']).toBeUndefined();
 		expect(
-			JSON.parse(Buffer.from(String(plainCall.headers['ss-sign-in']).split('.')[1] ?? '', 'base64url').toString()),
+			JSON.parse(Buffer.from(String(plainCall.headers['shelfway-sign-in']).split('.')[1] ?? '', 'base64url').toString()),
 		).toMatchObject({
 			sub: 'usr_test_staff',
 		});
@@ -341,9 +343,9 @@ describe('K2 and K9: the acting staff member and labeled activity', () => {
 		const call = /** @type {import('./helpers.js').Call} */ (
 			shop.callsTo(PAYMENTS).findLast((c) => c.path === '/v1/payments/pay_kitclaim/refunds')
 		);
-		expect(call.headers['ss-actor-name']).toBeUndefined();
+		expect(call.headers['shelfway-actor-name']).toBeUndefined();
 		expect(
-			JSON.parse(Buffer.from(String(call.headers['ss-sign-in']).split('.')[1] ?? '', 'base64url').toString()),
+			JSON.parse(Buffer.from(String(call.headers['shelfway-sign-in']).split('.')[1] ?? '', 'base64url').toString()),
 		).toMatchObject({
 			sub: 'usr_ali0001',
 			name: 'Ali Khān',
@@ -383,7 +385,7 @@ describe('K2 and K9: the acting staff member and labeled activity', () => {
 	it('sends Payments the verified sign-in of the staff member who asked, and only theirs', async () => {
 		const ctx = (/** @type {any} */ found) => ({ ctx: { staffSignIn: async () => found } });
 		const found = { ok: true, token: 'a.sign.in', user: { id: 'usr_1' } };
-		expect(await staffSignInHeaders(ctx(found), { kind: 'user', id: 'usr_1' })).toEqual({ 'ss-sign-in': 'a.sign.in' });
+		expect(await staffSignInHeaders(ctx(found), { kind: 'user', id: 'usr_1' })).toEqual({ 'shelfway-sign-in': 'a.sign.in' });
 		// another person, no sign-in, a refused one, the server itself: nothing is sent, Payments refuses
 		expect(await staffSignInHeaders(ctx(found), { kind: 'staff', id: 'usr_2' })).toEqual({});
 		expect(await staffSignInHeaders(ctx(null), { kind: 'user', id: 'usr_1' })).toEqual({});
@@ -402,11 +404,11 @@ describe('K3: visitor calls from the merchant’s server', () => {
 		expect(fromServer.headers.get('access-control-allow-origin')).toBeNull();
 	});
 
-	it('places an order for the signed-in visitor with SS-Visitor-IP, and limits writes per that address', async () => {
+	it('places an order for the signed-in visitor with Shelfway-Visitor-IP, and limits writes per that address', async () => {
 		const item = await shop.seedProduct({ price: 3000, stock: 5 });
 		const signIn = await shop.signIn({ id: 'usr_serverbuyer01', name: 'Sana Server' });
 		const body = { lines: [{ productId: item.id, quantity: 1 }], payment: 'cod' };
-		const missing = await shop.api('POST', '/v1/shop/orders', body, { 'ss-sign-in': signIn, 'idempotency-key': 'srv-1' });
+		const missing = await shop.api('POST', '/v1/shop/orders', body, { 'shelfway-sign-in': signIn, 'idempotency-key': 'srv-1' });
 		expect(missing.status).toBe(400);
 		expect(codeOf(missing)).toBe('visitor_ip_required');
 		const placed = await shop.api(
@@ -424,7 +426,7 @@ describe('K3: visitor calls from the merchant’s server', () => {
 					country: 'US',
 				},
 			},
-			{ 'ss-sign-in': signIn, 'ss-visitor-ip': '203.0.113.7', 'idempotency-key': 'srv-2' },
+			{ 'shelfway-sign-in': signIn, 'shelfway-visitor-ip': '203.0.113.7', 'idempotency-key': 'srv-2' },
 		);
 		expect(placed.status).toBe(201);
 		const record = /** @type {any} */ (
@@ -433,7 +435,7 @@ describe('K3: visitor calls from the merchant’s server', () => {
 		expect(record.customer).toMatchObject({ userId: 'usr_serverbuyer01', name: 'Sana Server' });
 
 		/** @param {string} ip */
-		const review = (ip) => shop.api('POST', '/v1/shop/reviews', {}, { 'ss-visitor-ip': ip });
+		const review = (ip) => shop.api('POST', '/v1/shop/reviews', {}, { 'shelfway-visitor-ip': ip });
 		for (let n = 0; n < 10; n += 1) expect((await review('198.51.100.20')).status).not.toBe(429);
 		expect((await review('198.51.100.20')).status).toBe(429);
 		expect((await review('198.51.100.21')).status).not.toBe(429);
@@ -725,7 +727,7 @@ describe('K7 and K8: Format and business time zone', () => {
 					country: 'US',
 				},
 			},
-			{ 'ss-sign-in': signIn, 'ss-visitor-ip': '203.0.113.9', 'idempotency-key': 'new-year' },
+			{ 'shelfway-sign-in': signIn, 'shelfway-visitor-ip': '203.0.113.9', 'idempotency-key': 'new-year' },
 		);
 		expect(placed.status).toBe(201);
 		expect(placed.json.order.number).toMatch(/^2027-\d{6}$/);

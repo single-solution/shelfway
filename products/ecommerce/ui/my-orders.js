@@ -271,7 +271,7 @@ export const mountMyOrders = async ({ host, config, shop, win }) => {
 							shop,
 							config,
 							target: { orderId: order.id, lineId: line.id },
-							idPrefix: `ss-review-${line.id}`,
+							idPrefix: `shelfway-review-${line.id}`,
 							heading: t('reviews.writeItem', { name }),
 							onDone: (state) => done(t(state === 'approved' ? 'reviews.thanks' : 'reviews.pending')),
 							onRefused: (code) =>

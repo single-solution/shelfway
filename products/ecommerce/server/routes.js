@@ -3,12 +3,12 @@
  * and the dashboard API). The shop's parts each bring their routes (`server/<part>.js`): catalog, checkout, orders,
  * promotions, extras (returns, reviews, wishlist, alerts, compare, reports) and SEO (with feeds, llms.txt and the Chat
  * lookups). Every browser-token, server-token and ticket route belongs to one feature; `openapi.json` is generated from
- * the definitions (`ss app assets`), so `method`, `path`, `auth`, `feature` and `permission` stay string literals.
+ * the definitions (`shelfway app assets`), so `method`, `path`, `auth`, `feature` and `permission` stay string literals.
  * This file adds the public widget script and docs, and joins the parts' data-rights answers and widget settings (the
  * dashboard's list settings are the kit's). Public entry `./routes` of this package: `product.handler(createRoutes(product))`.
  * @module
  */
-import { defineRoute } from '@ss/app-kit';
+import { defineRoute } from '@shelfway/app-kit';
 import { gradesByKey } from '../core/grades.js';
 import { createCatalog } from './catalog.js';
 import { createCheckout } from './checkout.js';
@@ -31,7 +31,7 @@ import { WIDGET_SCRIPT } from './widget-script.js';
 /**
  * What a part of the shop brings.
  * @typedef {object} Area
- * @property {import('@ss/app-kit').RouteDefinition[]} routes
+ * @property {import('@shelfway/app-kit').RouteDefinition[]} routes
  * @property {(s: Site, user: Person) => Promise<Record<string, unknown[]>>} [exportUser] the person's records (data rights)
  * @property {(s: Site, user: Person) => Promise<{ deleted: number, anonymized: number }>} [deleteUser] erase or anonymize them
  * @property {(s: Site) => Promise<Record<string, unknown>>} [widgetSettings] settings the visitor widgets need (never secrets)

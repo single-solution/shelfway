@@ -1,10 +1,10 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { validateDirectoryList } from '@ss/contracts';
-import { manifest as notesManifest } from '@ss/contracts/testing';
+import { validateDirectoryList } from '@shelfway/contracts';
+import { manifest as notesManifest } from '@shelfway/contracts/testing';
 import { closeMongoClients } from '../../../src/testing.js';
 import { launchUrl, parseAdminLaunch, parseConnect, parseConsume, parseStatus } from '../../../src/modules/catalog/core/input.js';
 import { startMongo } from '../../helpers.js';
-import { bootPortal, codeOf } from './boot.js';
+import { bootPlatform, codeOf } from './boot.js';
 import { startFakeProduct } from './fakes/product.js';
 
 vi.setConfig({ testTimeout: 60_000, hookTimeout: 180_000 });
@@ -26,7 +26,7 @@ afterAll(async () => {
 
 /** @param {string} name */
 const boot = async (name) => {
-	const h = await bootPortal({ db: mongo.db(name) });
+	const h = await bootPlatform({ db: mongo.db(name) });
 	cleanups.push(h.close);
 	return h;
 };
@@ -69,7 +69,7 @@ describe('Products (PLAN 0.8.2): Add product, Reconnect, active / inactive', () 
 	it('connects a product under its manifest id, inactive, with price list 1; refuses an id already connected', async () => {
 		const h = await boot('cat_connect');
 		const owner = await h.owner();
-		const product = await fake({ manifest: notesManifest(), portalUrl: 'https://portal.test', now: h.clock.now });
+		const product = await fake({ manifest: notesManifest(), platformUrl: 'https://portal.test', now: h.clock.now });
 		const added = await owner.post('/v1/admin/products', { url: product.url, secret: product.secret });
 		expect(added.status).toBe(201);
 		expect(added.json.product).toEqual({
@@ -90,8 +90,8 @@ describe('Products (PLAN 0.8.2): Add product, Reconnect, active / inactive', () 
 			connectedAt: '2026-10-01T10:00:00.000Z',
 			reconnectedAt: null,
 		});
-		// the product pinned PORTAL_URL and the Portal keys; the Portal sent its last accepted version (none yet)
-		expect(product.connects).toEqual([{ portalUrl: 'https://portal.test', baseUrl: product.url, priceListVersion: 0 }]);
+		// the product pinned PLATFORM_URL and the Portal keys; the Portal sent its last accepted version (none yet)
+		expect(product.connects).toEqual([{ platformUrl: 'https://portal.test', baseUrl: product.url, priceListVersion: 0 }]);
 		const detail = await owner.get('/v1/admin/products/notes');
 		expect(detail.json).toMatchObject({
 			priceListVersion: 1,
@@ -128,7 +128,7 @@ describe('Products (PLAN 0.8.2): Add product, Reconnect, active / inactive', () 
 		});
 		const bookings = await fake({
 			manifest: { ...notesManifest(), id: 'bookings', name: 'Bookings' },
-			portalUrl: 'https://portal.test',
+			platformUrl: 'https://portal.test',
 			now: h.clock.now,
 		});
 		expect((await owner.post('/v1/admin/products', { url: bookings.url, secret: bookings.secret })).status).toBe(201);
@@ -146,7 +146,7 @@ describe('Products (PLAN 0.8.2): Add product, Reconnect, active / inactive', () 
 	it('refuses bad input, refused targets and answers that do not verify', async () => {
 		const h = await boot('cat_connect_refused');
 		const owner = await h.owner();
-		const product = await fake({ manifest: notesManifest(), portalUrl: 'https://portal.test', now: h.clock.now });
+		const product = await fake({ manifest: notesManifest(), platformUrl: 'https://portal.test', now: h.clock.now });
 		const add = (/** @type {Record<string, unknown>} */ body) => owner.post('/v1/admin/products', body);
 		expect(codeOf(await add({ url: product.url }))).toEqual([422, 'validation_failed']);
 		expect(codeOf(await add({ url: product.url, secret: 'short' }))).toEqual([422, 'validation_failed']);
@@ -222,7 +222,7 @@ describe('Products (PLAN 0.8.2): Add product, Reconnect, active / inactive', () 
 		// another product at the address: the same id is required
 		const other = await startFakeProduct({
 			manifest: { ...notesManifest(), id: 'other' },
-			portalUrl: 'https://portal.test',
+			platformUrl: 'https://portal.test',
 			now: h.clock.now,
 		});
 		cleanups.push(other.close);

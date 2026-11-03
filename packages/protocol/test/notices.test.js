@@ -41,7 +41,7 @@ const verify = (clock, headers, overrides = {}) =>
 
 describe('notices', () => {
 	it('names the path and the five types', () => {
-		expect(NOTICE_PATH).toBe('/.well-known/ss-events');
+		expect(NOTICE_PATH).toBe('/.well-known/shelfway-events');
 		expect(NOTICE_TYPES).toEqual([
 			'status.changed',
 			'token.revoked',
@@ -55,8 +55,8 @@ describe('notices', () => {
 	it('signs and verifies, returning the checked body (plain object, lower-case and Headers inputs)', async () => {
 		const clock = createClock();
 		const headers = await signNotice({ audience, signer: portal.signer, body, timestamp: ts(clock) });
-		expect(headers['SS-Key-Id']).toBe('portal-1');
-		expect(headers['SS-Signature']).toMatch(/^v1;kid=portal-1;sig=[A-Za-z0-9_-]{86}$/);
+		expect(headers['Shelfway-Key-Id']).toBe('portal-1');
+		expect(headers['Shelfway-Signature']).toMatch(/^v1;kid=portal-1;sig=[A-Za-z0-9_-]{86}$/);
 		expect(await verify(clock, headers)).toEqual({ type: 'status.changed', websiteId: 'web_1' });
 		const lower = Object.fromEntries(Object.entries(headers).map(([k, v]) => [k.toLowerCase(), v]));
 		await verify(clock, lower);
@@ -110,7 +110,7 @@ describe('notices', () => {
 		const headers = await signDetached(
 			[portal.signer],
 			ts(clock),
-			new TextEncoder().encode(['ss-notice.v1', ts(clock), audience, sha256Hex(raw)].join('\n')),
+			new TextEncoder().encode(['shelfway-notice.v1', ts(clock), audience, sha256Hex(raw)].join('\n')),
 		);
 		await expectCode(verify(clock, headers, { rawBody: raw }), 'malformed');
 		expectThrowCode(() => parseNotice(new Uint8Array([0xff, 0xfe])), 'malformed');
@@ -179,14 +179,14 @@ describe('notices', () => {
 		const clock = createClock();
 		const headers = await signNotice({ audience, signer: portal.signer, body, timestamp: ts(clock) });
 		await expectCode(verify(clock, headers, { rawBody: body.replace('web_1', 'web_2') }), 'signature');
-		await expectCode(verify(clock, { ...headers, 'SS-Timestamp': String(ts(clock) - 1) }), 'signature');
-		const sig = headers['SS-Signature'];
+		await expectCode(verify(clock, { ...headers, 'Shelfway-Timestamp': String(ts(clock) - 1) }), 'signature');
+		const sig = headers['Shelfway-Signature'];
 		const flipped = sig.replace(/sig=(.)/, (_m, c) => `sig=${c === 'A' ? 'B' : 'A'}`);
-		await expectCode(verify(clock, { ...headers, 'SS-Signature': flipped }), 'signature');
+		await expectCode(verify(clock, { ...headers, 'Shelfway-Signature': flipped }), 'signature');
 		const forged = await signNotice({ audience, signer: attacker.signer, body, timestamp: ts(clock) });
 		await expectCode(verify(clock, forged), 'signature');
-		// SS-Key-Id is only a hint: pointing it elsewhere changes nothing
-		await verify(clock, { ...headers, 'SS-Key-Id': 'portal-2' });
+		// Shelfway-Key-Id is only a hint: pointing it elsewhere changes nothing
+		await verify(clock, { ...headers, 'Shelfway-Key-Id': 'portal-2' });
 	});
 
 	it('rejects unknown kids', async () => {
@@ -198,7 +198,7 @@ describe('notices', () => {
 	it('supports dual-signing during rotation', async () => {
 		const clock = createClock();
 		const headers = await signNotice({ audience, signers: [portal.signer, next.signer], body, timestamp: ts(clock) });
-		expect(headers['SS-Signature'].split(', ')).toHaveLength(2);
+		expect(headers['Shelfway-Signature'].split(', ')).toHaveLength(2);
 		expect(await verify(clock, headers, { keyResolver: staticResolver([next.publicJwk]) })).toMatchObject({
 			type: 'status.changed',
 		});
@@ -207,20 +207,20 @@ describe('notices', () => {
 	});
 
 	it.each([
-		['missing timestamp', { 'SS-Timestamp': undefined }],
-		['non-numeric timestamp', { 'SS-Timestamp': '12a' }],
-		['missing signature', { 'SS-Signature': undefined }],
-		['bad version', { 'SS-Signature': 'v2;kid=portal-1;sig=abc' }],
-		['short sig', { 'SS-Signature': 'v1;kid=portal-1;sig=abc' }],
+		['missing timestamp', { 'Shelfway-Timestamp': undefined }],
+		['non-numeric timestamp', { 'Shelfway-Timestamp': '12a' }],
+		['missing signature', { 'Shelfway-Signature': undefined }],
+		['bad version', { 'Shelfway-Signature': 'v2;kid=portal-1;sig=abc' }],
+		['short sig', { 'Shelfway-Signature': 'v1;kid=portal-1;sig=abc' }],
 		[
 			'too many entries',
 			{
-				'SS-Signature': Array(5)
+				'Shelfway-Signature': Array(5)
 					.fill('v1;kid=a;sig=' + 'A'.repeat(86))
 					.join(', '),
 			},
 		],
-		['duplicated header array', { 'SS-Signature': ['a', 'b'] }],
+		['duplicated header array', { 'Shelfway-Signature': ['a', 'b'] }],
 	])('rejects %s as malformed', async (_name, patch) => {
 		const clock = createClock();
 		const headers = await signNotice({ audience, signer: portal.signer, body, timestamp: ts(clock) });

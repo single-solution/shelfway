@@ -1,5 +1,5 @@
 /**
- * `ss-import verify` (PLAN 0.8.10 Migration, cut-over step 6): compares what `read` found with what each product holds.
+ * `shelfway-import verify` (PLAN 0.8.10 Migration, cut-over step 6): compares what `read` found with what each product holds.
  * Per target: the records read with the records an import wrote and the product holds (`GET <product>/v1/import/status`
  * `imported`; after a final pass with prune they are equal) and, where the mapping names one, the product's count
  * route (K4), which must equal the records the product holds (`collections`). Per product: the verification sums the mapping's steps added up (order totals per status, stock units,

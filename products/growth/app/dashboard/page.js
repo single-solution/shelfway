@@ -1,16 +1,16 @@
 'use client';
 /**
- * The product dashboard (PLAN 0.4.3): the shared dashboard of every product (`@ss/ui/dashboard`), opened from the
+ * The product dashboard (PLAN 0.4.3): the shared dashboard of every product (`@shelfway/ui/dashboard`), opened from the
  * Portal (`/sso` → `/dashboard?websiteId=…`), with Growth's words and its own parts of the Overview, Settings,
  * Developers and Defaults tabs (`tabs.js`). Setup only: it calls the kit's dashboard API and shows no business data.
  * @module
  */
-import { ProductDashboard } from '@ss/ui/dashboard';
+import { ProductDashboard } from '@shelfway/ui/dashboard';
 import manifest from '../../manifest.json' with { type: 'json' };
 import { TABS } from './tabs.js';
 import { TEXTS } from './texts.js';
 
-/** @type {import('@ss/ui/dashboard').DashboardCategories} */
+/** @type {import('@shelfway/ui/dashboard').DashboardCategories} */
 const CATEGORIES = Object.freeze([
 	{
 		title: 'Ads and tracking tags',

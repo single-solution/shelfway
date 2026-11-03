@@ -2,7 +2,7 @@
  * Moves and refunds when someone else changed the order meanwhile (optimistic concurrency), and the role effects that
  * depend on switched-off features. Calls the moves module directly with an order as read before the other change.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createMoves } from '../server/orders-moves.js';
 import { createService } from '../server/service.js';

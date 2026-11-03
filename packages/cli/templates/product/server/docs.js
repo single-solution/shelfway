@@ -6,8 +6,8 @@
  * every value is escaped.
  * @module
  */
-import { docsBlock, docsFeatureSections, docsOperations, docsParagraph, renderDocsPage } from '@ss/app-kit';
-import { widgetScriptTag } from '@ss/contracts/text';
+import { docsBlock, docsFeatureSections, docsOperations, docsParagraph, renderDocsPage } from '@shelfway/app-kit';
+import { widgetScriptTag } from '@shelfway/contracts/text';
 import guide from '../docs/guide.json' with { type: 'json' };
 import openapi from '../openapi.json' with { type: 'json' };
 import { WIDGET_ATTRIBUTE, WIDGET_GLOBAL } from '../core/widgets.js';
@@ -33,7 +33,7 @@ export const renderDocs = ({ base }) => {
 		'<script>',
 		`  window.${WIDGET_GLOBAL}.admin({`,
 		'    // your own server route (below): it checks the signed-in user, then asks for a ticket',
-		"    getTicket: () => fetch('/api/ss-ticket', { method: 'POST' }).then((response) => response.json()),",
+		"    getTicket: () => fetch('/api/shelfway-ticket', { method: 'POST' }).then((response) => response.json()),",
 		'  });',
 		'</script>',
 	].join('\n');
@@ -47,7 +47,7 @@ export const renderDocs = ({ base }) => {
 		"// your server, after checking the user's sign-in and role (Node.js 18+, also inside a Next.js route handler)",
 		`const response = await fetch('${base}/v1/tickets', {`,
 		"  method: 'POST',",
-		"  headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}`, 'content-type': 'application/json' },",
+		"  headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}`, 'content-type': 'application/json' },",
 		'  body: JSON.stringify({',
 		'    user: { id: user.id, name: user.name, email: user.email },',
 		`    permissions: ${JSON.stringify(permissions)},`,
@@ -58,7 +58,7 @@ export const renderDocs = ({ base }) => {
 	].join('\n');
 	const curlSnippet = [
 		`curl -X POST '${base}/v1/tickets' \\`,
-		'  -H "Authorization: Bearer $SS_SERVER_TOKEN" \\',
+		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN" \\',
 		"  -H 'Content-Type: application/json' \\",
 		`  -d '${JSON.stringify(ticketBody)}'`,
 	].join('\n');

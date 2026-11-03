@@ -1,4 +1,4 @@
-import { createEslintConfig } from '@ss/config/eslint';
+import { createEslintConfig } from '@shelfway/config/eslint';
 
 export default createEslintConfig({
 	jsx: ['app/**/*.js'],

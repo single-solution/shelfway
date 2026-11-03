@@ -144,32 +144,32 @@ describe('the docs’ webhook route', () => {
 			'process',
 			`${code.replace(/^import .*$/gm, '').replace(/^export /gm, '')}\nreturn POST;`,
 		)(createHmac, timingSafeEqual, (/** @type {string} */ tag) => cleared.push(tag), {
-			env: { SS_WEBHOOK_SECRET: 'webhook-secret-0123456789abcdef' },
+			env: { SHELFWAY_WEBHOOK_SECRET: 'webhook-secret-0123456789abcdef' },
 		});
 		/** @param {object} event @param {string} [secret] @param {number} [at] */
 		const post = (event, secret = 'webhook-secret-0123456789abcdef', at = Math.floor(Date.now() / 1000)) => {
 			const body = JSON.stringify(event);
 			const v1 = createHmac('sha256', secret).update(`${at}.${body}`).digest('hex');
 			return POST(
-				new Request('https://shop.example.com/api/ss-ecommerce-events', {
+				new Request('https://shop.example.com/api/shelfway-ecommerce-events', {
 					method: 'POST',
-					headers: { 'ss-signature': `t=${at},v1=${v1}` },
+					headers: { 'shelfway-signature': `t=${at},v1=${v1}` },
 					body,
 				}),
 			);
 		};
 		expect((await post({ type: 'ecommerce.catalog.changed', data: {} })).status).toBe(204);
-		expect(cleared).toEqual(['ss-ecommerce']);
+		expect(cleared).toEqual(['shelfway-ecommerce']);
 		expect((await post({ type: 'ecommerce.order.placed', data: {} })).status).toBe(204);
 		expect((await post({ type: 'ecommerce.settings.changed', data: {} })).status).toBe(204);
-		expect(cleared).toEqual(['ss-ecommerce', 'ss-ecommerce']);
+		expect(cleared).toEqual(['shelfway-ecommerce', 'shelfway-ecommerce']);
 		expect((await post({ type: 'ecommerce.catalog.changed' }, 'another-secret-0123456789')).status).toBe(401);
 		expect((await post({ type: 'ecommerce.catalog.changed' }, undefined, 1_000)).status).toBe(401);
 		// a forged signature of the right length with a character of more than one byte is refused, never a crash (L11)
 		const forged = await POST(
-			new Request('https://shop.example.com/api/ss-ecommerce-events', {
+			new Request('https://shop.example.com/api/shelfway-ecommerce-events', {
 				method: 'POST',
-				headers: { 'ss-signature': `t=${Math.floor(Date.now() / 1000)},v1=${'é'.padEnd(64, '0')}` },
+				headers: { 'shelfway-signature': `t=${Math.floor(Date.now() / 1000)},v1=${'é'.padEnd(64, '0')}` },
 				body: JSON.stringify({ type: 'ecommerce.catalog.changed' }),
 			}),
 		);
@@ -178,6 +178,6 @@ describe('the docs’ webhook route', () => {
 		// every SEO and served answer is fetched with the tag the route clears
 		const snippets = createSnippets({ base: BASE, widgets: [], permissions: [] });
 		for (const fetched of [snippets.homePage, snippets.productMeta, snippets.listingPage, snippets.policies])
-			expect(fetched).toContain("tags: ['ss-ecommerce']");
+			expect(fetched).toContain("tags: ['shelfway-ecommerce']");
 	});
 });

@@ -6,7 +6,7 @@ import { cleanup, click, keydown, render } from '../src/testing.js';
 afterEach(cleanup);
 
 /** @param {HTMLElement} root */
-const row = (root) => /** @type {HTMLElement} */ (root.querySelector('[data-ss-row]'));
+const row = (root) => /** @type {HTMLElement} */ (root.querySelector('[data-shelfway-row]'));
 
 describe('Row', () => {
 	it('draws the lead, the title, the status label, the facts, the value and the time', () => {
@@ -68,7 +68,7 @@ describe('Row', () => {
 		expect(box.hasAttribute('data-selected')).toBe(false);
 		rerender(<Row title="Acme" onSelect={onSelect} selected />);
 		expect(box.hasAttribute('data-selected')).toBe(true);
-		expect(box.className).toContain('ss-hard');
+		expect(box.className).toContain('shelfway-hard');
 		expect(box.className).toContain('border-line');
 	});
 
@@ -86,7 +86,7 @@ describe('Row', () => {
 				}
 			/>,
 		);
-		const control = /** @type {HTMLElement} */ (container.querySelector('[data-ss-row-trailing] button'));
+		const control = /** @type {HTMLElement} */ (container.querySelector('[data-shelfway-row-trailing] button'));
 		click(control);
 		keydown(control, 'Enter');
 		expect(onToggle).toHaveBeenCalledTimes(1);

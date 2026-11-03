@@ -8,7 +8,7 @@ import { checkAddress, checkCart, checkOrderExtras, priceLines, promotionDiscoun
 import { ADDRESS_LIMITS, countryKey, placeKey, postcodeKey, regionsFor } from '../core/address.js';
 import { checkZones, defaultZones, homeRate, matchZone, rateFee, rateFits, zoneCities } from '../core/delivery.js';
 import { canDownload, checkLicenseKeys, downloadLimitOf, fileKey, fileNameOf, safeFileName } from '../core/digital.js';
-import { MAX_AMOUNT, zonedParts } from '@ss/contracts/format';
+import { MAX_AMOUNT, zonedParts } from '@shelfway/contracts/format';
 import { checkTaxRules, taxOf, taxPercent } from '../core/taxes.js';
 
 /** @returns {any} */

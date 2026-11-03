@@ -1,10 +1,10 @@
 /**
- * What Growth's admin widgets share besides the kit's blocks (`@ss/app-kit/widget`: the More menu, dialogs and fact
+ * What Growth's admin widgets share besides the kit's blocks (`@shelfway/app-kit/widget`: the More menu, dialogs and fact
  * grids): filter chips with counts, ranked lists with share bars, and the texts of refused calls. Text is always set
  * as text, never as HTML.
  * @module
  */
-import { element } from '@ss/app-kit/widget';
+import { element } from '@shelfway/app-kit/widget';
 
 /** The widget texts of the problem codes any admin widget may get. */
 export const PROBLEM_TEXTS = Object.freeze({

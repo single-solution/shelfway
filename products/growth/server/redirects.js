@@ -9,9 +9,9 @@
  * {@link MAX_RULES}) and written to the activity log. Nothing runs on a timer.
  * @module
  */
-import { countHandlers, created, defineRoute, noContent, ok, paginate, problem } from '@ss/app-kit';
-import { createId } from '@ss/contracts';
-import { isObject } from '@ss/contracts/util';
+import { countHandlers, created, defineRoute, noContent, ok, paginate, problem } from '@shelfway/app-kit';
+import { createId } from '@shelfway/contracts';
+import { isObject } from '@shelfway/contracts/util';
 import {
 	CODES,
 	MAX_RULES,

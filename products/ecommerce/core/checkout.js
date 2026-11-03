@@ -15,14 +15,14 @@
  * methods a cart may use. Pure functions, no I/O.
  * @module
  */
-import { normalizePhone } from '@ss/contracts/phone';
-import { addressProblem, countryCodeOf, countryName, tidyPostcode } from '@ss/contracts/address';
+import { normalizePhone } from '@shelfway/contracts/phone';
+import { addressProblem, countryCodeOf, countryName, tidyPostcode } from '@shelfway/contracts/address';
 import { ADDRESS_LIMITS, placeKey, regionsFor } from './address.js';
 import { CART_MAX_QUANTITY } from './limits.js';
 import { MAX_LINES, MAX_MEASURED, MAX_QUANTITY, grossFits, limitsOf, lineGross, piecesOf, quantityProblem } from './measure.js';
 import { allocateUnits, roundHalfUp } from './money.js';
-import { isAmount } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
+import { isAmount } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
 import { isMethodKey, methodFee } from './payment-methods.js';
 import { taxOf, taxPercent } from './taxes.js';
 
@@ -190,7 +190,7 @@ export const checkCart = (body) => {
 
 /**
  * Check a delivery address (every field at most its {@link ADDRESS_LIMITS} length) by its country's format
- * (`@ss/contracts/address`): the country is kept as its ISO code (given as a code or an English name), the place parts
+ * (`@shelfway/contracts/address`): the country is kept as its ISO code (given as a code or an English name), the place parts
  * the website requires (`checkout.addressRequired`) and the region and postal code the country requires are filled
  * (never a postal code where the country has none), and the postal code is in the country's shape (kept upper case).
  * Its phone (the one the courier calls) is kept as E.164 when the website's phone rules can read it (K12), else as

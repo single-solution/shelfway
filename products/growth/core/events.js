@@ -15,9 +15,9 @@
  * cities, Web Vitals per page and 404 referrers.
  * @module
  */
-import { isAmount, isCurrency, zonedDay } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
-import { pathMatches } from '@ss/contracts/text';
+import { isAmount, isCurrency, zonedDay } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
+import { pathMatches } from '@shelfway/contracts/text';
 import { itemTotals } from './product-performance.js';
 import { FUNNEL_STEPS, STANDARD_EVENTS, VISIT_IDLE_MS } from './widgets.js';
 
@@ -28,7 +28,7 @@ export const EVENT_FEATURES = Object.freeze({
 	add_to_cart: 'conversion_funnel',
 	begin_checkout: 'conversion_funnel',
 	purchase: 'conversion_funnel',
-	// G2: a contact (ss:contact, SSGrowth.contact) and the merchant's own events (SSGrowth.track)
+	// G2: a contact (shelfway:contact, ShelfwayGrowth.contact) and the merchant's own events (ShelfwayGrowth.track)
 	contact: 'conversion_funnel',
 	custom: 'conversion_funnel',
 	search: 'searches_404s',

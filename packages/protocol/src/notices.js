@@ -1,12 +1,12 @@
 /**
- * Notices (PLAN 0.4.12): signed Portal → product messages sent to `POST <product base>/.well-known/ss-events`.
+ * Notices (PLAN 0.4.12): signed Portal → product messages sent to `POST <product base>/.well-known/shelfway-events`.
  *
  * Headers:
- *   SS-Timestamp: <unix seconds>
- *   SS-Signature: v1;kid=<kid>;sig=<base64url Ed25519 signature>[, v1;kid=<kid2>;sig=<...>]
- *   SS-Key-Id:    <kid of the first signature>   (a hint only; never trusted for verification)
+ *   Shelfway-Timestamp: <unix seconds>
+ *   Shelfway-Signature: v1;kid=<kid>;sig=<base64url Ed25519 signature>[, v1;kid=<kid2>;sig=<...>]
+ *   Shelfway-Key-Id:    <kid of the first signature>   (a hint only; never trusted for verification)
  *
- * Signed message (UTF-8, lines joined by `\n`): `ss-notice.v1`, the timestamp, the product id the notice is for (its
+ * Signed message (UTF-8, lines joined by `\n`): `shelfway-notice.v1`, the timestamp, the product id the notice is for (its
  * audience) and the hex SHA-256 of the raw body. The prefix separates notice signatures from JWS signing inputs and
  * from calls made with the same Portal key; the audience keeps a notice for one product from being replayed to
  * another; a newline cannot appear in any field. Several signatures let the Portal dual-sign while rotating keys; the
@@ -26,10 +26,10 @@ import { isProductId } from './tokens.js';
 
 /** @import { KeyResolver, Signer } from './keys.js' */
 /** @typedef {import('./assertion.js').ReplayStore} ReplayStore */
-/** @typedef {{ 'SS-Timestamp': string, 'SS-Signature': string, 'SS-Key-Id': string }} NoticeHeaders */
+/** @typedef {{ 'Shelfway-Timestamp': string, 'Shelfway-Signature': string, 'Shelfway-Key-Id': string }} NoticeHeaders */
 
 /** Path of the product's notice endpoint. */
-export const NOTICE_PATH = '/.well-known/ss-events';
+export const NOTICE_PATH = '/.well-known/shelfway-events';
 
 /** The five notice types. */
 export const NOTICE_TYPES = Object.freeze(
@@ -59,7 +59,7 @@ const MAX_ID_LENGTH = 256;
  * @returns {Uint8Array}
  */
 const signedMessage = (timestamp, audience, body) =>
-	utf8(['ss-notice.v1', String(timestamp), audience, sha256Hex(body)].join('\n'));
+	utf8(['shelfway-notice.v1', String(timestamp), audience, sha256Hex(body)].join('\n'));
 
 /** @param {unknown} audience */
 const assertAudience = (audience) => {

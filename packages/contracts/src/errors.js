@@ -66,7 +66,7 @@ export const PROBLEM_CODES = Object.freeze({
 	internal_error: Object.freeze({ status: 500, title: 'Internal error' }),
 	upstream_error: Object.freeze({ status: 502, title: 'Upstream error' }),
 	unavailable: Object.freeze({ status: 503, title: 'Service unavailable' }),
-	portal_unreachable: Object.freeze({ status: 503, title: 'Portal unreachable' }),
+	platform_unreachable: Object.freeze({ status: 503, title: 'Portal unreachable' }),
 	timeout: Object.freeze({ status: 504, title: 'Upstream timeout' }),
 });
 

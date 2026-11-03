@@ -16,21 +16,21 @@ import {
 	createProductInstance as createEcommerce,
 	manifest as shopManifest,
 	strings as shopStrings,
-} from '@ss/product-ecommerce/product';
-import { createRoutes as shopRoutes } from '@ss/product-ecommerce/routes';
+} from '@shelfway/product-ecommerce/product';
+import { createRoutes as shopRoutes } from '@shelfway/product-ecommerce/routes';
 import {
 	createProductInstance as createNotifications,
 	manifest as notifyManifest,
 	strings as notifyStrings,
-} from '@ss/product-notifications/product';
-import { createRoutes as notifyRoutes } from '@ss/product-notifications/routes';
+} from '@shelfway/product-notifications/product';
+import { createRoutes as notifyRoutes } from '@shelfway/product-notifications/routes';
 import {
 	createProductInstance as createPayments,
 	manifest as payManifest,
 	strings as payStrings,
-} from '@ss/product-payments/product';
-import { createRoutes as payRoutes } from '@ss/product-payments/routes';
-import { PASSWORD, PRODUCT_URL, codeOf, startSystem } from './helpers.js';
+} from '@shelfway/product-payments/product';
+import { createRoutes as payRoutes } from '@shelfway/product-payments/routes';
+import { PRODUCT_URL, codeOf, startSystem } from './helpers.js';
 
 const NOTIFY = 'https://notifications.test';
 const PAYMENTS = 'https://payments.test';
@@ -39,7 +39,7 @@ const SITE_A = 'one.example.com';
 const SITE_B = 'two.example.com';
 const SECRET_HOST = 'cluster-secret-name';
 /** The databases the merchant's connection gives each product (derived: nobody names them here). */
-const DATABASES = ['ss_notes', 'ss_notifications', 'ss_payments', 'ss_ecommerce'];
+const DATABASES = ['shelfway_notes', 'shelfway_notifications', 'shelfway_payments', 'shelfway_ecommerce'];
 
 /** @param {any} create @param {any} routes @param {any} manifest @param {any} strings @param {string} url */
 const unit = (create, routes, manifest, strings, url) => ({
@@ -151,8 +151,8 @@ describe('The database is entered once, in the Portal', () => {
 		expect(view.database).toMatchObject({ set: false });
 		expect(view.products.map((/** @type {any} */ p) => [p.productId, p.database?.name, p.database?.state])).toEqual(
 			expect.arrayContaining([
-				['notes', 'ss_notes', 'not_set'],
-				['notifications', 'ss_notifications', 'not_set'],
+				['notes', 'shelfway_notes', 'not_set'],
+				['notifications', 'shelfway_notifications', 'not_set'],
 			]),
 		);
 		// the product's own Connections screen has the database as the Portal's: no value, no form, a link to the Portal
@@ -162,7 +162,7 @@ describe('The database is entered once, in the Portal', () => {
 		const refused = await dashboardOf(siteA, NOTIFY, 'notifications', 'PUT', '/connections/database', {
 			value: connectionString(),
 		});
-		expect([refused.status, codeOf(refused)]).toEqual([409, 'managed_by_portal']);
+		expect([refused.status, codeOf(refused)]).toEqual([409, 'managed_by_platform']);
 	});
 
 	it('the merchant enters it once (a wrong password changes nothing) and Notes and Notifications each work on a database of their own', async () => {
@@ -190,8 +190,8 @@ describe('The database is entered once, in the Portal', () => {
 		expect(templates.status).toBe(200);
 		const collections = async (/** @type {string} */ name) =>
 			(await mongo.db(name).listCollections().toArray()).map((each) => each.name);
-		expect((await collections('ss_notes')).some((name) => name.startsWith('ss_notes_'))).toBe(true);
-		expect((await collections('ss_notifications')).some((name) => name.startsWith('ss_notifications_'))).toBe(true);
+		expect((await collections('shelfway_notes')).some((name) => name.startsWith('shelfway_notes_'))).toBe(true);
+		expect((await collections('shelfway_notifications')).some((name) => name.startsWith('shelfway_notifications_'))).toBe(true);
 		// each product's tests of it went back to the Portal
 		const view = await connectionsOf(siteA);
 		expect(view.products.map((/** @type {any} */ p) => [p.productId, p.database?.state])).toEqual(
@@ -209,11 +209,13 @@ describe('The database is entered once, in the Portal', () => {
 		const list = await sys.call('GET', '/v1/payments', { base: PAYMENTS, token: payTokens.server });
 		expect(list.status).toBe(200);
 		expect(
-			(await mongo.db('ss_payments').listCollections().toArray()).some((each) => each.name.startsWith('ss_payments_')),
+			(await mongo.db('shelfway_payments').listCollections().toArray()).some((each) =>
+				each.name.startsWith('shelfway_payments_'),
+			),
 		).toBe(true);
 		const view = await connectionsOf(siteA);
 		expect(view.products.find((/** @type {any} */ p) => p.productId === 'payments').database).toMatchObject({
-			name: 'ss_payments',
+			name: 'shelfway_payments',
 			state: 'connected',
 		});
 	});
@@ -259,7 +261,7 @@ describe('The database is entered once, in the Portal', () => {
 		}
 		// a signed-in Owner of the product cannot either: the database is the Portal's
 		const owned = await dashboardOf(siteA, NOTIFY, 'notifications', 'DELETE', '/connections/database');
-		expect([owned.status, codeOf(owned)]).toEqual([409, 'managed_by_portal']);
+		expect([owned.status, codeOf(owned)]).toEqual([409, 'managed_by_platform']);
 		// no route of the Portal lets a product (signed with its own key) write the value
 		const viaProduct = await sys.productApi('PUT', `/v1/product/websites/${siteA}/connections/database`, {
 			value: 'mongodb://x/db',

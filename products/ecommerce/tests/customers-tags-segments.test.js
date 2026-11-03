@@ -28,7 +28,7 @@ const placeOrder = async ({ phone, city = 'Springfield', price = 1000 }) => {
 			payment: 'cod',
 			address: { name: 'Sara', phone, line1: '1 Main Street', city, region: 'IL', postalCode: '62701', country: 'US' },
 		},
-		headers: { 'x-forwarded-for': `10.11.0.${users}`, 'ss-sign-in': token, 'idempotency-key': `e11-${users}` },
+		headers: { 'x-forwarded-for': `10.11.0.${users}`, 'shelfway-sign-in': token, 'idempotency-key': `e11-${users}` },
 	});
 	expect(placed.status).toBe(201);
 	return { userId: id, order: placed.json.order };

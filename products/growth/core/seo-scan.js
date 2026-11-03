@@ -5,7 +5,7 @@
  * (an index or a list of addresses with their images). Pure: the fetching is done by the caller.
  * @module
  */
-import { decodeEntities } from '@ss/contracts/text';
+import { decodeEntities } from '@shelfway/contracts/text';
 import { VERIFICATION_NAMES, robotsDirectiveOf } from './seo.js';
 
 /** Most addresses one sitemap file may list (the sitemap protocol's limit). */

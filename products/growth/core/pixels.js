@@ -13,8 +13,8 @@
  * `contentIds` setting `variant`.
  * @module
  */
-import { currencyDigits, isAmount, isCurrency } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
+import { currencyDigits, isAmount, isCurrency } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
 
 /**
  * Minor units as a major-unit number (1250 USD → 12.5).
@@ -214,7 +214,7 @@ export const pixelCalls = (step, detail, loaded, contentIds = 'product', action 
 };
 
 /**
- * A site search's `detail` (`ss:search`, `SSGrowth.search`), checked: the term (at most 100 characters) and how many
+ * A site search's `detail` (`shelfway:search`, `ShelfwayGrowth.search`), checked: the term (at most 100 characters) and how many
  * results the page found; null without a term.
  * @param {unknown} raw
  * @returns {{ term: string, results: number | null } | null}
@@ -229,7 +229,7 @@ export const searchOf = (raw) => {
 };
 
 /**
- * A contact's `detail` (`ss:contact`, `SSGrowth.contact`), checked: how the visitor got in touch (for example
+ * A contact's `detail` (`shelfway:contact`, `ShelfwayGrowth.contact`), checked: how the visitor got in touch (for example
  * `whatsapp`; letters, digits, `_` and `-`, at most 40), or null.
  * @param {unknown} raw
  * @returns {{ method: string | null }}
@@ -285,7 +285,7 @@ export const contactCalls = (method, loaded, action = null) => {
 };
 
 /**
- * The pixel calls of the merchant's own event (G2 `SSGrowth.track(name, props)`), with its properties, under its
+ * The pixel calls of the merchant's own event (G2 `ShelfwayGrowth.track(name, props)`), with its properties, under its
  * conversion action's names (none without one).
  * @param {Record<string, string | number | boolean>} props
  * @param {Loaded} loaded

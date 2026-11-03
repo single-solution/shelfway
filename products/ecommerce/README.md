@@ -22,13 +22,13 @@ Three variables, and one optional while the encryption key is changed (`.env.exa
 Each deployable has its own port, so all run at once: the Portal 3000, Accounts 3001, Notifications 3002, Chat 3003,
 Payments 3004, Ecommerce 3005, Growth 3006. This product runs on **3005**.
 
-1. One local MongoDB for everything (keep it running): `pnpm --filter @ss/platform db:local` (kept in
+1. One local MongoDB for everything (keep it running): `pnpm --filter @shelfway/platform db:local` (kept in
    `platform/.mongo-data`) or `db:memory` (lost on stop). Start the Portal as its README says.
 2. `products/ecommerce/.env.local` (git-ignored), each secret random and different (make one with
    `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`):
 
    ```bash
-   MONGODB_URI=mongodb://127.0.0.1:27999/ss_ecommerce?replicaSet=testset
+   MONGODB_URI=mongodb://127.0.0.1:27999/shelfway_ecommerce?replicaSet=testset
    CONNECT_SECRET=<random>
    ENCRYPTION_KEY=<random>
    ```
@@ -69,19 +69,19 @@ in the Portal (Website settings › Business and Brand and look) for every produ
 and they are read in public form at
 `GET /v1/shop/store` (with the website's own address, `siteUrl`), and `GET /v1/shop/store/business-json` gives the
 business.json a headless website serves at `/.well-known/business.json`. Staff work with the server token needs
-the verified `SS-Sign-In` of a signed-in staff member with the permission (the token alone is 403), and the shopper routes (`/v1/shop/…`: cart, checkout, my orders,
-cancel, loyalty, wishlist) also take the server token with `SS-Sign-In` and `SS-Visitor-IP`, so a headless website acts
+the verified `Shelfway-Sign-In` of a signed-in staff member with the permission (the token alone is 403), and the shopper routes (`/v1/shop/…`: cart, checkout, my orders,
+cancel, loyalty, wishlist) also take the server token with `Shelfway-Sign-In` and `Shelfway-Visitor-IP`, so a headless website acts
 as the shopper who signed in through Accounts: the kit checks that sign-in for the website of the token and refuses a
 wrong, expired, foreign or forged one with 401 `invalid_sign_in`; a user id alone is never taken.
 
 ## Scripts
 
 `pnpm dev` and `pnpm build` regenerate `openapi.json` and `server/widget-script.js` first; `pnpm check` runs format, lint,
-typecheck and tests with coverage; `pnpm validate` runs `ss app validate`.
+typecheck and tests with coverage; `pnpm validate` runs `shelfway app validate`.
 
 ## Import — catalog
 
-With the `import` feature on, the merchant's server token sends the catalog with `ss-import` (PLAN.md 0.8.10
+With the `import` feature on, the merchant's server token sends the catalog with `shelfway-import` (PLAN.md 0.8.10
 Migration): `POST /v1/import/<collection>?dryRun=1` takes NDJSON of the stored shapes of `core/model.js` with their
 ids (`<prefix>_<24 hex digits>`), times as ISO-8601 text and money in minor units. Every collection is found by `id`;
 `POST /v1/import/<collection>/prune` takes `{ keep: [ids] }`. Send them in this order, as each one names records of the
@@ -132,7 +132,7 @@ Smallest records (one per line in a file):
 
 `POST /v1/import/finish` (the catalog's steps run first) places every category under its parents and derives each
 product's price, highest price, stock state and grades again, writing only what changed. It is paged: one call works on
-at most 200 records and answers `more` and `next`; while `more` is true, call again with `?after=<next>` (`ss-import
+at most 200 records and answers `more` and `next`; while `more` is true, call again with `?after=<next>` (`shelfway-import
 send` does, and adds the numbers of every call up). Each call answers `categoriesChecked`, `categoriesChanged`,
 `productsChecked` and `productsChanged`, and the calls that reach the categories add `categoryProblems: { orphans,
 cycles, tooDeep }` (at most 20 ids per list; `{ tooMany: true }` above 5,000 categories: no path derived). `GET

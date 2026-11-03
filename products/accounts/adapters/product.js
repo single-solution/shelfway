@@ -1,5 +1,5 @@
 /**
- * The product on the kit: `createProductInstance(options)` wires `@ss/app-kit` `createProduct` with Accounts'
+ * The product on the kit: `createProductInstance(options)` wires `@shelfway/app-kit` `createProduct` with Accounts'
  * manifest (each feature's settings schema from `schemas/` inline), its widget texts, its Connections (the
  * Notifications token for codes, invites and resets; Google, Apple and Facebook keys; the other products' tokens for
  * data rights, permissions and the Orders tab), the merchant database indexes, the data-rights hooks, the widget
@@ -11,10 +11,10 @@
  * Public entry `./product` of this package, so a system test can compose the product with `./routes`.
  * @module
  */
-import { createProduct, createProductBase } from '@ss/app-kit';
-import { normalizeEmail } from '@ss/contracts/email';
-import { normalizePhone } from '@ss/contracts/phone';
-import { addressRequiredOf } from '@ss/contracts/website-settings';
+import { createProduct, createProductBase } from '@shelfway/app-kit';
+import { normalizeEmail } from '@shelfway/contracts/email';
+import { normalizePhone } from '@shelfway/contracts/phone';
+import { addressRequiredOf } from '@shelfway/contracts/website-settings';
 import guide from '../docs/guide.json' with { type: 'json' };
 import manifestFile from '../manifest.json' with { type: 'json' };
 import openapi from '../openapi.json' with { type: 'json' };
@@ -55,14 +55,25 @@ import { INDEXES, createStore } from './store.js';
 /** Settings schema of each feature (manifest.json points at them with `$ref`). @type {Record<string, unknown>} */
 const SETTINGS = {
 	sign_in: signIn,
+	phone_code: phoneCode,
+	phone_password: phonePassword,
+	email_password: emailPassword,
+	email_code: emailCode,
+	google,
+	apple,
+	facebook,
 	roles,
-	role_requests: roleRequests,
-	approval,
+	custom_fields: customFields,
 	two_step: twoStep,
+	approval,
+	risk_checks: riskChecks,
 	consents,
 	data_rights: dataRights,
-	import: importSettings,
 	activity_copies: activityCopies,
+	orders_tab: ordersTab,
+	staff_links: staffLinks,
+	role_requests: roleRequests,
+	import: importSettings,
 };
 
 /**
@@ -71,15 +82,13 @@ const SETTINGS = {
  * @type {Record<string, { name: string, features: string[], settings: any }>}
  */
 const SHARED_SETTINGS = {
-	phone: { name: 'Phone numbers and codes', features: ['sign_in'], settings: phoneShared },
-	passwords: { name: 'Passwords', features: ['sign_in'], settings: passwordsShared },
-	profile: { name: 'Profile', features: ['sign_in'], settings: profileShared },
-	risk_checks: { name: 'Risk checks', features: ['sign_in'], settings: riskChecks },
-	staff_links: { name: 'Staff links', features: ['roles'], settings: staffLinks },
+	phone: { name: 'Phone numbers and codes', features: ['sign_in', 'phone_code', 'phone_password'], settings: phoneShared },
+	passwords: { name: 'Passwords', features: ['sign_in', 'email_password', 'phone_password'], settings: passwordsShared },
+	profile: { name: 'Profile', features: ['sign_in', ...SIGN_IN_METHODS], settings: profileShared },
 };
 
 /** The manifest as the kit and the Portal take it: settings schemas inline. */
-export const manifest = /** @type {import('@ss/contracts').Manifest} */ (
+export const manifest = /** @type {import('@shelfway/contracts').Manifest} */ (
 	/** @type {unknown} */ ({
 		...manifestFile,
 		features: manifestFile.features.map((feature) => ({ ...feature, settings: SETTINGS[feature.key] })),
@@ -120,7 +129,7 @@ const PROBLEM_CODES = Object.freeze({
  * the devices (never the password, two-step secrets or the merchant's notes); delete erases the user, their sessions,
  * their codes and the messages kept for them.
  * @param {() => number} now
- * @returns {Pick<NonNullable<import('@ss/app-kit').ProductOptions['hooks']>, 'exportUser' | 'deleteUser'>}
+ * @returns {Pick<NonNullable<import('@shelfway/app-kit').ProductOptions['hooks']>, 'exportUser' | 'deleteUser'>}
  */
 const ownDataRights = (now) => ({
 	exportUser: async (ctx, user) => {
@@ -195,7 +204,7 @@ const setupPart = ({ on, signUp, signInMethods = [] }) => {
 };
 
 /**
- * @typedef {Omit<import('@ss/app-kit').ProductOptions, 'manifest' | 'strings' | 'hooks' | 'connections' | 'data' | 'problemCodes' | 'openapi' | 'build'>} InstanceOptions
+ * @typedef {Omit<import('@shelfway/app-kit').ProductOptions, 'manifest' | 'strings' | 'hooks' | 'connections' | 'data' | 'problemCodes' | 'openapi' | 'build'>} InstanceOptions
  */
 
 /**
@@ -353,7 +362,7 @@ export const createProductInstance = (options) => {
 		openapi,
 		build: guide.build,
 		sharedSettings: SHARED_SETTINGS,
-		// records moved in from another system with ss-import (feature `import`, PLAN 0.8.10 K10)
+		// records moved in from another system with shelfway-import (feature `import`, PLAN 0.8.10 K10)
 		imports: createImportOptions({
 			settings: (websiteId, feature) => product.settings.values(websiteId, feature),
 			website: (websiteId) => product.website(websiteId),

@@ -537,15 +537,15 @@ describe('A11: profile options', () => {
 });
 
 describe('A12: sign-in from the merchant’s server', () => {
-	it('signs in, renews and signs out with the server token and SS-Visitor-IP; the refresh token comes in the body', async () => {
+	it('signs in, renews and signs out with the server token and Shelfway-Visitor-IP; the refresh token comes in the body', async () => {
 		/** @param {string} path @param {unknown} body @param {Record<string, string>} [headers] */
 		const fromServer = (path, body, headers = {}) =>
 			env.call('POST', path, {
 				token: env.server,
 				body,
 				headers: {
-					'ss-visitor-ip': '198.51.100.20',
-					'ss-visitor-agent': 'Mozilla/5.0 (Linux; Android 14) Chrome/126.0',
+					'shelfway-visitor-ip': '198.51.100.20',
+					'shelfway-visitor-agent': 'Mozilla/5.0 (Linux; Android 14) Chrome/126.0',
 					...headers,
 				},
 			});
@@ -680,7 +680,7 @@ describe('K-27: rolling sessions, new recovery codes and reset links to another 
 		await env.setting('email_password', 'resetHosts', ['Admin.Shop.Example.com']);
 		expect((await forgot(page)).status).toBe(202);
 		expect(String(env.messages().at(-1).values.link)).toMatch(
-			/^https:\/\/admin\.shop\.example\.com\/login\/reset#ss_accounts_reset=/,
+			/^https:\/\/admin\.shop\.example\.com\/login\/reset#shelfway_accounts_reset=/,
 		);
 		// over https on the default port, and only the hosts listed
 		for (const url of [

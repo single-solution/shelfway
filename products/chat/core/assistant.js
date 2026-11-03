@@ -20,10 +20,10 @@ const estimateTokens = (messages, output) => {
 	return { input: Math.ceil(input / 4), output: Math.ceil(output.length / 4) };
 };
 
-/** @typedef {import('@ss/app-kit').AiMessage} AiMessage */
-/** @typedef {import('@ss/app-kit').AiResult} AiResult */
-/** @typedef {import('@ss/app-kit').AiToolCall} AiToolCall */
-/** @typedef {import('@ss/app-kit').AiToolSchema} AiToolSchema */
+/** @typedef {import('@shelfway/app-kit').AiMessage} AiMessage */
+/** @typedef {import('@shelfway/app-kit').AiResult} AiResult */
+/** @typedef {import('@shelfway/app-kit').AiToolCall} AiToolCall */
+/** @typedef {import('@shelfway/app-kit').AiToolSchema} AiToolSchema */
 /**
  * @typedef {object} AssistantDeps
  * @property {(request: { messages: AiMessage[], tools: AiToolSchema[] }) => Promise<{ ok: true, value: AiResult } | { ok: false, code: string }>} call

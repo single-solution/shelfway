@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { createKeyResolver, verifyToken } from '@ss/protocol';
-import { PORTAL_URL, boot, setupMongo, teardownMongo } from './boot.js';
+import { createKeyResolver, verifyToken } from '@shelfway/protocol';
+import { PLATFORM_URL, boot, setupMongo, teardownMongo } from './boot.js';
 
 vi.setConfig({ testTimeout: 60_000 });
 beforeAll(setupMongo, 120_000);
@@ -96,7 +96,7 @@ describe('websites (PLAN 0.2 Websites, 0.5.9)', () => {
 		const browser = await verifyToken({
 			token: install.json.items[0].browserToken,
 			keyResolver: createKeyResolver({ jwks: h.portal.shared.keys.publishedJwks() }),
-			issuer: PORTAL_URL,
+			issuer: PLATFORM_URL,
 			productId: 'notes',
 			kind: 'browser',
 		});
@@ -112,7 +112,7 @@ describe('websites (PLAN 0.2 Websites, 0.5.9)', () => {
 		expect((await a.client.get(`/v1/merchants/${a.merchantId}/websites`)).json.items).toEqual([]);
 		// both tokens are revoked for good
 		const revocations = await h.call('GET', '/v1/product/revocations', {
-			headers: { authorization: `Bearer ${await h.catalog.assertion(PORTAL_URL, h.clock.now)}` },
+			headers: { authorization: `Bearer ${await h.catalog.assertion(PLATFORM_URL, h.clock.now)}` },
 		});
 		expect(revocations.json.tokenIds).toHaveLength(2);
 		expect(revocations.json.tokenIds).toContain(browser.jti);

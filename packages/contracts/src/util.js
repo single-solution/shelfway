@@ -1,5 +1,5 @@
 /**
- * Small value helpers every unit shares (`@ss/contracts/util`). Pure and browser-safe (no Node.js imports).
+ * Small value helpers every unit shares (`@shelfway/contracts/util`). Pure and browser-safe (no Node.js imports).
  * @module
  */
 
@@ -22,6 +22,6 @@ export const deepFreeze = (value) => {
 /**
  * True for an object that is neither null nor an array (a JSON object, a record).
  * @param {unknown} value
- * @returns {value is Record<string, unknown>}
+ * @returns {value is Record<string, any>}
  */
 export const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 /**
- * `@ss/ui/dashboard`, the product dashboard every product shares: the dashboard API helpers, the product's words over
+ * `@shelfway/ui/dashboard`, the product dashboard every product shares: the dashboard API helpers, the product's words over
  * the shared ones, the shared pieces (loading, outcome, settings and texts forms, Re-seal), the standard
  * tabs with the product's own parts, and the whole page (session, sidebar for merchants and Owners, website switch).
  */
@@ -101,7 +101,7 @@ const inDashboard = (node, categories) => (
  * @param {string} id
  */
 const openSection = (root, id) => {
-	click(/** @type {HTMLElement} */ (root.querySelector(`[role="option"][data-ss-id="${id}"]`)));
+	click(/** @type {HTMLElement} */ (root.querySelector(`[role="option"][data-shelfway-id="${id}"]`)));
 };
 
 /** What the page's (i) says: opens it and gives the page's text. @param {ParentNode} root */
@@ -149,7 +149,7 @@ const button = (label) => byText(document.body, label, 'button');
 const buttonsOf = (root, label) => [...root.querySelectorAll('button')].filter((el) => el.textContent?.trim() === label);
 
 /** The More button of the page header (null when there is none). @param {HTMLElement} root */
-const moreOf = (root) => root.querySelector('[data-ss-part="header"] button[aria-haspopup="menu"]');
+const moreOf = (root) => root.querySelector('[data-shelfway-part="header"] button[aria-haspopup="menu"]');
 
 const SCHEMA = { type: 'object', properties: { greeting: { type: 'string', title: 'Greeting' } } };
 
@@ -491,7 +491,7 @@ describe('standard tabs', () => {
 	const switchesOf = (root) =>
 		/** @type {HTMLButtonElement[]} */ ([...root.querySelectorAll('[role="option"] [role="switch"]')]);
 	/** The row of a feature in the list. @param {ParentNode} root @param {string} id */
-	const rowOf = (root, id) => /** @type {HTMLElement} */ (root.querySelector(`[role="option"][data-ss-id="${id}"]`));
+	const rowOf = (root, id) => /** @type {HTMLElement} */ (root.querySelector(`[role="option"][data-shelfway-id="${id}"]`));
 
 	it('Settings: a row for every feature with its price and switch; an Owner switches one after a confirmation with the cost, what goes off with it and the warnings', async () => {
 		const id = freshSite();
@@ -515,10 +515,10 @@ describe('standard tabs', () => {
 				],
 			),
 		);
-		expect(container.querySelector('[data-ss-page][aria-busy="true"]')).not.toBeNull();
+		expect(container.querySelector('[data-shelfway-page][aria-busy="true"]')).not.toBeNull();
 		await settle();
 		// every feature has a row, on or off, under its category; the key numbers are beside the page
-		expect([...container.querySelectorAll('[role="option"]')].map((row) => row.getAttribute('data-ss-id'))).toEqual([
+		expect([...container.querySelectorAll('[role="option"]')].map((row) => row.getAttribute('data-shelfway-id'))).toEqual([
 			'notes',
 			'inbox',
 			'alerts',
@@ -768,7 +768,7 @@ describe('standard tabs', () => {
 		await settle();
 		// the list has a row for each feature, on or off, with the categories as its filter chips
 		const ALL = ['notes', 'inbox', 'inbox.beside', 'alerts', 'own'];
-		const idsOf = () => [...container.querySelectorAll('[role="option"]')].map((row) => row.getAttribute('data-ss-id'));
+		const idsOf = () => [...container.querySelectorAll('[role="option"]')].map((row) => row.getAttribute('data-shelfway-id'));
 		expect(idsOf()).toEqual(ALL);
 		const chips = [...container.querySelectorAll('button[aria-pressed]')].map((chip) => chip.textContent);
 		expect(chips).toEqual(['All5', 'Writing1', 'Reading3', 'Lists1']);
@@ -913,7 +913,7 @@ describe('standard tabs', () => {
 			[`GET /v1/dashboard/websites/${id}/features`]: ok({ features: FEATURES }),
 		});
 		const { container } = render(inDashboard(<SettingsTab {...tabProps(id)} />));
-		expect(container.querySelector('[data-ss-page][aria-busy="true"]')).not.toBeNull();
+		expect(container.querySelector('[data-shelfway-page][aria-busy="true"]')).not.toBeNull();
 		expect(container.querySelector('h1')?.textContent).toBe('Settings');
 		await settle();
 		expect(container.querySelector('[aria-busy="true"]')).toBeNull();
@@ -1072,7 +1072,7 @@ describe('standard tabs', () => {
 				.map((label) => label.textContent);
 		expect(shown()).toEqual(['Sign in']);
 		expect(container.querySelector('table')).toBeNull();
-		expect(container.querySelector('[data-ss-part="footer"]')?.textContent).toContain('1');
+		expect(container.querySelector('[data-shelfway-part="footer"]')?.textContent).toContain('1');
 		type(search(), 'zzz');
 		await settle();
 		expect(container.textContent).toContain(TEXTS.texts.none);
@@ -1096,7 +1096,7 @@ describe('standard tabs', () => {
 		const id = freshSite();
 		serve({ [`GET /v1/dashboard/websites/${id}/texts`]: ok({ texts: [] }) });
 		const { container } = render(inDashboard(<TextsTab {...tabProps(id)} />));
-		expect(container.querySelector('[data-ss-page][aria-busy="true"]')).not.toBeNull();
+		expect(container.querySelector('[data-shelfway-page][aria-busy="true"]')).not.toBeNull();
 		expect(container.querySelector('h1')?.textContent).toBe('Texts');
 		await settle();
 		expect(container.querySelector('[aria-busy="true"]')).toBeNull();
@@ -1152,7 +1152,7 @@ describe('standard tabs', () => {
 			'Feature docs',
 		]);
 		expect(crumbsOf(container)).toEqual(['Notes', 'Developers', 'Database']);
-		const header = () => /** @type {HTMLElement} */ (container.querySelector('[data-ss-part="header"]'));
+		const header = () => /** @type {HTMLElement} */ (container.querySelector('[data-shelfway-part="header"]'));
 		const card = (/** @type {string} */ name) =>
 			/** @type {HTMLElement} */ (container.querySelector(`#section-connection-${name}`));
 		// the page is one rich card: its name, its state, the product's hint as the help line
@@ -1302,7 +1302,7 @@ describe('standard tabs', () => {
 		const empty = render(inDashboard(<DevelopersTab {...tabProps(id)} />));
 		await settle();
 		expect(navLinks(empty.container)).toEqual(['Widget script', 'Feature docs']);
-		expect(empty.container.querySelector('[role="radio"], [data-ss-chip]')).toBeNull();
+		expect(empty.container.querySelector('[role="radio"], [data-shelfway-chip]')).toBeNull();
 		cleanup();
 		requests.length = 0;
 		const left = render(inDashboard(<DevelopersTab {...tabProps(id)} connections={null} />));
@@ -1346,7 +1346,7 @@ describe('standard tabs', () => {
 		openSection(container, 'docs');
 		expect(crumbsOf(container)).toEqual(['Notes', 'Developers', 'Feature docs']);
 		expect(container.querySelector('#section-docs table, #section-docs ul, #section-docs ol')).toBeNull();
-		const docs = () => [...container.querySelectorAll('#section-docs [data-ss-row]')];
+		const docs = () => [...container.querySelectorAll('#section-docs [data-shelfway-row]')];
 		expect(docs().map((row) => row.querySelector('a')?.textContent)).toEqual(['Notes', 'Inbox', 'Alerts']);
 		expect(docs().map((row) => row.querySelector('.tabular-nums')?.textContent)).toEqual(['On', 'On', 'Off']);
 		expect(container.querySelector('a[href="/docs#feature-notes"]')).not.toBeNull();
@@ -1395,7 +1395,7 @@ describe('standard tabs', () => {
 		expect(container.textContent).not.toContain(TEXTS.defaults.intro);
 		expect(aboutOf(container)).toContain(TEXTS.defaults.intro);
 		expect(container.textContent).toContain('default notice notes');
-		expect(container.querySelector('[data-ss-page] h2, #section-notes h3')).toBeNull();
+		expect(container.querySelector('[data-shelfway-page] h2, #section-notes h3')).toBeNull();
 		// the sidebar: every feature, then the texts by screen, and Recent changes (the theme and Format are the Portal's)
 		expect(navLinks(container)).toEqual(['Notes', 'Hello1 text · 1 changed', 'Recent changes']);
 		await act(async () => byText(container, 'Reset', 'button').click());
@@ -1424,7 +1424,7 @@ describe('standard tabs', () => {
 		// Recent changes is rich rows, without a card or an ol
 		openSection(container, 'changes');
 		expect(crumbsOf(container)).toEqual(['Notes', 'Defaults', 'Recent changes']);
-		const changes = /** @type {HTMLElement} */ (container.querySelector('#section-changes [data-ss-row]'));
+		const changes = /** @type {HTMLElement} */ (container.querySelector('#section-changes [data-shelfway-row]'));
 		expect(changes.textContent).toContain('Alex');
 		expect(changes.textContent).toContain('Changed the default greeting');
 		expect(container.querySelector('#section-changes ol, #section-changes ul')).toBeNull();
@@ -1493,7 +1493,7 @@ describe('standard tabs', () => {
 		// Recent changes is rich rows
 		openSection(container, 'changes');
 		expect(crumbsOf(container)).toEqual(['Notes', 'Prices', 'Recent changes']);
-		expect(container.querySelector('#section-changes [data-ss-row]')).not.toBeNull();
+		expect(container.querySelector('#section-changes [data-shelfway-row]')).not.toBeNull();
 	});
 });
 
@@ -1505,7 +1505,7 @@ describe('ProductDashboard', () => {
 	const session = (who) =>
 		ok({
 			who,
-			portalUrl: 'https://portal.example.com',
+			platformUrl: 'https://portal.example.com',
 			branding: { name: 'Acme' },
 			support: { channels: [{ type: /** @type {const} */ ('email'), label: 'Email', url: 'mailto:help@example.com' }] },
 			switcher: [
@@ -1529,7 +1529,7 @@ describe('ProductDashboard', () => {
 		const { container } = render(<ProductDashboard manifest={MANIFEST} texts={TEXTS} />);
 		// the page's own skeleton: the same header and panes as the page that is coming
 		expect(container.querySelector('[role="status"]')?.textContent).toBe(TEXTS.loading);
-		expect(container.querySelector('[data-ss-page][aria-busy="true"]')).not.toBeNull();
+		expect(container.querySelector('[data-shelfway-page][aria-busy="true"]')).not.toBeNull();
 		await settle();
 		expect(container.textContent).toContain(TEXTS.signedOut);
 		cleanup();
@@ -1563,9 +1563,9 @@ describe('ProductDashboard', () => {
 		expect(document.body.textContent).toContain(TEXTS.pickWebsite);
 		expect(document.body.textContent).toContain('Notes');
 		// Back to Portal and the docs sit at the bottom of the sidebar, not in a header that pages replace
-		const portal = document.querySelector('[data-ss-part="sidebar-bottom"] a[href="https://portal.example.com"]');
+		const portal = document.querySelector('[data-shelfway-part="sidebar-bottom"] a[href="https://portal.example.com"]');
 		expect(portal?.textContent).toBe(TEXTS.backToPortal);
-		const docs = document.querySelector('[data-ss-part="sidebar-bottom"] a[href="/docs"]');
+		const docs = document.querySelector('[data-shelfway-part="sidebar-bottom"] a[href="/docs"]');
 		expect(docs?.textContent).toBe(TEXTS.developers.openDocs);
 		const picker = /** @type {HTMLSelectElement} */ (document.querySelector('select'));
 		expect([...picker.options].map((option) => option.textContent)).toEqual([
@@ -1661,7 +1661,7 @@ describe('ProductDashboard', () => {
 		await settle();
 		expect(window.location.search).toBe('?websiteId=p2&view=overview');
 		expect(document.body.textContent).toContain('Editing as admin: changes go live on other.example.com');
-		const adminNote = document.querySelector('[data-ss-part="sidebar-bottom"] p');
+		const adminNote = document.querySelector('[data-shelfway-part="sidebar-bottom"] p');
 		expect(adminNote?.className).toContain('text-warning');
 		expect(adminNote?.className).toContain('bg-warning-soft');
 		expect(document.body.textContent).toContain('tab for p2');
@@ -1693,7 +1693,7 @@ describe('ProductDashboard', () => {
 		render(<ProductDashboard manifest={MANIFEST} texts={TEXTS} tabs={{ settings: Parts }} />);
 		await settle();
 		const before = window.history.length;
-		click(/** @type {HTMLElement} */ (document.querySelector('[role="option"][data-ss-id="two"]')));
+		click(/** @type {HTMLElement} */ (document.querySelector('[role="option"][data-shelfway-id="two"]')));
 		await settle();
 		expect(window.location.search).toBe('?websiteId=p1&view=settings');
 		expect(window.location.hash).toBe('#two');

@@ -121,29 +121,29 @@ describe('the other skeletons', () => {
 		const lg = render(<DrawerSkeleton size="lg" />).container;
 		expect(cls(md.firstElementChild)).toContain(DRAWER_WIDTH.md);
 		expect(cls(lg.firstElementChild)).toContain(DRAWER_WIDTH.lg);
-		expect(cls(md.querySelector('[data-ss-part="header"]'))).toBe(DRAWER.header);
-		expect(cls(md.querySelector('[data-ss-part="body"]'))).toBe(DRAWER.body);
-		expect(cls(md.querySelector('[data-ss-part="footer"]'))).toBe(DRAWER.footer);
+		expect(cls(md.querySelector('[data-shelfway-part="header"]'))).toBe(DRAWER.header);
+		expect(cls(md.querySelector('[data-shelfway-part="body"]'))).toBe(DRAWER.body);
+		expect(cls(md.querySelector('[data-shelfway-part="footer"]'))).toBe(DRAWER.footer);
 	});
 
 	it('the drawer skeleton can leave out the footer', () => {
 		const { container } = render(<DrawerSkeleton footer={false} className="x" />);
-		expect(container.querySelector('[data-ss-part="footer"]')).toBeNull();
+		expect(container.querySelector('[data-shelfway-part="footer"]')).toBeNull();
 		expect(cls(container.firstElementChild)).toContain('x');
 	});
 
 	it('the page skeleton draws the parts it is asked for, in the page areas', () => {
 		const bare = render(<PageSkeleton />).container;
-		expect(bare.querySelector('[data-ss-part="toolbar"]')).toBeNull();
-		expect(bare.querySelector('[data-ss-part="footer"]')).toBeNull();
-		expect(cls(bare.querySelector('[data-ss-part="body"]'))).toBe(pageBody({ toolbar: false, footer: false }));
+		expect(bare.querySelector('[data-shelfway-part="toolbar"]')).toBeNull();
+		expect(bare.querySelector('[data-shelfway-part="footer"]')).toBeNull();
+		expect(cls(bare.querySelector('[data-shelfway-part="body"]'))).toBe(pageBody({ toolbar: false, footer: false }));
 		const full = render(<PageSkeleton nav toolbar footer flush label="Loading orders" className="mine" />).container;
-		expect(cls(full.querySelector('[data-ss-part="toolbar"]'))).toBe(PAGE.toolbar);
-		expect(cls(full.querySelector('[data-ss-part="footer"]'))).toBe(PAGE.footer);
-		expect(cls(full.querySelector('[data-ss-part="body"]'))).toBe(pageBody({ toolbar: true, footer: true }));
+		expect(cls(full.querySelector('[data-shelfway-part="toolbar"]'))).toBe(PAGE.toolbar);
+		expect(cls(full.querySelector('[data-shelfway-part="footer"]'))).toBe(PAGE.footer);
+		expect(cls(full.querySelector('[data-shelfway-part="body"]'))).toBe(pageBody({ toolbar: true, footer: true }));
 		expect(full.querySelector('[role="status"]')?.textContent).toBe('Loading orders');
-		expect(cls(full.querySelector('[data-ss-page]'))).toContain('mine');
-		expect(cls(full.querySelector('[data-ss-part="body"] > div'))).toBe(PAGE.flush);
+		expect(cls(full.querySelector('[data-shelfway-page]'))).toContain('mine');
+		expect(cls(full.querySelector('[data-shelfway-part="body"] > div'))).toBe(PAGE.flush);
 	});
 
 	it('the page skeleton shows the breadcrumbs once they are known', () => {
@@ -154,10 +154,10 @@ describe('the other skeletons', () => {
 
 	it('the page skeleton draws the list column when list is true', () => {
 		const { container } = render(<PageSkeleton list />);
-		expect(cls(container.querySelector('[data-ss-page] > div'))).toBe(PAGE.listArea);
+		expect(cls(container.querySelector('[data-shelfway-page] > div'))).toBe(PAGE.listArea);
 		const aside = container.querySelector('aside');
 		expect(aside).not.toBeNull();
 		expect(cls(aside)).toContain(LIST.column);
-		expect(aside?.querySelectorAll('[data-ss-row], [class*="h-14"]').length).toBeGreaterThan(0);
+		expect(aside?.querySelectorAll('[data-shelfway-row], [class*="h-14"]').length).toBeGreaterThan(0);
 	});
 });

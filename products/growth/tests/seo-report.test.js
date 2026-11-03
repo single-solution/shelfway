@@ -244,7 +244,7 @@ describe('SEO checklist: the live site', () => {
 
 		// kept: one document, read back by GET /v1/seo/report with the texts of now
 		const db = await env.merchantDb();
-		expect(await db.collection('ss_growth_seo_reports').countDocuments()).toBe(1);
+		expect(await db.collection('shelfway_growth_seo_reports').countDocuments()).toBe(1);
 		const kept = await (await env.call('GET', '/v1/seo/report', { token: env.server })).json();
 		expect(kept).toEqual({ ...report, cached: true });
 	});
@@ -282,12 +282,12 @@ describe('SEO checklist: the live site', () => {
 		const cached = await env.call('POST', '/v1/admin/seo/checks', { token: ticket, origin: ADMIN_ORIGIN, body: {} });
 		expect((await cached.json()).cached).toBe(true);
 		const db = await env.merchantDb();
-		expect(await db.collection('ss_growth_activity').countDocuments({ action: 'seo.checked' })).toBe(0);
+		expect(await db.collection('shelfway_growth_activity').countDocuments({ action: 'seo.checked' })).toBe(0);
 		const ran = await env.call('POST', '/v1/admin/seo/checks', { token: ticket, origin: ADMIN_ORIGIN, body: { paths: ['/'] } });
 		expect((await ran.json()).pages).toEqual([
 			{ url: `${ORIGIN}/`, kind: 'home', sampled: false, head: expect.objectContaining({ url: `${ORIGIN}/` }) },
 		]);
-		expect(await db.collection('ss_growth_activity').findOne({ action: 'seo.checked' })).toMatchObject({
+		expect(await db.collection('shelfway_growth_activity').findOne({ action: 'seo.checked' })).toMatchObject({
 			actor: { kind: 'staff', id: 'u_1', name: 'Sam Staff' },
 			target: 'seo_checklist',
 			label: '/',

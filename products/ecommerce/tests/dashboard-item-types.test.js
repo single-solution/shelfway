@@ -7,7 +7,7 @@
  */
 import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { byLabel, byText, cleanup, click, keydown, render, type } from '@ss/ui/testing';
+import { byLabel, byText, cleanup, click, keydown, render, type } from '@shelfway/ui/testing';
 import { ItemTypesEditor } from '../app/dashboard/item-types.js';
 import { blankType, cleanType, loadType, typeProblems } from '../app/dashboard/drafts.js';
 import { checkItemTypes } from '../core/item-types.js';

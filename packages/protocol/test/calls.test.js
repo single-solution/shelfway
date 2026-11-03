@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { signNotice, signPortalCall, verifyPortalCall } from '../src/index.js';
+import { signNotice, signPlatformCall, verifyPlatformCall } from '../src/index.js';
 import { createMemoryReplayStore } from '../src/testing.js';
 import { createClock, expectCode, makeKey, seededRandom, staticResolver } from './helpers.js';
 
@@ -25,7 +25,14 @@ const ts = (clock) => Math.floor(clock.now() / 1000);
  * @param {Record<string, any>} [overrides]
  */
 const sign = (clock, overrides = {}) =>
-	signPortalCall({ signer: portal.signer, audience: 'shop', method: 'GET', target: TARGET, timestamp: ts(clock), ...overrides });
+	signPlatformCall({
+		signer: portal.signer,
+		audience: 'shop',
+		method: 'GET',
+		target: TARGET,
+		timestamp: ts(clock),
+		...overrides,
+	});
 
 /**
  * @param {ReturnType<typeof createClock>} clock
@@ -33,7 +40,7 @@ const sign = (clock, overrides = {}) =>
  * @param {Record<string, any>} [overrides]
  */
 const verify = (clock, headers, overrides = {}) =>
-	verifyPortalCall({
+	verifyPlatformCall({
 		headers,
 		audience: 'shop',
 		method: 'GET',
@@ -48,9 +55,9 @@ describe('Portal calls', () => {
 	it('signs and verifies a call (plain object, lower-case and Headers inputs)', async () => {
 		const clock = createClock();
 		const headers = await sign(clock);
-		expect(headers['SS-Key-Id']).toBe('portal-1');
-		expect(headers['SS-Nonce']).toMatch(/^[A-Za-z0-9_-]{22}$/);
-		expect(headers['SS-Signature']).toMatch(/^v1;kid=portal-1;sig=[A-Za-z0-9_-]{86}$/);
+		expect(headers['Shelfway-Key-Id']).toBe('portal-1');
+		expect(headers['Shelfway-Nonce']).toMatch(/^[A-Za-z0-9_-]{22}$/);
+		expect(headers['Shelfway-Signature']).toMatch(/^v1;kid=portal-1;sig=[A-Za-z0-9_-]{86}$/);
 		expect(await verify(clock, headers)).toEqual({ kid: 'portal-1', timestamp: ts(clock) });
 		const lower = Object.fromEntries(Object.entries(headers).map(([k, v]) => [k.toLowerCase(), v]));
 		await verify(clock, lower);
@@ -72,7 +79,7 @@ describe('Portal calls', () => {
 		const random = seededRandom(7);
 		const first = await sign(clock, { randomBytes: random });
 		const second = await sign(clock, { randomBytes: random });
-		expect(first['SS-Nonce']).not.toBe(second['SS-Nonce']);
+		expect(first['Shelfway-Nonce']).not.toBe(second['Shelfway-Nonce']);
 		await verify(clock, first, { replayStore });
 		await verify(clock, second, { replayStore });
 		await expectCode(verify(clock, first, { replayStore }), 'replay');
@@ -85,9 +92,9 @@ describe('Portal calls', () => {
 		await expectCode(verify(clock, headers, { method: 'DELETE' }), 'signature');
 		await expectCode(verify(clock, headers, { target: '/v1/blueprint?websiteId=web_2' }), 'signature');
 		await expectCode(verify(clock, headers, { target: '/v1/blueprint' }), 'signature');
-		await expectCode(verify(clock, { ...headers, 'SS-Timestamp': String(ts(clock) - 1) }), 'signature');
-		await expectCode(verify(clock, { ...headers, 'SS-Nonce': 'A'.repeat(22) }), 'signature');
-		const forged = await signPortalCall({
+		await expectCode(verify(clock, { ...headers, 'Shelfway-Timestamp': String(ts(clock) - 1) }), 'signature');
+		await expectCode(verify(clock, { ...headers, 'Shelfway-Nonce': 'A'.repeat(22) }), 'signature');
+		const forged = await signPlatformCall({
 			signer: attacker.signer,
 			audience: 'shop',
 			method: 'GET',
@@ -95,15 +102,18 @@ describe('Portal calls', () => {
 			timestamp: ts(clock),
 		});
 		await expectCode(verify(clock, forged), 'signature');
-		// SS-Key-Id is only a hint
-		await verify(clock, { ...headers, 'SS-Key-Id': 'portal-2' });
+		// Shelfway-Key-Id is only a hint
+		await verify(clock, { ...headers, 'Shelfway-Key-Id': 'portal-2' });
 	});
 
 	it('is never taken for a notice, nor a notice for a call', async () => {
 		const clock = createClock();
 		const body = JSON.stringify({ type: 'status.changed', websiteId: 'web_1' });
 		const notice = await signNotice({ audience: 'shop', signer: portal.signer, body, timestamp: ts(clock) });
-		await expectCode(verify(clock, { ...notice, 'SS-Nonce': 'A'.repeat(22) }, { method: 'POST', rawBody: body }), 'signature');
+		await expectCode(
+			verify(clock, { ...notice, 'Shelfway-Nonce': 'A'.repeat(22) }, { method: 'POST', rawBody: body }),
+			'signature',
+		);
 	});
 
 	it('refuses old and future timestamps', async () => {
@@ -122,10 +132,10 @@ describe('Portal calls', () => {
 	});
 
 	it.each([
-		['a missing nonce', { 'SS-Nonce': undefined }],
-		['a short nonce', { 'SS-Nonce': 'abc' }],
-		['a missing timestamp', { 'SS-Timestamp': undefined }],
-		['a missing signature', { 'SS-Signature': undefined }],
+		['a missing nonce', { 'Shelfway-Nonce': undefined }],
+		['a short nonce', { 'Shelfway-Nonce': 'abc' }],
+		['a missing timestamp', { 'Shelfway-Timestamp': undefined }],
+		['a missing signature', { 'Shelfway-Signature': undefined }],
 	])('refuses %s as malformed', async (_name, patch) => {
 		const clock = createClock();
 		await expectCode(verify(clock, { ...(await sign(clock)), ...patch }), 'malformed');

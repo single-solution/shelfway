@@ -1,7 +1,7 @@
 /**
- * The compare list, kept in the shopper's browser (localStorage `ss-ecommerce-compare`, PLAN 0.8.4): product ids in
+ * The compare list, kept in the shopper's browser (localStorage `shelfway-ecommerce-compare`, PLAN 0.8.4): product ids in
  * the order added, at most the `compare` setting's largest number. The grid's and the product page's compare toggles
- * write it; the compare widget reads it. Every change is announced on the window (`ss-ecommerce:compare`) so widgets
+ * write it; the compare widget reads it. Every change is announced on the window (`shelfway-ecommerce:compare`) so widgets
  * on the same page follow, and other tabs follow through the `storage` event. A browser without storage keeps the
  * list for the page's life only.
  * @module
@@ -10,7 +10,7 @@ import { MAX_COMPARE } from '../core/model.js';
 import { STORAGE_KEYS } from '../core/widgets.js';
 
 /** The window event of a change to the compare list (`detail`: the ids). */
-export const COMPARE_EVENT = 'ss-ecommerce:compare';
+export const COMPARE_EVENT = 'shelfway-ecommerce:compare';
 const PRODUCT_ID = /^prd_[A-Za-z0-9]{1,64}$/;
 
 /** The list per window when the browser keeps no storage. @type {WeakMap<object, string[]>} */

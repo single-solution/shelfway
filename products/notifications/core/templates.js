@@ -2,7 +2,7 @@
  * Templates (PLAN 0.8.5): one per template key × channel × language. Products and the send API name a template key
  * and the values; the merchant writes the words. A template's text fills `{placeholders}` from the values as plain
  * text, and shows an optional section `{?name}…{/name}` only when the value `name` is not empty (PLAN 0.8.10 N2).
- * The rules of the words are `@ss/contracts/templates`, which products' default templates follow too (parity P1): a
+ * The rules of the words are `@shelfway/contracts/templates`, which products' default templates follow too (parity P1): a
  * send of a product's message carries its defaults, used while the website has no template of its own for the channel.
  * A product's message may have long values (`longValues`, up to 50,000 characters each, for example a chat
  * transcript): they go only in the message's text; email sends them whole, and a channel with a shorter limit (SMS,
@@ -26,7 +26,7 @@ import {
 	sectionProblem,
 	valueNamesOf,
 	wordsProblem,
-} from '@ss/contracts/templates';
+} from '@shelfway/contracts/templates';
 import { CHANNELS, LANGUAGE } from './channels.js';
 
 export { placeholdersOf, sectionProblem, valueNamesOf };

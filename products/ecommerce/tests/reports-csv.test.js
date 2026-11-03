@@ -3,15 +3,15 @@
  * by grade and payment method, sell-through, oldest stock, every report as CSV, orders per order with the list's
  * filters, customers, and price and stock updates by CSV with the stale-row check; each with its ticket twin.
  */
-import { createId } from '@ss/contracts';
-import { parseCsv, toCsv } from '@ss/contracts/csv';
+import { createId } from '@shelfway/contracts';
+import { parseCsv, toCsv } from '@shelfway/contracts/csv';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { COLLECTIONS } from '../core/model.js';
 import { readyShop } from './helpers.js';
 
 /** @type {Awaited<ReturnType<typeof readyShop>>} */
 let shop;
-/** @type {import('@ss/app-kit').WebsiteData} */
+/** @type {import('@shelfway/app-kit').WebsiteData} */
 let data;
 const DAY = 86_400_000;
 /** @typedef {import('../core/model.js').ProductRecord} ProductRecord */

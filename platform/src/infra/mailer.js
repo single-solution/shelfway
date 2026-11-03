@@ -13,12 +13,12 @@
  *   shows a warning. Development and test log instead (the link is logged — never in production).
  * @module
  */
-import { normalizeEmail } from '@ss/contracts/email';
-import { escapeHtml } from '@ss/contracts/text';
+import { normalizeEmail } from '@shelfway/contracts/email';
+import { escapeHtml } from '@shelfway/contracts/text';
 import { problem } from './http.js';
 import { MAIL_TEXTS, supportLine } from '../texts/mail.js';
 
-/** @typedef {import('@ss/net').Logger} Logger */
+/** @typedef {import('@shelfway/net').Logger} Logger */
 /** @typedef {import('./config.js').SmtpConfig} SmtpConfig */
 
 /**
@@ -35,7 +35,7 @@ import { MAIL_TEXTS, supportLine } from '../texts/mail.js';
  * @property {() => Promise<void>} [close] close pooled connections
  *
  * @typedef {{ subject: string, text: string, html: string }} RenderedMail
- * @typedef {{ brand: string, support: { channels: import('@ss/contracts/text').SupportChannel[] } }} MailContext
+ * @typedef {{ brand: string, support: { channels: import('@shelfway/contracts/text').SupportChannel[] } }} MailContext
  *
  * @typedef {{ sendMail: (message: Record<string, unknown>) => Promise<unknown>, close: () => void }} Transport
  * @typedef {(options: Record<string, unknown>) => Transport | Promise<Transport>} TransportFactory

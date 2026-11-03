@@ -1,6 +1,6 @@
 # Product configure dashboard — UX audit (planning only)
 
-**Scope:** `@ss/ui` ProductDashboard (every product’s Open → configure). Shared shell: Overview · Settings · Texts · Developers · Owner Defaults · **Prices**.  
+**Scope:** `@shelfway/ui` ProductDashboard (every product’s Open → configure). Shared shell: Overview · Settings · Texts · Developers · Owner Defaults · **Prices**.  
 **Pain (owner):** scattered, boring, card-heavy; Settings = wall of feature rows; Prices = spreadsheet of micro-prices; easy to feel confused and “frightened.” Same §6 rule: structure must match how a person thinks.
 
 |                   | Today                                        | Target                                                                                            |
@@ -101,12 +101,12 @@ Do **E** (feature merge) and **F** (this dashboard UX) together for Chat first s
 
 ## 5. Work order (later — build **F**)
 
-1. Spec capability-oriented Settings list in `@ss/ui` (API can stay feature-keyed until merges land).
+1. Spec capability-oriented Settings list in `@shelfway/ui` (API can stay feature-keyed until merges land).
 2. PricesTab: only billable capability keys; demoted keys price 0 / folded.
 3. Settings body: open section order (use `x-ui.group` / order). **Do not** use `x-ui.advanced` as click-to-reveal; prefer reorder or a separate full sub-page for rare blocks.
 4. Categories: only post-audit groups; delete phantom keys.
 5. Overview: one primary next step, less tile clutter.
-6. Visual pass: less Card-for-Card’s-sake; open Page sections (still `@ss/ui` only).
+6. Visual pass: less Card-for-Card’s-sake; open Page sections (still `@shelfway/ui` only).
 
 **Non-goal / ban:** accordion, collapse, “show advanced”, expand-to-edit-one-field.
 

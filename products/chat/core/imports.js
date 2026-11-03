@@ -1,10 +1,10 @@
 /**
  * The `import` feature's records (pure; PLAN 0.8.10 K10, Migration step 7): Chat's own stored shapes of staff, guests,
- * conversations and messages as `ss-import` sends them (JSON times as ISO 8601 text), checked in import mode: given ids
+ * conversations and messages as `shelfway-import` sends them (JSON times as ISO 8601 text), checked in import mode: given ids
  * and past times are taken, unknown fields and the tenant fields are refused by name, and text longer than Chat keeps
  * is refused, never cut (IMP-31). Nothing here sends anything.
  *
- * - Guests are found by `keyHash`, the SHA-256 (hex) of the old guest cookie value, as Chat hashes the `SS-Guest` key of
+ * - Guests are found by `keyHash`, the SHA-256 (hex) of the old guest cookie value, as Chat hashes the `Shelfway-Guest` key of
  *   a request, so a guest's conversations keep working through the store's own cookie (C7).
  * - Messages are separate records; each gets a provisional sequence number from its time and id (far past the numbers
  *   a conversation reaches by itself), and `finish` numbers each conversation's messages 1..n in time order (ties by
@@ -12,9 +12,9 @@
  *   marks behind the unread counts the record gives (C8, C11).
  * @module
  */
-import { isId } from '@ss/contracts';
-import { normalizePhone } from '@ss/contracts/phone';
-import { isObject } from '@ss/contracts/util';
+import { isId } from '@shelfway/contracts';
+import { normalizePhone } from '@shelfway/contracts/phone';
+import { isObject } from '@shelfway/contracts/util';
 import { PRESENCES, STATUSES, USER_ID, messageText, previewOf } from './conversation.js';
 import { LABEL_LIMITS } from './labels.js';
 import { checkFieldValue } from './fields.js';

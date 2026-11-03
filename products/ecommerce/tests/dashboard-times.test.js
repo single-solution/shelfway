@@ -8,7 +8,7 @@
 import { act } from 'react';
 import { renderToString } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, render } from '@ss/ui/testing';
+import { cleanup, render } from '@shelfway/ui/testing';
 import { TABS } from '../app/dashboard/tabs.js';
 import { inDashboard } from './dashboard-provider.js';
 

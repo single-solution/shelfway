@@ -1,5 +1,5 @@
 /**
- * `@ss/importer/fixture` — the test mappings and their source documents: a small store-like `feedback` collection
+ * `@shelfway/importer/fixture` — the test mappings and their source documents: a small store-like `feedback` collection
  * (ObjectId ids, mixed-case emails, a duplicate, a hidden message and an empty one) mapped into the e2e test product
  * Notes (`notes` import collection), and the example shop (`shop.js`: people, catalog, orders, chats and analytics)
  * mapped into Accounts, Ecommerce, Chat and Growth. Used by this unit's tests and by the e2e import tests. A store

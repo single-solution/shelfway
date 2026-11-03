@@ -15,16 +15,21 @@ import { Dialog } from './overlay.js';
 
 /** The words of the dialog (US English; a caller passes its own). */
 export const PASSWORD_CONFIRM_TEXTS =
-	/** @type {Readonly<Record<'password' | 'passwordHelp' | 'code' | 'codeHelp' | 'recoveryCode' | 'recoveryHelp' | 'useRecovery' | 'useTwoStep', string>>} */ (
+	/** @type {Readonly<Record<'password' | 'passwordHelp' | 'code' | 'codeHelp' | 'emailCodeHelp' | 'emailOtpSent' | 'resendCode' | 'codeResent' | 'recoveryCode' | 'recoveryHelp' | 'useRecovery' | 'useTwoStep' | 'useEmailOtp', string>>} */ (
 		Object.freeze({
 			password: 'Your password',
 			passwordHelp: 'Enter it again to confirm it is you.',
 			code: 'Two-step code',
 			codeHelp: '6-digit code from your authenticator app.',
+			emailCodeHelp: '6-digit code sent to your email address.',
+			emailOtpSent: 'We emailed a 6-digit confirmation code to your address.',
+			resendCode: 'Resend code',
+			codeResent: 'A new code was sent to your email.',
 			recoveryCode: 'Recovery code',
 			recoveryHelp: 'One of your backup recovery codes.',
 			useRecovery: 'Use a recovery code instead',
 			useTwoStep: 'Use authenticator code instead',
+			useEmailOtp: 'Send code to email instead',
 		})
 	);
 
@@ -32,8 +37,9 @@ export const PASSWORD_CONFIRM_TEXTS =
  * @param {{ open: boolean, onClose: () => void, onConfirm: (input: { password?: string, code: string }) => void,
  *   title: ReactNode, description?: ReactNode, children?: ReactNode, confirmLabel?: string, cancelLabel?: string,
  *   busy?: boolean, danger?: boolean, showCode?: boolean, otpOnly?: boolean, expected?: string,
+ *   isEmailOtp?: boolean, onResendEmailOtp?: () => Promise<void> | void, resendingEmailOtp?: boolean,
  *   errors?: { password?: ReactNode, code?: ReactNode, form?: ReactNode },
- *   texts?: Partial<Record<'password' | 'passwordHelp' | 'code' | 'codeHelp' | 'recoveryCode' | 'recoveryHelp' | 'useRecovery' | 'useTwoStep', string>> }} props
+ *   texts?: Partial<Record<'password' | 'passwordHelp' | 'code' | 'codeHelp' | 'emailCodeHelp' | 'emailOtpSent' | 'resendCode' | 'codeResent' | 'recoveryCode' | 'recoveryHelp' | 'useRecovery' | 'useTwoStep' | 'useEmailOtp', string>> }} props
  */
 export function PasswordConfirmDialog({
 	open,
@@ -49,6 +55,9 @@ export function PasswordConfirmDialog({
 	showCode = false,
 	otpOnly = false,
 	expected,
+	isEmailOtp = false,
+	onResendEmailOtp,
+	resendingEmailOtp = false,
 	errors = {},
 	texts,
 }) {
@@ -57,15 +66,31 @@ export function PasswordConfirmDialog({
 	const [code, setCode] = useState('');
 	const [typed, setTyped] = useState('');
 	const [useRecovery, setUseRecovery] = useState(false);
+	const [cooldown, setCooldown] = useState(0);
 	const formId = useId();
+
 	useEffect(() => {
 		if (open) {
 			setPassword('');
 			setCode('');
 			setTyped('');
 			setUseRecovery(false);
+			setCooldown(isEmailOtp ? 30 : 0);
 		}
-	}, [open]);
+	}, [open, isEmailOtp]);
+
+	useEffect(() => {
+		if (cooldown <= 0) return undefined;
+		const timer = setTimeout(() => setCooldown((c) => Math.max(0, c - 1)), 1000);
+		return () => clearTimeout(timer);
+	}, [cooldown]);
+
+	const handleResend = async () => {
+		if (!onResendEmailOtp || cooldown > 0 || resendingEmailOtp) return;
+		setCooldown(30);
+		await onResendEmailOtp();
+	};
+
 	const effectiveShowCode = otpOnly || showCode;
 	const ready =
 		(otpOnly || password !== '') &&
@@ -98,6 +123,11 @@ export function PasswordConfirmDialog({
 					if (ready) onConfirm({ ...(otpOnly ? {} : { password }), code: code.trim() });
 				}}>
 				{children}
+				{isEmailOtp && (
+					<p role="status" className="rounded-control bg-surface-2 p-2.5 text-xs text-muted">
+						{T.emailOtpSent}
+					</p>
+				)}
 				{otpOnly ? null : (
 					<Input
 						label={T.password}
@@ -115,31 +145,59 @@ export function PasswordConfirmDialog({
 					<div className="space-y-2">
 						<Input
 							label={useRecovery ? (T.recoveryCode ?? 'Recovery code') : T.code}
-							help={useRecovery ? (T.recoveryHelp ?? 'One of your backup recovery codes.') : T.codeHelp}
+							help={
+								useRecovery
+									? (T.recoveryHelp ?? 'One of your backup recovery codes.')
+									: isEmailOtp
+										? (T.emailCodeHelp ?? '6-digit code sent to your email address.')
+										: T.codeHelp
+							}
 							autoComplete={useRecovery ? 'off' : 'one-time-code'}
 							inputMode={useRecovery ? 'text' : 'numeric'}
 							maxLength={useRecovery ? 16 : 6}
 							placeholder={useRecovery ? 'abcd-efgh-...' : '123456'}
 							spellCheck={false}
 							value={code}
-							onChange={(event) => setCode(event.currentTarget.value)}
+							onPaste={(event) => {
+								if (!useRecovery) {
+									event.preventDefault();
+									const pasted = event.clipboardData.getData('text').replace(/\s+/g, '');
+									setCode(pasted.slice(0, 6));
+								}
+							}}
+							onChange={(event) => {
+								const val = useRecovery ? event.currentTarget.value : event.currentTarget.value.replace(/\s+/g, '');
+								setCode(val);
+							}}
 							error={errors.code}
 							required
 							data-autofocus={otpOnly ? true : undefined}
 						/>
-						<div className="flex justify-end">
-							<Button
-								type="button"
-								variant="ghost"
-								size="sm"
-								onClick={() => {
-									setUseRecovery((v) => !v);
-									setCode('');
-								}}>
-								{useRecovery
-									? (T.useTwoStep ?? 'Use authenticator code instead')
-									: (T.useRecovery ?? 'Use a recovery code instead')}
-							</Button>
+						<div className="flex flex-wrap items-center justify-between gap-2">
+							{isEmailOtp && onResendEmailOtp ? (
+								<Button
+									type="button"
+									variant="ghost"
+									size="sm"
+									disabled={resendingEmailOtp || cooldown > 0}
+									onClick={() => void handleResend()}>
+									{cooldown > 0 ? `${T.resendCode} (${cooldown}s)` : T.resendCode}
+								</Button>
+							) : null}
+							<div className="ml-auto">
+								<Button
+									type="button"
+									variant="ghost"
+									size="sm"
+									onClick={() => {
+										setUseRecovery((v) => !v);
+										setCode('');
+									}}>
+									{useRecovery
+										? (T.useTwoStep ?? 'Use authenticator code instead')
+										: (T.useRecovery ?? 'Use a recovery code instead')}
+								</Button>
+							</div>
 						</div>
 					</div>
 				) : null}
@@ -157,7 +215,7 @@ export function PasswordConfirmDialog({
 					/>
 				)}
 				{errors.form ? (
-					<p role="alert" className="animate-ss-shake text-sm font-medium text-danger">
+					<p role="alert" className="animate-shelfway-shake text-sm font-medium text-danger">
 						{errors.form}
 					</p>
 				) : null}

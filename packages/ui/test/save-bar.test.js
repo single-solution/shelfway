@@ -26,15 +26,15 @@ describe('SaveBar floating at the bottom centre', () => {
 			'bottom-3',
 			'z-40',
 			'justify-center',
-			'left-[var(--ss-pane-left,0px)]',
-			'right-[var(--ss-pane-right,0px)]',
+			'left-[var(--shelfway-pane-left,0px)]',
+			'right-[var(--shelfway-pane-right,0px)]',
 		]) {
 			expect(region.className).toContain(name);
 		}
 		// the strip itself lets clicks through; only the bar takes them
 		expect(region.className).toContain('pointer-events-none');
 		expect(region.firstElementChild?.className).toContain('pointer-events-auto');
-		expect(region.firstElementChild?.className).toContain('animate-ss-sheet');
+		expect(region.firstElementChild?.className).toContain('animate-shelfway-sheet');
 	});
 
 	it('says what changed, and reports Save and Discard', () => {
@@ -98,10 +98,10 @@ describe('the pane the SaveBar centres on', () => {
 			</AppShell>,
 		);
 		const root = /** @type {HTMLElement} */ (container.querySelector('.h-dvh'));
-		expect(root.className).toContain('[--ss-pane-left:0.5rem]');
-		expect(root.className).toContain('lg:[--ss-pane-left:16.625rem]');
-		expect(root.className).toContain('[--ss-pane-right:0.5rem]');
+		expect(root.className).toContain('[--shelfway-pane-left:0.5rem]');
+		expect(root.className).toContain('lg:[--shelfway-pane-left:16.625rem]');
+		expect(root.className).toContain('[--shelfway-pane-right:0.5rem]');
 		click(/** @type {HTMLElement} */ (container.querySelector('button[aria-label="Collapse sidebar"]')));
-		expect(root.className).toContain('lg:[--ss-pane-left:5.125rem]');
+		expect(root.className).toContain('lg:[--shelfway-pane-left:5.125rem]');
 	});
 });

@@ -21,7 +21,7 @@
  * or given back through Payments). Pure functions, no I/O.
  * @module
  */
-import { isObject } from '@ss/contracts/util';
+import { isObject } from '@shelfway/contracts/util';
 
 /** The kinds of payment methods (Payments' manual methods use the same names). */
 export const PAYMENT_KINDS = Object.freeze(/** @type {const} */ (['gateway', 'pay_first', 'on_delivery', 'at_pickup']));

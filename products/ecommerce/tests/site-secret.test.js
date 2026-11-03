@@ -3,7 +3,7 @@
  * `ENCRYPTION_KEY_PREVIOUS` while the key changes, moved by the Owner's Re-seal, replaced when no key opens it; and the
  * dashboard's Re-seal reaches it.
  */
-import { createMemoryStore } from '@ss/app-kit';
+import { createMemoryStore } from '@shelfway/app-kit';
 import { describe, expect, it } from 'vitest';
 import { createSealer, createSiteSecrets } from '../adapters/site-secret.js';
 import { setup } from './helpers.js';

@@ -10,9 +10,9 @@
 import { act } from 'react';
 import { renderToString } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { DashboardProvider } from '@ss/ui/dashboard';
-import { fill } from '@ss/ui/dashboard';
-import { byLabel, byText, cleanup, click, render, type } from '@ss/ui/testing';
+import { DashboardProvider } from '@shelfway/ui/dashboard';
+import { fill } from '@shelfway/ui/dashboard';
+import { byLabel, byText, cleanup, click, render, type } from '@shelfway/ui/testing';
 import manifest from '../manifest.json' with { type: 'json' };
 import { TABS } from '../app/dashboard/tabs.js';
 import { TemplatesSection } from '../app/dashboard/templates.js';
@@ -222,7 +222,9 @@ describe('Settings → Templates: the products’ messages (parity P1)', () => {
 		const labels = (/** @type {HTMLButtonElement[]} */ items) => items.map((item) => item.textContent);
 		// Accounts' reset link can neither be switched off nor has an edited version: only Edit
 		expect(labels(await menuAt(0))).toEqual([T.edit]);
-		await act(async () => click(/** @type {HTMLElement} */ (container.querySelector('[data-ss-row] button[aria-haspopup]'))));
+		await act(async () =>
+			click(/** @type {HTMLElement} */ (container.querySelector('[data-shelfway-row] button[aria-haspopup]'))),
+		);
 		// an edited message: Reset to default and Switch off
 		const edited = await menuAt(1);
 		expect(labels(edited)).toEqual([T.edit, T.reset, T.switchOff]);
@@ -467,7 +469,7 @@ describe('Overview (PLAN 0.6 "Overviews talk")', () => {
 			`/v1/dashboard/websites/web_o${website}/lists/webhook_urls`,
 		);
 		cleanup();
-		serveOverview({ featuresOn: ['webhooks'], urls: ['https://hooks.example.com/ss'] });
+		serveOverview({ featuresOn: ['webhooks'], urls: ['https://hooks.example.com/shelfway'] });
 		const added = render(overviewOf(props()));
 		await settle();
 		expect(needs(added.container)).not.toContain('Outgoing webhooks is on, but no address is added yet');

@@ -1,5 +1,5 @@
 /**
- * HTTP security headers (pure). `next.config.js` applies the static set (`@ss/net` `staticSecurityHeaders`) to every
+ * HTTP security headers (pure). `next.config.js` applies the static set (`@shelfway/net` `staticSecurityHeaders`) to every
  * response; `proxy.js` adds a
  * per-request nonce-based CSP to HTML pages (Next.js applies the nonce to its own scripts and styles).
  *

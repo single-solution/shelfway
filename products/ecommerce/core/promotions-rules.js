@@ -4,8 +4,8 @@
  * limit) when the merchant's staff or server write one. No I/O.
  * @module
  */
-import { MAX_AMOUNT } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
+import { MAX_AMOUNT } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
 
 /** @typedef {import('./model.js').OfferScope} OfferScope */
 

@@ -5,7 +5,7 @@
  * defaults; staff alerts take `all_staff` (every unblocked Accounts user whose role has the alert's own permission) and
  * `includePhone`.
  */
-import { validateMessageDefaults } from '@ss/contracts';
+import { validateMessageDefaults } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import declaration from '../schemas/messages.json' with { type: 'json' };
 import guide from '../docs/guide.json' with { type: 'json' };
@@ -105,7 +105,7 @@ describe('Ecommerce’s messages and their defaults (parity P1)', () => {
 				token: shop.browser,
 				origin: ORIGIN,
 				body: { lines: [{ productId: item.id }], payment: 'cod', address: ADDRESS },
-				headers: { 'x-forwarded-for': `10.9.0.${shoppers}`, 'ss-sign-in': token, 'idempotency-key': `msg-${shoppers}` },
+				headers: { 'x-forwarded-for': `10.9.0.${shoppers}`, 'shelfway-sign-in': token, 'idempotency-key': `msg-${shoppers}` },
 			});
 			expect(placed.status, JSON.stringify(placed.json)).toBe(201);
 			await shop.flush();
@@ -195,7 +195,7 @@ describe('Ecommerce’s messages and their defaults (parity P1)', () => {
 					lines: [{ lineId: order.lines[0].id, quantity: 1 }],
 					reason: 'Wrong size',
 				},
-				headers: { 'x-forwarded-for': '10.9.1.1', 'ss-sign-in': token, 'idempotency-key': 'msg-claim' },
+				headers: { 'x-forwarded-for': '10.9.1.1', 'shelfway-sign-in': token, 'idempotency-key': 'msg-claim' },
 			});
 			expect(claim.status, JSON.stringify(claim.json)).toBe(201);
 			await shop.flush();

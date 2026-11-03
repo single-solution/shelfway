@@ -5,7 +5,7 @@
  * body only. Each view exports its `metadata`.
  */
 import { notFound, redirect } from 'next/navigation.js';
-import { PageTransition } from '@ss/ui';
+import { PageTransition } from '@shelfway/ui';
 import {
 	loadActivity,
 	loadAdmin,
@@ -208,7 +208,7 @@ export { SettingsPartPage as SettingsPart };
 
 /**
  * Path patterns under /admin (`:name` captures a segment into `params`), views, metadata and the kind of view: a
- * `page`, a `screen` (a `Page` of `@ss/ui`: it keeps its header in place and fades its own body in) or `public` (no
+ * `page`, a `screen` (a `Page` of `@shelfway/ui`: it keeps its header in place and fades its own body in) or `public` (no
  * session, no title suffix).
  * @typedef {'page' | 'screen' | 'public'} ViewKind
  */

@@ -3,7 +3,7 @@
  * counters, with the kit's pool and deadlines (K-16): a database that cannot be reached answers 503
  * `database_unavailable` within the deadline, never 500 or a request that waits for the driver's 30 s.
  */
-import { PRODUCT_DATABASE_OPTIONS } from '@ss/app-kit';
+import { PRODUCT_DATABASE_OPTIONS } from '@shelfway/app-kit';
 import { afterAll, expect, it, vi } from 'vitest';
 import { createProductInstance } from '../adapters/product.js';
 import { createRoutes } from '../server/routes.js';
@@ -44,7 +44,7 @@ it('opens its product database with the kit’s pool and deadlines and answers 5
 	expect(opened.map(({ uri, options }) => [uri, options])).toEqual([['mongodb://127.0.0.1:1/chat', PRODUCT_DATABASE_OPTIONS]]);
 	const handler = product.handler(createRoutes(product));
 	const response = await handler(
-		new Request('https://chat.example.dev/v1/features', { headers: { authorization: 'Bearer ss_test' } }),
+		new Request('https://chat.example.dev/v1/features', { headers: { authorization: 'Bearer shelfway_test' } }),
 	);
 	expect([response.status, response.headers.get('retry-after')]).toEqual([503, '5']);
 	expect((await response.json()).type).toMatch(/\/database_unavailable$/);

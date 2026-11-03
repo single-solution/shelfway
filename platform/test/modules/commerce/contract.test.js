@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { validateStatusResponse, validateWebsitesPage } from '@ss/contracts';
+import { validateStatusResponse, validateWebsitesPage } from '@shelfway/contracts';
 import { closeMongoClients } from '../../../src/testing.js';
 import { MAX_PRICE_MILLICREDITS_PER_HOUR } from '../../../src/modules/commerce/services/products.js';
 import { T0, createClock, startMongo } from '../../helpers.js';

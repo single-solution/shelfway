@@ -122,7 +122,7 @@ describe('reading pages', () => {
 			title: 'A & B',
 			hidden: '',
 		});
-		// references as HTML reads them (@ss/contracts/text): an unknown name stays as written, even one every object has
+		// references as HTML reads them (@shelfway/contracts/text): an unknown name stays as written, even one every object has
 		// (`&constructor;`), and a code point that is no character becomes U+FFFD
 		expect(attributesOf('<a title="&#36;12 &#x20B9;5 &AMP; &nbsp;&bogus; &constructor; &#0; &#xD800;">')).toEqual({
 			title: '$12 ₹5 & \u00a0&bogus; &constructor; \uFFFD \uFFFD',

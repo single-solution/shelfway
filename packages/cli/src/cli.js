@@ -1,5 +1,5 @@
 /**
- * `ss` command dispatcher. Every side effect is injected (`io`, `cwd`), so the whole CLI is testable in-process;
+ * `shelfway` command dispatcher. Every side effect is injected (`io`, `cwd`), so the whole CLI is testable in-process;
  * `bin.js` wires the real process.
  * @module
  */
@@ -10,7 +10,7 @@ import { formatValidation, validateProject } from './validate/index.js';
 import { writeAssets } from './assets.js';
 import pkg from '../package.json' with { type: 'json' };
 
-/** This CLI's version (`ss --version`), from its package.json. */
+/** This CLI's version (`shelfway --version`), from its package.json. */
 export const VERSION = pkg.version;
 
 /** @typedef {{ out: (text: string) => void, err: (text: string) => void }} Io */
@@ -20,18 +20,18 @@ export const VERSION = pkg.version;
  * @property {string} [cwd]
  */
 
-export const USAGE = `ss — Shelfway developer CLI
+export const USAGE = `shelfway — Shelfway developer CLI
 
 Usage:
-  ss app init <dir> --id <id> --name <name> [--base-url <url>] [--sdk-version <range>]
+  shelfway app init <dir> --id <id> --name <name> [--base-url <url>] [--sdk-version <range>]
                                  generate a product (PLAN 0.4.13 layout) with the sample feature notes
-  ss app validate [dir] [--json] check the product standard: layout, manifest, routes, API descriptions, texts,
+  shelfway app validate [dir] [--json] check the product standard: layout, manifest, routes, API descriptions, texts,
                                  .env.example, import direction, package wiring, server shape, generated files
-  ss app assets [dir] [--check]  generate openapi.json (from the routes and schemas/api.json) and
+  shelfway app assets [dir] [--check]  generate openapi.json (from the routes and schemas/api.json) and
                                  server/widget-script.js (ui/ bundled for browsers); --check fails when either is out
                                  of date
-  ss help, ss --help, ss -h      print this help
-  ss --version, ss -v            print the CLI's version
+  shelfway help, shelfway --help, shelfway -h      print this help
+  shelfway --version, shelfway -v                  print the CLI's version
 
 Exit codes: 0 ok, 1 validation failed or command error, 2 usage error.
 `;
@@ -42,7 +42,7 @@ Exit codes: 0 ok, 1 validation failed or command error, 2 usage error.
  * @returns {number}
  */
 const usageError = (io, message) => {
-	io.err(`ss: ${message}\n\n${USAGE}`);
+	io.err(`shelfway: ${message}\n\n${USAGE}`);
 	return 2;
 };
 
@@ -57,7 +57,7 @@ const parse = (args, options) => {
 };
 
 /**
- * `ss app <sub>`.
+ * `shelfway app <sub>`.
  * @param {string | undefined} sub
  * @param {string[]} args
  * @param {{ io: Io, cwd: string }} deps
@@ -93,7 +93,7 @@ const app = async (sub, args, { io, cwd }) => {
 		const states = await writeAssets(path.resolve(cwd, positionals[0] ?? '.'), { check });
 		const stale = states.filter((state) => !state.upToDate);
 		if (check && stale.length > 0) {
-			io.err(`${stale.map((state) => state.file).join(', ')} out of date: run ss app assets\n`);
+			io.err(`${stale.map((state) => state.file).join(', ')} out of date: run shelfway app assets\n`);
 			return 1;
 		}
 		io.out(`${states.map((state) => `${state.file} ${state.upToDate ? 'is up to date' : 'written'}`).join('\n')}\n`);
@@ -110,7 +110,7 @@ const app = async (sub, args, { io, cwd }) => {
 
 /**
  * Run the CLI.
- * @param {string[]} argv arguments after `ss`
+ * @param {string[]} argv arguments after `shelfway`
  * @param {CliDeps} deps
  * @returns {Promise<number>} exit code
  */
@@ -138,7 +138,7 @@ export const main = async (argv, deps) => {
 		) {
 			return usageError(io, /** @type {Error} */ (error).message);
 		}
-		io.err(`ss: ${/** @type {Error} */ (error).message}\n`);
+		io.err(`shelfway: ${/** @type {Error} */ (error).message}\n`);
 		return 1;
 	}
 };

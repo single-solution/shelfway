@@ -102,9 +102,9 @@ const full = () => {
 	});
 };
 
-describe('the website-settings document (ss.website-settings/1)', () => {
+describe('the website-settings document (shelfway.website-settings/1)', () => {
 	it('names its schema and its five sections', () => {
-		expect(WEBSITE_SETTINGS_SCHEMA).toBe('ss.website-settings/1');
+		expect(WEBSITE_SETTINGS_SCHEMA).toBe('shelfway.website-settings/1');
 		expect(SCHEMA_IDS.websiteSettings).toMatch(/website-settings$/);
 		expect(WEBSITE_SETTINGS_SECTIONS).toEqual(['business', 'brand', 'region', 'pages', 'team']);
 	});
@@ -122,7 +122,7 @@ describe('the website-settings document (ss.website-settings/1)', () => {
 	const refusals = [
 		['an unknown member', (s) => (s.region.secret = 'x'), '/region/secret'],
 		['an unknown section', (s) => (s.extra = {}), '/extra'],
-		['another schema', (s) => (s.schema = 'ss.website-settings/2'), '/schema'],
+		['another schema', (s) => (s.schema = 'shelfway.website-settings/2'), '/schema'],
 		['a time zone the runtime does not know', (s) => (s.region.timeZone = 'Mars/Base'), '/region/timeZone'],
 		['a country written in three letters', (s) => (s.region.country = 'USA'), '/region/country'],
 		['a currency written in lower case', (s) => (s.region.currency = 'usd'), '/region/currency'],

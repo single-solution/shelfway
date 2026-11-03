@@ -29,7 +29,7 @@ describe('vocabularies', () => {
 describe('connections of a website', () => {
 	const connections = () => ({
 		version: 3,
-		database: { uri: 'mongodb+srv://user:secret@cluster.example.net/?retryWrites=true', dbName: 'ss_ecommerce' },
+		database: { uri: 'mongodb+srv://user:secret@cluster.example.net/?retryWrites=true', dbName: 'shelfway_ecommerce' },
 		storage: {
 			bucket: 'media',
 			region: 'auto',
@@ -68,7 +68,7 @@ describe('connections of a website', () => {
 	/** @type {Array<[string, (c: any) => unknown, string, string]>} */
 	const refused = [
 		['a database that is not MongoDB', (c) => (c.database.uri = 'postgres://x'), '/database/uri', 'pattern'],
-		['a database name with a dot', (c) => (c.database.dbName = 'ss.chat'), '/database/dbName', 'pattern'],
+		['a database name with a dot', (c) => (c.database.dbName = 'shelfway.chat'), '/database/dbName', 'pattern'],
 		['a database without its name', (c) => delete c.database.dbName, '/database/dbName', 'required'],
 		['a storage without a secret', (c) => delete c.storage.secretAccessKey, '/storage/secretAccessKey', 'required'],
 		['an unknown storage member', (c) => (c.storage.publicUrl = 'x'), '/storage/publicUrl', 'additionalProperties'],

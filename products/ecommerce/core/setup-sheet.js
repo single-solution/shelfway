@@ -1,5 +1,5 @@
 /**
- * Ecommerce's own part of the website Setup sheet (owner request 2026-10-14, `ss.blueprint/1`): its lists in its own
+ * Ecommerce's own part of the website Setup sheet (owner request 2026-10-14, `shelfway.blueprint/1`): its lists in its own
  * words — the order flow, couriers, delivery zones, tax rules, grades, item types, booking schedules and role prices, by name and
  * number, never an address or a key — and short summaries of what the merchant's website builds around the shop: the
  * pages and their addresses, what the website serves from its own domain, and the SEO tags of its page heads. The

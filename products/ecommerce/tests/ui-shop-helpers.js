@@ -184,7 +184,7 @@ export const handTimers = () => {
  */
 export const place = (key, data = {}) => {
 	const host = document.createElement('div');
-	host.setAttribute('data-ss-ecommerce', key);
+	host.setAttribute('data-shelfway-ecommerce', key);
 	for (const [name, value] of Object.entries(data)) host.dataset[name] = value;
 	document.body.append(host);
 	return host;

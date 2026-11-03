@@ -7,7 +7,7 @@
  *   settings › Data and files) and arrive here with the product's own database name; the website's AI provider key is
  *   entered there too and arrives, when the manifest says `needs.ai`, in a `secret` definition that says `portal: 'ai'`; the
  *   links to other products are created by the Portal from the manifests and arrive as keys with the scopes granted. They
- *   are *managed*: `save` and `remove` refuse them (409 `managed_by_portal`), and only `adopt` (a signed fetch from the
+ *   are *managed*: `save` and `remove` refuse them (409 `managed_by_platform`), and only `adopt` (a signed fetch from the
  *   Portal) writes them. The product's own provider keys (`secret` with no `portal`) are still entered in the product.
  * - Values are encrypted (`sealing.js`: with `ENCRYPTION_KEY`, or `ENCRYPTION_KEY_PREVIOUS` while the key changes)
  *   and write-only: screens get only `{ name, label, kind, neededBy, managed, set, status, message?, testedAt }`: whether a
@@ -19,15 +19,15 @@
  *   reported to the Portal, which never opens the merchant's database or bucket itself.
  * - Every change writes Recent changes.
  * - `callProduct` calls another product with the link key the Portal gave this product for it, at the address the
- *   Portal's directory gives (cached up to 5 minutes), through `@ss/net`; a send to Notifications carries the defaults and
+ *   Portal's directory gives (cached up to 5 minutes), through `@shelfway/net`; a send to Notifications carries the defaults and
  *   long values of the product's message (`attach`, `messages.js`). The key proves who calls and the other product
  *   enforces what it may do. `addressOf` gives another product's address (the same cache); `products` every connected
  *   product and its address (the Portal's directory list, cached up to 5 minutes; its last good copy while the Portal
  *   cannot answer), so a product can serve the others without naming them in its code.
  * @module
  */
-import { isNetError, isSafeMongoUri } from '@ss/net';
-import { isObject } from '@ss/contracts/util';
+import { isNetError, isSafeMongoUri } from '@shelfway/net';
+import { isObject } from '@shelfway/contracts/util';
 import { problem } from './http/results.js';
 import { createS3Storage } from './adapters/storage.js';
 import { resealEach } from './reseal.js';
@@ -52,8 +52,8 @@ import { omit } from './util.js';
  *   status: 'connected' | 'not_connected' | 'test_failed', set: boolean, message?: string, testedAt: string | null }} ConnectionView
  *   `managed`: the Portal owns it (database, storage, the AI key and links): it cannot be saved or removed here
  */
-/** The Portal's bundle for a product (`GET /v1/product/websites/:id/connections`). @typedef {import('@ss/contracts').WebsiteConnections} Bundle */
-/** @typedef {(url: string, init?: import('@ss/net').SafeFetchInit) => Promise<import('@ss/net').SafeResponse>} OutboundSend */
+/** The Portal's bundle for a product (`GET /v1/product/websites/:id/connections`). @typedef {import('@shelfway/contracts').WebsiteConnections} Bundle */
+/** @typedef {(url: string, init?: import('@shelfway/net').SafeFetchInit) => Promise<import('@shelfway/net').SafeResponse>} OutboundSend */
 /** @typedef {{ productId: string, name: string, baseUrl: string }} DirectoryEntry a connected product, its name and address */
 /**
  * @typedef {{ ok: true, status: number, body: unknown }
@@ -117,7 +117,7 @@ const RESEAL_LIMIT = 100_000;
  * database and the storage are the Portal's: the storage is named `storage`. There are no token connections: a
  * product's links to other products come from the Portal (manifest `links.needs`).
  * @param {Record<string, ConnectionDefinition> | undefined} definitions
- * @param {import('@ss/contracts').Manifest} manifest
+ * @param {import('@shelfway/contracts').Manifest} manifest
  * @returns {Record<string, ConnectionDefinition>}
  */
 export const checkConnectionDefinitions = (definitions = {}, manifest) => {
@@ -142,7 +142,7 @@ export const checkConnectionDefinitions = (definitions = {}, manifest) => {
 
 /**
  * The links a product needs from other products, from its manifest: name, the other product, the features that use it.
- * @param {import('@ss/contracts').Manifest} manifest
+ * @param {import('@shelfway/contracts').Manifest} manifest
  * @returns {Array<{ name: string, productId: string, label: string, neededBy: string[] }>}
  */
 export const linkDefinitionsOf = (manifest) => {
@@ -189,10 +189,10 @@ const valueViolation = (kind, value) => {
  *   store: Store, productId: string, definitions: Record<string, ConnectionDefinition>,
  *   links?: Array<{ name: string, productId: string, label: string, neededBy: string[] }>,
  *   sealer: import('./sealing.js').Sealer, recent: import('./recent.js').RecentChanges, send: OutboundSend,
- *   policy: import('@ss/net').OutboundPolicy, testDatabase: (uri: string) => Promise<{ ok: boolean, message?: string }>,
+ *   policy: import('@shelfway/net').OutboundPolicy, testDatabase: (uri: string) => Promise<{ ok: boolean, message?: string }>,
  *   directory: (productId: string) => Promise<{ baseUrl: string }>,
  *   directoryList: () => Promise<{ items: DirectoryEntry[] }>,
- *   now: () => number, logger: import('@ss/net').Logger,
+ *   now: () => number, logger: import('@shelfway/net').Logger,
  *   attach?: import('./messages.js').Messages['attach'],
  * }} options `links`: the links the manifest needs (`linkDefinitionsOf`)
  */
@@ -258,7 +258,7 @@ export const createConnections = ({
 					now,
 					policy,
 				});
-				await storage.headObject({ key: 'ss-connection-test' });
+				await storage.headObject({ key: 'shelfway-connection-test' });
 			}
 			if (result.ok && def.test) result = await def.test(value, { websiteId, send });
 		} catch (error) {
@@ -316,7 +316,7 @@ export const createConnections = ({
 	};
 
 	/**
-	 * The refusal of a change the Portal owns: 409 `managed_by_portal`, naming where to make it.
+	 * The refusal of a change the Portal owns: 409 `managed_by_platform`, naming where to make it.
 	 * @param {string} label
 	 * @param {'connections' | 'links'} section
 	 * @returns {{ ok: false, problem: ProblemResult }}
@@ -324,7 +324,7 @@ export const createConnections = ({
 	const managed = (label, section) => ({
 		ok: false,
 		problem: problem(
-			'managed_by_portal',
+			'managed_by_platform',
 			section === 'links'
 				? `${label} is set by the Portal: it links the products of a website by itself (Website settings › Between your products).`
 				: `${label} is entered once for every product, in the Portal: Website settings › Data and files.`,
@@ -334,7 +334,7 @@ export const createConnections = ({
 
 	/**
 	 * Save (or replace) a value of the product's own (a provider key): checked, tested live, encrypted. The database,
-	 * the storage and the links are the Portal's: 409 `managed_by_portal`.
+	 * the storage and the links are the Portal's: 409 `managed_by_platform`.
 	 * @param {{ websiteId: string, name: string, value: unknown, who: Who }} input
 	 * @returns {Promise<{ ok: true, connection: ConnectionView } | { ok: false, problem: ProblemResult }>}
 	 */
@@ -639,7 +639,7 @@ export const createConnections = ({
 			await mark(websiteId, name, `${otherProductId} is not available.`);
 			return { ok: false, reason: 'unavailable' };
 		}
-		/** @type {import('@ss/net').SafeResponse} */
+		/** @type {import('@shelfway/net').SafeResponse} */
 		let response;
 		try {
 			response = await send(`${baseUrl}${path}`, {

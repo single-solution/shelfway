@@ -4,27 +4,27 @@
  *
  * Two sources, both plain:
  * - **Environment** (`loadEnv`, PLAN 0.11): the database (`MONGODB_URI`), the Portal's final public address
- *   (`PORTAL_URL`) and the key that encrypts stored secrets (`ENCRYPTION_KEY`, plus the optional
+ *   (`PLATFORM_URL`) and the key that encrypts stored secrets (`ENCRYPTION_KEY`, plus the optional
  *   `ENCRYPTION_KEY_PREVIOUS` set only while the owner changes it), listed in `.env.example`. Everything else is a fixed
  *   constant below. The environment comes from `NODE_ENV` (production unless `development` or `test`).
  * - **System state** (`infra/system.js`, the control database): the secrets generated on first start (the Portal
  *   signing keys, the token signing keys, the session secret and the idempotency secret) and the settings an Owner
  *   records (email sending, branding, support contact, security, billing rules).
- * The Portal's address is `PORTAL_URL` and nothing else: never the request's Host or forwarded headers (PLAN 0.8.1).
+ * The Portal's address is `PLATFORM_URL` and nothing else: never the request's Host or forwarded headers (PLAN 0.8.1).
  * `buildConfig(env, system)` joins them into the {@link PortalConfig} every module reads.
  * @module
  */
-import { LOCAL_HOSTS, mongoDatabaseName } from '@ss/net';
+import { LOCAL_HOSTS, mongoDatabaseName } from '@shelfway/net';
 import { platformError } from './errors.js';
 
-/** @typedef {import('@ss/protocol').PrivateJwk} PrivateJwk */
+/** @typedef {import('@shelfway/protocol').PrivateJwk} PrivateJwk */
 /** @typedef {'production' | 'development' | 'test'} PortalEnv */
 
 /**
  * @typedef {object} EnvConfig
  * @property {PortalEnv} env
  * @property {boolean} isProduction
- * @property {string} portalUrl `PORTAL_URL`: scheme + host (+ port), no path and no trailing slash
+ * @property {string} platformUrl `PLATFORM_URL`: scheme + host (+ port), no path and no trailing slash
  * @property {string} encryptionKey `ENCRYPTION_KEY` (at least 32 characters; encrypts stored secrets, PLAN 0.4.8)
  * @property {string | null} previousEncryptionKey `ENCRYPTION_KEY_PREVIOUS`: the old key while the owner changes
  *   `ENCRYPTION_KEY` (values it sealed keep opening until Settings → Encryption key → Re-seal), else null
@@ -43,7 +43,7 @@ import { platformError } from './errors.js';
  *   when absent)
  * @property {ReadonlyArray<PrivateJwk>} signingKeys first signs; all are published
  * @property {ReadonlyArray<PrivateJwk>} tokenSigningKeys first signs browser and server tokens; all are published
- * @property {{ signing: ReadonlyArray<import('@ss/protocol').PublicJwk>, token: ReadonlyArray<import('@ss/protocol').PublicJwk> }} [publishedOnly]
+ * @property {{ signing: ReadonlyArray<import('@shelfway/protocol').PublicJwk>, token: ReadonlyArray<import('@shelfway/protocol').PublicJwk> }} [publishedOnly]
  *   public keys of stored signing keys whose seed no longer opens (`ENCRYPTION_KEY` lost): published, never signing
  * @property {Buffer} sessionSecret
  * @property {Buffer} idempotencySecret
@@ -54,7 +54,7 @@ import { platformError } from './errors.js';
  * @typedef {object} PortalSettings
  * @property {{ sessionHours: number, requireTwoStepForAdmins: boolean }} security
  * @property {{ name: string, accent: string, hasLogo: boolean, logoVersion: number }} branding
- * @property {{ channels: import('@ss/contracts/text').SupportChannel[] }} support the support contact: a list of channels (email, phone or
+ * @property {{ channels: import('@shelfway/contracts/text').SupportChannel[] }} support the support contact: a list of channels (email, phone or
  *   any https link, each with the operator's label)
  * @property {{ graceDays: number, lowBalanceDays: number }} billing
  */
@@ -63,9 +63,9 @@ import { platformError } from './errors.js';
  * @typedef {object} PortalConfig
  * @property {PortalEnv} env
  * @property {boolean} isProduction
- * @property {string} portalUrl `PORTAL_URL` (no trailing slash) — issuer of launches, audience of assertions, base of
+ * @property {string} platformUrl `PLATFORM_URL` (no trailing slash) — issuer of launches, audience of assertions, base of
  *   links, the only origin the CSRF check accepts
- * @property {boolean} cookieSecure true when `PORTAL_URL` is https
+ * @property {boolean} cookieSecure true when `PLATFORM_URL` is https
  * @property {string} encryptionKey `ENCRYPTION_KEY`
  * @property {string | null} previousEncryptionKey `ENCRYPTION_KEY_PREVIOUS` (null when not set)
  * @property {PortalSettings} settings
@@ -73,7 +73,7 @@ import { platformError } from './errors.js';
 
  * @property {ReadonlyArray<PrivateJwk>} signingKeys first = active signer; all are published in the JWKS
  * @property {ReadonlyArray<PrivateJwk>} tokenSigningKeys dedicated token signers (first signs; all published)
- * @property {{ signing: ReadonlyArray<import('@ss/protocol').PublicJwk>, token: ReadonlyArray<import('@ss/protocol').PublicJwk> }} publishedOnly
+ * @property {{ signing: ReadonlyArray<import('@shelfway/protocol').PublicJwk>, token: ReadonlyArray<import('@shelfway/protocol').PublicJwk> }} publishedOnly
  *   public keys published without a signer (stored keys whose seed no longer opens)
  * @property {Buffer} sessionSecret HMAC key for session ids, recovery codes and throttle keys at rest
  * @property {Buffer} idempotencySecret HMAC key of idempotency fingerprints
@@ -107,18 +107,18 @@ export const SETTINGS_BOUNDS = Object.freeze({
 
 /**
  * The address of the Branding logo (it changes with each new logo, so caches never show an old one), or null.
- * @param {string} portalUrl
+ * @param {string} platformUrl
  * @param {{ hasLogo: boolean, logoVersion: number }} branding
  */
-export const logoUrlOf = (portalUrl, branding) =>
-	branding.hasLogo ? `${portalUrl}/branding/logo?v=${branding.logoVersion}` : null;
+export const logoUrlOf = (platformUrl, branding) =>
+	branding.hasLogo ? `${platformUrl}/branding/logo?v=${branding.logoVersion}` : null;
 
 /** @type {Readonly<PortalSettings>} */
 export const DEFAULT_SETTINGS = Object.freeze({
 	// two-step is required for every admin until an Owner turns the requirement off (Settings → Security)
 	security: Object.freeze({ sessionHours: SETTINGS_BOUNDS.sessionHours.default, requireTwoStepForAdmins: true }),
 	branding: Object.freeze({ name: 'Shelfway', accent: '#0f766e', hasLogo: false, logoVersion: 0 }),
-	support: Object.freeze({ channels: /** @type {import('@ss/contracts/text').SupportChannel[]} */ ([]) }),
+	support: Object.freeze({ channels: /** @type {import('@shelfway/contracts/text').SupportChannel[]} */ ([]) }),
 	billing: Object.freeze({
 		graceDays: SETTINGS_BOUNDS.graceDays.default,
 		lowBalanceDays: SETTINGS_BOUNDS.lowBalanceDays.default,
@@ -132,7 +132,7 @@ export const MAIL_FROM = /^(?:[^<>\r\n]{1,100} <[^\s@<>]{1,64}@[^\s@<>]{1,255}>|
 const LOCAL_HOST = /^(?:localhost|[a-z0-9-]+(?:\.[a-z0-9-]+)*\.localhost|127\.0\.0\.1|\[::1\])$/;
 
 /**
- * Validate `PORTAL_URL` (PLAN 0.11): an http(s) origin with nothing after it; https unless a local host outside
+ * Validate `PLATFORM_URL` (PLAN 0.11): an http(s) origin with nothing after it; https unless a local host outside
  * production. Returns the origin or a message naming the variable.
  * @param {string | undefined} raw
  * @param {boolean} production
@@ -141,7 +141,7 @@ const LOCAL_HOST = /^(?:localhost|[a-z0-9-]+(?:\.[a-z0-9-]+)*\.localhost|127\.0\
 export const parsePortalUrl = (raw, production) => {
 	// tolerate surrounding spaces and one trailing slash, the common copy-paste slips
 	const text = raw?.trim().replace(/\/$/, '');
-	if (!text) return { ok: false, message: 'PORTAL_URL is required' };
+	if (!text) return { ok: false, message: 'PLATFORM_URL is required' };
 	/** @type {URL | null} */
 	let url = null;
 	try {
@@ -161,9 +161,9 @@ export const parsePortalUrl = (raw, production) => {
 		text.includes('?') ||
 		text.includes('#')
 	)
-		return { ok: false, message: 'PORTAL_URL must be scheme + host (+ port), with no path and no trailing slash' };
+		return { ok: false, message: 'PLATFORM_URL must be scheme + host (+ port), with no path and no trailing slash' };
 	if (url.protocol === 'http:' && (production || !LOCAL_HOST.test(url.hostname)))
-		return { ok: false, message: 'PORTAL_URL must use https (http only for a local host in development and tests)' };
+		return { ok: false, message: 'PLATFORM_URL must use https (http only for a local host in development and tests)' };
 	return { ok: true, value: url.origin };
 };
 
@@ -186,16 +186,16 @@ export const loadEnv = (env = process.env) => {
 	const portalEnv = env.NODE_ENV === 'development' || env.NODE_ENV === 'test' ? env.NODE_ENV : 'production';
 	const strict = portalEnv === 'production';
 
-	// Mongo (the database is the path of MONGODB_URI, else `ss_portal`)
+	// Mongo (the database is the path of MONGODB_URI, else `shelfway_platform`)
 	const mongoUri = read('MONGODB_URI') ?? '';
 	if (!mongoUri) problems.push('MONGODB_URI is required');
 	else if (!/^mongodb(\+srv)?:\/\//.test(mongoUri)) problems.push('MONGODB_URI must be a mongodb:// or mongodb+srv:// URI');
-	const dbName = (mongoUri ? mongoDatabaseName(mongoUri) : null) ?? 'ss_portal';
+	const dbName = (mongoUri ? mongoDatabaseName(mongoUri) : null) ?? 'shelfway_platform';
 	if (!/^[A-Za-z0-9_-]{1,63}$/.test(dbName)) problems.push('MONGODB_URI names an invalid database');
 
 	// The Portal's address and the key of stored secrets (PLAN 0.11)
-	const portalUrl = parsePortalUrl(read('PORTAL_URL'), strict);
-	if (!portalUrl.ok) problems.push(portalUrl.message);
+	const platformUrl = parsePortalUrl(read('PLATFORM_URL'), strict);
+	if (!platformUrl.ok) problems.push(platformUrl.message);
 	const encryptionKey = read('ENCRYPTION_KEY') ?? '';
 	if (!encryptionKey) problems.push('ENCRYPTION_KEY is required');
 	else if (encryptionKey.length < 32) problems.push('ENCRYPTION_KEY must be at least 32 characters');
@@ -212,13 +212,13 @@ export const loadEnv = (env = process.env) => {
 	return Object.freeze({
 		env: portalEnv,
 		isProduction: portalEnv === 'production',
-		portalUrl: portalUrl.ok ? portalUrl.value : '',
+		platformUrl: platformUrl.ok ? platformUrl.value : '',
 		encryptionKey,
 		previousEncryptionKey,
 		mongo: Object.freeze({ uri: mongoUri, dbName, maxPoolSize: MONGO_POOL_SIZE }),
 		logLevel,
 		maxBodyBytes: MAX_BODY_BYTES,
-		// outside production the Portal reaches products on this machine over plain http (`@ss/net` LOCAL_HOSTS)
+		// outside production the Portal reaches products on this machine over plain http (`@shelfway/net` LOCAL_HOSTS)
 		outbound: Object.freeze({ allowHosts: portalEnv === 'production' ? Object.freeze([]) : LOCAL_HOSTS }),
 	});
 };
@@ -254,7 +254,7 @@ export const buildConfig = (envConfig, system, { overrides = {} } = {}) => {
 	const settings = settingsWithDefaults(system.settings);
 	const config = {
 		...envConfig,
-		cookieSecure: envConfig.portalUrl.startsWith('https:'),
+		cookieSecure: envConfig.platformUrl.startsWith('https:'),
 		settings,
 		sessionMs: settings.security.sessionHours * 3_600_000,
 		signingKeys: Object.freeze([...system.signingKeys]),
@@ -265,7 +265,7 @@ export const buildConfig = (envConfig, system, { overrides = {} } = {}) => {
 		}),
 		sessionSecret: system.sessionSecret,
 		idempotencySecret: system.idempotencySecret,
-		problemBaseUri: `${envConfig.portalUrl}/problems/`,
+		problemBaseUri: `${envConfig.platformUrl}/problems/`,
 		mail: Object.freeze(
 			mail
 				? {

@@ -142,7 +142,7 @@ export const PENDING = Object.freeze(
 
 /**
  * Settings whose value only SB's deployment holds when no row is saved: entered by hand in the per-store table
- * (`ss-import send --settings <file>`), from SB's environment.
+ * (`shelfway-import send --settings <file>`), from SB's environment.
  */
 export const BY_HAND = Object.freeze({
 	'ecommerce staff_alerts.adminUrl': 'integration.adminSiteUrl, else ADMIN_SITE_URL (+ /orders?order={number})',
@@ -155,7 +155,7 @@ export const BY_HAND = Object.freeze({
  * settings every product used to keep its own copy of are the website's now, so the plan above no longer writes them.
  * Each is SB's effective value or where it comes from (`packages/shared`, cited by line where SB has it).
  */
-export const PORTAL_BY_HAND = Object.freeze({
+export const PLATFORM_BY_HAND = Object.freeze({
 	'region.country': 'PK',
 	'region.currency': 'PKR (whole rupees)',
 	'region.phone': 'calling code +92, trunk prefix 0, numbers of PK (`packages/shared/src/phone.ts`:21, :56)',
@@ -176,7 +176,7 @@ export const PORTAL_BY_HAND = Object.freeze({
  * bucket for every product, entered once by a signed-in person. Each product gets its own database in the connection
  * (`ss_<product>`); an Owner may name another for a product when SB's data must stay in the one database its string names.
  */
-export const PORTAL_CONNECTIONS_BY_HAND = Object.freeze({
+export const PLATFORM_CONNECTIONS_BY_HAND = Object.freeze({
 	database:
 		"SB's MongoDB connection string (every product has its own database in it; name SB's existing one for a product with the Owner-only names field)",
 	storage:

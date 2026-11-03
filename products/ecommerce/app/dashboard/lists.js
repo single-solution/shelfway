@@ -24,11 +24,11 @@ import {
 	Select,
 	TextArea,
 	SaveBar,
-} from '@ss/ui';
+} from '@shelfway/ui';
 import { COURIER_CONNECTIONS } from '../../core/couriers.js';
-import { currencyDigits, fromDecimal, toDecimal } from '@ss/contracts/format';
+import { currencyDigits, fromDecimal, toDecimal } from '@shelfway/contracts/format';
 import { UNIT_STATE_LIMITS } from '../../core/unit-states.js';
-import { Loaded, SaveOutcome, call, fill, useLoad } from '@ss/ui/dashboard';
+import { Loaded, SaveOutcome, call, fill, useLoad } from '@shelfway/ui/dashboard';
 import { cleanLines, keyOf, splitIds, taxRegionLine, taxRegionOf } from './drafts.js';
 import { TEXTS } from './texts.js';
 
@@ -131,7 +131,7 @@ export function IdTags({ label, help, values, max, none, onChange }) {
 /**
  * The outcome of a save: Saved and a refused save are toasts; the check errors by row, and the editor's own, stay under the
  * editor.
- * @param {{ result: import('@ss/ui/dashboard').Answer | null, local: string[] }} props
+ * @param {{ result: import('@shelfway/ui/dashboard').Answer | null, local: string[] }} props
  */
 export const ListOutcome = ({ result, local }) => <SaveOutcome result={result} local={local} title={L.errors} />;
 
@@ -156,7 +156,7 @@ export const useList = (websiteId, list) => {
 	const path = `/v1/dashboard/websites/${websiteId}/lists/${list}`;
 	const { answer, reload } = useLoad(path);
 	const [draft, setDraft] = useState(/** @type {any} */ (null));
-	const [result, setResult] = useState(/** @type {import('@ss/ui/dashboard').Answer | null} */ (null));
+	const [result, setResult] = useState(/** @type {import('@shelfway/ui/dashboard').Answer | null} */ (null));
 	const [local, setLocal] = useState(/** @type {string[]} */ ([]));
 	/** @param {unknown} value */
 	const save = async (value) => {
@@ -178,7 +178,7 @@ export const useList = (websiteId, list) => {
 
 /**
  * @typedef {object} ListLook how the records of a list look as rows
- * @property {import('@ss/ui').IconName} icon the lead of each row
+ * @property {import('@shelfway/ui').IconName} icon the lead of each row
  * @property {(item: Item, index: number) => string[]} facts the line under the name (empty ones are left out)
  * @property {(item: Item, index: number) => string} [value] the value at the right of the row
  * @property {(item: Item, index: number) => { tone: 'success' | 'warning' | 'danger' | 'accent' | 'neutral', label: string } | null} [status]

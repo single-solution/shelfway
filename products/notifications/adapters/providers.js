@@ -1,6 +1,6 @@
 /**
  * Messaging providers (PLAN 0.8.5), with the merchant's own keys from Connections. Every call goes through the
- * outbound `send` (`@ss/net` `safeFetch` under the product's policy: https only, every DNS answer vetted, no
+ * outbound `send` (`@shelfway/net` `safeFetch` under the product's policy: https only, every DNS answer vetted, no
  * redirects); SMTP through the SMTP adapter. Credentials never appear in errors or logs.
  *
  * Connection values (flat fields; the secret is always `secret`, so screens show its last 4 characters):
@@ -20,13 +20,13 @@
  *   encoded for where they go (URL, JSON string, form field or plain text).
  * @module
  */
-import { isObject } from '@ss/contracts/util';
-import { checkUrl, isNetError, signV4 } from '@ss/net';
+import { isObject } from '@shelfway/contracts/util';
+import { checkUrl, isNetError, signV4 } from '@shelfway/net';
 import { JSON_PATH, SUCCESS_2XX, detailOf, failed, failureMessage, httpOutcome, parseStatusRule } from '../core/gateway.js';
 import { isMailbox, createSmtpMessaging } from './smtp.js';
 
 /** @typedef {import('../core/gateway.js').SendOutcome} SendOutcome */
-/** @typedef {(url: string, init?: import('@ss/net').SafeFetchInit) => Promise<import('@ss/net').SafeResponse>} OutboundSend */
+/** @typedef {(url: string, init?: import('@shelfway/net').SafeFetchInit) => Promise<import('@shelfway/net').SafeResponse>} OutboundSend */
 /** @typedef {Record<string, string | number | boolean>} ProviderValue */
 /**
  * One message for a provider.
@@ -171,7 +171,7 @@ const gatewayRule = (v) => ({
 const jsonInner = (value) => JSON.stringify(value).slice(1, -1);
 
 /**
- * @param {{ send: OutboundSend, policy: import('@ss/net').OutboundPolicy, now: () => number,
+ * @param {{ send: OutboundSend, policy: import('@shelfway/net').OutboundPolicy, now: () => number,
  *   createTransport?: import('./smtp.js').CreateSmtpTransport }} options
  */
 export const createProviders = ({ send, policy, now, createTransport }) => {

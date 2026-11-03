@@ -14,7 +14,7 @@
  * conversation a staff alert links to (`?conversation=<id>` in the page address) opens on start.
  * @module
  */
-import { adminCall, element, formatText, mountWidget } from '@ss/app-kit/widget';
+import { adminCall, element, formatText, mountWidget } from '@shelfway/app-kit/widget';
 import { STAFF_ATTACHMENT_MAX_BYTES, STAFF_ATTACHMENT_TYPES } from '../core/limits.js';
 import { MAX_MESSAGE_LENGTH, PAGE_MAX } from '../core/widgets.js';
 import {
@@ -38,7 +38,7 @@ import { WIDGET_CSS } from './styles.js';
 import { createChecks } from './transport.js';
 
 /**
- * @param {{ host: HTMLElement, win: Window, api: import('@ss/app-kit/widget').AdminApi,
+ * @param {{ host: HTMLElement, win: Window, api: import('@shelfway/app-kit/widget').AdminApi,
  *   config: import('./common.js').WidgetConfig, clock: Omit<import('./transport.js').Clock, 'win'>,
  *   onUnread: (count: number) => void }} input
  */
@@ -49,7 +49,7 @@ export const mountInbox = ({ host, win, api, config, clock, onUnread }) => {
 	/** @param {string} feature */
 	const on = (feature) => config.features.includes(feature);
 	const doc = win.document;
-	const make = fieldMaker(doc, 'ss-inbox');
+	const make = fieldMaker(doc, 'shelfway-inbox');
 	/** @type {Record<string, string>} */
 	const statuses = {
 		open: t('inbox.statusOpen'),
@@ -58,7 +58,7 @@ export const mountInbox = ({ host, win, api, config, clock, onUnread }) => {
 	};
 	/**
 	 * What to tell staff when a call failed: the widget's own texts for each problem, never the server's detail.
-	 * @param {import('@ss/app-kit/widget').Answer} answer
+	 * @param {import('@shelfway/app-kit/widget').Answer} answer
 	 * @param {string} [invalid] the text of a refused value (`validation_failed`) for this action
 	 */
 	const failure = (answer, invalid = 'common.error') => {
@@ -178,6 +178,7 @@ export const mountInbox = ({ host, win, api, config, clock, onUnread }) => {
 			/** @param {any} item */
 			const itemNode = (item) => {
 				const node = element(doc, 'li', { class: item.unread > 0 ? 'unread' : '' });
+				node.dataset.id = item.id;
 				const open = buttonOf(doc, visitorName(item.visitor), { class: 'link' });
 				open.addEventListener('click', () => void show(item.id));
 				node.append(open);
@@ -203,6 +204,13 @@ export const mountInbox = ({ host, win, api, config, clock, onUnread }) => {
 					),
 				);
 				return node;
+			};
+			/** @param {any} item */
+			const updateItemNode = (item) => {
+				if (!item?.id) return;
+				const existing = /** @type {HTMLElement | null} */ (list.querySelector(`li[data-id="${item.id}"]`));
+				if (!existing) return;
+				existing.replaceWith(itemNode(item));
 			};
 			/** @param {boolean} reset */
 			const load = async (reset) => {
@@ -332,9 +340,9 @@ export const mountInbox = ({ host, win, api, config, clock, onUnread }) => {
 			const reply = /** @type {HTMLTextAreaElement} */ (
 				element(doc, 'textarea', { rows: '3', maxlength: String(MAX_MESSAGE_LENGTH), 'aria-label': t('inbox.reply') })
 			);
-			const replyForm = element(doc, 'form', { class: 'part' });
-			const send = element(doc, 'button', { type: 'submit' }, t('inbox.reply'));
-			const addNote = buttonOf(doc, t('inbox.addNote'), { class: 'secondary' });
+			const replyForm = /** @type {HTMLFormElement} */ (element(doc, 'form', { class: 'part' }));
+			const send = /** @type {HTMLButtonElement} */ (element(doc, 'button', { type: 'submit' }, t('inbox.reply')));
+			const addNote = /** @type {HTMLButtonElement} */ (buttonOf(doc, t('inbox.addNote'), { class: 'secondary' }));
 			const file = /** @type {HTMLInputElement} */ (element(doc, 'input', { type: 'file', hidden: '' }));
 			const attach = buttonOf(doc, t('inbox.attach'), { class: 'secondary' });
 			// what staff may send: the fixed types and size (C12)
@@ -575,11 +583,13 @@ export const mountInbox = ({ host, win, api, config, clock, onUnread }) => {
 			/** @param {Record<string, unknown>} body @param {string} [invalid] the text of a refused value */
 			const patch = async (body, invalid) => {
 				const answer = await adminCall(api, 'PATCH', path(), body);
-				if (answer.ok) current = answer.data.conversation;
+				if (answer.ok) {
+					current = answer.data.conversation;
+					updateItemNode(current);
+				}
 				if (answer.status === 403) deny(manage);
 				sync();
 				detailNote.textContent = answer.ok ? t('inbox.saved') : failure(answer, invalid);
-				if (answer.ok) await load(true);
 				return answer;
 			};
 			/** Pause the AI with the reason typed, or resume it (C11). @param {boolean} paused */
@@ -589,11 +599,11 @@ export const mountInbox = ({ host, win, api, config, clock, onUnread }) => {
 				if (answer.ok) {
 					current = answer.data.conversation;
 					reason.input.value = '';
+					updateItemNode(current);
 				}
 				if (answer.status === 403) deny(aiPart);
 				sync();
 				detailNote.textContent = answer.ok ? t('inbox.saved') : failure(answer);
-				if (answer.ok) await load(true);
 			};
 			/** @param {'messages' | 'notes'} kindOf @param {Record<string, unknown>} body */
 			const post = async (kindOf, body) => {
@@ -637,10 +647,36 @@ export const mountInbox = ({ host, win, api, config, clock, onUnread }) => {
 			});
 			replyForm.addEventListener('submit', async (event) => {
 				event.preventDefault();
-				if (reply.value.trim()) await post('messages', { text: reply.value.trim() });
+				const text = reply.value.trim();
+				if (!text || send.disabled) return;
+				send.disabled = true;
+				reply.disabled = true;
+				try {
+					await post('messages', { text });
+				} finally {
+					send.disabled = false;
+					reply.disabled = false;
+					reply.focus();
+				}
+			});
+			reply.addEventListener('keydown', (event) => {
+				if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+					event.preventDefault();
+					replyForm.requestSubmit();
+				}
 			});
 			addNote.addEventListener('click', async () => {
-				if (reply.value.trim()) await post('notes', { text: reply.value.trim() });
+				const text = reply.value.trim();
+				if (!text || addNote.disabled) return;
+				addNote.disabled = true;
+				reply.disabled = true;
+				try {
+					await post('notes', { text });
+				} finally {
+					addNote.disabled = false;
+					reply.disabled = false;
+					reply.focus();
+				}
 			});
 			attach.addEventListener('click', () => file.click());
 			file.addEventListener('change', async () => {

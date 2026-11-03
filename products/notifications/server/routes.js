@@ -1,7 +1,7 @@
 /**
  * Notifications' routes (the kit adds its own: connect, notices, tickets, data rights, widget config, `/sso`, the
  * dashboard API with its list twin of `webhook_urls`, the settings API and the activity reads). Every browser-token, server-token and ticket route belongs
- * to one feature; `openapi.json` is generated from these definitions (`ss app assets`), so `method`, `path`, `auth`,
+ * to one feature; `openapi.json` is generated from these definitions (`shelfway app assets`), so `method`, `path`, `auth`,
  * `feature` and `permission` stay string literals. Every website route sends due messages and webhook events right
  * after it answers (`drain`). Who acts is the ticket's member of staff, else the signed-in staff member of a server-token
  * call, else the server (PLAN 0.8.10 K2).
@@ -9,10 +9,10 @@
  * @module
  */
 import { timingSafeEqual } from 'node:crypto';
-import { isId } from '@ss/contracts';
-import { normalizeEmail } from '@ss/contracts/email';
-import { TEMPLATE_KEY, TEXT_LIMITS } from '@ss/contracts/templates';
-import { actorOf, countHandlers, created, defineRoute, noContent, ok, paginate, problem } from '@ss/app-kit';
+import { isId } from '@shelfway/contracts';
+import { normalizeEmail } from '@shelfway/contracts/email';
+import { TEMPLATE_KEY, TEXT_LIMITS } from '@shelfway/contracts/templates';
+import { actorOf, countHandlers, created, defineRoute, noContent, ok, paginate, problem } from '@shelfway/app-kit';
 import { CHANNELS, CHANNEL_FEATURES, checkRecipient, isChannelActive, normalizePhone } from '../core/channels.js';
 import { gatewayRepliesOf, isOptOut, repliesOf } from '../core/inbound.js';
 import { isOwnLink } from '../core/links.js';
@@ -50,7 +50,7 @@ const VISITOR_LIMITS = [
 	{ limit: 20, windowSeconds: 60, per: /** @type {const} */ ('visitor') },
 ];
 
-/** Who acts when neither a ticket nor the the verified `SS-Sign-In` names a member of the merchant's staff. */
+/** Who acts when neither a ticket nor the the verified `Shelfway-Sign-In` names a member of the merchant's staff. */
 const SERVER = Object.freeze({ kind: 'server', id: 'server', name: 'Server' });
 /** @typedef {{ kind: 'merchant' | 'admin' | 'user' | 'server', id: string, name: string, role?: string }} Who */
 /**
@@ -519,7 +519,7 @@ export const createRoutes = (product) => {
 			auth: 'server',
 			scope: 'messages.send',
 			runtime: true,
-			feature: 'push',
+			feature: ['push', 'browser_push'],
 			idempotent: true,
 			rateLimit: SEND_LIMITS,
 			handler: sendHandler('push'),
@@ -530,7 +530,7 @@ export const createRoutes = (product) => {
 			auth: 'server',
 			scope: 'messages.send',
 			runtime: true,
-			feature: 'push',
+			feature: ['push', 'staff_push'],
 			idempotent: true,
 			rateLimit: SEND_LIMITS,
 			handler: sendHandler('staff_push'),
@@ -595,7 +595,7 @@ export const createRoutes = (product) => {
 			path: '/v1/templates',
 			auth: 'server',
 			permission: 'templates.edit',
-			feature: ['email', 'sms', 'whatsapp', 'push'],
+			feature: ['email', 'sms', 'whatsapp', 'push', 'browser_push', 'staff_push'],
 			handler: serverTemplates.list,
 		}),
 		defineRoute({
@@ -603,7 +603,7 @@ export const createRoutes = (product) => {
 			path: '/v1/templates',
 			auth: 'server',
 			permission: 'templates.edit',
-			feature: ['email', 'sms', 'whatsapp', 'push'],
+			feature: ['email', 'sms', 'whatsapp', 'push', 'browser_push', 'staff_push'],
 			rateLimit: TEMPLATE_WRITE_LIMITS,
 			handler: serverTemplates.save,
 		}),
@@ -612,7 +612,7 @@ export const createRoutes = (product) => {
 			path: '/v1/templates/:key/:channel/:language',
 			auth: 'server',
 			permission: 'templates.edit',
-			feature: ['email', 'sms', 'whatsapp', 'push'],
+			feature: ['email', 'sms', 'whatsapp', 'push', 'browser_push', 'staff_push'],
 			rateLimit: TEMPLATE_WRITE_LIMITS,
 			handler: serverTemplates.remove,
 		}),
@@ -622,7 +622,7 @@ export const createRoutes = (product) => {
 			method: 'POST',
 			path: '/v1/push/subscriptions',
 			auth: 'browser',
-			feature: 'push',
+			feature: ['push', 'browser_push'],
 			rateLimit: VISITOR_LIMITS,
 			handler: async (ctx) => {
 				const subscription = checkSubscription(ctx.body?.subscription);
@@ -647,7 +647,7 @@ export const createRoutes = (product) => {
 			method: 'POST',
 			path: '/v1/push/subscriptions/remove',
 			auth: 'browser',
-			feature: 'push',
+			feature: ['push', 'browser_push'],
 			rateLimit: VISITOR_LIMITS,
 			handler: async (ctx) => {
 				const { subscriberId, endpoint } = ctx.body ?? {};
@@ -664,7 +664,7 @@ export const createRoutes = (product) => {
 			path: '/v1/admin/messages',
 			auth: 'ticket',
 			permission: 'log.read',
-			feature: ['send_api', 'email', 'sms', 'whatsapp', 'push'],
+			feature: ['send_api', 'email', 'sms', 'whatsapp', 'push', 'browser_push', 'staff_push'],
 			handler: listMessages,
 		}),
 		defineRoute({
@@ -672,7 +672,7 @@ export const createRoutes = (product) => {
 			path: '/v1/admin/messages/count',
 			auth: 'ticket',
 			permission: 'log.read',
-			feature: ['send_api', 'email', 'sms', 'whatsapp', 'push'],
+			feature: ['send_api', 'email', 'sms', 'whatsapp', 'push', 'browser_push', 'staff_push'],
 			handler: messageCounts.count,
 		}),
 		defineRoute({
@@ -680,7 +680,7 @@ export const createRoutes = (product) => {
 			path: '/v1/admin/messages/counts',
 			auth: 'ticket',
 			permission: 'log.read',
-			feature: ['send_api', 'email', 'sms', 'whatsapp', 'push'],
+			feature: ['send_api', 'email', 'sms', 'whatsapp', 'push', 'browser_push', 'staff_push'],
 			handler: messageCounts.counts,
 		}),
 		defineRoute({
@@ -799,7 +799,7 @@ export const createRoutes = (product) => {
 			path: '/v1/admin/templates',
 			auth: 'ticket',
 			permission: 'templates.edit',
-			feature: ['email', 'sms', 'whatsapp', 'push'],
+			feature: ['email', 'sms', 'whatsapp', 'push', 'browser_push', 'staff_push'],
 			handler: widgetTemplates.list,
 		}),
 		defineRoute({
@@ -807,7 +807,7 @@ export const createRoutes = (product) => {
 			path: '/v1/admin/templates',
 			auth: 'ticket',
 			permission: 'templates.edit',
-			feature: ['email', 'sms', 'whatsapp', 'push'],
+			feature: ['email', 'sms', 'whatsapp', 'push', 'browser_push', 'staff_push'],
 			handler: widgetTemplates.save,
 		}),
 		defineRoute({
@@ -815,7 +815,7 @@ export const createRoutes = (product) => {
 			path: '/v1/admin/templates/:key/:channel/:language',
 			auth: 'ticket',
 			permission: 'templates.edit',
-			feature: ['email', 'sms', 'whatsapp', 'push'],
+			feature: ['email', 'sms', 'whatsapp', 'push', 'browser_push', 'staff_push'],
 			handler: widgetTemplates.remove,
 		}),
 		// staff push: the ticket's user gets pushes in this browser
@@ -824,7 +824,7 @@ export const createRoutes = (product) => {
 			path: '/v1/admin/push/subscriptions',
 			auth: 'ticket',
 			permission: 'push.subscribe',
-			feature: 'push',
+			feature: ['push', 'staff_push'],
 			handler: async (ctx) => {
 				const subscription = checkSubscription(ctx.body?.subscription);
 				if (!subscription) return invalid('subscription', 'Send the browser push subscription (PushSubscription.toJSON()).');
@@ -867,7 +867,7 @@ export const createRoutes = (product) => {
 				const store = createStore(await ctx.data(), { now });
 				// the products come from the Portal's directory: without it (never read here) they are not known yet
 				const [listed, off] = await Promise.all([product.defaults.all().catch(() => null), store.off.list()]);
-				if (!listed) return problem('portal_unreachable', 'The Portal cannot be reached to list the products. Try again.');
+				if (!listed) return problem('platform_unreachable', 'The Portal cannot be reached to list the products. Try again.');
 				return { items: listed.messages, off, products: listed.products, unavailable: listed.unavailable };
 			},
 		}),

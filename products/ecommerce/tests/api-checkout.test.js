@@ -1,7 +1,7 @@
 /**
  * The checkout area's routes as schemas/api.json describes them (`call()` checks every answer against it): a digital
  * product's files added with the server token, the one pickup point and a coupon that does not apply in a quote and an
- * order, and a guest order read, paid and canceled with its key (SS-Order-Key).
+ * order, and a guest order read, paid and canceled with its key (Shelfway-Order-Key).
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { COLLECTIONS } from '../core/model.js';
@@ -26,9 +26,9 @@ const visit = (method, path, { body, signIn, key, orderKey } = {}) => {
 		body,
 		headers: {
 			'x-forwarded-for': `10.7.${(ip >> 8) & 255}.${ip & 255}`,
-			...(signIn ? { 'ss-sign-in': signIn } : {}),
+			...(signIn ? { 'shelfway-sign-in': signIn } : {}),
 			...(key ? { 'idempotency-key': key } : {}),
-			...(orderKey ? { 'ss-order-key': orderKey } : {}),
+			...(orderKey ? { 'shelfway-order-key': orderKey } : {}),
 		},
 	});
 };
@@ -162,7 +162,7 @@ describe('the pickup point and coupon problems', () => {
 	});
 });
 
-describe('a guest order and its key (SS-Order-Key)', () => {
+describe('a guest order and its key (Shelfway-Order-Key)', () => {
 	it('is read by number, paid again and canceled with its key only', async () => {
 		await shop.setting('checkout', 'guests', 'on');
 		const item = await shop.seedProduct({ price: 1500, stock: 5 });

@@ -13,7 +13,7 @@
  */
 export const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-/** The index the docs ask the merchant to create on `ss_ecommerce_products` (Atlas Search, JSON editor). */
+/** The index the docs ask the merchant to create on `shelfway_ecommerce_products` (Atlas Search, JSON editor). */
 export const SEARCH_INDEX_DEFINITION = Object.freeze({
 	mappings: {
 		dynamic: false,

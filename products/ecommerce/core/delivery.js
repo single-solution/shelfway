@@ -24,8 +24,8 @@
  * @module
  */
 import { ADDRESS_LIMITS, countryKey, placeKey, postcodeKey } from './address.js';
-import { isAmount } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
+import { isAmount } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
 
 /**
  * Where a zone delivers ([] = any).

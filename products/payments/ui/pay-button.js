@@ -7,7 +7,7 @@
  * id).
  * @module
  */
-import { element, field, formatText, mountWidget, radioGroup } from '@ss/app-kit/widget';
+import { element, field, formatText, mountWidget, radioGroup } from '@shelfway/app-kit/widget';
 import { toDecimal } from '../core/payments.js';
 import { formattersOf } from './format.js';
 import { WIDGET_CSS } from './styles.js';
@@ -68,10 +68,10 @@ export const mountPayButton = async ({ host, config, call, go }) => {
 			let amountInput = null;
 			if (data.amount === null) {
 				box.append(
-					element(doc, 'label', { for: 'ss-pay-amount' }, formatText(t('link.amount'), { currency: data.currency })),
+					element(doc, 'label', { for: 'shelfway-pay-amount' }, formatText(t('link.amount'), { currency: data.currency })),
 				);
 				amountInput = /** @type {HTMLInputElement} */ (
-					element(doc, 'input', { id: 'ss-pay-amount', inputmode: 'decimal', required: '' })
+					element(doc, 'input', { id: 'shelfway-pay-amount', inputmode: 'decimal', required: '' })
 				);
 				box.append(
 					amountInput,
@@ -84,10 +84,10 @@ export const mountPayButton = async ({ host, config, call, go }) => {
 				);
 			} else box.append(element(doc, 'p', { class: 'amount' }, money(data.amount, data.currency)));
 			const name = /** @type {HTMLInputElement} */ (
-				element(doc, 'input', { id: 'ss-pay-name', autocomplete: 'name', maxlength: '120' })
+				element(doc, 'input', { id: 'shelfway-pay-name', autocomplete: 'name', maxlength: '120' })
 			);
 			const email = /** @type {HTMLInputElement} */ (
-				element(doc, 'input', { id: 'ss-pay-email', type: 'email', autocomplete: 'email', maxlength: '254' })
+				element(doc, 'input', { id: 'shelfway-pay-email', type: 'email', autocomplete: 'email', maxlength: '254' })
 			);
 			// what the link asks beyond the amount (P3): the phone, and the merchant's own questions
 			const phone =
@@ -95,7 +95,7 @@ export const mountPayButton = async ({ host, config, call, go }) => {
 					? null
 					: /** @type {HTMLInputElement} */ (
 							element(doc, 'input', {
-								id: 'ss-pay-phone',
+								id: 'shelfway-pay-phone',
 								type: 'tel',
 								autocomplete: 'tel',
 								maxlength: '20',
@@ -108,7 +108,7 @@ export const mountPayButton = async ({ host, config, call, go }) => {
 				(question, index) =>
 					/** @type {HTMLInputElement} */ (
 						element(doc, 'input', {
-							id: `ss-pay-field-${index}`,
+							id: `shelfway-pay-field-${index}`,
 							maxlength: '200',
 							...(question.required ? { required: '' } : {}),
 						})
@@ -116,30 +116,30 @@ export const mountPayButton = async ({ host, config, call, go }) => {
 			);
 			const method = radioGroup(doc, {
 				label: t('link.method'),
-				name: 'ss-pay-method',
+				name: 'shelfway-pay-method',
 				items: data.gateways.map((/** @type {{ id: string, name: string }} */ g) => ({ value: g.id, label: g.name })),
 				value: data.gateways[0]?.id ?? '',
 				look: 'card',
 			});
 			const button = element(doc, 'button', { type: 'submit' }, t('link.pay'));
 			box.append(
-				element(doc, 'label', { for: 'ss-pay-name' }, t('link.name')),
+				element(doc, 'label', { for: 'shelfway-pay-name' }, t('link.name')),
 				name,
-				element(doc, 'label', { for: 'ss-pay-email' }, t('link.email')),
+				element(doc, 'label', { for: 'shelfway-pay-email' }, t('link.email')),
 				email,
 				...(phone
 					? [
 							element(
 								doc,
 								'label',
-								{ for: 'ss-pay-phone' },
+								{ for: 'shelfway-pay-phone' },
 								t(data.phone === 'required' ? 'link.phone' : 'link.phoneOptional'),
 							),
 							phone,
 						]
 					: []),
 				...questions.flatMap((question, index) => [
-					element(doc, 'label', { for: `ss-pay-field-${index}` }, question.label),
+					element(doc, 'label', { for: `shelfway-pay-field-${index}` }, question.label),
 					/** @type {HTMLInputElement} */ (answers[index]),
 				]),
 				field(doc, t('link.method'), method.node),

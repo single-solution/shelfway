@@ -11,7 +11,7 @@ import { ACCOUNTS, GROWTH, NOTIFY, ORIGIN, PAYMENTS, UNIT_TYPES, readyShop, stor
 
 /** @type {Awaited<ReturnType<typeof readyShop>>} */
 let shop;
-/** @type {import('@ss/app-kit').WebsiteData} */
+/** @type {import('@shelfway/app-kit').WebsiteData} */
 let data;
 
 /** A test id: `<prefix>_` and 24 digits (as the importer makes them from the old ObjectIds). @param {string} prefix @param {number} n */
@@ -355,7 +355,7 @@ const placeNew = async (key) => {
 		token: shop.browser,
 		origin: ORIGIN,
 		body: { lines: [{ productId: OTHER, quantity: 1 }], payment: 'cod', address: ADDRESS },
-		headers: { 'ss-sign-in': token, 'idempotency-key': key, 'x-forwarded-for': `10.9.0.${key.length}` },
+		headers: { 'shelfway-sign-in': token, 'idempotency-key': key, 'x-forwarded-for': `10.9.0.${key.length}` },
 	});
 };
 

@@ -7,7 +7,7 @@
  * own (CH-21).
  */
 import { describe, expect, it } from 'vitest';
-import { createMemoryStore } from '@ss/app-kit';
+import { createMemoryStore } from '@shelfway/app-kit';
 import { createFileSigner, createSealer } from '../adapters/crypto.js';
 import { createLists } from '../adapters/lists.js';
 import { detectLanguage, markerSetsOf, replyMatchesLanguage, translationOf } from '../core/language.js';

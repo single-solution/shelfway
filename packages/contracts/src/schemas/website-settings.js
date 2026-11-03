@@ -1,5 +1,5 @@
 /**
- * The shape of the website-settings document (`ss.website-settings/1`; vocabulary, limits and the checks a schema
+ * The shape of the website-settings document (`shelfway.website-settings/1`; vocabulary, limits and the checks a schema
  * cannot make are in `../website-settings.js`). Every member is required: the Portal always writes the whole document,
  * with `''` for unset text and `[]` for an unset list.
  * @module

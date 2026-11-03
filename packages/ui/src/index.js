@@ -1,6 +1,6 @@
 /**
- * @ss/ui — the consoles' component library (React 19, Tailwind 4 with CSS-variable design tokens).
- * Theme pack: Unite (`THEME-PACK.md`). Import tokens once per app (`@import '@ss/ui/theme.css'`) — Portal,
+ * @shelfway/ui — the consoles' component library (React 19, Tailwind 4 with CSS-variable design tokens).
+ * Theme pack: Unite (`THEME-PACK.md`). Import tokens once per app (`@import '@shelfway/ui/theme.css'`) — Portal,
  * Docs, and every product share that pack. Interactive components are client components (`'use client'`);
  * layout and display components also render on the server.
  * @module

@@ -1,23 +1,23 @@
 /**
  * The widgets' CSS, injected into their shadow roots only. Colors, font and corner radius come from the website's
- * theme (`--ss-color-<name>`, `--ss-font-family`, `--ss-radius`), with fallbacks for light and dark. Usable on phones
+ * theme (`--shelfway-color-<name>`, `--shelfway-font-family`, `--shelfway-radius`), with fallbacks for light and dark. Usable on phones
  * from 360 px wide; the visitor chat goes full screen on phones when the merchant chose it. Formatted answers (`.rich`)
  * wrap long words and links, and their tables and code scroll inside the bubble.
  * @module
  */
-import { CONTROLS_CSS } from '@ss/app-kit/widget';
+import { CONTROLS_CSS } from '@shelfway/app-kit/widget';
 import { PHONE_MEDIA } from '../core/widgets.js';
 
 export const WIDGET_CSS = `${CONTROLS_CSS}
-:host { display: block; font-family: var(--ss-font-family, inherit); color: var(--ss-color-text, #1f2937);
-  --bg: var(--ss-kit-card); --line: var(--ss-kit-line); --accent: var(--ss-color-accent, #0f766e);
-  --on-accent: var(--ss-color-onAccent, #ffffff); --soft: var(--ss-color-muted, #f3f4f6); --r: var(--ss-radius, 0.35rem); }
-:host([data-ss-mode='dark']) { color: var(--ss-color-text, #f3f4f6); --soft: var(--ss-color-muted, #1f2937); }
+:host { display: block; font-family: var(--shelfway-font-family, inherit); color: var(--shelfway-color-text, #1f2937);
+  --bg: var(--shelfway-kit-card); --line: var(--shelfway-kit-line); --accent: var(--shelfway-color-accent, #0f766e);
+  --on-accent: var(--shelfway-color-onAccent, #ffffff); --soft: var(--shelfway-color-muted, #f3f4f6); --r: var(--shelfway-radius, 0.35rem); }
+:host([data-shelfway-mode='dark']) { color: var(--shelfway-color-text, #f3f4f6); --soft: var(--shelfway-color-muted, #1f2937); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0);
   white-space: nowrap; border: 0; }
 .box { box-sizing: border-box; }
 h2 { font-size: 1.15em; font-weight: 650; margin: 0 0 12px; } h3 { font-size: 1em; margin: 0 0 8px; }
-.part { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--ss-kit-hair); } .block.part { padding-top: 16px; }
+.part { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--shelfway-kit-hair); } .block.part { padding-top: 16px; }
 button { margin: 8px 8px 0 0; min-height: 40px; }
 button.link { color: var(--accent); padding: 4px 0; min-height: 0; margin: 0; text-align: start; }
 button.small { padding: 4px 10px; min-height: 32px; font-size: 0.9em; }
@@ -28,9 +28,9 @@ a { color: var(--accent); }
 .status { margin: 8px 0 0; font-size: 0.9em; } .status:empty { display: none; }
 .meta { display: block; font-size: 0.8em; opacity: 0.7; }
 .tag, .badge { display: inline-block; font-size: 0.75em; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); }
-.badge { background: var(--ss-color-danger, #b91c1c); color: #ffffff; border: 0; }
+.badge { background: var(--shelfway-color-danger, #b91c1c); color: #ffffff; border: 0; }
 ul { list-style: none; margin: 0; padding: 0; }
-li { padding: 10px 0; border-top: 1px solid var(--ss-kit-hair); overflow-wrap: anywhere; } li:first-child { border-top: 0; }
+li { padding: 10px 0; border-top: 1px solid var(--shelfway-kit-hair); overflow-wrap: anywhere; } li:first-child { border-top: 0; }
 p { overflow-wrap: anywhere; }
 .chat { position: fixed; bottom: 16px; right: 16px; z-index: 2147483000; display: flex; flex-direction: column;
   align-items: flex-end; gap: 8px; max-width: calc(100vw - 32px); }
@@ -40,9 +40,9 @@ p { overflow-wrap: anywhere; }
 .launcher svg { width: 26px; height: 26px; fill: currentColor; }
 .launcher .badge { position: absolute; top: -4px; right: -4px; }
 .nudge { display: flex; gap: 8px; align-items: start; max-width: 280px; padding: 12px 14px; background: var(--bg);
-  border: 1px solid var(--ss-kit-hair); border-radius: var(--ss-kit-rc); box-shadow: var(--ss-kit-shadow); }
+  border: 1px solid var(--shelfway-kit-hair); border-radius: var(--shelfway-kit-rc); box-shadow: var(--shelfway-kit-shadow); }
 .window { display: flex; flex-direction: column; width: 360px; max-width: 100%; height: min(600px, calc(100vh - 104px));
-  background: var(--bg); border: 1px solid var(--ss-kit-hair); border-radius: var(--ss-kit-rc); box-shadow: 0 16px 48px rgba(15, 23, 42, 0.22); overflow: hidden; }
+  background: var(--bg); border: 1px solid var(--shelfway-kit-hair); border-radius: var(--shelfway-kit-rc); box-shadow: 0 16px 48px rgba(15, 23, 42, 0.22); overflow: hidden; }
 .chat[data-style='side_panel'] .window { position: fixed; top: 16px; bottom: 16px; right: 16px; height: auto; width: min(400px, calc(100vw - 32px)); max-width: calc(100vw - 32px); }
 .chat[data-style='side_panel'][data-position='bottom-left'] .window { right: auto; left: 16px; }
 .head { display: flex; align-items: center; gap: 8px; padding: 12px; background: var(--accent); color: var(--on-accent); }
@@ -51,7 +51,7 @@ p { overflow-wrap: anywhere; }
   background: var(--on-accent); color: var(--accent); font-weight: 600; }
 .window .log { flex: 1; overflow-y: auto; padding: 8px 12px; }
 .msg { border: 0; padding: 4px 0; display: flex; flex-direction: column; align-items: flex-start; }
-.msg > p, .msg > .rich { margin: 0; padding: 8px 12px; border-radius: var(--ss-kit-rc); background: var(--soft); max-width: 85%;
+.msg > p, .msg > .rich { margin: 0; padding: 8px 12px; border-radius: var(--shelfway-kit-rc); background: var(--soft); max-width: 85%;
   box-sizing: border-box; } .msg > p { white-space: pre-wrap; }
 .msg.visitor { align-items: flex-end; } .msg.visitor > p { background: var(--accent); color: var(--on-accent); }
 .msg.system > p { background: transparent; font-size: 0.85em; opacity: 0.8; }
@@ -84,7 +84,7 @@ p { overflow-wrap: anywhere; }
 .tools { display: flex; flex-wrap: wrap; } .ask { margin: 0 0 4px; }
 .choices { display: flex; flex-wrap: wrap; }
 .ends { display: flex; justify-content: space-between; font-size: 0.8em; margin: 2px 0; }
-.composer { display: flex; gap: 8px; align-items: end; padding: 10px 12px; border-top: 1px solid var(--ss-kit-hair); }
+.composer { display: flex; gap: 8px; align-items: end; padding: 10px 12px; border-top: 1px solid var(--shelfway-kit-hair); }
 .composer textarea { flex: 1; resize: none; } .composer button { margin: 0; }
 .window > .status { padding: 0 12px 8px; }
 @media ${PHONE_MEDIA} {
@@ -92,7 +92,7 @@ p { overflow-wrap: anywhere; }
 }
 .inbox { container-type: inline-size; }
 .split > :is(.list-part, .detail-part), .split.open > :is(.list-part, .detail-part) { min-width: 0; box-sizing: border-box; padding: 16px 18px;
-  border: 1px solid var(--ss-kit-hair); border-radius: var(--ss-kit-rc); background: var(--ss-kit-card); box-shadow: var(--ss-kit-shadow); }
+  border: 1px solid var(--shelfway-kit-hair); border-radius: var(--shelfway-kit-rc); background: var(--shelfway-kit-card); box-shadow: var(--shelfway-kit-shadow); }
 .split.open { gap: 16px; } .split > .detail-part:empty { display: none; }
 ul.staff { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 0 20px; }
 .split.open > .list-part { display: none; }

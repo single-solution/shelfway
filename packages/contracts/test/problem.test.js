@@ -116,7 +116,7 @@ describe('problem factory', () => {
 		expect(PROBLEM_CODES.feature_off.status).toBe(403);
 		expect(PROBLEM_CODES.database_not_connected.status).toBe(403);
 		expect(PROBLEM_CODES.website_not_found.status).toBe(404);
-		expect(PROBLEM_CODES.portal_unreachable.status).toBe(503);
+		expect(PROBLEM_CODES.platform_unreachable.status).toBe(503);
 	});
 
 	it('wraps validation problems', () => {

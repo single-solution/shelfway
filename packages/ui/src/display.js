@@ -179,7 +179,11 @@ function CardMeter({ percent, label }) {
 				aria-valuenow={Math.round(width)}
 				{...(typeof label === 'string' ? { 'aria-label': label } : {})}
 				className="h-1.5 overflow-hidden rounded-full bg-surface-2">
-				<div data-ss-meter="" className="h-full animate-ss-meter rounded-full bg-primary" style={{ width: `${width}%` }} />
+				<div
+					data-shelfway-meter=""
+					className="h-full animate-shelfway-meter rounded-full bg-primary"
+					style={{ width: `${width}%` }}
+				/>
 			</div>
 			{label ? <p className="mt-1.5 text-micro text-muted tabular-nums">{label}</p> : null}
 		</div>
@@ -244,7 +248,7 @@ export function Card({
 	);
 	const content =
 		(children || meter) && (meter || off) ? (
-			<div className={cx(off && 'opacity-60 ss-motion')}>
+			<div className={cx(off && 'opacity-60 shelfway-motion')}>
 				{children}
 				{meter ? (
 					<div className={cx(Boolean(children) && 'mt-4')}>
@@ -262,7 +266,7 @@ export function Card({
 		<Tag
 			id={id}
 			{...(flow ? { 'data-flow': 'card' } : {})}
-			className={cx(CARD.box, rich && 'ss-lift hover:border-line-strong', className)}
+			className={cx(CARD.box, rich && 'shelfway-lift hover:border-line-strong', className)}
 			{...(title && typeof title === 'string' && as === 'section' ? { 'aria-label': title } : {})}>
 			{hasHeader ? (
 				<header className={CARD.header}>
@@ -352,7 +356,7 @@ export function Badge({ tone = 'neutral', kind, children, dot = false, icon, cla
 					type="button"
 					aria-label={removeLabel ?? 'Remove'}
 					onClick={onRemove}
-					className="ss-motion ss-press -mr-1 rounded-full p-0.5 opacity-70 hover:bg-surface-3 hover:opacity-100 focus-visible:outline-2 focus-visible:outline-focus">
+					className="shelfway-motion shelfway-press -mr-1 rounded-full p-0.5 opacity-70 hover:bg-surface-3 hover:opacity-100 focus-visible:outline-2 focus-visible:outline-focus">
 					<Icon name="close" size={11} />
 				</button>
 			) : null}
@@ -496,7 +500,7 @@ export function Callout({ tone = 'info', title, children, actions, className, li
 	const { box, icon } = CALLOUTS[tone];
 	const role = !live ? undefined : tone === 'danger' || tone === 'warning' || tone === 'attention' ? 'alert' : 'status';
 	return (
-		<div role={role} className={cx('flex animate-ss-enter gap-2.5 rounded-card px-3.5 py-2.5 text-sm', box, className)}>
+		<div role={role} className={cx('flex animate-shelfway-enter gap-2.5 rounded-card px-3.5 py-2.5 text-sm', box, className)}>
 			<span className="mt-0.5 shrink-0">
 				<Icon name={icon} size={15} />
 			</span>
@@ -584,9 +588,12 @@ export function RemovedState({ title, message = 'This item was removed or you no
  */
 export function Skeleton({ className, lines = 1, label = 'Loading' }) {
 	return (
-		<div role="status" aria-label={label} aria-busy="true" className="animate-ss-fade space-y-2">
+		<div role="status" aria-label={label} aria-busy="true" className="animate-shelfway-fade space-y-2">
 			{Array.from({ length: lines }, (_, i) => (
-				<div key={i} className={cx('ss-shimmer h-4 rounded-control', i === lines - 1 && lines > 1 && 'w-2/3', className)} />
+				<div
+					key={i}
+					className={cx('shelfway-shimmer h-4 rounded-control', i === lines - 1 && lines > 1 && 'w-2/3', className)}
+				/>
 			))}
 		</div>
 	);
@@ -597,7 +604,7 @@ export function Skeleton({ className, lines = 1, label = 'Loading' }) {
  * @param {{ className?: string }} props
  */
 export function SkeletonBlock({ className }) {
-	return <div aria-hidden="true" className={cx('ss-shimmer rounded-control', className)} />;
+	return <div aria-hidden="true" className={cx('shelfway-shimmer rounded-control', className)} />;
 }
 
 /**
@@ -677,7 +684,10 @@ export function Stat({ label, value, hint, tone = 'neutral', icon, kind, classNa
 	const figure = (
 		<CountUp
 			value={value}
-			className={cx('animate-ss-fade font-display font-semibold tracking-[-0.02em] text-fg tabular-nums', valueSize(value))}
+			className={cx(
+				'animate-shelfway-fade font-display font-semibold tracking-[-0.02em] text-fg tabular-nums',
+				valueSize(value),
+			)}
 		/>
 	);
 	return (

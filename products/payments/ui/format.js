@@ -4,7 +4,7 @@
  * type take the decimal sign money is shown with (P6).
  * @module
  */
-import { formatDate, formatMoney, normalizeFormat, viewerOf } from '@ss/app-kit/widget';
+import { formatDate, formatMoney, normalizeFormat, viewerOf } from '@shelfway/app-kit/widget';
 import { amountOf, amountText, decimalSignOf } from '../core/money.js';
 
 /**

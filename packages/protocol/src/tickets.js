@@ -1,5 +1,5 @@
 /**
- * Tickets for admin widgets (PLAN 0.4.5): a product signs a 15-minute ticket (`typ: ss-ticket+jws`, EdDSA, with its own
+ * Tickets for admin widgets (PLAN 0.4.5): a product signs a 15-minute ticket (`typ: shelfway-ticket+jws`, EdDSA, with its own
  * ticket key) for one member of the merchant's staff, one website, one browser origin and a set of permissions. The
  * merchant's server asks for it with the server token; `tid` records that server token's `jti`, so regenerating the
  * server token ends every ticket made with it.
@@ -15,7 +15,7 @@ import { canonicalOrigin, isProductId, ticketOriginAllowed } from './tokens.js';
 /** @import { KeyResolver, Signer } from './keys.js' */
 
 /** JOSE `typ` of tickets. */
-const TICKET_TYP = 'ss-ticket+jws';
+const TICKET_TYP = 'shelfway-ticket+jws';
 
 /** Lifetime of every ticket, seconds (exactly 15 minutes). */
 export const TICKET_TTL_SECONDS = 900;

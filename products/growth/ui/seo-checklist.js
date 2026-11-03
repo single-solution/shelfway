@@ -5,7 +5,7 @@
  * pages from the sitemap (a run within 5 minutes of the last one answers that one), and the More menu checks other
  * pages (a dialog). A run shows the passed, to-improve and to-fix counts as tiles, filter chips with counts, and a
  * masonry of cards (the whole site, then each page with its kind) whose checks carry the reason and their fix steps;
- * each page read shows its search result and share preview (R7 #105, `@ss/ui/seo-preview`: its title and description
+ * each page read shows its search result and share preview (R7 #105, `@shelfway/ui/seo-preview`: its title and description
  * measured against Google's usual widths), and each page's More menu opens it, tests it in Google's Rich Results Test,
  * checks it again or submits it to IndexNow,
  * and the 404 log's check opens the redirects widget when it is on the page. With IndexNow on (ticket
@@ -13,8 +13,8 @@
  * text; the time of a run follows the website's Format and time zone (PLAN 0.8.10 K7).
  * @module
  */
-import { adminCall, element, formatDate, formatText, moreMenu, mountWidget, openDialog } from '@ss/app-kit/widget';
-import { SEO_PREVIEW_CSS, SEO_PREVIEW_TEXTS, seoPreview } from '@ss/ui/seo-preview';
+import { adminCall, element, formatDate, formatText, moreMenu, mountWidget, openDialog } from '@shelfway/app-kit/widget';
+import { SEO_PREVIEW_CSS, SEO_PREVIEW_TEXTS, seoPreview } from '@shelfway/ui/seo-preview';
 import { SITE_CHECKS, richResultsTestOf } from '../core/seo-checks.js';
 import { WIDGET_ATTRIBUTE } from '../core/widgets.js';
 import { PROBLEM_TEXTS, chipGroup, problemKey } from './admin-kit.js';
@@ -85,7 +85,7 @@ const pathOf = (url) => {
 };
 
 /**
- * @param {{ host: HTMLElement, api: import('@ss/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig,
+ * @param {{ host: HTMLElement, api: import('@shelfway/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig,
  *   viewer: import('./widget.js').Viewer, open?: (url: string) => void, now?: () => number }} input `viewer`: the
  *   browser's language and time zone; `open`: open a page in a new tab
  */

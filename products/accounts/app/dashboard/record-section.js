@@ -20,11 +20,11 @@ import {
 	RowListSkeleton,
 	Section,
 	describeProblem,
-} from '@ss/ui';
-import { Outcome, SaveOutcome, call, fill, useLoad } from '@ss/ui/dashboard';
+} from '@shelfway/ui';
+import { Outcome, SaveOutcome, call, fill, useLoad } from '@shelfway/ui/dashboard';
 import { TEXTS } from './texts.js';
 
-/** @typedef {import('@ss/ui').IconName} IconName */
+/** @typedef {import('@shelfway/ui').IconName} IconName */
 /** @typedef {{ key: string, isNew: boolean }} BaseDraft a record being edited, `isNew` while its key can still change */
 /**
  * The words of one kind of record.
@@ -47,7 +47,7 @@ export function RecordSection({ base, title, description, icon, texts: T, blank,
 	// the record being edited: a saved one opens under its row, a new one at the top
 	const [draft, setDraft] = useState(/** @type {Draft | null} */ (null));
 	const [saving, setSaving] = useState(false);
-	const [result, setResult] = useState(/** @type {import('@ss/ui/dashboard').Answer | null} */ (null));
+	const [result, setResult] = useState(/** @type {import('@shelfway/ui/dashboard').Answer | null} */ (null));
 	const [problem, setProblem] = useState(/** @type {any} */ (null));
 	/** @param {Partial<Draft>} patch */
 	const edit = (patch) => setDraft({ .../** @type {Draft} */ (draft), ...patch });

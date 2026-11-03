@@ -40,7 +40,7 @@ const visit = (method, path, { body, signIn } = {}) => {
 		headers: {
 			'x-forwarded-for': `10.7.${(keys >> 8) & 255}.${keys & 255}`,
 			'idempotency-key': `rec-${keys}`,
-			...(signIn ? { 'ss-sign-in': signIn } : {}),
+			...(signIn ? { 'shelfway-sign-in': signIn } : {}),
 		},
 	});
 };

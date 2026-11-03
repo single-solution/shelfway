@@ -9,8 +9,8 @@
  * summary's series, is a day in the business time zone (PLAN 0.8.10 K8).
  * @module
  */
-import { defineRoute } from '@ss/app-kit';
-import { toCsv } from '@ss/contracts/csv';
+import { defineRoute } from '@shelfway/app-kit';
+import { toCsv } from '@shelfway/contracts/csv';
 import { measuredScope } from '../adapters/catalog-store.js';
 import { attributesOf, productTypes } from '../adapters/catalog-store.js';
 import { valueLabel } from '../core/catalog.js';
@@ -57,7 +57,7 @@ const GROUPED_FIELDS = Object.freeze(['product', 'variant', 'order']);
 /** @typedef {import('../adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/reports.js').Range} Range */
 
 /**
@@ -567,7 +567,7 @@ export const createReports = (product, service) => {
 		const s = await service.site(ctx);
 		const data = await s.data();
 		const { lowStock } = await s.values('catalog');
-		const portalLink = product.portalUrl()?.replace(/\/+$/, '') ?? null;
+		const portalLink = product.platformUrl()?.replace(/\/+$/, '') ?? null;
 		const zones = s.has('delivery_zones') ? await s.values('delivery_zones') : null;
 		const feeds = s.has('feeds') ? await s.values('feeds') : null;
 		const skuAs = feeds?.skuAs === 'gtin' || feeds?.skuAs === 'mpn' ? feeds.skuAs : 'none';

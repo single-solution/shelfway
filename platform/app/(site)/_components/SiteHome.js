@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link.js';
-import { ButtonLink } from '@ss/ui';
+import { ButtonLink } from '@shelfway/ui';
 import { useEffect, useState } from 'react';
 import { COMPANY_NAME, PRODUCT_BRAND, SiteFooter, SiteHeader } from './SiteNav.js';
 
@@ -164,7 +164,7 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 
 	useEffect(() => {
 		const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-		const nodes = document.querySelectorAll('.ss-site .reveal');
+		const nodes = document.querySelectorAll('.shelfway-site .reveal');
 		if (reduce) {
 			nodes.forEach((el) => el.classList.add('in'));
 			return;

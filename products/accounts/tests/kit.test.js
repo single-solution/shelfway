@@ -3,7 +3,7 @@
  * server, the acting user and the labels of Accounts' own activity log, counts with the list's filters, activity-log
  * copies with the kit's filters and counts, the Format and the business time zone, and the kit guide in /docs.
  */
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { ORIGIN, setup } from './helpers.js';
 
@@ -18,16 +18,16 @@ const code = (res) =>
 
 /** A member of the merchant's staff acting through the merchant's server (K2). */
 const ZOE = Object.freeze({
-	'ss-actor-id': 'usr_staff1',
-	'ss-actor-name': encodeURIComponent('Zoë Staff'),
-	'ss-actor-role': encodeURIComponent('Owner'),
+	'shelfway-actor-id': 'usr_staff1',
+	'shelfway-actor-name': encodeURIComponent('Zoë Staff'),
+	'shelfway-actor-role': encodeURIComponent('Owner'),
 });
 // (the staff members are users of Accounts: the harness makes them, with the id Accounts gives)
 const ZOE_ACTOR = { kind: 'user', id: expect.stringMatching(/^usr_/), name: 'Zoë Staff', role: 'owner' };
 const SERVER_ACTOR = { kind: 'user', id: expect.stringMatching(/^usr_/), name: 'Test Staff', role: 'owner' };
 
 /**
- * A server-token call (no Origin), optionally for one visitor (`SS-Visitor-IP`) and by an acting user.
+ * A server-token call (no Origin), optionally for one visitor (`Shelfway-Visitor-IP`) and by an acting user.
  * @param {string} method @param {string} path
  * @param {{ body?: unknown, ip?: string, signIn?: string, headers?: Record<string, string> }} [init]
  */
@@ -36,7 +36,7 @@ const fromServer = (method, path, { body, ip, signIn, headers = {} } = {}) =>
 		token: env.server,
 		...(body === undefined ? {} : { body }),
 		...(signIn ? { signIn } : {}),
-		headers: { ...(ip ? { 'ss-visitor-ip': ip } : {}), ...headers },
+		headers: { ...(ip ? { 'shelfway-visitor-ip': ip } : {}), ...headers },
 	});
 
 /** @param {string} email @param {string} name */
@@ -64,7 +64,7 @@ afterAll(async () => {
 });
 
 describe('visitor calls from the merchant’s server (K3)', () => {
-	it('signs up, reads My account, renews and resets with the server token and SS-Visitor-IP', async () => {
+	it('signs up, reads My account, renews and resets with the server token and Shelfway-Visitor-IP', async () => {
 		await env.setting('approval', 'mode', 'open');
 		const body = { email: 'srv@example.com', name: 'Sid Server', password: 'correct horse battery' };
 		// writes name the visitor
@@ -94,7 +94,7 @@ describe('visitor calls from the merchant’s server (K3)', () => {
 		expect(String(env.messages().at(-1)?.values.link)).toContain(`${ORIGIN}/account/reset#`);
 	});
 
-	it('risk checks count sign-ups per network by the visitor’s SS-Visitor-IP, not the server’s address', async () => {
+	it('risk checks count sign-ups per network by the visitor’s Shelfway-Visitor-IP, not the server’s address', async () => {
 		await env.setting('risk_checks', 'maxSignUpsPerNetworkPerDay', 1);
 		const body = (/** @type {string} */ email) => ({ email, name: 'Net Test', password: 'correct horse battery' });
 		// the server's own address changes on every request (helpers), the visitor's stays the same
@@ -109,7 +109,7 @@ describe('visitor calls from the merchant’s server (K3)', () => {
 });
 
 describe('the acting user and the labels of Accounts’ own activity log (K2, K9)', () => {
-	it('records the staff member named by SS-Actor headers, the ticket’s user or the server, with labels and details', async () => {
+	it('records the staff member named by Shelfway-Actor headers, the ticket’s user or the server, with labels and details', async () => {
 		expect((await signUp('pia@example.com', 'Pia Pending')).json.status).toBe('pending');
 		expect((await signUp('quinn@example.com', 'Quinn')).json.status).toBe('pending');
 		expect((await signUp('dee@example.com', 'Dee Declined')).json.status).toBe('pending');
@@ -121,7 +121,7 @@ describe('the acting user and the labels of Accounts’ own activity log (K2, K9
 		const bad = await env.call('POST', `/v1/users/${pia.id}/approve`, {
 			token: env.server,
 			bare: true,
-			headers: { 'ss-actor-id': 'usr_owner', 'ss-actor-name': 'X' },
+			headers: { 'shelfway-actor-id': 'usr_owner', 'shelfway-actor-name': 'X' },
 		});
 		expect(code(bad)).toBe('needs_signed_in_staff');
 		expect((await userOf('pia@example.com')).status).toBe('pending');
@@ -449,7 +449,7 @@ describe('Format and time zone (K7, K8) and the docs', () => {
 		const docs = await env.call('GET', '/docs');
 		for (const id of ['server-settings', 'acting-user', 'server-visitors', 'counts', 'activity', 'format'])
 			expect(docs.text).toContain(`<h2 id="${id}">`);
-		expect(docs.text).toContain('SS-Actor-Id');
+		expect(docs.text).toContain('Shelfway-Actor-Id');
 		expect(docs.text).toContain('GET /v1/users/count');
 		expect(docs.text).toContain('GET /v1/admin/users/counts');
 		expect(docs.text).toContain('GET /v1/activity-copies/counts');

@@ -1,5 +1,5 @@
 /**
- * `ss-import read`: reads a store database **read only** (find and nothing else) and writes, to a local folder, one
+ * `shelfway-import read`: reads a store database **read only** (find and nothing else) and writes, to a local folder, one
  * NDJSON file per target (a product's import collection: the records of every step into it, merged, oldest first),
  * the id map (`idmap.json`: `<source>/<hex>` → the key of the record it became, merged documents pointing at the record
  * they joined), the website's settings when the mapping reads them (`settings.json`) and `manifest.json` (what was

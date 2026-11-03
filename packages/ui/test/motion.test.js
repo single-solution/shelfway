@@ -142,7 +142,7 @@ describe('navigation feedback', () => {
 				<Reporter busy={false} />
 			</NavigationProgress>,
 		);
-		const bar = () => container.querySelector('.ss-progress');
+		const bar = () => container.querySelector('.shelfway-progress');
 		expect(bar()?.hasAttribute('data-active')).toBe(false);
 		rerender(
 			<NavigationProgress>
@@ -182,7 +182,7 @@ describe('navigation feedback', () => {
 				</SwapTransition>
 			</>,
 		);
-		const wrapped = container.querySelectorAll('[data-ss-transition]');
+		const wrapped = container.querySelectorAll('[data-shelfway-transition]');
 		expect(wrapped).toHaveLength(2);
 		expect(wrapped[0]?.className).toContain('page');
 		expect(container.textContent).toBe('PageItem');

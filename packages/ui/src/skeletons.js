@@ -33,10 +33,14 @@ const WIDTHS = ['w-3/4', 'w-1/2', 'w-2/3', 'w-5/6', 'w-2/5'];
 export function InnerNavSkeleton({ items = 6, label = 'Loading', className }) {
 	return (
 		<>
-			<div role="status" aria-label={label} aria-busy="true" className={cx('shrink-0 animate-ss-fade lg:hidden', className)}>
+			<div
+				role="status"
+				aria-label={label}
+				aria-busy="true"
+				className={cx('shrink-0 animate-shelfway-fade lg:hidden', className)}>
 				<SkeletonBlock className="h-10 w-full" />
 			</div>
-			<div aria-hidden="true" className={cx(NAV_PANEL, 'animate-ss-fade', className)}>
+			<div aria-hidden="true" className={cx(NAV_PANEL, 'animate-shelfway-fade', className)}>
 				<div className="min-h-0 flex-1 space-y-1 p-2">
 					{Array.from({ length: items }, (_, i) => (
 						<div key={i} className={cx('flex items-center gap-2 px-2', METRICS.navItem)}>
@@ -56,7 +60,7 @@ export function InnerNavSkeleton({ items = 6, label = 'Loading', className }) {
  */
 export function ToolbarSkeleton({ label = 'Loading', className }) {
 	return (
-		<div role="status" aria-label={label} aria-busy="true" className={cx(BAR, 'animate-ss-fade', className)}>
+		<div role="status" aria-label={label} aria-busy="true" className={cx(BAR, 'animate-shelfway-fade', className)}>
 			<SkeletonBlock className="h-8 w-48 max-w-full" />
 			<SkeletonBlock className="hidden h-8 w-20 rounded-full sm:block" />
 			<SkeletonBlock className="hidden h-8 w-24 rounded-full sm:block" />
@@ -94,7 +98,11 @@ export function FiguresTableSkeleton({ columns, rows = 6, totals = false, label 
 	/** @type {SkeletonColumn[]} */
 	const list = typeof columns === 'number' ? Array.from({ length: columns }, () => ({})) : columns;
 	return (
-		<div role="status" aria-label={label} aria-busy="true" className={cx(FIGURES_TABLE.scroller, 'animate-ss-fade', className)}>
+		<div
+			role="status"
+			aria-label={label}
+			aria-busy="true"
+			className={cx(FIGURES_TABLE.scroller, 'animate-shelfway-fade', className)}>
 			<table className={FIGURES_TABLE.table}>
 				<thead>
 					<tr>
@@ -144,7 +152,7 @@ export function FiguresTableSkeleton({ columns, rows = 6, totals = false, label 
  */
 export function RowListSkeleton({ rows = 3, label = 'Loading', className }) {
 	return (
-		<div role="status" aria-label={label} aria-busy="true" className={cx('animate-ss-fade', className)}>
+		<div role="status" aria-label={label} aria-busy="true" className={cx('animate-shelfway-fade', className)}>
 			{Array.from({ length: rows }, (_, i) => (
 				<div key={i} aria-hidden="true" className={cx('flex items-center gap-3 px-2.5', LIST.row)}>
 					<SkeletonBlock className="size-8 shrink-0 rounded-full" />
@@ -166,7 +174,7 @@ export function RowListSkeleton({ rows = 3, label = 'Loading', className }) {
  */
 export function SettingsCardSkeleton({ rows = 3, title = true, className }) {
 	return (
-		<div aria-hidden="true" className={cx(CARD.box, 'animate-ss-fade', className)}>
+		<div aria-hidden="true" className={cx(CARD.box, 'animate-shelfway-fade', className)}>
 			{title ? (
 				<div className={CARD.header}>
 					<div className="min-w-0 flex-1 space-y-2">
@@ -199,7 +207,7 @@ export function SettingsCardSkeleton({ rows = 3, title = true, className }) {
  */
 export function StatGridSkeleton({ tiles = 4, className }) {
 	return (
-		<div aria-hidden="true" className={cx('@container min-w-0 animate-ss-fade', className)}>
+		<div aria-hidden="true" className={cx('@container min-w-0 animate-shelfway-fade', className)}>
 			<div className={STAT_GRID}>
 				{Array.from({ length: tiles }, (_, i) => (
 					<div key={i} className={CARD.tile}>
@@ -237,11 +245,11 @@ export function PageSkeleton({
 	className,
 }) {
 	return (
-		<div data-ss-page="" aria-busy="true" className={cx(PAGE.root, className)}>
+		<div data-shelfway-page="" aria-busy="true" className={cx(PAGE.root, className)}>
 			<span role="status" className="sr-only">
 				{label}
 			</span>
-			<header data-ss-part="header" className={PAGE.header}>
+			<header data-shelfway-part="header" className={PAGE.header}>
 				<ShellMenuButton />
 				<div className="min-w-0 flex-1">
 					{crumbs && crumbs.length > 0 ? (
@@ -255,7 +263,7 @@ export function PageSkeleton({
 			</header>
 			<div className={list ? PAGE.listArea : PAGE.area}>
 				{list ? (
-					<aside aria-hidden="true" className={cx(LIST.column, 'animate-ss-fade hidden lg:flex')}>
+					<aside aria-hidden="true" className={cx(LIST.column, 'animate-shelfway-fade hidden lg:flex')}>
 						<div className="p-2">
 							<SkeletonBlock className="h-9 w-full rounded-control" />
 						</div>
@@ -268,11 +276,11 @@ export function PageSkeleton({
 				) : null}
 				<section className={PAGE.main}>
 					{toolbar ? (
-						<div data-ss-part="toolbar" className={PAGE.toolbar}>
+						<div data-shelfway-part="toolbar" className={PAGE.toolbar}>
 							<ToolbarSkeleton />
 						</div>
 					) : null}
-					<div data-ss-part="body" className={pageBody({ toolbar, footer })}>
+					<div data-shelfway-part="body" className={pageBody({ toolbar, footer })}>
 						<div className={flush ? PAGE.flush : PAGE.padded}>
 							{children ?? (
 								<>
@@ -283,7 +291,7 @@ export function PageSkeleton({
 						</div>
 					</div>
 					{footer ? (
-						<div data-ss-part="footer" className={PAGE.footer}>
+						<div data-shelfway-part="footer" className={PAGE.footer}>
 							<PaginationSkeleton />
 						</div>
 					) : null}
@@ -313,16 +321,16 @@ export function DrawerBodySkeleton({ label = 'Loading', className }) {
  */
 export function DrawerSkeleton({ size = 'md', footer = true, label = 'Loading', className }) {
 	return (
-		<div aria-busy="true" className={cx(DRAWER.panel, DRAWER_WIDTH[size], 'animate-ss-fade', className)}>
-			<div data-ss-part="header" className={DRAWER.header}>
+		<div aria-busy="true" className={cx(DRAWER.panel, DRAWER_WIDTH[size], 'animate-shelfway-fade', className)}>
+			<div data-shelfway-part="header" className={DRAWER.header}>
 				<SkeletonBlock className="h-5 w-48 max-w-full" />
 				<SkeletonBlock className="ml-auto size-8 shrink-0 rounded-control" />
 			</div>
-			<div data-ss-part="body" className={DRAWER.body}>
+			<div data-shelfway-part="body" className={DRAWER.body}>
 				<DrawerBodySkeleton label={label} />
 			</div>
 			{footer ? (
-				<div data-ss-part="footer" className={DRAWER.footer}>
+				<div data-shelfway-part="footer" className={DRAWER.footer}>
 					<SkeletonBlock className="h-9 w-20" />
 					<SkeletonBlock className="h-9 w-24" />
 				</div>

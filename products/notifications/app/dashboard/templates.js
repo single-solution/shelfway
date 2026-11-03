@@ -31,11 +31,11 @@ import {
 	TextArea,
 	Toolbar,
 	describeProblem,
-} from '@ss/ui';
-import { LONG_VALUE_LIMIT, VALUE_LIMIT, isTitled } from '@ss/contracts/templates';
+} from '@shelfway/ui';
+import { LONG_VALUE_LIMIT, VALUE_LIMIT, isTitled } from '@shelfway/contracts/templates';
 import { CHANNELS } from '../../core/channels.js';
 import { MAX_BUTTONS, fillText, templateRows, valueNamesOf } from '../../core/templates.js';
-import { SaveOutcome, call, fill, useLoad } from '@ss/ui/dashboard';
+import { SaveOutcome, call, fill, useLoad } from '@shelfway/ui/dashboard';
 import { TEXTS } from './texts.js';
 
 /** @typedef {{ index: number, type: string, value: string }} TemplateButton */
@@ -188,7 +188,7 @@ const STATE_TONES = Object.freeze(
 
 /** The icon of each channel's row. */
 const CHANNEL_ICONS = Object.freeze(
-	/** @type {Record<string, import('@ss/ui').IconName>} */ ({
+	/** @type {Record<string, import('@shelfway/ui').IconName>} */ ({
 		email: 'mail',
 		sms: 'message',
 		whatsapp: 'message',
@@ -217,7 +217,7 @@ export function TemplatesSection({ websiteId }) {
 	const [draft, setDraft] = useState(/** @type {Draft | null} */ (null));
 	const [shown, setShown] = useState(false);
 	const [saving, setSaving] = useState(false);
-	const [result, setResult] = useState(/** @type {import('@ss/ui/dashboard').Answer | null} */ (null));
+	const [result, setResult] = useState(/** @type {import('@shelfway/ui/dashboard').Answer | null} */ (null));
 	const [problem, setProblem] = useState(/** @type {any} */ (null));
 	const [search, setSearch] = useState('');
 	const [channel, setChannel] = useState('');
@@ -468,7 +468,7 @@ export function TemplatesSection({ websiteId }) {
 							},
 						]}
 					/>
-					<div className="ss-scroll max-h-[36rem] overflow-y-auto p-2">
+					<div className="shelfway-scroll max-h-[36rem] overflow-y-auto p-2">
 						{shownRows.length === 0 ? (
 							<EmptyState compact title={T.noMatch} />
 						) : (

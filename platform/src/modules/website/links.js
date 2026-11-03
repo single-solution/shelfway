@@ -19,7 +19,7 @@
  *   (`website.link_changed`).
  * @module
  */
-import { issueToken } from '@ss/protocol';
+import { issueToken } from '@shelfway/protocol';
 import { resealEach } from '../../infra/crypto.js';
 import { problem } from '../../infra/http.js';
 import { isDuplicateKey } from '../../infra/util.js';
@@ -115,7 +115,7 @@ export const createLinks = (ctx, { bump, notify }) => {
 	const sign = async (website, callee, caller) => {
 		const { token, claims } = await issueToken({
 			signer: ctx.keys.tokenSigner,
-			issuer: ctx.config.portalUrl,
+			issuer: ctx.config.platformUrl,
 			websiteId: String(website.websiteId),
 			domain: website.domain,
 			productId: callee,

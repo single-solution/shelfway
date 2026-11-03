@@ -90,7 +90,7 @@ describe('AI replies', () => {
 		const call = sys.calls.find((c) => c.url === `${TOOLS}/stock`);
 		expect(JSON.parse(String(call?.body))).toMatchObject({ tool: 'stock_check', arguments: { sku: 'K-1' } });
 		const secret = await sys.dashboard(await sys.adminSession(), 'GET', `/v1/dashboard/websites/${sys.websiteId}/tool-secret`);
-		const [t, v1] = String(call?.headers['ss-chat-signature'])
+		const [t, v1] = String(call?.headers['shelfway-chat-signature'])
 			.split(',')
 			.map((part) => part.split('=')[1]);
 		expect(createHmac('sha256', secret.json.secret).update(`${t}.${call?.body}`).digest('hex')).toBe(v1);

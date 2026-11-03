@@ -16,7 +16,7 @@ import { isDuplicateKey } from './util.js';
  */
 
 /**
- * Replay store (`@ss/protocol` interface `{ seen(id, expiresAtMs) → boolean }`; true = already seen). The TTL
+ * Replay store (`@shelfway/protocol` interface `{ seen(id, expiresAtMs) → boolean }`; true = already seen). The TTL
  * monitor runs about once a minute, so an expired record that still exists is taken over atomically.
  * @param {MutableOps} repo
  * @param {{ now?: () => number }} [options]

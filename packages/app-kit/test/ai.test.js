@@ -3,8 +3,8 @@
  * the endpoints and the client's calls and connection test through the product's outbound `send`.
  */
 import { describe, expect, it } from 'vitest';
-import { AI_PROVIDERS as CONTRACT_PROVIDERS } from '@ss/contracts';
-import { createOutboundPolicy } from '@ss/net';
+import { AI_PROVIDERS as CONTRACT_PROVIDERS } from '@shelfway/contracts';
+import { createOutboundPolicy } from '@shelfway/net';
 import { AI_PROVIDERS, MODEL_SUGGESTIONS, checkAiConnection, createAiClient, estimateTokens } from '../src/index.js';
 import * as pure from '../src/ai/index.js';
 import { endpointOf } from '../src/ai/client.js';

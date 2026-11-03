@@ -7,11 +7,11 @@ import { GROWTH_EVENTS, growthItem, itemsDetail, purchaseDetail } from '../core/
 describe('growth events', () => {
 	it('name the five events, as Growth listens for them', () => {
 		expect(GROWTH_EVENTS).toEqual({
-			viewItem: 'ss:view_item',
-			addToCart: 'ss:add_to_cart',
-			beginCheckout: 'ss:begin_checkout',
-			purchase: 'ss:purchase',
-			search: 'ss:search',
+			viewItem: 'shelfway:view_item',
+			addToCart: 'shelfway:add_to_cart',
+			beginCheckout: 'shelfway:begin_checkout',
+			purchase: 'shelfway:purchase',
+			search: 'shelfway:search',
 		});
 		expect(Object.isFrozen(GROWTH_EVENTS)).toBe(true);
 	});

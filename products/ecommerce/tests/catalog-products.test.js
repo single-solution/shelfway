@@ -2,7 +2,7 @@
  * The catalog's staff routes (PLAN 0.8.8 Catalog): categories, brands, attributes, products with variants and stock,
  * images in the merchant's storage and serial numbers, through the server token and the admin widget's ticket.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { COLLECTIONS } from '../core/model.js';
 import { ALL, STORAGE, readyShop } from './helpers.js';

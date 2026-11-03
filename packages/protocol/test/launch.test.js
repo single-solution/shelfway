@@ -85,7 +85,7 @@ const verify = (clock, token, overrides = {}) =>
  * Sign arbitrary launch claims with the Portal key.
  * @param {Record<string, unknown>} payload
  */
-const signRaw = (payload) => signCompact({ signer: portal.signer, typ: 'ss-launch+jwt', payload });
+const signRaw = (payload) => signCompact({ signer: portal.signer, typ: 'shelfway-launch+jwt', payload });
 
 describe('launches', () => {
 	it('issues a 60 s single-use merchant launch and verifies it', async () => {
@@ -94,7 +94,7 @@ describe('launches', () => {
 		expect(claims.exp - claims.iat).toBe(60);
 		expect(claims.sub).toBe('mer_1');
 		expect(claims).not.toHaveProperty('admin');
-		expect(decodeSegment(token, 0)).toEqual({ alg: 'EdDSA', kid: 'portal-1', typ: 'ss-launch+jwt' });
+		expect(decodeSegment(token, 0)).toEqual({ alg: 'EdDSA', kid: 'portal-1', typ: 'shelfway-launch+jwt' });
 		const verified = await verify(clock, token);
 		expect(verified).toMatchObject({
 			kind: 'merchant',

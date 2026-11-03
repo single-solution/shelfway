@@ -13,9 +13,9 @@
 		"/v1/activity": {
 			"get": {
 				"summary": "The activity log, newest first",
-				"x-ss-auth": "server",
-				"x-ss-permission": "audit.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "audit.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -106,7 +106,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -159,9 +159,9 @@
 		"/v1/activity/count": {
 			"get": {
 				"summary": "Count the activity log",
-				"x-ss-auth": "server",
-				"x-ss-permission": "audit.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "audit.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -219,7 +219,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -249,9 +249,9 @@
 		"/v1/activity/counts": {
 			"get": {
 				"summary": "Count the activity log by action, actor or kind",
-				"x-ss-auth": "server",
-				"x-ss-permission": "audit.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "audit.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -322,7 +322,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -352,9 +352,9 @@
 		"/v1/admin/notes": {
 			"get": {
 				"summary": "The notes, newest first (inbox widget)",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "notes",
-				"x-ss-permission": "notes.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "notes",
+				"x-shelfway-permission": "notes.read",
 				"security": [
 					{
 						"ticket": []
@@ -410,9 +410,9 @@
 		"/v1/admin/notes/count": {
 			"get": {
 				"summary": "Count the notes (inbox widget)",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "notes",
-				"x-ss-permission": "notes.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "notes",
+				"x-shelfway-permission": "notes.read",
 				"security": [
 					{
 						"ticket": []
@@ -446,9 +446,9 @@
 		"/v1/connections": {
 			"get": {
 				"summary": "Connections (whether set, and how the last test went; never a value)",
-				"x-ss-auth": "server",
-				"x-ss-permission": "connections.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "connections.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -456,7 +456,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -497,10 +497,10 @@
 		},
 		"/v1/connections/{name}": {
 			"delete": {
-				"summary": "Remove a provider key. The database, the storage and the links are the Portal's: 409 managed_by_portal",
-				"x-ss-auth": "server",
-				"x-ss-permission": "connections.manage",
-				"x-ss-access": "staff",
+				"summary": "Remove a provider key. The database, the storage and the links are the Portal's: 409 managed_by_platform",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "connections.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -516,7 +516,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -536,10 +536,10 @@
 				}
 			},
 			"put": {
-				"summary": "Save a provider key ({ value }), tested live. The database, the storage and the links are the Portal's: 409 managed_by_portal",
-				"x-ss-auth": "server",
-				"x-ss-permission": "connections.manage",
-				"x-ss-access": "staff",
+				"summary": "Save a provider key ({ value }), tested live. The database, the storage and the links are the Portal's: 409 managed_by_platform",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "connections.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -555,7 +555,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -607,9 +607,9 @@
 		"/v1/connections/{name}/test": {
 			"post": {
 				"summary": "Test a connection again",
-				"x-ss-auth": "server",
-				"x-ss-permission": "connections.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "connections.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -625,7 +625,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -655,8 +655,8 @@
 		"/v1/data-rights/delete": {
 			"post": {
 				"summary": "Delete one user's records",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -664,7 +664,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -747,8 +747,8 @@
 		"/v1/data-rights/export": {
 			"post": {
 				"summary": "Export one user's records",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -756,7 +756,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -836,8 +836,8 @@
 		"/v1/features": {
 			"get": {
 				"summary": "Features with on/off and hourly price",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -845,7 +845,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -914,8 +914,8 @@
 			"get": {
 				"summary": "The Format of money and dates",
 				"description": "The website's Format from the Portal (sources `portal`: Website settings › Region and format); the built-in Format (sources `built-in`) while the Portal holds no settings yet.",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -923,7 +923,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -951,10 +951,10 @@
 			},
 			"put": {
 				"summary": "The Format is set in the Portal",
-				"description": "Always answers 409 managed_by_portal: the Format is set once for every product, in the Portal (Website settings › Region and format).",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"description": "Always answers 409 managed_by_platform: the Format is set once for every product, in the Portal (Website settings › Region and format).",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -962,7 +962,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -1056,9 +1056,9 @@
 			"post": {
 				"summary": "Finish an import",
 				"description": "Notes derives nothing from imported notes.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "import",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "import",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -1066,7 +1066,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -1104,10 +1104,10 @@
 		},
 		"/v1/import/status": {
 			"get": {
-				"summary": "What the import holds now (ss-import verify)",
-				"x-ss-auth": "server",
-				"x-ss-feature": "import",
-				"x-ss-access": "runtime",
+				"summary": "What the import holds now (shelfway-import verify)",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "import",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -1115,7 +1115,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -1188,9 +1188,9 @@
 			"post": {
 				"summary": "Import notes (NDJSON)",
 				"description": "collection is notes (404 not_found for another). Send application/x-ndjson, one note per line ({ id, text, email?, createdAt }), at most 1,000 records or 4 MB per call (413 payload_too_large; 415 unsupported_media_type). Each note is written by its id and replaces the stored one, so running it again changes nothing. Nothing is sent.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "import",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "import",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -1220,7 +1220,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -1318,9 +1318,9 @@
 			"post": {
 				"summary": "Remove imported notes the source no longer has",
 				"description": "Removes the notes an import wrote whose id lies after after and up to through (open ends when left out) and is not in keep, at most 1,000 per call (more: true: call again). Send the source’s ids sorted (byte order of their UTF-8), cut into calls. Only notes an import wrote are removed: notes left on the website stay. 422 validation_failed for keep; 413 payload_too_large over 1,000 ids.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "import",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "import",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -1350,7 +1350,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -1443,8 +1443,8 @@
 		"/v1/lists/{list}": {
 			"get": {
 				"summary": "A list setting ({ value })",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -1460,7 +1460,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -1497,9 +1497,9 @@
 			},
 			"put": {
 				"summary": "Save a whole list setting ({ value })",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -1515,7 +1515,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -1570,10 +1570,10 @@
 		"/v1/notes": {
 			"get": {
 				"summary": "The notes, newest first",
-				"x-ss-auth": "server",
-				"x-ss-feature": "notes",
-				"x-ss-permission": "notes.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "notes",
+				"x-shelfway-permission": "notes.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -1602,7 +1602,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -1631,8 +1631,8 @@
 			"post": {
 				"summary": "Leave a note",
 				"description": "A visitor leaves a note. A text longer than the maxLength setting answers 422 validation_failed.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "notes",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": "notes",
 				"security": [
 					{
 						"browserToken": []
@@ -1653,10 +1653,10 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -1727,10 +1727,10 @@
 		"/v1/notes/count": {
 			"get": {
 				"summary": "Count the notes",
-				"x-ss-auth": "server",
-				"x-ss-feature": "notes",
-				"x-ss-permission": "notes.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "notes",
+				"x-shelfway-permission": "notes.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -1738,7 +1738,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -1768,8 +1768,8 @@
 		"/v1/permissions": {
 			"get": {
 				"summary": "This product's permissions and the kit's own (for Accounts roles)",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -1777,7 +1777,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -1836,8 +1836,8 @@
 		"/v1/settings": {
 			"get": {
 				"summary": "Settings schemas, and values of switched-on features",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -1845,7 +1845,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -1935,9 +1935,9 @@
 		"/v1/settings/{key}": {
 			"delete": {
 				"summary": "Reset one setting to the default",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -1953,7 +1953,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -2000,9 +2000,9 @@
 			"put": {
 				"summary": "Save one setting (<feature>.<setting>, { value })",
 				"description": "The feature must be on (else 403 feature_off); an invalid value answers 422 validation_failed with errors.",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -2018,7 +2018,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -2084,8 +2084,8 @@
 		"/v1/texts": {
 			"get": {
 				"summary": "Widget texts",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -2093,7 +2093,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -2135,9 +2135,9 @@
 		"/v1/texts/{key}": {
 			"delete": {
 				"summary": "Reset one widget text to English",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -2153,7 +2153,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -2182,9 +2182,9 @@
 			"put": {
 				"summary": "Save one widget text ({ value })",
 				"description": "1–2000 characters with the same {placeholders} as the English text.",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -2200,7 +2200,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -2251,8 +2251,8 @@
 			"get": {
 				"summary": "The widgets' theme",
 				"description": "The website's theme from the Portal (sources `portal`: Website settings › Brand and look); the built-in look (sources `built-in`) while the Portal holds no settings yet.",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -2260,7 +2260,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -2288,10 +2288,10 @@
 			},
 			"put": {
 				"summary": "The theme is set in the Portal",
-				"description": "Always answers 409 managed_by_portal: the theme is set once for every product, in the Portal (Website settings › Brand and look).",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"description": "Always answers 409 managed_by_platform: the theme is set once for every product, in the Portal (Website settings › Brand and look).",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -2299,7 +2299,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -2381,9 +2381,9 @@
 		"/v1/tickets": {
 			"post": {
 				"summary": "Ticket for an admin widget (15 minutes)",
-				"description": "Your server asks for a ticket for the signed-in member of your staff who opens an admin widget: send their Accounts sign-in in SS-Sign-In next to the server token. The ticket is for that person and carries only the permissions of their role out of those asked for (and of switched-on features); the server token alone gets 403 needs_signed_in_staff.",
-				"x-ss-auth": "server",
-				"x-ss-access": "staff",
+				"description": "Your server asks for a ticket for the signed-in member of your staff who opens an admin widget: send their Accounts sign-in in Shelfway-Sign-In next to the server token. The ticket is for that person and carries only the permissions of their role out of those asked for (and of switched-on features); the server token alone gets 403 needs_signed_in_staff.",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -2391,7 +2391,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -2464,7 +2464,7 @@
 			"get": {
 				"summary": "Widget config (admin widgets)",
 				"description": "The same for the admin widgets, with a ticket from POST /v1/tickets, from the origin it names.",
-				"x-ss-auth": "ticket",
+				"x-shelfway-auth": "ticket",
 				"security": [
 					{
 						"ticket": []
@@ -2499,7 +2499,7 @@
 			"get": {
 				"summary": "Widget config (visitor widgets)",
 				"description": "With the browser token from the website (an Origin is required; the server token is refused): what the visitor widgets need. No feature of its own: it answers while the product serves the website and its merchant database is connected.",
-				"x-ss-auth": "browser",
+				"x-shelfway-auth": "browser",
 				"security": [
 					{
 						"browserToken": []
@@ -2510,10 +2510,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -2551,7 +2551,7 @@
 			"serverToken": {
 				"type": "http",
 				"scheme": "bearer",
-				"description": "The website's server token: the merchant's server only, never with an Origin header. On its own it runs the shop (x-ss-access: runtime): it also reaches every visitor route, acting for the visitor named by SS-Visitor-IP and, for a signed-in shopper, SS-Sign-In (their Accounts sign-in, checked for this website; a wrong, expired or foreign one is 401 invalid_sign_in). Every change of configuration and every piece of staff work (x-ss-access: staff) also needs the verified Accounts sign-in of a signed-in staff member in SS-Sign-In, whose role has the permission: a stolen server token changes nothing by itself."
+				"description": "The website's server token: the merchant's server only, never with an Origin header. On its own it runs the shop (x-shelfway-access: runtime): it also reaches every visitor route, acting for the visitor named by Shelfway-Visitor-IP and, for a signed-in shopper, Shelfway-Sign-In (their Accounts sign-in, checked for this website; a wrong, expired or foreign one is 401 invalid_sign_in). Every change of configuration and every piece of staff work (x-shelfway-access: staff) also needs the verified Accounts sign-in of a signed-in staff member in Shelfway-Sign-In, whose role has the permission: a stolen server token changes nothing by itself."
 			},
 			"ticket": {
 				"type": "http",
@@ -2560,8 +2560,8 @@
 			}
 		},
 		"parameters": {
-			"SSVisitorIp": {
-				"name": "SS-Visitor-IP",
+			"ShelfwayVisitorIp": {
+				"name": "Shelfway-Visitor-IP",
 				"in": "header",
 				"required": false,
 				"description": "With the server token: the visitor's IP address (required on writes, else 400 visitor_ip_required). These calls count in their own window of 3,000 requests per minute per route per website, plus the per-visitor limits.",
@@ -2570,8 +2570,8 @@
 					"maxLength": 45
 				}
 			},
-			"SSSignIn": {
-				"name": "SS-Sign-In",
+			"ShelfwaySignIn": {
+				"name": "Shelfway-Sign-In",
 				"in": "header",
 				"required": false,
 				"description": "The signed-in shopper's Accounts sign-in, checked for this website (a wrong, expired or foreign one is 401 invalid_sign_in). Only a verified sign-in names the shopper: a user id alone is never taken.",
@@ -2580,8 +2580,8 @@
 					"maxLength": 8192
 				}
 			},
-			"SSSignInStaff": {
-				"name": "SS-Sign-In",
+			"ShelfwaySignInStaff": {
+				"name": "Shelfway-Sign-In",
 				"in": "header",
 				"required": true,
 				"description": "The Accounts sign-in of the signed-in staff member whose role has the permission this call needs, checked for this website. The server token alone changes nothing: without it the call is 403 needs_signed_in_staff, with a role that lacks the permission 403 forbidden, with a sign-in of another website or an expired or forged one 401 invalid_sign_in. The person it names is who the activity log and the histories record.",
@@ -2885,7 +2885,7 @@
 					"built-in",
 					"portal"
 				],
-				"description": "Where a theme or Format value comes from: the website's settings in the Portal, or built in while the Portal holds none yet. It cannot be saved in a product (409 managed_by_portal)."
+				"description": "Where a theme or Format value comes from: the website's settings in the Portal, or built in while the Portal holds none yet. It cannot be saved in a product (409 managed_by_platform)."
 			},
 			"Note": {
 				"type": "object",

@@ -6,7 +6,7 @@
  * never written into entries (PLAN 0.5.9).
  * @module
  */
-import { isId } from '@ss/contracts';
+import { isId } from '@shelfway/contracts';
 import { utcDayStart } from '../../infra/util.js';
 
 /** @typedef {import('../../infra/modules.js').ModuleContext} ModuleContext */

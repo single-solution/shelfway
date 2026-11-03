@@ -14,7 +14,7 @@
 			"title": "Show the nudge once per",
 			"default": "session",
 			"enum": ["session", "product"],
-			"description": "Session: once per visit. Product: once for each product the visitor looks at (a page that names its product with SSChat.setPage), once per visit on other pages. Each page type’s own nudge text is in Settings → Proactive (Page types)."
+			"description": "Session: once per visit. Product: once for each product the visitor looks at (a page that names its product with ShelfwayChat.setPage), once per visit on other pages. Each page type’s own nudge text is in Settings → Proactive (Page types)."
 		},
 		"hideOnMobile": {
 			"type": "boolean",

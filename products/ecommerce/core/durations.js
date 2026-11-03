@@ -4,8 +4,8 @@
  * last day of February). Shown in the reader's language by `Intl` (`1 year`, `2 Jahre`). No I/O.
  * @module
  */
-import { isObject } from '@ss/contracts/util';
-import { zonedDayStart } from '@ss/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
+import { zonedDayStart } from '@shelfway/contracts/format';
 
 /** A calendar day as `YYYY-MM-DD`. */
 export const DAY = /^\d{4}-\d{2}-\d{2}$/;

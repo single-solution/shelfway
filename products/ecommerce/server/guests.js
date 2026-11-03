@@ -9,7 +9,7 @@
  * Portal link to Accounts), and the website's phone and address rules (K12).
  * @module
  */
-import { addressRequiredOf } from '@ss/contracts/website-settings';
+import { addressRequiredOf } from '@shelfway/contracts/website-settings';
 import { mergeLoyalty } from '../adapters/ledger.js';
 import { createOrdersStore } from '../adapters/orders-store.js';
 import { phoneRules, savedAddresses } from '../core/guests.js';

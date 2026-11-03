@@ -1,20 +1,20 @@
 'use client';
 /**
- * Chat's parts of the dashboard tabs (PLAN 0.4.3, 0.8.3 Chat dashboard), on the shared tabs of `@ss/ui/dashboard`: the
+ * Chat's parts of the dashboard tabs (PLAN 0.4.3, 0.8.3 Chat dashboard), on the shared tabs of `@shelfway/ui/dashboard`: the
  * Overview's setup steps and its booking address while the Book-a-slot tool is on, the rules between features, Chat's settings sections, the
  * developer snippets with the connections beside them (the backup AI provider form with its hint; the database, the
  * storage and the main AI key are the Portal's), and the AI label warning in Defaults.
  * @module
  */
-import { Button, CodeBlock, Section } from '@ss/ui';
-import { DefaultsTab, DevelopersTab, OverviewTab, useLoad, useSetupSteps, wantsSettings } from '@ss/ui/dashboard';
+import { Button, CodeBlock, Section } from '@shelfway/ui';
+import { DefaultsTab, DevelopersTab, OverviewTab, useLoad, useSetupSteps, wantsSettings } from '@shelfway/ui/dashboard';
 import manifest from '../../manifest.json' with { type: 'json' };
 import { createSnippets } from '../../core/snippets.js';
 import { AiForm, FORMS } from './forms.js';
 import { SettingsTab, aiLabelNotice } from './settings.js';
 import { TEXTS } from './texts.js';
 
-/** @type {ReadonlyArray<import('@ss/ui/dashboard').SetupRequirement>} */
+/** @type {ReadonlyArray<import('@shelfway/ui/dashboard').SetupRequirement>} */
 const SETUP = Object.freeze([
 	{
 		key: 'instructions',
@@ -42,12 +42,12 @@ const SETUP = Object.freeze([
 	},
 ]);
 
-/** @typedef {import('@ss/ui/dashboard').TabProps} TabProps */
+/** @typedef {import('@shelfway/ui/dashboard').TabProps} TabProps */
 
 /**
  * Chat's part of the Overview (PLAN 0.6 "Overviews talk"): the settings the switched-on features need set
  * (`setup-steps.js`), and, while the Book-a-slot tool is on, its booking address to set while there is none.
- * @type {import('@ss/ui/dashboard').UseOverviewMore}
+ * @type {import('@shelfway/ui/dashboard').UseOverviewMore}
  */
 const useChatOverview = (overview, { websiteId, open }) => {
 	const booking = overview?.ok === true && overview.data.featuresOn.includes('book_slot');
@@ -98,7 +98,7 @@ const connectionHint = (name) => TEXTS.connections.hints[/** @type {keyof typeof
 /**
  * The structured value of the backup AI provider (the other connections take one value; the database, the storage and the
  * main AI key are the Portal's).
- * @param {import('@ss/ui/dashboard').Connection} item
+ * @param {import('@shelfway/ui/dashboard').Connection} item
  * @param {(value: unknown) => Promise<void>} save
  */
 const connectionForm = (item, save) => (FORMS.includes(item.name) ? <AiForm onSave={save} /> : null);
@@ -122,7 +122,7 @@ function Developers(props) {
 		permissions: manifest.permissions.map((permission) => permission.key),
 	});
 	const D = TEXTS.developers;
-	/** @param {string} id @param {string} title @param {string} help @param {import('react').ReactNode} body @param {import('@ss/ui').IconName} icon */
+	/** @param {string} id @param {string} title @param {string} help @param {import('react').ReactNode} body @param {import('@shelfway/ui').IconName} icon */
 	const part = (id, title, help, body, icon) => ({
 		id,
 		label: title,

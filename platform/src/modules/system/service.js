@@ -9,8 +9,8 @@ import { MAIL_FROM, SETTINGS_BOUNDS, logoUrlOf } from '../../infra/config.js';
 import { sumCounts } from '../../infra/crypto.js';
 import { problem } from '../../infra/http.js';
 import { createSmtpMailer, mailContextOf } from '../../infra/mailer.js';
-import { normalizeEmail } from '@ss/contracts/email';
-import { SUPPORT_CHANNELS_MAX, supportChannelProblem, supportChannelUrl } from '@ss/contracts/text';
+import { normalizeEmail } from '@shelfway/contracts/email';
+import { SUPPORT_CHANNELS_MAX, supportChannelProblem, supportChannelUrl } from '@shelfway/contracts/text';
 import { hasControlCharacters } from '../../infra/util.js';
 import { createActivity } from './activity.js';
 
@@ -267,7 +267,7 @@ export const createSystemService = (ctx) => {
 			if (given === null) errors.push({ path: '/channels', message: 'must be a list' });
 			else if (given.length > SUPPORT_CHANNELS_MAX)
 				errors.push({ path: '/channels', message: `must have at most ${SUPPORT_CHANNELS_MAX} channels` });
-			/** @type {import('@ss/contracts/text').SupportChannel[]} */
+			/** @type {import('@shelfway/contracts/text').SupportChannel[]} */
 			const channels = [];
 			for (const [index, raw] of (given ?? []).entries()) {
 				const entry = objectOf(raw);
@@ -277,7 +277,7 @@ export const createSystemService = (ctx) => {
 				const channel = { type, label, url: url ?? String(entry.url ?? '') };
 				const wrong = hasControlCharacters(label) ? 'label must be plain text' : supportChannelProblem(channel);
 				if (wrong) errors.push({ path: `/channels/${index}`, message: wrong });
-				else channels.push(/** @type {import('@ss/contracts/text').SupportChannel} */ (channel));
+				else channels.push(/** @type {import('@shelfway/contracts/text').SupportChannel} */ (channel));
 			}
 			refuse(errors, 'The support contact is invalid.');
 			const support = { channels };
@@ -341,7 +341,7 @@ export const createSystemService = (ctx) => {
 			return {
 				name: branding.name,
 				accent: branding.accent,
-				logoUrl: logoUrlOf(ctx.config.portalUrl, branding),
+				logoUrl: logoUrlOf(ctx.config.platformUrl, branding),
 				support,
 			};
 		},

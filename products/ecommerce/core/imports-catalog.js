@@ -13,8 +13,8 @@
  * `categoryPaths` in the import's finish. No I/O.
  * @module
  */
-import { isId } from '@ss/contracts';
-import { isObject } from '@ss/contracts/util';
+import { isId } from '@shelfway/contracts';
+import { isObject } from '@shelfway/contracts/util';
 import { LIMITS, checkProduct, cleanText, givenFacts, isSlug, summarize } from './catalog.js';
 import { keyAllowed, mediaExtras, publicPhoto } from './catalog-content.js';
 import { checkAttribute, checkBrand, checkCategory } from './catalog-taxonomy.js';

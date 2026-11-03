@@ -167,7 +167,7 @@ function useJumps(ids) {
 	const timer = useRef(/** @type {ReturnType<typeof setTimeout> | undefined} */ (undefined));
 	const scrollTo = useCallback((/** @type {string} */ id, /** @type {boolean} */ instant) => {
 		const pane = body.current;
-		const target = pane && [...pane.querySelectorAll('[data-ss-section]')].find((el) => el.id === id);
+		const target = pane && [...pane.querySelectorAll('[data-shelfway-section]')].find((el) => el.id === id);
 		if (!pane || !target) return;
 		// the section lands where the first one starts: under the body's own padding
 		const pad = target.parentElement ? parseFloat(getComputedStyle(target.parentElement).paddingTop) || 0 : 0;
@@ -242,7 +242,7 @@ function useJumps(ids) {
 			},
 			{ root, rootMargin: '-16px 0px -65% 0px' },
 		);
-		for (const el of root.querySelectorAll('[data-ss-section]')) watcher.observe(el);
+		for (const el of root.querySelectorAll('[data-shelfway-section]')) watcher.observe(el);
 		root.addEventListener('scroll', pick, { passive: true });
 		return () => {
 			watcher.disconnect();
@@ -337,7 +337,7 @@ export function PageSectionList({ sections, scopes, changed = [], note }) {
 				<PageSavesContext.Provider key={section.id} value={scopes[index] ?? null}>
 					<section
 						id={section.id}
-						data-ss-section=""
+						data-shelfway-section=""
 						{...(changed.includes(section.id) ? { 'data-changed': '' } : {})}
 						aria-label={section.label}
 						className="flex min-w-0 flex-col gap-6">

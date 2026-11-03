@@ -5,7 +5,7 @@
  */
 
 /** `localStorage` key of the stored choice (absent = follow the system). */
-export const THEME_STORAGE_KEY = 'ss-theme';
+export const THEME_STORAGE_KEY = 'shelfway-theme';
 
 /** Inline script applying the stored choice before paint (no dependencies; storage errors keep the system theme). */
 export const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)});if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;

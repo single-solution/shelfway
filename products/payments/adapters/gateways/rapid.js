@@ -11,9 +11,9 @@
  * Connection `rapid`: `{ secretKey, webhookSecret, sandbox? }`.
  * @module
  */
-import { fromDecimal, toDecimal } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
-import { constantTimeEqual, hmacSha256Hex } from '@ss/protocol';
+import { fromDecimal, toDecimal } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
+import { constantTimeEqual, hmacSha256Hex } from '@shelfway/protocol';
 import { call, failure, ok2xx } from './types.js';
 
 /** @typedef {import('./types.js').GatewayAdapter} GatewayAdapter */
@@ -75,14 +75,14 @@ export const rapid = {
 			headers: {
 				authorization: `Bearer ${keys.secretKey}`,
 				'content-type': 'application/json',
-				'idempotency-key': `ss-${payment.id}`,
+				'idempotency-key': `shelfway-${payment.id}`,
 			},
 			body: JSON.stringify({
 				amount,
 				currency: payment.currency,
 				methods: METHODS,
 				customer: payment.customer.phone ? { phone: payment.customer.phone } : {},
-				metadata: { ss_payment: payment.id, ss_website: payment.websiteId },
+				metadata: { shelfway_payment: payment.id, shelfway_website: payment.websiteId },
 				return_url: urls.return,
 				webhook_url: urls.notify,
 			}),
@@ -118,7 +118,9 @@ export const rapid = {
 				{
 					kind: 'payment',
 					paymentId:
-						isObject(body.metadata) && typeof body.metadata.ss_payment === 'string' ? body.metadata.ss_payment : null,
+						isObject(body.metadata) && typeof body.metadata.shelfway_payment === 'string'
+							? body.metadata.shelfway_payment
+							: null,
 					ref,
 					outcome: PAID.has(status)
 						? 'paid'

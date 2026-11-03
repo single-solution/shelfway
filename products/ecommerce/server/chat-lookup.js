@@ -2,7 +2,7 @@
  * The lookups other products call through the Portal's link to Ecommerce: Chat's shop tools (PLAN 0.8.3 Shop tools;
  * exactly the endpoints of `products/chat/core/shop.js`) and the customer orders lookup Accounts' Orders tab and
  * Chat's context panel use. All read-only with small answers. The `me` lookups take the visitor's Accounts sign-in
- * forwarded in `SS-Sign-In`, verify it here and answer only that user's data — never street addresses or phone
+ * forwarded in `Shelfway-Sign-In`, verify it here and answer only that user's data — never street addresses or phone
  * numbers; any query value naming another user is ignored. Every price and total comes with its text (`priceText`,
  * `totalText` …) by the website's Format (PLAN 0.8.10 K7), and products are priced as shoppers see them: each variant at
  * its shown price (`server/shown-prices.js`, SEO audit G4), with the price struck through above it and the deal in it.
@@ -10,8 +10,8 @@
  * fields, fuller orders and accounts, and the live store context (`GET /v1/chat/context`) Chat's AI replies add (C1).
  * @module
  */
-import { addressFormat } from '@ss/contracts/address';
-import { defineRoute, problem } from '@ss/app-kit';
+import { addressFormat } from '@shelfway/contracts/address';
+import { defineRoute, problem } from '@shelfway/app-kit';
 import { categoriesOf, locationsOf, productTypes } from '../adapters/catalog-store.js';
 import { ADDRESS_LIMITS } from '../core/address.js';
 import { ownerOrders } from '../adapters/fulfillment-store.js';
@@ -63,7 +63,7 @@ import { createShownPrices } from './shown-prices.js';
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./catalog-media.js').Media} Media */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/model.js').ProductRecord} ProductRecord */
 /** @typedef {import('../core/model.js').OrderRecord} OrderRecord */
 /** @typedef {import('../core/model.js').DealRecord} DealRecord */

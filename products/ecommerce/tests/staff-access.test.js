@@ -125,7 +125,7 @@ describe('a staff sign-in', () => {
 		const asShopper = await shop.call('POST', '/v1/orders/ord_none/move', {
 			token: shop.server,
 			bare: true,
-			headers: { 'ss-sign-in': sara },
+			headers: { 'shelfway-sign-in': sara },
 			body: { to: 'confirmed' },
 		});
 		expect([asShopper.status, typeOf(asShopper)]).toEqual([403, 'forbidden']);
@@ -137,7 +137,7 @@ describe('a staff sign-in', () => {
 		const refused = await shop.call('POST', '/v1/orders/ord_none/move', {
 			token: shop.server,
 			bare: true,
-			headers: { 'ss-sign-in': other },
+			headers: { 'shelfway-sign-in': other },
 			body: { to: 'confirmed' },
 		});
 		expect([refused.status, typeOf(refused)]).toEqual([401, 'invalid_sign_in']);

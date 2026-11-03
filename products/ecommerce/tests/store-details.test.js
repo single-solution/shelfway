@@ -4,8 +4,8 @@
  * Ecommerce keeps no record of it: the shop read and the business.json a headless website serves are made from the
  * Portal's settings, and nothing here can be saved, uploaded or removed.
  */
-import { validateBusinessJson } from '@ss/contracts';
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
+import { validateBusinessJson } from '@shelfway/contracts';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { businessJsonOf, publicStoreDetails, storeDetailsFromWebsite, whatsappLink } from '../core/store-details.js';
 import { DOMAIN, readyShop } from './helpers.js';

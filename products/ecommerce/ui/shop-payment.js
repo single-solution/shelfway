@@ -102,8 +102,8 @@ const proofForm = ({ doc, t, shop, config, win, order, onOrder }) => {
 		'form',
 		{ class: 'box proof-form' },
 		h(doc, 'h3', {}, t(order.payment?.proof ? 'checkout.pay.proofAgain' : 'checkout.pay.proofTitle')),
-		field(doc, `ss-proof-file-${order.id}`, t('checkout.pay.proofFile'), file),
-		field(doc, `ss-proof-reference-${order.id}`, t('checkout.pay.proofReference'), reference),
+		field(doc, `shelfway-proof-file-${order.id}`, t('checkout.pay.proofFile'), file),
+		field(doc, `shelfway-proof-reference-${order.id}`, t('checkout.pay.proofReference'), reference),
 		submit,
 		status,
 	);

@@ -9,8 +9,8 @@
  * Atlas and is not reachable here.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createProductInstance, manifest, strings } from '@ss/product-ecommerce/product';
-import { createRoutes } from '@ss/product-ecommerce/routes';
+import { createProductInstance, manifest, strings } from '@shelfway/product-ecommerce/product';
+import { createRoutes } from '@shelfway/product-ecommerce/routes';
 import { startSystem } from './helpers.js';
 
 const SHOP = 'https://ecommerce-catalogs.test';
@@ -68,7 +68,6 @@ beforeAll(async () => {
 			'catalog.enableSizeCharts': true,
 			'catalog.enableGradesSerials': true,
 			'catalog.enableMeasuredSales': true,
-			'seo.enableLandingPages': true,
 		});
 	}
 });
@@ -303,7 +302,7 @@ describe('Ecommerce catalogs on the real Portal', () => {
 				},
 				{ key: 'b', label: 'B', condition: 'used', warrantyTime: { amount: 30, unit: 'days' } },
 			],
-			'seo.gradeUrl': '/grades/{key}',
+			'landing_pages.gradeUrl': '/grades/{key}',
 		});
 		// the IMEI is this shop's own unit field: 15 digits with a Luhn check digit, two per dual-SIM phone
 		const imei = await write(DEVICES, 'POST', '/v1/attributes', {

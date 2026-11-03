@@ -18,7 +18,7 @@
  * @module
  */
 import { randomBytes as nodeRandomBytes } from 'node:crypto';
-import { signingKeyFromSeed, toPublicJwk } from '@ss/protocol';
+import { signingKeyFromSeed, toPublicJwk } from '@shelfway/protocol';
 import { createSecretBox, resealEach, sumCounts } from './crypto.js';
 import { platformError } from './errors.js';
 import { COLLECTIONS } from './schema.js';
@@ -30,7 +30,7 @@ const SYSTEM_COLLECTION = COLLECTIONS.system;
 /** @typedef {import('./config.js').SystemState} SystemState */
 /**
  * A signing key as stored: its seed sealed with `ENCRYPTION_KEY` and its public key (K-21).
- * @typedef {{ kid: string, sealed: string, publicJwk: import('@ss/protocol').PublicJwk, createdAt: string }} StoredKey
+ * @typedef {{ kid: string, sealed: string, publicJwk: import('@shelfway/protocol').PublicJwk, createdAt: string }} StoredKey
  */
 /**
  * A signing key just generated, before it is sealed (never stored like this).
@@ -102,7 +102,7 @@ const keyAad = (kid) => ({ purpose: 'signing_key', kid });
 /**
  * The secrets part of the system state: the signing keys whose seed opens with `open`, and the public keys of those
  * that do not (published only).
- * @template {{ kid: string, publicJwk?: import('@ss/protocol').PublicJwk }} K
+ * @template {{ kid: string, publicJwk?: import('@shelfway/protocol').PublicJwk }} K
  * @param {{ signingKeys: K[], tokenSigningKeys: K[], sessionSecret: string, idempotencySecret: string }} doc
  * @param {(key: K) => string | null} open the seed of a key, or null when it does not open
  * @returns {Omit<SystemState, 'mail'>}

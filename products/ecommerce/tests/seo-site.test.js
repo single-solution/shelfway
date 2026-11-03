@@ -264,7 +264,7 @@ describe('baseline SEO with the catalog', () => {
 			return { ok: answer.status === 200, json: async () => answer.json };
 		};
 		const generateMetadata = new Function('fetch', 'process', `${head}\nreturn generateMetadata;`)(fetch, {
-			env: { SS_SERVER_TOKEN: shop.server },
+			env: { SHELFWAY_SERVER_TOKEN: shop.server },
 		});
 		expect(await generateMetadata()).toEqual({
 			title: 'Northwind Goods',

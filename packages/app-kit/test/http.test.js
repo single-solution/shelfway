@@ -321,7 +321,7 @@ describe('handler results and the Next.js adapter', () => {
 
 describe('helpers', () => {
 	it('builds prefixes, omits members and types errors', () => {
-		expect(collectionPrefix('coupon-box')).toBe('ss_coupon_box_');
+		expect(collectionPrefix('coupon-box')).toBe('shelfway_coupon_box_');
 		expect(omit({ a: 1, b: 2 }, ['a'])).toEqual({ b: 2 });
 		const error = kitError('x', 'm', { a: 1 });
 		expect(isKitError(error, 'x') && isKitError(error) && !isKitError(error, 'y') && !isKitError(new Error('m'))).toBe(true);
@@ -361,8 +361,8 @@ describe('routes of several features and the permission list', () => {
 			],
 		});
 		const preflight = await env.call('OPTIONS', '/v1/notes', { origin: 'https://shop.example.com' });
-		expect(preflight.headers.get('access-control-allow-headers')).toContain('ss-sign-in');
-		expect(preflight.headers.get('access-control-allow-headers')).toContain('ss-guest');
+		expect(preflight.headers.get('access-control-allow-headers')).toContain('shelfway-sign-in');
+		expect(preflight.headers.get('access-control-allow-headers')).toContain('shelfway-guest');
 		expect(() =>
 			defineRoute({ method: 'GET', path: '/x', auth: 'server', runtime: true, feature: [], handler: () => 1 }),
 		).toThrow(/non-empty list/);

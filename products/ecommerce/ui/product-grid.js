@@ -1,6 +1,6 @@
 /**
  * The product grid with search, filters and sort (visitor widget `product_grid`, feature catalog; PLAN 0.8.8 Shopper
- * widgets, 0.8.10 E1, E2, E6, E8). Placed as `<div data-ss-ecommerce="product_grid" data-category="accessories"
+ * widgets, 0.8.10 E1, E2, E6, E8). Placed as `<div data-shelfway-ecommerce="product_grid" data-category="accessories"
  * data-brand="acme,zeta" data-grade="" data-attributes="" data-deal="" data-featured="" data-sort="newest" data-query=""
  * data-limit="24"></div>`: the data attributes are where the grid starts (`data-attributes`: field values by slug in
  * query form, for example `color=red,blue&size=m`, as a landing page by a field lists them); the shopper can change
@@ -134,18 +134,18 @@ export const mountProductGrid = async ({ host, config, shop, win }) => {
 					panelOpen = !panelOpen;
 					keepFocus(root, renderFilters);
 				},
-				{ class: 'secondary filter-toggle', 'aria-controls': 'ss-grid-filters', 'data-focus': 'filters' },
+				{ class: 'secondary filter-toggle', 'aria-controls': 'shelfway-grid-filters', 'data-focus': 'filters' },
 			);
 			const form = h(
 				doc,
 				'form',
 				{ class: 'toolbar', role: 'search' },
-				field(doc, 'ss-grid-q', t('grid.search'), search),
-				field(doc, 'ss-grid-sort', t('grid.sort'), sort),
+				field(doc, 'shelfway-grid-q', t('grid.search'), search),
+				field(doc, 'shelfway-grid-sort', t('grid.sort'), sort),
 				h(doc, 'button', { type: 'submit' }, t('grid.searchButton')),
 				toggle,
 			);
-			const panel = h(doc, 'aside', { class: 'filter-panel', id: 'ss-grid-filters', 'aria-label': t('grid.filters') });
+			const panel = h(doc, 'aside', { class: 'filter-panel', id: 'shelfway-grid-filters', 'aria-label': t('grid.filters') });
 			const list = h(doc, 'ul', { class: 'grid', 'aria-label': t('grid.label') });
 			const summary = h(doc, 'p', { class: 'meta' });
 			const pages = h(doc, 'nav', { class: 'pages', 'aria-label': t('grid.pages') });

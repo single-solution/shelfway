@@ -3,7 +3,7 @@
  * support contact (added by the mailer). Variables come from `data` (single line, bounded) and are HTML-escaped.
  * @module
  */
-import { supportContactLine } from '@ss/contracts/text';
+import { supportContactLine } from '@shelfway/contracts/text';
 
 /**
  * @typedef {object} MailText
@@ -139,5 +139,5 @@ export const MAIL_TEXTS = Object.freeze({
 });
 
 /** Closing line with the support contact (its channels), or null without channels. */
-export const supportLine = (/** @type {{ channels: import('@ss/contracts/text').SupportChannel[] }} */ support) =>
+export const supportLine = (/** @type {{ channels: import('@shelfway/contracts/text').SupportChannel[] }} */ support) =>
 	support.channels.length > 0 ? `Support: ${supportContactLine(support.channels)}.` : null;

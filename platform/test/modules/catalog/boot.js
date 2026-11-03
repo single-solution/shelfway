@@ -1,25 +1,25 @@
 /**
  * Test harness of the Portal: the real modules (system, catalog, identity, commerce, website) on the shared
- * MongoMemoryReplSet, driven through the HTTP API with `@ss/platform/testing`'s `createPortalClient`, fake products on
+ * MongoMemoryReplSet, driven through the HTTP API with `@shelfway/platform/testing`'s `createPlatformClient`, fake products on
  * local HTTP servers (`fakes/product.js`), and helpers that create people and websites the way PLAN 0.2 says. Work after
  * responses (notices, emails) runs before each call returns.
  * @module
  */
-import { createKeyResolver, verifyLaunch } from '@ss/protocol';
-import { consumeWith, createMemoryReplayStore } from '@ss/protocol/testing';
-import { createPortalClient } from '../../../src/testing.js';
+import { createKeyResolver, verifyLaunch } from '@shelfway/protocol';
+import { consumeWith, createMemoryReplayStore } from '@shelfway/protocol/testing';
+import { createPlatformClient } from '../../../src/testing.js';
 import { createSystemStore } from '../../../src/infra/system.js';
 import { createCatalogModule } from '../../../src/modules/catalog/index.js';
 import { commerceModule } from '../../../src/modules/commerce/index.js';
 import { createIdentityModule } from '../../../src/modules/identity/index.js';
 import { systemModule } from '../../../src/modules/system/index.js';
 import { websiteModule } from '../../../src/modules/website/index.js';
-import { createPortal } from '../../../src/portal.js';
-import { ENCRYPTION_KEY, PORTAL_URL, T0, createClock, createTestLogger, testConfig } from '../../helpers.js';
+import { createPlatform } from '../../../src/platform.js';
+import { ENCRYPTION_KEY, PLATFORM_URL, T0, createClock, createTestLogger, testConfig } from '../../helpers.js';
 import { memoryMailer } from '../identity/fakes/modules.js';
 import { startFakeProduct } from './fakes/product.js';
 
-export { PORTAL_URL };
+export { PLATFORM_URL };
 export const PASSWORD = 'correct horse battery';
 
 /**
@@ -28,13 +28,13 @@ export const PASSWORD = 'correct horse battery';
  *   `ENCRYPTION_KEY`, an `ENCRYPTION_KEY_PREVIOUS`); a second Portal on the same database signs its Owner in instead of
  *   creating one
  */
-export const bootPortal = async ({ db, clock = createClock(T0), settings, allowHosts = ['127.0.0.1'], env = {} }) => {
+export const bootPlatform = async ({ db, clock = createClock(T0), settings, allowHosts = ['127.0.0.1'], env = {} }) => {
 	const mailer = memoryMailer();
 	const config = await testConfig(env, settings ? { settings } : {});
 	const { logger, entries } = createTestLogger();
 	/** @type {Promise<unknown>[]} */
 	const pending = [];
-	const portal = createPortal({
+	const portal = createPlatform({
 		config,
 		db,
 		modules: [
@@ -57,7 +57,7 @@ export const bootPortal = async ({ db, clock = createClock(T0), settings, allowH
 	const settle = async () => {
 		while (pending.length > 0) await Promise.all(pending.splice(0));
 	};
-	const api = createPortalClient({ handle: portal.handle, portalUrl: PORTAL_URL, settle });
+	const api = createPlatformClient({ handle: portal.handle, platformUrl: PLATFORM_URL, settle });
 	/** @type {Array<Awaited<ReturnType<typeof startFakeProduct>>>} */
 	const products = [];
 
@@ -120,7 +120,7 @@ export const bootPortal = async ({ db, clock = createClock(T0), settings, allowH
 	 * @param {{ active?: boolean }} [options]
 	 */
 	const connect = async (manifest, { active = true } = {}) => {
-		const product = await startFakeProduct({ manifest, portalUrl: PORTAL_URL, now: clock.now });
+		const product = await startFakeProduct({ manifest, platformUrl: PLATFORM_URL, now: clock.now });
 		products.push(product);
 		const res = await (await owner()).post('/v1/admin/products', { url: product.url, secret: product.secret });
 		if (res.status !== 201) throw new Error(`connect ${res.status} ${JSON.stringify(res.json)}`);
@@ -146,7 +146,7 @@ export const bootPortal = async ({ db, clock = createClock(T0), settings, allowH
 			token: decodeURIComponent(String(new URL(url).searchParams.get('launch'))),
 			keyResolver: createKeyResolver({ jwks: portal.shared.keys.publishedJwks() }),
 			audience: productId,
-			issuer: PORTAL_URL,
+			issuer: PLATFORM_URL,
 			consume: consumeWith(createMemoryReplayStore({ now: clock.now })),
 			now: clock.now,
 		});

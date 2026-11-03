@@ -7,7 +7,7 @@
  * tapping a button ends the flow.
  * @module
  */
-import { isObject } from '@ss/contracts/util';
+import { isObject } from '@shelfway/contracts/util';
 import { containsPhrase, pathMatches } from './text.js';
 import { checkFieldValue } from './fields.js';
 

@@ -1,12 +1,12 @@
 /**
- * A fake product on a local node:http server, built with `@ss/protocol` the way `@ss/app-kit` does:
+ * A fake product on a local node:http server, built with `@shelfway/protocol` the way `@shelfway/app-kit` does:
  *
- * - `POST /.well-known/ss-connect`: the product side of the connect handshake (HMAC-verified request, single-use
+ * - `POST /.well-known/shelfway-connect`: the product side of the connect handshake (HMAC-verified request, single-use
  *   nonce, HMAC-signed answer with its id, public key, manifest and current price list). It pins the Portal's keys
  *   and continues its price list from the Portal's `priceListVersion` when that is higher.
- * - `POST /.well-known/ss-events`: notices, verified with `verifyNotice` against the pinned Portal keys and recorded.
- * - `GET /v1/blueprint?websiteId=`: its part of a Setup sheet, a Portal call verified with `verifyPortalCall` (the
- *   `@ss/contracts/testing` product blueprint under its own id and name, unless a test sets another).
+ * - `POST /.well-known/shelfway-events`: notices, verified with `verifyNotice` against the pinned Portal keys and recorded.
+ * - `GET /v1/blueprint?websiteId=`: its part of a Setup sheet, a Portal call verified with `verifyPlatformCall` (the
+ *   `@shelfway/contracts/testing` product blueprint under its own id and name, unless a test sets another).
  * - `POST /v1/blueprint/features?websiteId=`: the advisor's Switch on, a Portal call with a body: recorded, and
  *   answered `{ version, on, added }` with the asked features added (or as a test tampers it).
  *
@@ -14,8 +14,8 @@
  * @module
  */
 import { createServer } from 'node:http';
-import { manifestPriceList } from '@ss/contracts';
-import { productBlueprint } from '@ss/contracts/testing';
+import { manifestPriceList } from '@shelfway/contracts';
+import { productBlueprint } from '@shelfway/contracts/testing';
 import {
 	createConnectResponse,
 	createJwks,
@@ -25,9 +25,9 @@ import {
 	signAssertion,
 	verifyConnectRequest,
 	verifyNotice,
-	verifyPortalCall,
-} from '@ss/protocol';
-import { createMemoryReplayStore } from '@ss/protocol/testing';
+	verifyPlatformCall,
+} from '@shelfway/protocol';
+import { createMemoryReplayStore } from '@shelfway/protocol/testing';
 
 /** The connect secret fake products are deployed with (unless a test passes another). */
 const PRODUCT_SECRET = 'fake-product-connect-secret-0123456789abcdef';
@@ -43,9 +43,15 @@ const PRODUCT_SECRET = 'fake-product-connect-secret-0123456789abcdef';
  */
 
 /**
- * @param {{ manifest: any, portalUrl: string, now?: () => number, kid?: string, secret?: string }} options
+ * @param {{ manifest: any, platformUrl: string, now?: () => number, kid?: string, secret?: string }} options
  */
-export const startFakeProduct = async ({ manifest, portalUrl, now = Date.now, kid = 'product-k1', secret = PRODUCT_SECRET }) => {
+export const startFakeProduct = async ({
+	manifest,
+	platformUrl,
+	now = Date.now,
+	kid = 'product-k1',
+	secret = PRODUCT_SECRET,
+}) => {
 	let key = await generateSigningKey({ kid });
 	/** @type {Tamper} */
 	const tamper = {};
@@ -54,11 +60,11 @@ export const startFakeProduct = async ({ manifest, portalUrl, now = Date.now, ki
 	let prices = manifestPriceList(manifest);
 	/** @type {Set<string>} */
 	const nonces = new Set();
-	/** @type {Array<{ portalUrl: string, baseUrl: string, priceListVersion: number }>} */
+	/** @type {Array<{ platformUrl: string, baseUrl: string, priceListVersion: number }>} */
 	const connects = [];
 	/** @type {Array<{ type: string, websiteId?: string, subject?: string }>} */
 	const notices = [];
-	/** @type {import('@ss/protocol').KeyResolver | null} */
+	/** @type {import('@shelfway/protocol').KeyResolver | null} */
 	let portalKeys = null;
 	const replayStore = createMemoryReplayStore({ now });
 	/** The websites the Portal asked for blueprints, in order. @type {string[]} */
@@ -79,7 +85,7 @@ export const startFakeProduct = async ({ manifest, portalUrl, now = Date.now, ki
 				res.writeHead(status, { 'content-type': 'application/json' });
 				res.end(json === undefined ? '' : JSON.stringify(json));
 			};
-			if (req.method === 'POST' && req.url === '/.well-known/ss-connect') {
+			if (req.method === 'POST' && req.url === '/.well-known/shelfway-connect') {
 				if (tamper.connect === 'no_secret')
 					return answer(503, { status: 503, detail: 'CONNECT_SECRET is shorter than 32 characters.', problems: [] });
 				if (tamper.connect === 'status_500') return answer(500, {});
@@ -92,7 +98,11 @@ export const startFakeProduct = async ({ manifest, portalUrl, now = Date.now, ki
 				}
 				if (nonces.has(request.nonce)) return answer(401, { code: 'unauthorized' });
 				nonces.add(request.nonce);
-				connects.push({ portalUrl: request.portalUrl, baseUrl: request.baseUrl, priceListVersion: request.priceListVersion });
+				connects.push({
+					platformUrl: request.platformUrl,
+					baseUrl: request.baseUrl,
+					priceListVersion: request.priceListVersion,
+				});
 				portalKeys = createKeyResolver({ jwks: request.jwks });
 				if (request.priceListVersion > prices.version) prices = { ...prices, version: request.priceListVersion };
 				const signed = createConnectResponse({
@@ -110,7 +120,7 @@ export const startFakeProduct = async ({ manifest, portalUrl, now = Date.now, ki
 				res.writeHead(200, signed.headers);
 				return void res.end(signed.body);
 			}
-			if (req.method === 'POST' && req.url === '/.well-known/ss-events') {
+			if (req.method === 'POST' && req.url === '/.well-known/shelfway-events') {
 				if (tamper.noticeStatus) return answer(tamper.noticeStatus, {});
 				try {
 					if (!portalKeys) throw new Error('not connected');
@@ -133,7 +143,7 @@ export const startFakeProduct = async ({ manifest, portalUrl, now = Date.now, ki
 				if (tamper.switchOn === 'status_500') return answer(500, {});
 				try {
 					if (!portalKeys) throw new Error('not connected');
-					await verifyPortalCall({
+					await verifyPlatformCall({
 						headers: /** @type {any} */ (req.headers),
 						audience: current.id,
 						method: 'POST',
@@ -162,7 +172,7 @@ export const startFakeProduct = async ({ manifest, portalUrl, now = Date.now, ki
 				if (tamper.blueprint === 'refuse') return answer(403, { code: 'forbidden' });
 				try {
 					if (!portalKeys) throw new Error('not connected');
-					await verifyPortalCall({
+					await verifyPlatformCall({
 						headers: /** @type {any} */ (req.headers),
 						audience: current.id,
 						method: 'GET',
@@ -188,9 +198,9 @@ export const startFakeProduct = async ({ manifest, portalUrl, now = Date.now, ki
 						'/v1/test': {
 							get: {
 								summary: 'Test operation',
-								'x-ss-auth': 'server',
-								'x-ss-permission': 'test.read',
-								'x-ss-feature': 'always',
+								'x-shelfway-auth': 'server',
+								'x-shelfway-permission': 'test.read',
+								'x-shelfway-feature': 'always',
 							},
 						},
 					},
@@ -213,7 +223,7 @@ export const startFakeProduct = async ({ manifest, portalUrl, now = Date.now, ki
 			return key.publicJwk;
 		},
 		/** A fresh client assertion of this product (`Authorization: Bearer …`). */
-		assertion: () => signAssertion({ signer: createSigner(key.privateJwk), productId: current.id, audience: portalUrl, now }),
+		assertion: () => signAssertion({ signer: createSigner(key.privateJwk), productId: current.id, audience: platformUrl, now }),
 		/** The websites the Portal asked for blueprints, in order. */
 		blueprintCalls,
 		/** The Switch on calls, in order. */

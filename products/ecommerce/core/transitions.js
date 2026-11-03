@@ -43,7 +43,7 @@
  * the attachments) it checks before. Pure functions, no I/O (ids are random).
  * @module
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { factsGuard, factsOf } from './facts.js';
 import {
 	BEFORE_DELIVERY_ROLES as BEFORE_DELIVERY,

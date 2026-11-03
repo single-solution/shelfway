@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { ObjectId } from 'mongodb';
 import { afterEach, describe, expect, it } from 'vitest';
-import { IMPORT_LIMITS } from '@ss/contracts';
+import { IMPORT_LIMITS } from '@shelfway/contracts';
 import { defineMapping, read, send, verify } from '../src/index.js';
 import { main } from '../src/cli.js';
 import { compareKeyTexts, keyPayloadOf, keyTextOf, keyValuesOf } from '../src/keys.js';
@@ -440,9 +440,9 @@ describe('send: settings, prune and the final pass', () => {
 		const deps = {
 			io: { out: (/** @type {string} */ text) => void (out += text), err: () => {} },
 			env: {
-				SS_IMPORT_TOKEN_ACCOUNTS: product.token,
-				SS_IMPORT_TOKEN_ECOMMERCE: product.token,
-				SS_IMPORT_TOKEN_CHAT: product.token,
+				SHELFWAY_IMPORT_TOKEN_ACCOUNTS: product.token,
+				SHELFWAY_IMPORT_TOKEN_ECOMMERCE: product.token,
+				SHELFWAY_IMPORT_TOKEN_CHAT: product.token,
 			},
 			fetch: product.fetch,
 			connect: async () => {

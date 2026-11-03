@@ -1,4 +1,4 @@
-import { WEBSITE_SETTINGS_PATHS } from '@ss/contracts';
+import { WEBSITE_SETTINGS_PATHS } from '@shelfway/contracts';
 import { ObjectId } from 'mongodb';
 import { afterEach, describe, expect, it } from 'vitest';
 import { send, verify } from '../src/index.js';
@@ -6,8 +6,8 @@ import { MAPPINGS } from '../src/mappings/index.js';
 import { SB_IDS, sbHex } from '../src/mappings/sisters-boutique/fixture.js';
 import {
 	BY_HAND,
-	PORTAL_BY_HAND,
-	PORTAL_CONNECTIONS_BY_HAND,
+	PLATFORM_BY_HAND,
+	PLATFORM_CONNECTIONS_BY_HAND,
 	DEAL_HOURS_SHIFT_MINUTES,
 	DEFAULT_CHART_ID,
 	FEATURES,
@@ -571,8 +571,8 @@ describe('the Sisters Boutique mapping', () => {
 			'phone.trunkPrefix',
 		])
 			expect(keys.filter((key) => key.endsWith(gone))).toEqual([]);
-		expect(Object.keys(PORTAL_BY_HAND)).toContain('region.currency');
-		expect(PORTAL_BY_HAND['region.format']).toContain('Rs');
+		expect(Object.keys(PLATFORM_BY_HAND)).toContain('region.currency');
+		expect(PLATFORM_BY_HAND['region.format']).toContain('Rs');
 		expect(plan.ecommerce?.lists?.payment_methods).toMatchObject([
 			{ key: 'bank_transfer', instructions: 'Transfer online — send payment screenshot on WhatsApp' },
 			{ key: 'cod', note: 'Pay when you receive your order' },
@@ -1012,12 +1012,12 @@ describe('the Sisters Boutique mapping', () => {
 
 describe('what is entered by hand in the Portal stays accurate', () => {
 	it('names only values the website settings really hold (a value or a group of them), once', () => {
-		for (const key of Object.keys(PORTAL_BY_HAND))
+		for (const key of Object.keys(PLATFORM_BY_HAND))
 			expect(
 				WEBSITE_SETTINGS_PATHS.some((path) => path === key || path.startsWith(`${key}.`)),
 				`${key} is not a value of the website settings`,
 			).toBe(true);
-		for (const text of Object.values(PORTAL_BY_HAND)) expect(text.length).toBeGreaterThan(0);
+		for (const text of Object.values(PLATFORM_BY_HAND)) expect(text.length).toBeGreaterThan(0);
 	});
 
 	it('is not also written by the plan: no setting of the Portal, no Format, in any product', async () => {
@@ -1031,6 +1031,6 @@ describe('what is entered by hand in the Portal stays accurate', () => {
 	});
 
 	it('lists the database and the storage, one of each for every product', () => {
-		expect(Object.keys(PORTAL_CONNECTIONS_BY_HAND)).toEqual(['database', 'storage']);
+		expect(Object.keys(PLATFORM_CONNECTIONS_BY_HAND)).toEqual(['database', 'storage']);
 	});
 });

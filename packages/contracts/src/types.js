@@ -1,6 +1,6 @@
 /**
  * JSDoc type definitions for the v1 contracts. This module has no runtime exports; import the types with
- * `@typedef {import('@ss/contracts').Manifest} Manifest`.
+ * `@typedef {import('@shelfway/contracts').Manifest} Manifest`.
  * @module
  */
 
@@ -67,7 +67,7 @@
  * @property {string[]} [requires] what the feature needs the website's settings (Portal) to say, as dotted paths into the
  *   document (`pages.signIn`); empty or absent: nothing
  * @property {SettingsSchema} settings
- * @property {string[]} [recommendFor] rules of business profile tags the feature suits (`@ss/contracts/profile`)
+ * @property {string[]} [recommendFor] rules of business profile tags the feature suits (`@shelfway/contracts/profile`)
  */
 
 /**
@@ -255,9 +255,9 @@
  *   the profile rules them out
  */
 /**
- * The Setup sheet of a website, `ss.blueprint/1`.
+ * The Setup sheet of a website, `shelfway.blueprint/1`.
  * @typedef {object} Blueprint
- * @property {'ss.blueprint/1'} schema
+ * @property {'shelfway.blueprint/1'} schema
  * @property {string} generatedAt
  * @property {{ id: string, domain: string, status: 'active' | 'grace' | 'stopped' | 'suspended', business: { found: boolean,
  *   name: string | null, country: string | null, timeZone: string | null },
@@ -283,10 +283,10 @@ export {};
  */
 
 /**
- * The website-settings document (`ss.website-settings/1`, `@ss/contracts/website-settings`): the facts every product of
+ * The website-settings document (`shelfway.website-settings/1`, `@shelfway/contracts/website-settings`): the facts every product of
  * one website shares, kept once in the Portal. `''` is an unset text, `[]` an unset list. No secret has a place in it.
  * @typedef {object} WebsiteSettings
- * @property {'ss.website-settings/1'} schema
+ * @property {'shelfway.website-settings/1'} schema
  * @property {string} websiteId
  * @property {number} version the Portal's saves (0: nothing saved yet)
  * @property {string | null} updatedAt ISO-8601 UTC of the last save

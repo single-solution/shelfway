@@ -8,11 +8,11 @@
  * schedule (`booking.schedule`, '' = the first of the list). Times are in the website's time zone (the Portal's Region and format).
  * A product's slots are back-to-back periods of its `durationMinutes` from the start of each opening period, ending
  * inside it. Booked slots are kept with a unique index (the ledger), so one start of one product is booked once.
- * Time-zone arithmetic is `zonedParts` of `@ss/contracts/format` (no I/O); an unknown zone is read as UTC.
+ * Time-zone arithmetic is `zonedParts` of `@shelfway/contracts/format` (no I/O); an unknown zone is read as UTC.
  * @module
  */
-import { zonedParts } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
+import { zonedParts } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
 import { DAY_MS } from './durations.js';
 
 /** @typedef {{ start: string, end: string }} TimeRange `HH:MM`, the end after the start (`24:00` = the end of the day) */

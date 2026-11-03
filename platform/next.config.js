@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { staticSecurityHeaders } from '@ss/net';
+import { staticSecurityHeaders } from '@shelfway/net';
 import { API_CSP } from './src/infra/security-headers.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -19,7 +19,7 @@ const config = {
 	turbopack: { root },
 	serverExternalPackages: ['mongodb'],
 	// the UI library ships untranspiled JSX in .js files
-	transpilePackages: ['@ss/ui'],
+	transpilePackages: ['@shelfway/ui'],
 	// One route handler (app/api/[...path]) serves every server path; the public paths stay as they are. Checked before
 	// the console's catch-all page, which owns every other path.
 	rewrites: async () => ({

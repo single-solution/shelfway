@@ -8,7 +8,7 @@
  * products found, or Ecommerce cannot answer) is skipped.
  * @module
  */
-import { isObject } from '@ss/contracts/util';
+import { isObject } from '@shelfway/contracts/util';
 import { primary } from './language.js';
 import { aroundPhrase, containsPhrase, normalize, tokenize } from './text.js';
 

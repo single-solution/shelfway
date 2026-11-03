@@ -843,7 +843,7 @@ const editDialog = (kit, order, done) => {
 			quantity: kit.input(String(quantity), {
 				type: 'number',
 				min: '0',
-				max: '99',
+				max: '99999',
 				step: '1',
 				'aria-label': t('ordersAdmin.quantityOf', { item: name }),
 			}),

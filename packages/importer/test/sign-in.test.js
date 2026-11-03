@@ -21,7 +21,7 @@ describe('the staff member’s sign-in', () => {
 		await requestProduct(fetch, target, 'GET', '/v1/products/count');
 		await requestProduct(fetch, target, 'POST', '/v1/import/products', { body: '' });
 		await requestProduct(fetch, target, 'GET', '/v1/import/status');
-		expect(seen.map((call) => [call.route, call.headers['ss-sign-in'] ?? null])).toEqual([
+		expect(seen.map((call) => [call.route, call.headers['shelfway-sign-in'] ?? null])).toEqual([
 			['/v1/settings/catalog.pageSize', 'a.sign.in'],
 			['/v1/products/count', 'a.sign.in'],
 			['/v1/import/products', null],
@@ -33,6 +33,6 @@ describe('the staff member’s sign-in', () => {
 	it('is not sent when there is none', async () => {
 		const { fetch, seen } = recording();
 		await requestProduct(fetch, { url: 'https://shop.example.test', token: 't' }, 'GET', '/v1/settings');
-		expect(seen[0]?.headers['ss-sign-in']).toBeUndefined();
+		expect(seen[0]?.headers['shelfway-sign-in']).toBeUndefined();
 	});
 });

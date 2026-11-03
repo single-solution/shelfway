@@ -70,13 +70,13 @@ describe('secrets never reach the delivery log (D11, SE-3)', () => {
 			subject: 'Your code for {business}',
 			text: 'Code {code}. Or sign in: {link} (valid {minutes} minutes)',
 		});
-		const secrets = ['482913', 'ss_accounts_magic=abc.def'];
+		const secrets = ['482913', 'shelfway_accounts_magic=abc.def'];
 		const sent = await env.send('email', {
 			template: 'accounts.email_code',
 			to: { email: 'ana@example.com' },
 			values: {
 				code: '482913',
-				link: 'https://shop.example.com/account#ss_accounts_magic=abc.def',
+				link: 'https://shop.example.com/account#shelfway_accounts_magic=abc.def',
 				minutes: 10,
 				business: 'Shop',
 			},
@@ -85,7 +85,7 @@ describe('secrets never reach the delivery log (D11, SE-3)', () => {
 		const mail = JSON.parse(lastBody('https://api.resend.com'));
 		expect(mail).toMatchObject({
 			subject: 'Your code for Shop',
-			text: 'Code 482913. Or sign in: https://shop.example.com/account#ss_accounts_magic=abc.def (valid 10 minutes)',
+			text: 'Code 482913. Or sign in: https://shop.example.com/account#shelfway_accounts_magic=abc.def (valid 10 minutes)',
 		});
 		// every read and the record keep them hidden
 		expect(sent.json).toMatchObject({

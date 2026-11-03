@@ -6,7 +6,7 @@
  * own, takes no picture and has no save here. The pictures are the https addresses of Brand and look.
  * @module
  */
-import { defineRoute, problem } from '@ss/app-kit';
+import { defineRoute, problem } from '@shelfway/app-kit';
 import { businessJsonOf, publicStoreDetails, storeDetailsFromWebsite } from '../core/store-details.js';
 import { conditional } from './http-cache.js';
 import { VISITOR_LIMITS } from './service.js';
@@ -64,7 +64,7 @@ export const createStoreDetails = (product, service) => {
 				method: 'GET',
 				path: '/v1/shop/store',
 				auth: 'browser',
-				feature: ['catalog', 'checkout'],
+				feature: ['store_details', 'catalog', 'checkout'],
 				rateLimit: VISITOR_LIMITS,
 				handler: conditional(read, service.now),
 			}),
@@ -72,7 +72,7 @@ export const createStoreDetails = (product, service) => {
 				method: 'GET',
 				path: '/v1/shop/store/business-json',
 				auth: 'browser',
-				feature: ['catalog', 'checkout'],
+				feature: ['store_details', 'catalog', 'checkout'],
 				rateLimit: VISITOR_LIMITS,
 				handler: conditional(businessJson, service.now),
 			}),

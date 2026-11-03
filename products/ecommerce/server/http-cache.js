@@ -9,7 +9,7 @@
  * @module
  */
 import { createHash } from 'node:crypto';
-import { ok } from '@ss/app-kit';
+import { ok } from '@shelfway/app-kit';
 
 /** A server keeps an answer a minute, and serves it for ten more while it reads it again. */
 const SERVER_CACHE = 'private, max-age=60, stale-while-revalidate=600';

@@ -68,7 +68,7 @@ const verify = (clock, token, overrides = {}) =>
 	});
 
 /** @param {Record<string, unknown>} payload */
-const signRaw = (payload) => signCompact({ signer: portal.signer, typ: 'ss-token+jws', payload });
+const signRaw = (payload) => signCompact({ signer: portal.signer, typ: 'shelfway-token+jws', payload });
 
 describe('tokens', () => {
 	it('issues tokens with exactly the seven claims and no expiry', async () => {
@@ -82,7 +82,7 @@ describe('tokens', () => {
 			productId: 'chat',
 			kind: 'browser',
 		});
-		expect(decodeSegment(token, 0)).toEqual({ alg: 'EdDSA', kid: 'portal-1', typ: 'ss-token+jws' });
+		expect(decodeSegment(token, 0)).toEqual({ alg: 'EdDSA', kid: 'portal-1', typ: 'shelfway-token+jws' });
 		expect(decodeSegment(token, 1)).toEqual(claims);
 		expect(TOKEN_KINDS).toEqual(['browser', 'server', 'link']);
 	});
@@ -110,7 +110,7 @@ describe('tokens', () => {
 			() =>
 				verify(
 					clock,
-					tamperSegment(token, 0, (h) => ({ ...h, typ: 'ss-ticket+jws' })),
+					tamperSegment(token, 0, (h) => ({ ...h, typ: 'shelfway-ticket+jws' })),
 				),
 			() =>
 				verify(

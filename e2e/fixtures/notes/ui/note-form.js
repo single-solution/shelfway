@@ -3,7 +3,7 @@
  * token.
  * @module
  */
-import { element, formatText, mountWidget, requestJson } from '@ss/app-kit/widget';
+import { element, formatText, mountWidget, requestJson } from '@shelfway/app-kit/widget';
 import { checkNote } from '../core/notes.js';
 import { WIDGET_CSS } from './styles.js';
 

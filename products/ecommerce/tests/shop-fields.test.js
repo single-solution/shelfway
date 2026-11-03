@@ -11,7 +11,7 @@ let shop;
 /** @type {Record<string, any>} */
 const ids = {};
 
-const VISITOR = { 'ss-visitor-ip': '203.0.113.7' };
+const VISITOR = { 'shelfway-visitor-ip': '203.0.113.7' };
 
 /** @param {string} method @param {string} path @param {unknown} [body] */
 const api = async (method, path, body) => {

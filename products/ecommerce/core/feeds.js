@@ -8,11 +8,11 @@
  * functions, no I/O.
  * @module
  */
-import { csvCell } from '@ss/contracts/csv';
+import { csvCell } from '@shelfway/contracts/csv';
 import { escapeXml, feedGroupId, feedItemId, fillTemplate, offeredVariants, shippingFee, variantLabel } from './seo.js';
 import { variantInStock } from './catalog.js';
 import { feedMeasureOf } from './measure.js';
-import { toDecimal } from '@ss/contracts/format';
+import { toDecimal } from '@shelfway/contracts/format';
 
 /** @typedef {import('./model.js').ProductRecord} ProductRecord */
 /** @typedef {import('./seo.js').Condition} Condition */

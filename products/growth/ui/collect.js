@@ -269,7 +269,7 @@ export const searchOnPage = (win, params) => {
 };
 
 /**
- * Whether the page marks itself as a 404 (`<meta name="ss-growth-page" content="not_found">`).
+ * Whether the page marks itself as a 404 (`<meta name="shelfway-growth-page" content="not_found">`).
  * @param {Document} doc
  */
 export const markedNotFound = (doc) =>

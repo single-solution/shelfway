@@ -137,7 +137,7 @@ Largest product — many features are **real** (catalog, checkout, loyalty). Deb
 | `events`       | API/forward                     | **DEMOTE** Admin tools     |
 | `csv`          | delimiter; csv.run              | **DEMOTE** Admin tools     |
 | `bulk_actions` | bulk.run, data.delete_all       | **DEMOTE** Admin tools     |
-| `import`       | ss-import                       | **KEEP**                   |
+| `import`       | shelfway-import                 | **KEEP**                   |
 
 ---
 

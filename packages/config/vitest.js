@@ -1,7 +1,7 @@
 /**
  * Shared Vitest preset. Every unit's `vitest.config.js` is one call:
  *
- *   import { defineUnitConfig } from '@ss/config/vitest';
+ *   import { defineUnitConfig } from '@shelfway/config/vitest';
  *   export default defineUnitConfig({ dir: import.meta.dirname, coverageInclude: ['src/**'], mongo: true });
  *
  * Coverage thresholds are the standard (90 % lines and functions, 85 % branches) for every unit; the test project is
@@ -18,8 +18,8 @@ const MONGO_SETUP = fileURLToPath(new URL('./mongo-setup.js', import.meta.url));
 /** The coverage standard. */
 const THRESHOLDS = Object.freeze({ lines: 90, functions: 90, branches: 85 });
 
-/** Sources of `@ss/ui` (untranspiled JSX in `.js`), linked from the workspace or installed from the registry. */
-const UI_SOURCES = /[\\/](?:packages[\\/]ui|node_modules[\\/]@ss[\\/]ui)[\\/]src[\\/][^\\/]+\.js$/;
+/** Sources of `@shelfway/ui` (untranspiled JSX in `.js`), linked from the workspace or installed from the registry. */
+const UI_SOURCES = /[\\/](?:packages[\\/]ui|node_modules[\\/]@shelfway[\\/]ui)[\\/]src[\\/][^\\/]+\.js$/;
 
 /** @param {string} text */
 const escape = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -55,7 +55,7 @@ export const defineUnitConfig = ({
 }) =>
 	defineConfig({
 		root: dir,
-		// JSX in .js files: @ss/ui (wherever it is installed) and the unit's own component folders
+		// JSX in .js files: @shelfway/ui (wherever it is installed) and the unit's own component folders
 		esbuild: {
 			include: jsx.length > 0 ? [UI_SOURCES, folderPattern(dir, jsx)] : [UI_SOURCES],
 			exclude: [],
@@ -66,8 +66,8 @@ export const defineUnitConfig = ({
 			name: path.basename(dir),
 			include,
 			environment: 'node',
-			// @ss/ui ships JSX: transform it even when it comes from node_modules
-			server: { deps: { inline: [/@ss[\\/]ui/] } },
+			// @shelfway/ui ships JSX: transform it even when it comes from node_modules
+			server: { deps: { inline: [/@shelfway[\\/]ui/] } },
 			globalSetup: mongo ? [MONGO_SETUP] : [],
 			hookTimeout: 60_000,
 			testTimeout: 30_000,

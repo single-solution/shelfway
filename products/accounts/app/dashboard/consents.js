@@ -7,7 +7,7 @@
  * are rich rows (`record-section.js`); a click on a row opens its fields in place.
  * @module
  */
-import { Checkbox, Input, Select } from '@ss/ui';
+import { Checkbox, Input, Select } from '@shelfway/ui';
 import { RecordSection } from './record-section.js';
 import { TEXTS } from './texts.js';
 
@@ -27,7 +27,7 @@ const T = TEXTS.settings.consent;
  */
 const rowOf = (item) => ({
 	lead: {
-		icon: /** @type {import('@ss/ui').IconName} */ (item.purpose === 'marketing' ? 'mail' : 'shield'),
+		icon: /** @type {import('@shelfway/ui').IconName} */ (item.purpose === 'marketing' ? 'mail' : 'shield'),
 		tone: /** @type {const} */ ('primary'),
 	},
 	title: item.label,

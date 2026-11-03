@@ -1,5 +1,5 @@
 /**
- * `@ss/protocol/testing` — helpers for tests and single-process tools only, never for a deployable: an in-memory
+ * `@shelfway/protocol/testing` — helpers for tests and single-process tools only, never for a deployable: an in-memory
  * replay store and the adapter of a replay store to the single-use `consume` of `verifyLaunch`.
  * @module
  */

@@ -6,7 +6,7 @@
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { dashboardHeaders } from '@ss/app-kit/headers';
+import { dashboardHeaders } from '@shelfway/app-kit/headers';
 
 const here = dirname(fileURLToPath(import.meta.url));
 // inside the Shelfway monorepo the workspace packages are linked from its root; split off, the project is the root
@@ -23,7 +23,7 @@ const config = {
 	turbopack: { root },
 	serverExternalPackages: ['mongodb'],
 	// the UI library ships untranspiled JSX in .js files
-	transpilePackages: ['@ss/ui'],
+	transpilePackages: ['@shelfway/ui'],
 	// the dashboard page refuses every frame and gets the static security headers (PLAN 0.4.3)
 	headers: async () => dashboardHeaders(),
 	async rewrites() {

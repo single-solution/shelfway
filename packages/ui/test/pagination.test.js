@@ -59,7 +59,7 @@ describe('Pagination (the page footer)', () => {
 	it('has a skeleton with the same two buttons and the count line', () => {
 		const { container } = render(<PaginationSkeleton label="Loading pages" />);
 		expect(container.querySelector('[role="status"]')?.getAttribute('aria-label')).toBe('Loading pages');
-		expect(container.querySelectorAll('.ss-shimmer')).toHaveLength(3);
+		expect(container.querySelectorAll('.shelfway-shimmer')).toHaveLength(3);
 	});
 });
 

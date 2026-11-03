@@ -1,7 +1,7 @@
 /**
  * Growth's options (PLAN 0.8.10 G1–G7) pass the jsdom test with the real page script. Growth runs against the REAL
  * Portal; the merchant's server sets every option through the settings API (K1, with an acting user), then a visitor's
- * browser (jsdom, the real `@ss/product-growth/page-script`, the Portal-issued browser token) loads a page: tags
+ * browser (jsdom, the real `@shelfway/product-growth/page-script`, the Portal-issued browser token) loads a page: tags
  * without a consent step and GA4 left to Tag Manager (G1), search, contact and variant ids at the pixels (G2), sessions
  * with their journey, live visitors and the event log through a ticket (G3), the AI crawler block and the Yandex tag
  * (G4), the IndexNow key file at its own path (G5), the notice bar closed per page, hidden on pages and read by custom
@@ -9,9 +9,9 @@
  */
 import { JSDOM } from 'jsdom';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createProductInstance, manifest, strings } from '@ss/product-growth/product';
-import { createRoutes } from '@ss/product-growth/routes';
-import { startWidget } from '@ss/product-growth/page-script';
+import { createProductInstance, manifest, strings } from '@shelfway/product-growth/product';
+import { createRoutes } from '@shelfway/product-growth/routes';
+import { startWidget } from '@shelfway/product-growth/page-script';
 import { startSystem } from './helpers.js';
 
 const GROWTH = 'https://growth.test';
@@ -73,7 +73,7 @@ const setting = async (key, value) => {
 	const saved = await sys.call('PUT', `/v1/settings/${key}`, {
 		token: tokens.server,
 		body: { value },
-		headers: { 'SS-Actor-Id': 'u_7', 'SS-Actor-Name': 'Mina%20Manager' },
+		headers: { 'Shelfway-Actor-Id': 'u_7', 'Shelfway-Actor-Name': 'Mina%20Manager' },
 	});
 	expect(saved.status, `${key}: ${JSON.stringify(saved.json)}`).toBe(200);
 	return saved.json;
@@ -168,7 +168,7 @@ describe('Growth options with the real page script (PLAN 0.8.10 G1–G7)', () =>
 		const first = openPage('/shop?q=Blue+tote');
 		// Ecommerce's product page announces a variant before the page script has its config
 		first.win.dispatchEvent(
-			new first.win.CustomEvent('ss:view_item', {
+			new first.win.CustomEvent('shelfway:view_item', {
 				detail: { currency: 'USD', value: 1250, items: [{ id: 'prd_1', variantId: 'var_1', price: 1250, quantity: 1 }] },
 			}),
 		);
@@ -182,12 +182,12 @@ describe('Growth options with the real page script (PLAN 0.8.10 G1–G7)', () =>
 			'https://connect.facebook.net/en_US/fbevents.js',
 			'https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=CABCDEFGHIJ12&lib=ttq',
 		]);
-		const banner = win.document.querySelector('[data-ss-growth="consent_banner"]');
+		const banner = win.document.querySelector('[data-shelfway-growth="consent_banner"]');
 		expect(banner.shadowRoot.querySelector('[role="dialog"]').hasAttribute('hidden')).toBe(false);
 
 		// G2: the search page, a contact and the variant reach the pixels; GA4 events go to the container's dataLayer
-		win.dispatchEvent(new win.CustomEvent('ss:contact', { detail: { method: 'whatsapp' } }));
-		win.SSGrowth.search('chargers', { results: 0 });
+		win.dispatchEvent(new win.CustomEvent('shelfway:contact', { detail: { method: 'whatsapp' } }));
+		win.ShelfwayGrowth.search('chargers', { results: 0 });
 		const meta = win.fbq.queue.map((/** @type {unknown[]} */ call) => call.slice(1, 3));
 		expect(meta).toEqual(
 			expect.arrayContaining([
@@ -207,26 +207,26 @@ describe('Growth options with the real page script (PLAN 0.8.10 G1–G7)', () =>
 		).toEqual(expect.arrayContaining(['ViewContent', 'Search', 'Contact']));
 
 		// G6: the notice bar shows here; closing it holds for this page only
-		const bar = win.document.querySelector('[data-ss-growth="notice_bar"]');
+		const bar = win.document.querySelector('[data-shelfway-growth="notice_bar"]');
 		expect(bar.shadowRoot.textContent).toContain('Free delivery this week');
 		bar.shadowRoot.querySelector('button').click();
-		expect(win.document.querySelector('[data-ss-growth="notice_bar"]')).toBeNull();
-		expect(win.sessionStorage.getItem('ss-growth-notice-closed')).toBeNull();
+		expect(win.document.querySelector('[data-shelfway-growth="notice_bar"]')).toBeNull();
+		expect(win.sessionStorage.getItem('shelfway-growth-notice-closed')).toBeNull();
 
 		leave(win);
 		await until(() => first.answers.some((answer) => answer === '/v1/collect 202'));
-		const session = JSON.parse(win.sessionStorage.getItem('ss-growth-session')).id;
+		const session = JSON.parse(win.sessionStorage.getItem('shelfway-growth-session')).id;
 		expect(session).toMatch(/^[0-9a-f]{32}$/);
 
 		// the second page of the same tab: the notice is back, the session goes on, the page's largest paint goes to GA4
 		const second = openPage('/bags/blue-tote', {
 			storage: Object.fromEntries(
-				['ss-growth-session', 'ss-growth-visit'].map((key) => [key, win.sessionStorage.getItem(key)]),
+				['shelfway-growth-session', 'shelfway-growth-visit'].map((key) => [key, win.sessionStorage.getItem(key)]),
 			),
 			lcp: 4200,
 		});
 		await second.page.ready;
-		expect(second.win.document.querySelector('[data-ss-growth="notice_bar"]')).not.toBeNull();
+		expect(second.win.document.querySelector('[data-shelfway-growth="notice_bar"]')).not.toBeNull();
 		await new Promise((resolve) => setTimeout(resolve, 0));
 		leave(second.win);
 		// G7: the vital as a GA4 event, through the container
@@ -240,10 +240,12 @@ describe('Growth options with the real page script (PLAN 0.8.10 G1–G7)', () =>
 				non_interaction: true,
 			}),
 		);
-		await until(async () => (await merchantDb.collection('ss_growth_analytics_events').countDocuments({ type: 'vital' })) > 0);
+		await until(
+			async () => (await merchantDb.collection('shelfway_growth_analytics_events').countDocuments({ type: 'vital' })) > 0,
+		);
 
 		// G3: every event carries the session, the browser and system family and the city
-		const events = await merchantDb.collection('ss_growth_analytics_events').find({}).toArray();
+		const events = await merchantDb.collection('shelfway_growth_analytics_events').find({}).toArray();
 		expect(events.length).toBeGreaterThanOrEqual(6);
 		expect(events.every((event) => event.session === session && event.browser === 'chrome' && event.os === 'android')).toBe(
 			true,
@@ -294,7 +296,7 @@ describe('Growth options with the real page script (PLAN 0.8.10 G1–G7)', () =>
 		expect(hidden.json).toBeNull();
 		const checkout = openPage('/checkout/pay');
 		await checkout.page.ready;
-		expect(checkout.win.document.querySelector('[data-ss-growth="notice_bar"]')).toBeNull();
+		expect(checkout.win.document.querySelector('[data-shelfway-growth="notice_bar"]')).toBeNull();
 	});
 
 	it('G4 and G5: robots.txt, the verification tags and the IndexNow key file', async () => {

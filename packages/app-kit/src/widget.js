@@ -1,5 +1,5 @@
 /**
- * `@ss/app-kit/widget` — the browser side of widgets (PLAN 0.4.10). No Node.js imports: products bundle it into their
+ * `@shelfway/app-kit/widget` — the browser side of widgets (PLAN 0.4.10). No Node.js imports: products bundle it into their
  * own `widget.js`.
  *
  * `formatMoney` and `formatDate` are the kit's one formatter (PLAN 0.8.10 K7): widgets pass the website's Format and
@@ -9,9 +9,9 @@
  *
  * `mountWidget({ host, theme, css, customCss, render })` attaches an open Shadow DOM to `host`, so the site's CSS
  * cannot break the widget, and injects into that shadow root only: the theme as CSS variables
- * (`--ss-color-<name>`, `--ss-font-family`, `--ss-radius`), the product CSS and the merchant's custom CSS. The mode is
- * set as `data-ss-mode="light" | "dark"` on the host (`auto` follows the device and updates when it changes), so
- * product CSS styles both with `:host([data-ss-mode="dark"])`. The text language and direction come from the page:
+ * (`--shelfway-color-<name>`, `--shelfway-font-family`, `--shelfway-radius`), the product CSS and the merchant's custom CSS. The mode is
+ * set as `data-shelfway-mode="light" | "dark"` on the host (`auto` follows the device and updates when it changes), so
+ * product CSS styles both with `:host([data-shelfway-mode="dark"])`. The text language and direction come from the page:
  * a shadow root inherits `lang` and `dir` from its host, so a page in Arabic or Hebrew shows the widget right to left
  * (the widget CSS uses logical properties). `lang` and `dir` options set them on the widget's root when the page does
  * not say.
@@ -23,7 +23,7 @@
  * `CONTROLS_CSS` draws (a switch, a checkbox, a radio, a segmented control, a card) from the website's theme.
  * @module
  */
-import { toCsv } from '@ss/contracts/csv';
+import { toCsv } from '@shelfway/contracts/csv';
 import {
 	DEFAULT_FORMAT,
 	formatDate,
@@ -32,7 +32,7 @@ import {
 	isCurrency,
 	normalizeFormat,
 	toDecimal,
-} from '@ss/contracts/format';
+} from '@shelfway/contracts/format';
 import { formatText } from './util.js';
 
 export { DEFAULT_FORMAT, formatDate, formatMoney, formatText, fromDecimal, isCurrency, normalizeFormat, toCsv, toDecimal };
@@ -116,12 +116,12 @@ export const themeCss = (theme = {}) => {
 	const declarations = [];
 	for (const [name, color] of Object.entries(theme.colors ?? {})) {
 		if (COLOR_NAME.test(name) && typeof color === 'string' && COLOR.test(color))
-			declarations.push(`--ss-color-${name}: ${color};`);
+			declarations.push(`--shelfway-color-${name}: ${color};`);
 	}
-	if (theme.fontFamily === 'inherit' || theme.fontFamily === undefined) declarations.push('--ss-font-family: inherit;');
-	else if (FONT.test(theme.fontFamily)) declarations.push(`--ss-font-family: "${theme.fontFamily}", inherit;`);
+	if (theme.fontFamily === 'inherit' || theme.fontFamily === undefined) declarations.push('--shelfway-font-family: inherit;');
+	else if (FONT.test(theme.fontFamily)) declarations.push(`--shelfway-font-family: "${theme.fontFamily}", inherit;`);
 	if (Number.isInteger(theme.radius) && /** @type {number} */ (theme.radius) >= 0 && /** @type {number} */ (theme.radius) <= 24)
-		declarations.push(`--ss-radius: ${theme.radius}px;`);
+		declarations.push(`--shelfway-radius: ${theme.radius}px;`);
 	return `:host { ${declarations.join(' ')} }`;
 };
 
@@ -150,7 +150,7 @@ export const mountWidget = ({ host, theme = {}, css = '', customCss = '', lang, 
 	const media = view && typeof view.matchMedia === 'function' ? view.matchMedia('(prefers-color-scheme: dark)') : null;
 	let mode = theme.mode ?? 'auto';
 	const applyMode = () => {
-		host.setAttribute('data-ss-mode', mode === 'auto' ? (media?.matches ? 'dark' : 'light') : mode);
+		host.setAttribute('data-shelfway-mode', mode === 'auto' ? (media?.matches ? 'dark' : 'light') : mode);
 	};
 	media?.addEventListener('change', applyMode);
 
@@ -174,7 +174,7 @@ export const mountWidget = ({ host, theme = {}, css = '', customCss = '', lang, 
 			media?.removeEventListener('change', applyMode);
 			if (typeof cleanup === 'function') cleanup();
 			shadow.replaceChildren();
-			host.removeAttribute('data-ss-mode');
+			host.removeAttribute('data-shelfway-mode');
 		},
 	};
 };

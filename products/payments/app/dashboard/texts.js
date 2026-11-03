@@ -1,9 +1,9 @@
 /**
  * The dashboard's words (US English, kept in this file; the dashboard is not translated, PLAN 0.6): Payments' title
- * and its own words over the words every product dashboard shares (`@ss/ui`).
+ * and its own words over the words every product dashboard shares (`@shelfway/ui`).
  * @module
  */
-import { dashboardTexts } from '@ss/ui';
+import { dashboardTexts } from '@shelfway/ui';
 
 export const TEXTS = dashboardTexts({
 	title: 'Payments',
@@ -118,7 +118,7 @@ export const TEXTS = dashboardTexts({
 		callbacksHelp: 'Register these addresses with each gateway (webhook, notice or return URL), for this website.',
 		events: 'Webhooks',
 		eventsHelp:
-			'Have Notifications on this website (the Portal links the two) and turn on its Outgoing webhooks; check the SS-Signature header of every event.',
+			'Have Notifications on this website (the Portal links the two) and turn on its Outgoing webhooks; check the Shelfway-Signature header of every event.',
 		more: 'Links, refunds and subscriptions',
 		moreHelp:
 			'Payment links for any amount, full and partial refunds, your manual payment methods for your checkout, gateway-managed subscriptions.',

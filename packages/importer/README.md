@@ -1,18 +1,18 @@
-# @ss/importer (`ss-import`)
+# @shelfway/importer (`shelfway-import`)
 
 The read side of the store conversion (PLAN.md 0.8.10, Migration and importers). A command-line tool, **never
 deployed**, that moves a store's records into the products:
 
-1. `ss-import read` reads a store database **read only** (MongoDB `find`, a secondary preferred) and writes, to a local
+1. `shelfway-import read` reads a store database **read only** (MongoDB `find`, a secondary preferred) and writes, to a local
    folder, one NDJSON file per target (a product's import collection: the records of every step into it, merged,
    oldest first), `idmap.json` (every source document → the key of the record it became; merged documents point at
    the record they joined), `settings.json` (the website's settings, when the mapping reads them) and `manifest.json`
    (what was read, in import order, with the verification sums).
-2. `ss-import send` first writes the settings and lists (`settings.json`, then the per-store settings table given with
+2. `shelfway-import send` first writes the settings and lists (`settings.json`, then the per-store settings table given with
    `--settings <file>`) through each product's settings API (K1: `/v1/settings/<feature>.<key>`,
    `/v1/lists/<list>`; every value explicitly, RT-15; a 429 waits and tries again), then posts the files to each
    product's import routes with the website's server token (`POST /v1/import/<collection>`, `?dryRun=1` first), cut
-   into calls of at most 1,000 records and 4 MB (`@ss/contracts` `IMPORT_LIMITS`). In a real run each product's
+   into calls of at most 1,000 records and 4 MB (`@shelfway/contracts` `IMPORT_LIMITS`). In a real run each product's
    `POST /v1/import/finish` (derived values) follows its last file, so the products finish in import order (Accounts,
    then Ecommerce's catalog and orders, Chat, Growth); a finish that works in batches (Chat: 100 conversations a call)
    answers `more` with `next`, and `send` calls it again with `?after=<next>` until it is done. A dry run writes
@@ -22,7 +22,7 @@ deployed**, that moves a store's records into the products:
    records an earlier import wrote that the store has deleted since are removed (only records an import wrote, never
    the merchant's own). `--only <product>.<collection>` sends some targets (pre-imports before the freeze). Re-runs are
    safe: the products find records by their keys and replace them.
-3. `ss-import verify` compares the records read with `GET /v1/import/status` (records an import wrote), the mapping's
+3. `shelfway-import verify` compares the records read with `GET /v1/import/status` (records an import wrote), the mapping's
    count routes (K4), and the sums the steps added up (order totals per status, stock units, points balances …) with
    the product's verification totals.
 
@@ -30,16 +30,16 @@ The write side lives in each product: its `import` feature and the kit's import 
 writes `ss_*` collections from outside, and nothing runs in the background.
 
 ```sh
-SS_IMPORT_SOURCE_URI='mongodb+srv://…/store' ss-import read --mapping <name> --out ./import-out
-SS_IMPORT_TOKEN_ECOMMERCE='…' ss-import send --dir ./import-out --product ecommerce=https://shop.example.com \
+SHELFWAY_IMPORT_SOURCE_URI='mongodb+srv://…/store' shelfway-import read --mapping <name> --out ./import-out
+SHELFWAY_IMPORT_TOKEN_ECOMMERCE='…' shelfway-import send --dir ./import-out --product ecommerce=https://shop.example.com \
   --settings ./settings-table.json --dry-run
-SS_IMPORT_TOKEN_ECOMMERCE='…' ss-import send --dir ./import-out --product ecommerce=https://shop.example.com \
+SHELFWAY_IMPORT_TOKEN_ECOMMERCE='…' shelfway-import send --dir ./import-out --product ecommerce=https://shop.example.com \
   --settings ./settings-table.json --prune
-SS_IMPORT_TOKEN_ECOMMERCE='…' ss-import verify --dir ./import-out --product ecommerce=https://shop.example.com
+SHELFWAY_IMPORT_TOKEN_ECOMMERCE='…' shelfway-import verify --dir ./import-out --product ecommerce=https://shop.example.com
 ```
 
-Secrets never go on the command line: the store database's address comes from `SS_IMPORT_SOURCE_URI` (or `--source`)
-and each product's server token from `SS_IMPORT_TOKEN_<PRODUCT ID>`. The output folder holds store data: keep it out of
+Secrets never go on the command line: the store database's address comes from `SHELFWAY_IMPORT_SOURCE_URI` (or `--source`)
+and each product's server token from `SHELFWAY_IMPORT_TOKEN_<PRODUCT ID>`. The output folder holds store data: keep it out of
 the repository (`import-out/` is ignored) and delete it after the cut-over.
 
 ## Mappings
@@ -70,7 +70,7 @@ database and the storage, which are entered once in the Portal (Website settings
 Store names appear only in mappings (PLAN 0.13). Each store's mapping comes with its cut-over, when the owner says so,
 and lives in its own folder, `src/mappings/<store>/`, with its README (what it reads, how each kind comes in, what is
 entered by hand and what is refused) and its sample records (`fixture.js`, read by its tests); `--mapping` offers the
-mappings `src/mappings/index.js` lists. The test mappings (`@ss/importer/fixture`) are not on `--mapping`: the
+mappings `src/mappings/index.js` lists. The test mappings (`@shelfway/importer/fixture`) are not on `--mapping`: the
 importer's tests pass them in, and the e2e suite imports both through the real products (`e2e/tests/import.test.js`):
 
 - **`fixture`**: a small store-like `feedback` collection (a duplicate that merges, a hidden document that is not read,

@@ -5,7 +5,7 @@
  * earlier output.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { feedRows, googleItem, metaLine } from '../core/feeds.js';
 import { listShown } from '../core/promotions.js';
 import { feedGroupId, fillTemplate, fillTitle, pageName, patternText, shippingFee } from '../core/seo.js';

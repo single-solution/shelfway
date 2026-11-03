@@ -9,7 +9,7 @@
  * written), export orders by date range and status, export customers.
  * @module
  */
-import { toCsv } from '@ss/app-kit/widget';
+import { toCsv } from '@shelfway/app-kit/widget';
 import { dayEnd, dayStart, query } from './admin-kit.js';
 import { card } from './admin-screen.js';
 

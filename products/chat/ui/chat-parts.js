@@ -4,7 +4,7 @@
  * product cards under an AI answer.
  * @module
  */
-import { element, formatMoney, formatText, viewerOf } from '@ss/app-kit/widget';
+import { element, formatMoney, formatText, viewerOf } from '@shelfway/app-kit/widget';
 import { ADD_TO_CART_EVENT } from '../core/widgets.js';
 import { buttonOf, customInput, formPart, webAddress } from './common.js';
 
@@ -202,7 +202,7 @@ const pricePart = (doc, t, money, { price, compareAtPrice }) => {
 /**
  * The product cards under an AI answer (product cards): image, name linking to the product page, price with the "was"
  * price struck through beside it (as the product page shows them) and Add to cart. Add to cart dispatches the
- * cancelable `ss-ecommerce:add-to-cart` window event with the item's least quantity in its steps (the card's `limits`;
+ * cancelable `shelfway-ecommerce:add-to-cart` window event with the item's least quantity in its steps (the card's `limits`;
  * an item sold in a unit of its own counts thousandths of it, `measured`); when no widget on the page (Ecommerce's)
  * calls `preventDefault()`, the button follows its link to the product page.
  * @param {{ doc: Document, win: Window, t: import('./common.js').Texts,

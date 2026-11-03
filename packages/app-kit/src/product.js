@@ -8,17 +8,17 @@
  * randomness, logger, store, outbound calls).
  * @module
  */
-import { BUILD_TEXT_MAX, checkSettingsSchema, createProblemFactory, validateManifest } from '@ss/contracts';
-import { formatDate, formatMoney } from '@ss/contracts/format';
-import { allowHostsFor, createOutboundPolicy, safeFetch } from '@ss/net';
+import { BUILD_TEXT_MAX, checkSettingsSchema, createProblemFactory, validateManifest } from '@shelfway/contracts';
+import { formatDate, formatMoney } from '@shelfway/contracts/format';
+import { allowHostsFor, createOutboundPolicy, safeFetch } from '@shelfway/net';
 import { MongoClient } from 'mongodb';
-import { isObject } from '@ss/contracts/util';
+import { isObject } from '@shelfway/contracts/util';
 import { ACTIVITY_INDEXES, createActivity } from './activity.js';
 import { createBlueprint } from './blueprint.js';
 import { createBusiness } from './business.js';
 import { createConnection } from './connection.js';
 import { checkConnectionDefinitions, createConnections, linkDefinitionsOf } from './connections.js';
-import { createPortalConnections } from './website-connections.js';
+import { createPlatformConnections } from './website-connections.js';
 import { createDashboard } from './dashboard.js';
 import { PRODUCT_DATABASE_OPTIONS, createData } from './data.js';
 import { EVENT_INDEXES, createEvents } from './events.js';
@@ -28,7 +28,7 @@ import { createRequestHandler } from './http/handler.js';
 import { defineRoute } from './http/routes.js';
 import { createAccountsSignIns } from './identity.js';
 import { createKitRoutes } from './kit-routes.js';
-import { noopLogger } from '@ss/net';
+import { noopLogger } from '@shelfway/net';
 import { createRecentChanges } from './recent.js';
 import { createReports } from './reports.js';
 import { createReseal } from './reseal.js';
@@ -43,7 +43,7 @@ import { createMongoStore } from './stores/mongo.js';
 import { createTickets } from './tickets.js';
 import { defaultRandomBytes, isKitError, kitError } from './util.js';
 
-/** @typedef {import('@ss/contracts').Manifest} Manifest */
+/** @typedef {import('@shelfway/contracts').Manifest} Manifest */
 /** @typedef {import('./connections.js').ConnectionDefinition} ConnectionDefinition */
 /** @typedef {import('./connections.js').OutboundSend} OutboundSend */
 /**
@@ -64,11 +64,11 @@ import { defaultRandomBytes, isKitError, kitError } from './util.js';
  * @property {typeof globalThis.fetch} [fetch] Portal calls
  * @property {() => number} [now]
  * @property {(length: number) => Uint8Array} [randomBytes]
- * @property {import('@ss/net').Logger} [logger]
+ * @property {import('@shelfway/net').Logger} [logger]
  * @property {string} [nodeEnv] default `process.env.NODE_ENV`
- * @property {import('@ss/net').OutboundPolicyOptions} [outbound] policy of calls to addresses merchants enter
+ * @property {import('@shelfway/net').OutboundPolicyOptions} [outbound] policy of calls to addresses merchants enter
  *   (`allowHostsFor`: this machine too under `next dev`; `allowHosts` is ignored in production)
- * @property {OutboundSend} [outboundSend] replaces `@ss/net` `safeFetch` for those calls (tests)
+ * @property {OutboundSend} [outboundSend] replaces `@shelfway/net` `safeFetch` for those calls (tests)
  * @property {Record<string, { status: number, title: string }>} [problemCodes] the product's own problem codes
  * @property {import('./kit-routes.js').ProductHooks} [hooks]
  * @property {Record<string, ConnectionDefinition>} [connections] the product's Connections (a `database` connection is
@@ -103,10 +103,10 @@ import { defaultRandomBytes, isKitError, kitError } from './util.js';
  * @typedef {object} Kit
  * @property {Manifest} manifest
  * @property {import('./stores/types.js').Store} store
- * @property {import('@ss/net').Logger} logger
+ * @property {import('@shelfway/net').Logger} logger
  * @property {() => number} now
  * @property {(length: number) => Uint8Array} randomBytes
- * @property {import('@ss/contracts').ProblemFactory} problems
+ * @property {import('@shelfway/contracts').ProblemFactory} problems
  * @property {ReadonlyArray<string>} configProblems
  * @property {ReturnType<typeof createConnection>} connection
  * @property {import('./recent.js').RecentChanges} recent
@@ -117,7 +117,7 @@ import { defaultRandomBytes, isKitError, kitError } from './util.js';
  * @property {import('./data.js').Data} data
  * @property {import('./business.js').Business} business
  * @property {import('./website-settings.js').WebsiteSettingsCache} website the Portal's copy of each website's settings
- * @property {import('./website-connections.js').PortalConnections} portalConnections what the Portal delivered of the website's connections and links
+ * @property {import('./website-connections.js').PlatformConnections} portalConnections what the Portal delivered of the website's connections and links
  * @property {import('./activity.js').Activity} activity
  * @property {import('./events.js').Events} events
  * @property {(ctx: { websiteId: string | null, merchantId: string | null, after: (task: () => Promise<unknown>) => void },
@@ -130,7 +130,7 @@ import { defaultRandomBytes, isKitError, kitError } from './util.js';
  * @property {ReturnType<typeof createDashboard>} dashboard
  */
 
-/** Problem codes the kit answers with besides `@ss/contracts`'. */
+/** Problem codes the kit answers with besides `@shelfway/contracts`'. */
 const KIT_PROBLEM_CODES = Object.freeze({
 	duplicate_request: Object.freeze({ status: 409, title: 'Duplicate request' }),
 	in_progress: Object.freeze({ status: 409, title: 'Request in progress' }),
@@ -140,7 +140,7 @@ const KIT_PROBLEM_CODES = Object.freeze({
 	visitor_ip_required: Object.freeze({ status: 400, title: "The visitor's IP address is required" }),
 	count_timeout: Object.freeze({ status: 503, title: 'Counting took too long' }),
 	database_unavailable: Object.freeze({ status: 503, title: 'Database unavailable' }),
-	managed_by_portal: Object.freeze({ status: 409, title: 'Managed in the Portal' }),
+	managed_by_platform: Object.freeze({ status: 409, title: 'Managed in the Portal' }),
 	scope_denied: Object.freeze({ status: 403, title: 'The link does not allow this' }),
 });
 
@@ -152,14 +152,14 @@ const KIT_PROBLEM_CODES = Object.freeze({
  * - `store`: `options.store`, else MongoDB on `config.mongodbUri` with the kit's pool and deadlines
  *   (`PRODUCT_DATABASE_OPTIONS`, so a database that cannot be reached answers 503 `database_unavailable`), else in
  *   memory (development only: a warning is logged). Only a healthy configuration (no `problems`) opens MongoDB.
- * - `policy`: the `@ss/net` outbound policy of `options.outbound`, its hosts by `allowHostsFor`: under `next dev`
+ * - `policy`: the `@shelfway/net` outbound policy of `options.outbound`, its hosts by `allowHostsFor`: under `next dev`
  *   this machine too (the other products and a local MongoDB on localhost), in production none (`allowHosts` is
  *   ignored).
  * - `send`: `options.outboundSend`, else `safeFetch` on that policy.
  *
  * Pass `store` on to `createProduct` (with the same `outbound` and `outboundSend`), so the kit and the product share it.
  * @param {Pick<ProductOptions, 'config' | 'problems' | 'store' | 'now' | 'logger' | 'nodeEnv' | 'outbound' | 'outboundSend'>} options
- * @returns {{ store: import('./stores/types.js').Store, policy: import('@ss/net').OutboundPolicy, send: OutboundSend }}
+ * @returns {{ store: import('./stores/types.js').Store, policy: import('@shelfway/net').OutboundPolicy, send: OutboundSend }}
  */
 export const createProductBase = (options) => {
 	const { now = Date.now, logger = noopLogger } = options;
@@ -226,7 +226,7 @@ export const createProduct = (options) => {
 	});
 	const recent = createRecentChanges({ store, now, randomBytes });
 	const website = createWebsiteSettings({ store, client: () => connection.active().client, now, logger });
-	/** The Portal's connections are built once the connections exist; the status follows them from then on. @type {{ follow: ((websiteId: string, copy: import('@ss/contracts').StatusResponse) => Promise<unknown>) | null }} */
+	/** The Portal's connections are built once the connections exist; the status follows them from then on. @type {{ follow: ((websiteId: string, copy: import('@shelfway/contracts').StatusResponse) => Promise<unknown>) | null }} */
 	const later = { follow: null };
 	const status = createStatus({
 		store,
@@ -268,7 +268,7 @@ export const createProduct = (options) => {
 		now,
 		shared,
 		website,
-		portalUrl: () => (connection.connected() ? connection.active().portalUrl : null),
+		platformUrl: () => (connection.connected() ? connection.active().platformUrl : null),
 	});
 	const messages = createMessages({ productId: manifest.id, declaration: options.messages });
 	/** @type {ReturnType<typeof createData> | null} */
@@ -289,7 +289,7 @@ export const createProduct = (options) => {
 		logger,
 		attach: messages.attach,
 	});
-	const portalConnections = createPortalConnections({
+	const portalConnections = createPlatformConnections({
 		store,
 		client: () => connection.active().client,
 		connections,
@@ -480,7 +480,7 @@ export const createProduct = (options) => {
 			timeZone,
 			/** @param {number} amount minor units @param {string} currency */
 			money: (amount, currency) => formatMoney(amount, currency, format),
-			/** @param {Date | number | string | null | undefined} value @param {import('@ss/contracts').DateStyle} [style] */
+			/** @param {Date | number | string | null | undefined} value @param {import('@shelfway/contracts').DateStyle} [style] */
 			date: (value, style = 'datetime') => formatDate(value, format, { timeZone, style }),
 		});
 	};
@@ -544,7 +544,7 @@ export const createProduct = (options) => {
 		/** Accounts sign-ins of a website, verified offline with its Portal link to Accounts (PLAN 0.4.6). */
 		accounts,
 		/** The pinned Portal address (what a link to "change it in the Portal" is built from), or null before the first connect. */
-		portalUrl: () => (kit.connection.connected() ? kit.connection.active().portalUrl : null),
+		platformUrl: () => (kit.connection.connected() ? kit.connection.active().platformUrl : null),
 		/** This product's own address (the base URL it was connected with), or null before the first connect. */
 		address: () => (kit.connection.connected() ? kit.connection.active().baseUrl : null),
 		/** Close pooled merchant database connections (tests, shutdown). */

@@ -16,7 +16,7 @@ next-env.d.ts
 # Agent worktrees (local only)
 .claude/worktrees/
 
-# What ss-import read writes (store data: never commit it)
+# What shelfway-import read writes (store data: never commit it)
 import-out/
 
 # Claude working notes (kept locally, never in the repo)

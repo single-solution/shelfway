@@ -1,14 +1,14 @@
 /**
  * Form pieces the catalog admin widget's editors share (PLAN 0.8.10 E1, E3, E16): FAQs, SEO fields (title,
  * description, canonical address, social image, noindex, nofollow, focus keyword) with the page's search result and
- * share preview (R7 #105, `@ss/ui/seo-preview`, redrawn as the merchant types), content blocks (a summary and
+ * share preview (R7 #105, `@shelfway/ui/seo-preview`, redrawn as the merchant types), content blocks (a summary and
  * bullets with icons), groups of checkboxes, yes / no / inherited selects, and the rich description editor (a toolbar
  * that writes the allowed tags into the HTML and a live safe preview). Rich text is never inserted as HTML: it is
  * parsed in an inert document and only the allowed elements (and the `href` of links) are copied.
  * @module
  */
 
-import { SEO_PREVIEW_TEXTS, seoPreview } from '@ss/ui/seo-preview';
+import { SEO_PREVIEW_TEXTS, seoPreview } from '@shelfway/ui/seo-preview';
 import { CONTACT_LINK, CONTENT_LIMITS, RICH_DROPPED, RICH_SYNONYMS, RICH_TAGS, htmlToText } from '../core/catalog-content.js';
 import { categoryLink, productLink } from '../core/links.js';
 import { previewHead } from '../core/seo-preview.js';

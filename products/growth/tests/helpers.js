@@ -1,5 +1,5 @@
 /**
- * Test harness: Growth on the kit, connected to the kit's fake Portal (`@ss/app-kit/testing`), with one website, its
+ * Test harness: Growth on the kit, connected to the kit's fake Portal (`@shelfway/app-kit/testing`), with one website, its
  * two tokens, dashboard sessions, a merchant database on the run's MongoDB (`TEST_MONGODB_URI`) and a faked web: the
  * merchant's site (pages, robots.txt, sitemap) and the IndexNow endpoint are answered in process (no real network call
  * is ever made). Every command sent to the merchant database is kept, so a test can count the operations of a request.
@@ -8,7 +8,7 @@
  * @module
  */
 import { MongoClient } from 'mongodb';
-import { validateValue } from '@ss/app-kit/api';
+import { validateValue } from '@shelfway/app-kit/api';
 import {
 	apiChecker,
 	createAccountsDouble,
@@ -17,7 +17,7 @@ import {
 	createNetwork,
 	portalConnector,
 	staffCaller,
-} from '@ss/app-kit/testing';
+} from '@shelfway/app-kit/testing';
 import apiJson from '../schemas/api.json' with { type: 'json' };
 import { createProductInstance, manifest } from '../adapters/product.js';
 import { keyOf } from '../adapters/store.js';
@@ -90,7 +90,7 @@ const merchantDatabase = () => {
  * @param {import('mongodb').Db} db
  */
 export const dailyRows = async (db) =>
-	(await db.collection('ss_growth_totals').find({}).toArray()).flatMap((doc) =>
+	(await db.collection('shelfway_growth_totals').find({}).toArray()).flatMap((doc) =>
 		Object.entries(doc.totals ?? {}).flatMap(([metric, keys]) =>
 			Object.entries(/** @type {Record<string, { c: number, s?: number }>} */ (keys)).map(([field, total]) => ({
 				day: doc.day,
@@ -178,7 +178,7 @@ export const setup = async ({ start = Date.parse('2026-10-01T10:00:00Z') } = {})
 	const commands = [];
 	/** @type {Array<{ level: string, message: string, fields: Record<string, any> }>} what the product logged */
 	const logs = [];
-	/** @type {import('@ss/net').Logger} */
+	/** @type {import('@shelfway/net').Logger} */
 	const logger = Object.freeze({
 		debug: () => {},
 		info: (message, fields = {}) => void logs.push({ level: 'info', message, fields }),
@@ -221,7 +221,7 @@ export const setup = async ({ start = Date.parse('2026-10-01T10:00:00Z') } = {})
 	 *   (the website's server with a staff Owner signed in otherwise)
 	 */
 	const call = async (method, path, { token, origin, body, cookie, headers = {}, bare = false, staff } = {}) => {
-		if (token === server && !bare && headers['ss-sign-in'] === undefined && headers['ss-visitor-ip'] === undefined)
+		if (token === server && !bare && headers['shelfway-sign-in'] === undefined && headers['shelfway-visitor-ip'] === undefined)
 			// eslint-disable-next-line no-param-reassign -- the harness signs the staff member in
 			headers = await staffHeaders({ headers, staff });
 		const response = await handler(

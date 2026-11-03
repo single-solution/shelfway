@@ -1,5 +1,5 @@
 /**
- * Cryptography (node:crypto; the shared helpers of `@ss/protocol`):
+ * Cryptography (node:crypto; the shared helpers of `@shelfway/protocol`):
  *
  * - **Sealing** (PLAN 0.4.8): the website's tool signing secret is kept in the product database sealed with the kit's
  *   sealer (`ss2.<keyId>.…`, AES-256-GCM under a key derived from `ENCRYPTION_KEY`, label `chat`), bound to the
@@ -14,8 +14,8 @@
  *   `ENCRYPTION_KEY_PREVIOUS` keep opening while it is set, and a lost key ends old links (the views make new ones).
  * @module
  */
-import { createSealer as createKitSealer } from '@ss/app-kit';
-import { constantTimeEqual } from '@ss/protocol';
+import { createSealer as createKitSealer } from '@shelfway/app-kit';
+import { constantTimeEqual } from '@shelfway/protocol';
 import { createHmac, hkdfSync } from 'node:crypto';
 
 /**
@@ -24,7 +24,7 @@ import { createHmac, hkdfSync } from 'node:crypto';
  */
 export const createSealer = (encryptionKey, previousKey = null) => createKitSealer({ encryptionKey, previousKey, label: 'chat' });
 
-/** @typedef {import('@ss/app-kit').Sealer} Sealer */
+/** @typedef {import('@shelfway/app-kit').Sealer} Sealer */
 
 /** @typedef {{ w: string, k: string, n: string, t: string }} SignedFile the website, object key, name and type */
 
@@ -37,7 +37,7 @@ const FILE_TOKEN_MAX = 4096;
  */
 export const createFileSigner = (encryptionKey, previousKey = null) => {
 	const keys = [encryptionKey, ...(previousKey ? [previousKey] : [])].map((secret) =>
-		Buffer.from(hkdfSync('sha256', Buffer.from(secret, 'utf8'), Buffer.alloc(0), 'ss-chat.files.v1', 32)),
+		Buffer.from(hkdfSync('sha256', Buffer.from(secret, 'utf8'), Buffer.alloc(0), 'shelfway-chat.files.v1', 32)),
 	);
 	/** @param {string} payload @param {Buffer} [key] */
 	const mac = (payload, key = /** @type {Buffer} */ (keys[0])) => createHmac('sha256', key).update(payload).digest();

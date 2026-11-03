@@ -1,5 +1,5 @@
 import { createServer } from 'node:net';
-import { createOutboundPolicy } from '@ss/net';
+import { createOutboundPolicy } from '@shelfway/net';
 import { describe, expect, it } from 'vitest';
 import { SMTP_PORTS, createSmtpMessaging, smtpSettingsOf } from '../adapters/smtp.js';
 

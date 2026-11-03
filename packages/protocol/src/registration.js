@@ -3,19 +3,19 @@
  *
  * The deployer gives the product a random `CONNECT_SECRET` (at least 32 characters) and an Owner types the product URL
  * and that secret into Portal → Products. The Portal then
- *   1. calls `POST <productUrl>/.well-known/ss-connect` with the JSON body
- *      `{ portalUrl, jwks, baseUrl, nonce, priceListVersion }` and the headers `SS-Connect-Timestamp: <unix seconds>`
- *      and `SS-Connect-Signature: <hex HMAC-SHA256(secret, "ss-connect.v1|<timestamp>|<exact body>")>`; the secret
+ *   1. calls `POST <productUrl>/.well-known/shelfway-connect` with the JSON body
+ *      `{ platformUrl, jwks, baseUrl, nonce, priceListVersion }` and the headers `Shelfway-Connect-Timestamp: <unix seconds>`
+ *      and `Shelfway-Connect-Signature: <hex HMAC-SHA256(secret, "shelfway-connect.v1|<timestamp>|<exact body>")>`; the secret
  *      itself is never sent. `priceListVersion` is the Portal's last accepted price-list version for that product (0
  *      when none);
  *   2. the product (`verifyConnectRequest`) checks the HMAC in constant time and the timestamp (±5 min), refuses a
  *      reused nonce, generates its Ed25519 key if it has none, pins the Portal URL and keys, stores the base URL it was
  *      connected with as its own address, and answers (`createConnectResponse`)
  *      `{ productId, nonce, publicJwk, manifest, prices }`, HMAC-signed with the same secret under another label
- *      (`ss-connected.v1|…`), so a request cannot be reflected as an answer;
+ *      (`shelfway-connected.v1|…`), so a request cannot be reflected as an answer;
  *   3. the Portal (`verifyConnectResponse`) checks the answer (HMAC, timestamp, nonce echo, product id format, key) and
  *      stores the product with its base URL and public key pinned. Manifest and price-list shapes are checked by the
- *      caller with `@ss/contracts`. The Portal never stores the secret.
+ *      caller with `@shelfway/contracts`. The Portal never stores the secret.
  * Whoever holds the secret is the authority: connecting again replaces the binding.
  */
 import { createProtocolError } from './errors.js';
@@ -27,17 +27,17 @@ import { isProductId } from './tokens.js';
 /** @typedef {import('./keys.js').PublicJwk} PublicJwk */
 
 /** Path of the product's connect endpoint. */
-export const CONNECT_PATH = '/.well-known/ss-connect';
+export const CONNECT_PATH = '/.well-known/shelfway-connect';
 /** Header carrying the HMAC timestamp (unix seconds). */
-const CONNECT_TIMESTAMP_HEADER = 'SS-Connect-Timestamp';
+const CONNECT_TIMESTAMP_HEADER = 'Shelfway-Connect-Timestamp';
 /** Header carrying the hex HMAC-SHA256. */
-const CONNECT_SIGNATURE_HEADER = 'SS-Connect-Signature';
+const CONNECT_SIGNATURE_HEADER = 'Shelfway-Connect-Signature';
 /** Shortest accepted connect secret. */
 const MIN_CONNECT_SECRET_LENGTH = 32;
 /** Accepted clock difference, seconds. */
 const CONNECT_TOLERANCE_SECONDS = 300;
-const REQUEST_LABEL = 'ss-connect.v1';
-const RESPONSE_LABEL = 'ss-connected.v1';
+const REQUEST_LABEL = 'shelfway-connect.v1';
+const RESPONSE_LABEL = 'shelfway-connected.v1';
 const SIGNATURE = /^[0-9a-f]{64}$/;
 const TIMESTAMP = /^\d{1,12}$/;
 
@@ -144,7 +144,7 @@ const isVersion = (value) => Number.isSafeInteger(value) && /** @type {number} *
 
 /**
  * Portal side: the connect request to a product.
- * @param {{ secret: string, productUrl: string, portalUrl: string, jwks: { keys: unknown[] }, priceListVersion: number,
+ * @param {{ secret: string, productUrl: string, platformUrl: string, jwks: { keys: unknown[] }, priceListVersion: number,
  *   now?: () => number, randomBytes?: (length: number) => Uint8Array }} params `priceListVersion`: the last accepted
  *   price-list version for this product, 0 when none.
  * @returns {{ url: string, baseUrl: string, headers: Record<string, string>, body: string, nonce: string }}
@@ -152,7 +152,7 @@ const isVersion = (value) => Number.isSafeInteger(value) && /** @type {number} *
 export const createConnectRequest = ({
 	secret,
 	productUrl,
-	portalUrl,
+	platformUrl,
 	jwks,
 	priceListVersion,
 	now = Date.now,
@@ -162,14 +162,14 @@ export const createConnectRequest = ({
 	const baseUrl = canonicalUrl(productUrl);
 	if (!isVersion(priceListVersion)) throw createProtocolError('invalid_argument', 'priceListVersion must be an integer >= 0');
 	const nonce = randomId(randomBytes);
-	const body = JSON.stringify({ portalUrl: canonicalUrl(portalUrl), jwks, baseUrl, nonce, priceListVersion });
+	const body = JSON.stringify({ platformUrl: canonicalUrl(platformUrl), jwks, baseUrl, nonce, priceListVersion });
 	return { url: `${baseUrl}${CONNECT_PATH}`, baseUrl, headers: signedHeaders(REQUEST_LABEL, key, body, now), body, nonce };
 };
 
 /**
  * Product side: verify a connect request (check the nonce against a replay store afterwards).
  * @param {{ secret: string, headers: Headers | Record<string, string | string[] | undefined>, body: string, now?: () => number }} params
- * @returns {{ portalUrl: string, jwks: { keys: PublicJwk[] }, baseUrl: string, nonce: string, priceListVersion: number }}
+ * @returns {{ platformUrl: string, jwks: { keys: PublicJwk[] }, baseUrl: string, nonce: string, priceListVersion: number }}
  */
 export const verifyConnectRequest = ({ secret, headers, body, now = Date.now }) => {
 	const parsed = verifySigned(REQUEST_LABEL, { secret: requireSecret(secret), headers, body, now });
@@ -179,17 +179,17 @@ export const verifyConnectRequest = ({ secret, headers, body, now = Date.now }) 
 	/** @type {{ keys: PublicJwk[] }} */
 	let jwks;
 	/** @type {string} */
-	let portalUrl;
+	let platformUrl;
 	/** @type {string} */
 	let baseUrl;
 	try {
 		jwks = { keys: parsed.jwks.keys.map((k) => toPublicJwk(k)) };
-		portalUrl = canonicalUrl(parsed.portalUrl);
+		platformUrl = canonicalUrl(parsed.platformUrl);
 		baseUrl = canonicalUrl(parsed.baseUrl);
 	} catch {
-		throw createProtocolError('malformed', 'portalUrl, baseUrl or jwks is invalid');
+		throw createProtocolError('malformed', 'platformUrl, baseUrl or jwks is invalid');
 	}
-	return { portalUrl, jwks, baseUrl, nonce: checkedNonce(parsed.nonce), priceListVersion: parsed.priceListVersion };
+	return { platformUrl, jwks, baseUrl, nonce: checkedNonce(parsed.nonce), priceListVersion: parsed.priceListVersion };
 };
 
 /**

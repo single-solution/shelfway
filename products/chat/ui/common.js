@@ -13,7 +13,7 @@ import {
 	segmented,
 	toggle,
 	viewerOf,
-} from '@ss/app-kit/widget';
+} from '@shelfway/app-kit/widget';
 import { attachmentKind } from '../core/widgets.js';
 
 /** @typedef {(key: string) => string} Texts */
@@ -64,9 +64,9 @@ import { attachmentKind } from '../core/widgets.js';
  * The website's widget config, from the kit.
  * @typedef {object} WidgetConfig
  * @property {Record<string, string>} texts
- * @property {import('@ss/app-kit/widget').WidgetTheme} theme
+ * @property {import('@shelfway/app-kit/widget').WidgetTheme} theme
  * @property {string} customCss
- * @property {Partial<import('@ss/contracts/format').Format>} [format] how money and dates look (K7)
+ * @property {Partial<import('@shelfway/contracts/format').Format>} [format] how money and dates look (K7)
  * @property {string} [timeZone] the business time zone (UTC when missing)
  * @property {string[]} features the switched-on features
  * @property {string[]} widgets the keys of the widgets whose feature is on
@@ -139,7 +139,7 @@ export const problemCode = (data) => {
 /**
  * Whether the server refused what was sent (`validation_failed`). Widgets then show their own text for that action:
  * never the server's English detail, so every word stays editable (PLAN 0.4.10).
- * @param {import('@ss/app-kit/widget').Answer} answer
+ * @param {import('@shelfway/app-kit/widget').Answer} answer
  */
 export const isInvalid = (answer) => problemCode(answer.data) === 'validation_failed';
 
@@ -355,10 +355,10 @@ export const fileProblem = (file, types, maxBytes) =>
  * Upload a file: ask for the presigned PUT, send the file with exactly the returned headers, and answer the attachment
  * for the message.
  * @param {typeof globalThis.fetch} fetch
- * @param {(body: unknown) => Promise<import('@ss/app-kit/widget').Answer>} ask the uploads route
+ * @param {(body: unknown) => Promise<import('@shelfway/app-kit/widget').Answer>} ask the uploads route
  * @param {File} file
  * @returns {Promise<{ attachment: { key: string, name: string, type: string, size: number } } |
- *   { failed: import('@ss/app-kit/widget').Answer | null }>}
+ *   { failed: import('@shelfway/app-kit/widget').Answer | null }>}
  */
 export const uploadFile = async (fetch, ask, file) => {
 	const answer = await ask({ name: file.name, type: file.type, size: file.size });

@@ -86,7 +86,7 @@ export function NavigationProgress({ children }) {
 	return (
 		<ProgressContext.Provider value={api}>
 			{children}
-			<div aria-hidden="true" className="ss-progress" data-active={count > 0 ? '' : undefined}>
+			<div aria-hidden="true" className="shelfway-progress" data-active={count > 0 ? '' : undefined}>
 				<span />
 			</div>
 		</ProgressContext.Provider>
@@ -117,7 +117,7 @@ export function PendingHint({ pending, className }) {
 		<span
 			aria-hidden="true"
 			data-pending={pending ? '' : undefined}
-			className={cx('ss-pending-hint inline-flex size-3.5 shrink-0 items-center justify-center', className)}>
+			className={cx('shelfway-pending-hint inline-flex size-3.5 shrink-0 items-center justify-center', className)}>
 			<Spinner size={12} />
 		</span>
 	);
@@ -129,8 +129,8 @@ export function PendingHint({ pending, className }) {
  */
 export function PageTransition({ children, className }) {
 	return (
-		<ViewTransition enter="ss-vt-enter" exit="ss-vt-exit" default="none">
-			<div data-ss-transition="" className={cx('min-w-0', className)}>
+		<ViewTransition enter="shelfway-vt-enter" exit="shelfway-vt-exit" default="none">
+			<div data-shelfway-transition="" className={cx('min-w-0', className)}>
 				{children}
 			</div>
 		</ViewTransition>
@@ -144,8 +144,8 @@ export function PageTransition({ children, className }) {
  */
 export function SwapTransition({ id, children, className }) {
 	return (
-		<ViewTransition key={id} enter="ss-vt-enter" exit="ss-vt-exit" default="none">
-			<div data-ss-transition="" className={cx('min-w-0', className)}>
+		<ViewTransition key={id} enter="shelfway-vt-enter" exit="shelfway-vt-exit" default="none">
+			<div data-shelfway-transition="" className={cx('min-w-0', className)}>
 				{children}
 			</div>
 		</ViewTransition>

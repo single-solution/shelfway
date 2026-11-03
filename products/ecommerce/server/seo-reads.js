@@ -4,14 +4,14 @@
  * titles, and streaming a long text answer (sitemaps and feeds) so its size never matters. Every query pins `websiteId`.
  * @module
  */
-import { problem } from '@ss/app-kit';
+import { problem } from '@shelfway/app-kit';
 import { SEO_DEFAULTS } from '../adapters/product.js';
 import { siteAddress } from '../core/catalog-content.js';
 import { absolute } from '../core/links.js';
 import { COLLECTIONS } from '../core/model.js';
 import { BUSINESS_TYPES, pageName, pageTitle } from '../core/seo.js';
 
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/model.js').ProductRecord} ProductRecord */
 /** @typedef {import('../core/model.js').CategoryRecord} CategoryRecord */
 /** @typedef {import('./service.js').Site} Site */

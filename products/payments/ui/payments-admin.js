@@ -23,7 +23,7 @@ import {
 	openDialog,
 	splitView,
 	stateSlot,
-} from '@ss/app-kit/widget';
+} from '@shelfway/app-kit/widget';
 import { PAYMENT_STATUSES, paymentsCsv } from '../core/payments.js';
 import { field, listSection } from './admin-kit.js';
 import { formattersOf } from './format.js';
@@ -33,7 +33,7 @@ import { WIDGET_CSS } from './styles.js';
 const PAGE_SIZE = 25;
 const EXPORT_PAGES = 20;
 
-/** The tone of each payment status. @type {Record<string, import('@ss/app-kit/widget').Tone>} */
+/** The tone of each payment status. @type {Record<string, import('@shelfway/app-kit/widget').Tone>} */
 const TONES = {
 	pending: 'warning',
 	paid: 'success',
@@ -44,7 +44,7 @@ const TONES = {
 };
 
 /**
- * @param {{ host: HTMLElement, api: import('@ss/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig,
+ * @param {{ host: HTMLElement, api: import('@shelfway/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig,
  *   save: (name: string, text: string) => void, open: (url: string) => void, copy?: (text: string) => void }} input
  *   `save`: hand a file to the browser; `open`: open an address in a new tab; `copy`: put a text on the clipboard
  */
@@ -244,7 +244,7 @@ export const mountPaymentsAdmin = ({ host, api, config, save, open, copy = () =>
 					});
 					buttons.push(confirm);
 				}
-				/** @type {import('@ss/app-kit/widget').MenuItem[]} */
+				/** @type {import('@shelfway/app-kit/widget').MenuItem[]} */
 				const menu = [];
 				if (can('manual_payments') && payment.proof)
 					menu.push({

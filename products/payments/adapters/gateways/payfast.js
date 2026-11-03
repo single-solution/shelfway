@@ -9,9 +9,9 @@
  * @module
  */
 import { createHash } from 'node:crypto';
-import { fromDecimal, toDecimal } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
-import { constantTimeEqual } from '@ss/protocol';
+import { fromDecimal, toDecimal } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
+import { constantTimeEqual } from '@shelfway/protocol';
 import { formBody, formFields, phpUrlencode } from '../util.js';
 import { call, failure, ok2xx } from './types.js';
 

@@ -6,12 +6,12 @@
  * its number of days (localStorage), as the merchant set.
  * @module
  */
-import { element, mountWidget } from '@ss/app-kit/widget';
+import { element, mountWidget } from '@shelfway/app-kit/widget';
 import { appliesTo } from '../core/notices.js';
 import { WIDGET_CSS } from './styles.js';
 
 /** Where closed announcements are remembered (with their text, so a changed one shows again). */
-export const NOTICE_STORAGE_KEY = 'ss-growth-notice-closed';
+export const NOTICE_STORAGE_KEY = 'shelfway-growth-notice-closed';
 
 const DAY_MS = 86_400_000;
 

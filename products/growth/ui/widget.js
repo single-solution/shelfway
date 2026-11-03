@@ -1,19 +1,19 @@
 /**
  * The page script (PLAN 0.4.10, 0.8.9). `widget.js` is the same for every website. With `data-token` on its script
  * tag (the website's browser token) it fetches the website's widget config and, following the switched-on features:
- * keeps the visitor's consent (the banner, or `SSGrowth.consent.set()` from the merchant's own tool), loads the tags
+ * keeps the visitor's consent (the banner, or `ShelfwayGrowth.consent.set()` from the merchant's own tool), loads the tags
  * once their category is granted, shows the notice bar, records anonymous analytics (page views, searches, 404s, Web
- * Vitals) and the shop events (`ss:view_item`, `ss:add_to_cart`, `ss:begin_checkout`, `ss:purchase`), which it also
- * passes to the loaded pixels, and site searches and contacts (`ss:search`, `ss:contact`, `SSGrowth.search()`,
- * `SSGrowth.contact()`; PLAN 0.8.10 G2), which also go to the pixels. In a single-page app each page the app opens
+ * Vitals) and the shop events (`shelfway:view_item`, `shelfway:add_to_cart`, `shelfway:begin_checkout`, `shelfway:purchase`), which it also
+ * passes to the loaded pixels, and site searches and contacts (`shelfway:search`, `shelfway:contact`, `ShelfwayGrowth.search()`,
+ * `ShelfwayGrowth.contact()`; PLAN 0.8.10 G2), which also go to the pixels. In a single-page app each page the app opens
  * itself is a page too (its view, search and 404, and the notice bar's hidden pages; SG-4). It listens for these
  * events from the moment it runs and keeps them until the config is there. Without `data-token` (the merchant's admin
- * pages) it only offers `window.SSGrowth.admin({ getTicket })`, which mounts the admin widgets of switched-on
+ * pages) it only offers `window.ShelfwayGrowth.admin({ getTicket })`, which mounts the admin widgets of switched-on
  * features: `analytics_dashboard`, `seo_checklist` and `redirects`. Nothing renders while the product is stopped, its features are
  * off or the merchant database is not connected.
  * @module
  */
-import { createTicketSource, viewerOf } from '@ss/app-kit/widget';
+import { createTicketSource, viewerOf } from '@shelfway/app-kit/widget';
 import { ANALYTICS_SIGNALS, allows, grantedOf } from '../core/consent.js';
 import { VITALS, propsOf } from '../core/events.js';
 import { contactOf, detailOf, funnelEvent, searchOf } from '../core/pixels.js';
@@ -47,9 +47,9 @@ export const ADMIN_CONFIG_PATH = '/v1/widget/admin/config';
  * The website's widget config, from the kit.
  * @typedef {object} WidgetConfig
  * @property {Record<string, string>} texts the widget texts (the website's own, else the defaults)
- * @property {import('@ss/app-kit/widget').WidgetTheme} theme
+ * @property {import('@shelfway/app-kit/widget').WidgetTheme} theme
  * @property {string} customCss
- * @property {Partial<import('@ss/contracts/format').Format>} format how money and dates look (PLAN 0.8.10 K7)
+ * @property {Partial<import('@shelfway/contracts/format').Format>} format how money and dates look (PLAN 0.8.10 K7)
  * @property {string} timeZone the business time zone (UTC without it; K8)
  * @property {string[]} features the switched-on features
  * @property {string[]} widgets the keys of the widgets whose feature is on
@@ -287,7 +287,7 @@ export const startWidget = ({ window: win, script }) => {
 			}, NOT_FOUND_DELAY_MS);
 		};
 		page(null);
-		// only the page script whose SSGrowth the page has follows its navigations (one loaded twice counts a page once)
+		// only the page script whose ShelfwayGrowth the page has follows its navigations (one loaded twice counts a page once)
 		watchNavigation({
 			window: win,
 			change: (from) => {
@@ -321,9 +321,9 @@ export const startWidget = ({ window: win, script }) => {
 		for (const task of waiting) task(current);
 	})();
 
-	/** @param {{ getTicket: import('@ss/app-kit/widget').GetTicket }} options */
+	/** @param {{ getTicket: import('@shelfway/app-kit/widget').GetTicket }} options */
 	const admin = async ({ getTicket }) => {
-		/** @type {import('@ss/app-kit/widget').Ticket} */
+		/** @type {import('@shelfway/app-kit/widget').Ticket} */
 		let first;
 		try {
 			first = await getTicket();
@@ -377,17 +377,17 @@ export const startWidget = ({ window: win, script }) => {
 			get: () => consent.get(),
 		}),
 		/**
-		 * A site search the page ran itself: recorded and passed to the pixels (as `ss:search`).
+		 * A site search the page ran itself: recorded and passed to the pixels (as `shelfway:search`).
 		 * @param {unknown} term @param {{ results?: number }} [options]
 		 */
 		search: (term, options = {}) => siteSearch({ term, results: options?.results }, path()),
 		/**
-		 * The visitor got in touch (for example a WhatsApp link): passed to the pixels (as `ss:contact`).
+		 * The visitor got in touch (for example a WhatsApp link): passed to the pixels (as `shelfway:contact`).
 		 * @param {{ method?: string }} [detail]
 		 */
 		contact: (detail) => contact(detail, path()),
 		/**
-		 * The page's own event (G2), for example `SSGrowth.track('book_demo', { plan: 'pro' })`: counted when one of the
+		 * The page's own event (G2), for example `ShelfwayGrowth.track('book_demo', { plan: 'pro' })`: counted when one of the
 		 * merchant's goals or funnels names it, and sent to the pixels a conversion action names.
 		 * @param {string} name @param {Record<string, unknown>} [props]
 		 */

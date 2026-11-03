@@ -29,7 +29,7 @@ import {
 	sameMeaning,
 	toThousandths,
 } from '../core/measure.js';
-import { MAX_AMOUNT } from '@ss/contracts/format';
+import { MAX_AMOUNT } from '@shelfway/contracts/format';
 import { applyPromotions } from '../core/promotions.js';
 import { returnRateRows } from '../core/reports.js';
 import { claimValue, planClaim } from '../core/returns.js';

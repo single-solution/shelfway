@@ -4,16 +4,16 @@
  * is served without a change here: its template keys are its own (`<productId>.`), work without the Merchant send API
  * feature, and its messages show in the dashboard. Each product declares the messages it sends with their US-English
  * defaults and serves them at `GET /v1/message-defaults` (public, the same for every website); Notifications reads that
- * list at the product's directory address, checked with `@ss/contracts` `validateMessageDefaults`, kept 10 minutes per
+ * list at the product's directory address, checked with `@shelfway/contracts` `validateMessageDefaults`, kept 10 minutes per
  * instance (the last good copy stays while a product cannot be reached). Sends never wait for these lists: a product's
  * send carries its defaults itself.
  * @module
  */
-import { PATTERNS, validateMessageDefaults } from '@ss/contracts';
+import { PATTERNS, validateMessageDefaults } from '@shelfway/contracts';
 import { productOfKey } from '../core/templates.js';
 
 /** @typedef {import('../core/templates.js').ProductMessage} ProductMessage */
-/** @typedef {(url: string, init?: import('@ss/net').SafeFetchInit) => Promise<import('@ss/net').SafeResponse>} OutboundSend */
+/** @typedef {(url: string, init?: import('@shelfway/net').SafeFetchInit) => Promise<import('@shelfway/net').SafeResponse>} OutboundSend */
 /** @typedef {{ productId: string, name: string, baseUrl: string }} DirectoryEntry */
 
 /** How long a product's list is kept before it is read again. */

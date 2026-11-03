@@ -1,5 +1,5 @@
 /**
- * Staff sign-ins for tests (`@ss/product-accounts/testing`): a staff member of a website is a user of Accounts with a role and
+ * Staff sign-ins for tests (`@shelfway/product-accounts/testing`): a staff member of a website is a user of Accounts with a role and
  * an open session, and a staff route of the server token (the kit's `staff.js`) wants their sign-in next to the token.
  * `staffSignIns(product, site)` makes the user on first use and signs them in the way a person would be, so a test never
  * has a sign-in Accounts itself would not issue.

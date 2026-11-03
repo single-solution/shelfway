@@ -3,11 +3,11 @@
  * address. No I/O: the API, the adapters and the widgets share it.
  * @module
  */
-import { normalizeEmail } from '@ss/contracts/email';
-import { normalizePhone as normalizeAnyPhone } from '@ss/contracts/phone';
-import { TEMPLATE_CHANNELS } from '@ss/contracts/templates';
+import { normalizeEmail } from '@shelfway/contracts/email';
+import { normalizePhone as normalizeAnyPhone } from '@shelfway/contracts/phone';
+import { TEMPLATE_CHANNELS } from '@shelfway/contracts/templates';
 
-/** @typedef {import('@ss/contracts/templates').TemplateChannel} Channel */
+/** @typedef {import('@shelfway/contracts/templates').TemplateChannel} Channel */
 
 /** Every channel, in the order screens list them (the channels templates are written for). */
 export const CHANNELS = TEMPLATE_CHANNELS;
@@ -65,7 +65,7 @@ const ID = /^[A-Za-z0-9_-]{1,64}$/;
 export const LANGUAGE = /^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8}){0,3}$/;
 
 /**
- * A phone number as E.164, or null: the normalizer every product shares (`@ss/contracts/phone`), with no default
+ * A phone number as E.164, or null: the normalizer every product shares (`@shelfway/contracts/phone`), with no default
  * calling code, so a number needs its `+` or `00` and calling code (Notifications never guesses a country); a trunk 0
  * after the code is dropped (`+49 030 …`, `+44 (0)20 …`).
  * @param {unknown} value

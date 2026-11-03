@@ -1,5 +1,5 @@
 /**
- * Encryption of stored secrets (PLAN 0.4.8): the one sealing format of `@ss/protocol`, `ss2.<keyId>.<iv>.<tag>.<data>`
+ * Encryption of stored secrets (PLAN 0.4.8): the one sealing format of `@shelfway/protocol`, `ss2.<keyId>.<iv>.<tag>.<data>`
  * (AES-256-GCM under a key derived from `ENCRYPTION_KEY` and the unit's label; the key id names the key that sealed a
  * value, never the key itself). Each value is bound to where it is stored (`aad`), so a sealed value copied to another
  * website or connection does not open. `ENCRYPTION_KEY` is never stored, logged or sent.
@@ -11,7 +11,7 @@
  * The product's own key and its ticket key are kept sealed too (`sealKey`, `openKey`; K-21), their public keys readable.
  * @module
  */
-import { createSealer as createProtocolSealer, toPublicJwk } from '@ss/protocol';
+import { createSealer as createProtocolSealer, toPublicJwk } from '@shelfway/protocol';
 import { resealEach } from './reseal.js';
 
 /**
@@ -24,7 +24,7 @@ import { resealEach } from './reseal.js';
 export const createSealer = ({ encryptionKey, previousKey = null, label = 'app-kit', randomBytes }) =>
 	createProtocolSealer({ key: encryptionKey, previousKey, label, ...(randomBytes ? { randomBytes } : {}) });
 
-/** @typedef {import('@ss/protocol').Sealer} Sealer */
+/** @typedef {import('@shelfway/protocol').Sealer} Sealer */
 
 /**
  * A private signing key as the product database keeps it (PLAN 0.4.8, K-21): the private JWK sealed, with its public

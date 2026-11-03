@@ -17,7 +17,7 @@ afterEach(() => {
 const crumbs = [{ label: 'Merchants', href: '/merchants' }, { label: 'Acme', href: '/merchants/acme' }, { label: 'Credits' }];
 
 /** @param {HTMLElement} root @param {string} part */
-const part = (root, part) => /** @type {HTMLElement} */ (root.querySelector(`[data-ss-part="${part}"]`));
+const part = (root, part) => /** @type {HTMLElement} */ (root.querySelector(`[data-shelfway-part="${part}"]`));
 
 /** Pretend the window is a phone (or not). @param {boolean} narrow */
 const phone = (narrow) => {
@@ -34,7 +34,7 @@ const phone = (narrow) => {
 describe('Page header', () => {
 	it('has one title, the last crumb, and every other crumb is a link', () => {
 		const { container } = render(<Page crumbs={crumbs}>Body</Page>);
-		const root = /** @type {HTMLElement} */ (container.querySelector('[data-ss-page]'));
+		const root = /** @type {HTMLElement} */ (container.querySelector('[data-shelfway-page]'));
 		expect(root).not.toBeNull();
 		const title = /** @type {HTMLElement} */ (root.querySelector('h1'));
 		expect(title.textContent).toBe('Credits');
@@ -87,7 +87,7 @@ describe('Page header', () => {
 		expect(byText(header, 'Balance').closest('a')?.getAttribute('href')).toBe('/balance');
 		expect(byText(header, 'Websites').closest('button,a')).toBeNull();
 		expect(byText(header, 'Websites').closest('[title]')?.getAttribute('title')).toBe('Websites in this account');
-		expect(header.querySelectorAll('[data-ss-fact]')).toHaveLength(4);
+		expect(header.querySelectorAll('[data-shelfway-fact]')).toHaveLength(4);
 	});
 
 	it('puts one primary action, up to two secondary ones and a More menu on the right', () => {
@@ -234,7 +234,7 @@ describe('Page areas', () => {
 				<p>The content</p>
 			</Page>,
 		);
-		const root = /** @type {HTMLElement} */ (container.querySelector('[data-ss-page]'));
+		const root = /** @type {HTMLElement} */ (container.querySelector('[data-shelfway-page]'));
 		expect(root.className).toBe(PAGE.root);
 		expect(container.querySelector('nav[aria-label="Sections"]')).not.toBeNull();
 		const toolbar = part(container, 'toolbar');
@@ -245,8 +245,8 @@ describe('Page areas', () => {
 		expect(footer.textContent).toContain('Showing 1');
 		expect(toolbar.compareDocumentPosition(body) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 		expect(body.compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-		expect(body.className).toContain('ss-scroll');
-		expect(container.querySelectorAll('.ss-scroll').length).toBeGreaterThanOrEqual(1);
+		expect(body.className).toContain('shelfway-scroll');
+		expect(container.querySelectorAll('.shelfway-scroll').length).toBeGreaterThanOrEqual(1);
 		expect(toolbar.className).toContain('shrink-0');
 		expect(footer.className).toContain('shrink-0');
 		expect(footer.className).toContain('h-12');
@@ -284,7 +284,7 @@ describe('Page areas', () => {
 			</Page>,
 		);
 		const before = part(first.container, 'body').firstElementChild;
-		expect(before?.className).toContain('animate-ss-enter');
+		expect(before?.className).toContain('animate-shelfway-enter');
 		first.rerender(
 			<Page crumbs={[{ label: 'A' }]} bodyKey="two">
 				<span data-testid="x">two</span>
@@ -346,7 +346,7 @@ describe('Page loading', () => {
 		expect(container.textContent).not.toContain('The content');
 		expect(container.textContent).not.toContain('Alpha');
 		expect(container.querySelector('h1')?.textContent).toBe('Merchants');
-		expect(container.querySelector('[data-ss-page]')?.getAttribute('aria-busy')).toBe('true');
+		expect(container.querySelector('[data-shelfway-page]')?.getAttribute('aria-busy')).toBe('true');
 		for (const name of ['header', 'toolbar', 'body', 'footer']) expect(part(container, name)).not.toBeNull();
 		expect(allByRole(container, 'status').length).toBeGreaterThan(0);
 	});
@@ -365,9 +365,9 @@ describe('Page loading', () => {
 		const skeleton = render(<PageSkeleton {...props} nav toolbar footer />);
 		for (const name of ['header', 'toolbar', 'body', 'footer'])
 			expect(part(skeleton.container, name).className, name).toBe(part(real.container, name).className);
-		const rootOf = (/** @type {HTMLElement} */ el) => el.querySelector('[data-ss-page]')?.className;
+		const rootOf = (/** @type {HTMLElement} */ el) => el.querySelector('[data-shelfway-page]')?.className;
 		expect(rootOf(skeleton.container)).toBe(rootOf(real.container));
-		const main = (/** @type {HTMLElement} */ el) => el.querySelector('[data-ss-part="body"]')?.parentElement?.className;
+		const main = (/** @type {HTMLElement} */ el) => el.querySelector('[data-shelfway-part="body"]')?.parentElement?.className;
 		expect(main(skeleton.container)).toBe(main(real.container));
 	});
 
@@ -428,11 +428,11 @@ describe('Page in the console frame', () => {
 			</AppShell>,
 		);
 		const shellHeader = /** @type {HTMLElement} */ (
-			[...container.querySelectorAll('header')].find((el) => !el.hasAttribute('data-ss-part'))
+			[...container.querySelectorAll('header')].find((el) => !el.hasAttribute('data-shelfway-part'))
 		);
-		expect(shellHeader.className).toContain('group-has-[[data-ss-page]]/main:hidden');
+		expect(shellHeader.className).toContain('group-has-[[data-shelfway-page]]/main:hidden');
 		const main = /** @type {HTMLElement} */ (container.querySelector('main'));
-		expect(main.className).toContain('has-[[data-ss-page]]:flex-1');
+		expect(main.className).toContain('has-[[data-shelfway-page]]:flex-1');
 	});
 
 	it('does not need a frame', () => {
@@ -496,7 +496,7 @@ describe('Page header by its own width', () => {
 		const rows = [...list.querySelectorAll(':scope > li')];
 		expect(rows.map((li) => li.className.includes('@[72rem]:flex'))).toEqual([false, false, true, true]);
 		for (const li of rows) expect(li.className).toContain('min-w-0');
-		const chips = [...container.querySelectorAll('[data-ss-fact]')];
+		const chips = [...container.querySelectorAll('[data-shelfway-fact]')];
 		for (const chip of chips) {
 			expect(chip.className).toContain('shrink');
 			expect(chip.className).not.toContain('shrink-0');
@@ -649,7 +649,7 @@ describe('Page with a list', () => {
 				<p>Acme page</p>
 			</Page>,
 		);
-		const column = /** @type {HTMLElement} */ (container.querySelector('[data-ss-list]'));
+		const column = /** @type {HTMLElement} */ (container.querySelector('[data-shelfway-list]'));
 		expect(column).not.toBeNull();
 		expect(container.querySelector('nav[aria-label="Sections"]')).toBeNull();
 		expect(allByRole(container, 'option')).toHaveLength(2);
@@ -666,7 +666,7 @@ describe('Page with a list', () => {
 		}));
 		const { container } = render(<Page crumbs={crumbs} sections={sections} list={listOf({ selected: 'acme' })} />);
 		expect(container.querySelector('nav[aria-label="Sections"]')).toBeNull();
-		expect(container.querySelector('[data-ss-list]')).not.toBeNull();
+		expect(container.querySelector('[data-shelfway-list]')).not.toBeNull();
 		expect(part(container, 'body').textContent).toContain('Body four');
 	});
 
@@ -677,7 +677,7 @@ describe('Page with a list', () => {
 			</Page>,
 		);
 		const before = /** @type {HTMLElement} */ (part(container, 'body').firstElementChild);
-		expect(before.className).toContain('animate-ss-enter');
+		expect(before.className).toContain('animate-shelfway-enter');
 		rerender(
 			<Page crumbs={crumbs} list={listOf({ selected: 'acme' })}>
 				x
@@ -700,7 +700,7 @@ describe('Page with a list', () => {
 				Acme page
 			</Page>,
 		);
-		expect(container.querySelector('[data-ss-list]')).not.toBeNull();
+		expect(container.querySelector('[data-shelfway-list]')).not.toBeNull();
 		expect(part(container, 'body')).not.toBeNull();
 		expect(part(container, 'header').querySelector('[aria-label="Back to the list"]')).toBeNull();
 	});
@@ -712,7 +712,7 @@ describe('Page with a list', () => {
 				Acme page
 			</Page>,
 		);
-		expect(container.querySelector('[data-ss-list]')).not.toBeNull();
+		expect(container.querySelector('[data-shelfway-list]')).not.toBeNull();
 		expect(allByRole(container, 'option')).toHaveLength(2);
 		expect(part(container, 'body')).toBeNull();
 		expect(container.textContent).not.toContain('Acme page');
@@ -726,7 +726,7 @@ describe('Page with a list', () => {
 				Acme page
 			</Page>,
 		);
-		expect(container.querySelector('[data-ss-list]')).toBeNull();
+		expect(container.querySelector('[data-shelfway-list]')).toBeNull();
 		expect(part(container, 'body').textContent).toContain('Acme page');
 		const back = /** @type {HTMLElement} */ (part(container, 'header').querySelector('[aria-label="Back to the list"]'));
 		click(back);

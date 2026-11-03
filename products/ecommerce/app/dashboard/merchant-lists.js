@@ -8,7 +8,7 @@
  * whole with the shared list editor (`./lists.js`).
  * @module
  */
-import { Checkbox, CheckboxGroup, FieldGrid, Input, Select, TextArea } from '@ss/ui';
+import { Checkbox, CheckboxGroup, FieldGrid, Input, Select, TextArea } from '@shelfway/ui';
 import { ATTACHMENT_LIMITS, ATTACHMENT_TYPES } from '../../core/attachments.js';
 import { REASON_LIMIT } from '../../core/order-reasons.js';
 import { QUESTION_LIMITS, QUESTION_TYPES } from '../../core/reviews.js';

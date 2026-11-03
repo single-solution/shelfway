@@ -22,7 +22,7 @@ const asStaff = (method, path, as, body) =>
 	env.call(method, path, {
 		token: env.server,
 		...(body === undefined ? {} : { body }),
-		headers: { 'ss-actor-id': as.id, 'ss-actor-name': encodeURIComponent(as.name) },
+		headers: { 'shelfway-actor-id': as.id, 'shelfway-actor-name': encodeURIComponent(as.name) },
 	});
 /** @param {Record<string, unknown>} body */
 const create = async (body) => (await env.serverCall('POST', '/v1/users', body)).json;

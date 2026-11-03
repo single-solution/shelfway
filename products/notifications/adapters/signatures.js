@@ -1,11 +1,11 @@
 /**
  * Signatures (PLAN 0.8.5): replies forwarded by Twilio (`X-Twilio-Signature`, the auth token) and the WhatsApp Cloud
  * API (`X-Hub-Signature-256`, the app secret) are checked before they unsubscribe anyone. Outgoing webhooks are signed
- * with `@ss/protocol`'s `signWebhook` (`SS-Signature: t=<unix seconds>,v1=<hex HMAC-SHA256 of "<t>.<body>">`).
+ * with `@shelfway/protocol`'s `signWebhook` (`Shelfway-Signature: t=<unix seconds>,v1=<hex HMAC-SHA256 of "<t>.<body>">`).
  * @module
  */
 import { createHmac } from 'node:crypto';
-import { constantTimeEqual, hmacSha256Hex } from '@ss/protocol';
+import { constantTimeEqual, hmacSha256Hex } from '@shelfway/protocol';
 
 /**
  * Check Twilio's signature: base64 HMAC-SHA1 of the full URL followed by every form field (sorted by name) as

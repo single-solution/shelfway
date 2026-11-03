@@ -1,10 +1,10 @@
 /**
- * Stable `$id`s of every schema in @ss/contracts v1. Ids are URNs so no network location is implied or hardcoded.
+ * Stable `$id`s of every schema in @shelfway/contracts v1. Ids are URNs so no network location is implied or hardcoded.
  * @module
  */
 
 /** Prefix shared by every v1 schema id. */
-const SCHEMA_ID_PREFIX = 'urn:ss:contracts:v1:';
+const SCHEMA_ID_PREFIX = 'urn:shelfway:contracts:v1:';
 
 /**
  * Build a v1 schema id from a short name.

@@ -1,12 +1,12 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { manifest as notesManifest } from '@ss/contracts/testing';
-import { createKeyResolver, verifyToken } from '@ss/protocol';
+import { manifest as notesManifest } from '@shelfway/contracts/testing';
+import { createKeyResolver, verifyToken } from '@shelfway/protocol';
 import { createSecretBox } from '../../../src/infra/crypto.js';
 import { ADMIN } from '../../../src/texts/console.js';
 import { closeMongoClients } from '../../../src/testing.js';
 import { createSystemStore } from '../../../src/infra/system.js';
 import { startMongo } from '../../helpers.js';
-import { PASSWORD, PORTAL_URL, bootPortal, codeOf } from '../catalog/boot.js';
+import { PASSWORD, PLATFORM_URL, bootPlatform, codeOf } from '../catalog/boot.js';
 
 vi.setConfig({ testTimeout: 60_000, hookTimeout: 180_000 });
 
@@ -30,7 +30,7 @@ const CONFIRM = { password: PASSWORD };
 
 /** @param {string} name @param {Record<string, string>} [env] */
 const setUp = async (name, env) => {
-	const h = await bootPortal({ db: mongo.db(name), ...(env ? { env } : {}) });
+	const h = await bootPlatform({ db: mongo.db(name), ...(env ? { env } : {}) });
 	cleanups.push(h.close);
 	const owner = await h.owner();
 	return { h, owner };
@@ -38,7 +38,7 @@ const setUp = async (name, env) => {
 
 /**
  * Verify a token the way the product does: offline, against the keys it pinned at connect.
- * @param {Awaited<ReturnType<typeof bootPortal>>} h
+ * @param {Awaited<ReturnType<typeof bootPlatform>>} h
  * @param {string} token
  * @param {'browser' | 'server'} kind
  */
@@ -46,7 +46,7 @@ const check = (h, token, kind) =>
 	verifyToken({
 		token,
 		keyResolver: createKeyResolver({ jwks: h.portal.shared.keys.publishedJwks() }),
-		issuer: PORTAL_URL,
+		issuer: PLATFORM_URL,
 		productId: 'notes',
 		kind,
 	});
@@ -75,7 +75,7 @@ describe('tokens per website × product (PLAN 0.4.4)', () => {
 		expect(listed.headers.get('cache-control')).toBe('no-store');
 		const browser = await check(h, listed.json.items[0].browserToken, 'browser');
 		expect(browser).toMatchObject({
-			iss: PORTAL_URL,
+			iss: PLATFORM_URL,
 			websiteId,
 			domain: 'shop.example.com',
 			productId: 'notes',
@@ -88,7 +88,7 @@ describe('tokens per website × product (PLAN 0.4.4)', () => {
 				await verifyToken({
 					token: listed.json.items[0].browserToken,
 					keyResolver: pinned,
-					issuer: PORTAL_URL,
+					issuer: PLATFORM_URL,
 					productId: 'notes',
 				})
 			).jti,
@@ -207,7 +207,7 @@ describe('tokens per website × product (PLAN 0.4.4)', () => {
 		const site = `/v1/merchants/${m.merchantId}/websites/${m.websiteIds[0]}`;
 		await owner.post(`${site}/products`, { productId: 'notes' });
 		// the same database under another ENCRYPTION_KEY
-		const other = await bootPortal({
+		const other = await bootPlatform({
 			db: mongo.db('tokens_key'),
 			env: { ENCRYPTION_KEY: 'another-encryption-key-0123456789abcdef' },
 		});
@@ -243,7 +243,7 @@ describe('tokens per website × product (PLAN 0.4.4)', () => {
 		expect(codeOf(await support.client.post('/v1/admin/settings/reseal'))).toEqual([403, 'forbidden']);
 
 		const NEW_KEY = 'new-encryption-key-0123456789abcdef-portal';
-		const changing = await bootPortal({
+		const changing = await bootPlatform({
 			db: mongo.db('tokens_rekey'),
 			env: { ENCRYPTION_KEY: NEW_KEY, ENCRYPTION_KEY_PREVIOUS: 'test-encryption-key-0123456789abcdef-portal' },
 		});
@@ -285,7 +285,7 @@ describe('tokens per website × product (PLAN 0.4.4)', () => {
 
 		// a wrong ENCRYPTION_KEY_PREVIOUS opens nothing: Re-seal names what to type or make again and never says the
 		// previous key can be removed
-		const wrong = await bootPortal({
+		const wrong = await bootPlatform({
 			db: mongo.db('tokens_rekey'),
 			env: {
 				ENCRYPTION_KEY: 'third-encryption-key-0123456789abcdef-portal',

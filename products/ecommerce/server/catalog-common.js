@@ -3,7 +3,7 @@
  * needs, the grades list, image addresses, and telling the other parts (alerts) that products changed.
  * @module
  */
-import { problem } from '@ss/app-kit';
+import { problem } from '@shelfway/app-kit';
 import { categoriesOf, loadRules } from '../adapters/catalog-store.js';
 import { COLLECTIONS } from '../core/model.js';
 import { contentChanged } from '../core/catalog.js';
@@ -16,7 +16,7 @@ import { hiddenFor } from './catalog-visibility.js';
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('../core/model.js').ProductRecord} ProductRecord */
 /** @typedef {import('../core/catalog.js').FieldError} FieldError */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 
 /** Most addresses one IndexNow submission takes. */
 const INDEXNOW_MAX = 10_000;

@@ -5,13 +5,13 @@
  * the events other products forward (PLAN 0.8.10 K5). No I/O.
  * @module
  */
-import { isId } from '@ss/contracts';
+import { isId } from '@shelfway/contracts';
 import { MAX_WEBHOOK_URLS } from './limits.js';
 
 /** Events a merchant can receive. */
 export const WEBHOOK_EVENTS = Object.freeze(['message.sent', 'message.failed', 'recipient.unsubscribed']);
 /** Name of the signature header. */
-export const SIGNATURE_HEADER = 'ss-signature';
+export const SIGNATURE_HEADER = 'shelfway-signature';
 /** Event types one URL may name, at most. */
 const MAX_URL_EVENTS = 50;
 /** Longest webhook URL. */
@@ -23,7 +23,7 @@ const SUMMARY_MAX = 300;
 
 /**
  * Event types other products forward through `POST /v1/events`: `<product id>.<event>` for any product id (the
- * `@ss/contracts` pattern, so a product made later forwards its events too), but never `notifications.` nor the first
+ * `@shelfway/contracts` pattern, so a product made later forwards its events too), but never `notifications.` nor the first
  * part of Notifications' own events (`message.`, `recipient.`), which are named without a product prefix.
  */
 const PRODUCT_EVENT = /^(?!(?:notifications|message|recipient)\.)[a-z][a-z0-9-]{1,30}\.[a-z][a-z0-9_.]{0,62}$/;

@@ -166,7 +166,7 @@ const fieldRulesOf = (kit, searches, existing) => {
 	/** @type {Array<{ field: HTMLInputElement, op: HTMLElement & { value: string }, values: HTMLInputElement }>} */
 	let rows = [];
 	const list = h('div');
-	const keys = h('datalist', { id: 'ss-deal-fields' });
+	const keys = h('datalist', { id: 'shelfway-deal-fields' });
 	const match = kit.pick(
 		[
 			{ value: 'all', label: t('promotionsAdmin.fieldMatch.all') },
@@ -178,7 +178,7 @@ const fieldRulesOf = (kit, searches, existing) => {
 	/** @param {string} key @param {string} op @param {string} values */
 	const add = (key, op, values) => {
 		rows.push({
-			field: kit.input(key, { list: 'ss-deal-fields', maxlength: '64', 'aria-label': t('promotionsAdmin.fieldKey') }),
+			field: kit.input(key, { list: 'shelfway-deal-fields', maxlength: '64', 'aria-label': t('promotionsAdmin.fieldKey') }),
 			op: kit.pick(
 				[
 					{ value: 'in', label: t('promotionsAdmin.fieldOp.in') },

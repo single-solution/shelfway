@@ -22,18 +22,18 @@ The `seo_checklist` feature is the live website's SEO health report (SEO audit Â
   does not have (a removed product's from the 404 log when one is known, else a made-up one); a full run (no paths) adds
   sample pages from the sitemap (a product, a category, a landing or listing page, a glossary page), told apart by their
   structured data. With Web Vitals (and Visitor analytics, which keeps them) or Searches and 404s on it also reads
-  the daily totals (28 days of vitals, 90 days of 404s). Reads (`adapters/web.js`, through `@ss/net`) never follow a
+  the daily totals (28 days of vitals, 90 days of 404s). Reads (`adapters/web.js`, through `@shelfway/net`) never follow a
   redirect, run 4 at a time, each at most 8 s and 2 MB (a sitemap file 16 MB), the whole run at most 25 s.
 - Each check (`core/seo-checks.js`; reading HTML, JSON-LD, robots.txt rules and sitemaps in `core/seo-scan.js`) is
   pass, warn or fail with a finding code; the answer adds the title, reason and fix from the widget texts
   (`seo.check.<id>.title`, `.<finding>`, `.fix`) and the page's Google Rich Results Test link.
-- The last full run is kept in `ss_growth_seo_reports` (one document per website): `GET /v1/seo/report` answers it, the
+- The last full run is kept in `shelfway_growth_seo_reports` (one document per website): `GET /v1/seo/report` answers it, the
   widget opens on it (and runs again when it is a day old), and a full run within 5 minutes answers it (`cached: true`)
   without reading the site. 10 runs an hour per website.
 
 ## Redirects
 
-The `redirects` feature keeps up to 5,000 rules per website in the merchant database (`ss_growth_redirects`, one per
+The `redirects` feature keeps up to 5,000 rules per website in the merchant database (`shelfway_growth_redirects`, one per
 old path): `{ from, match: exact | prefix | wildcard, to, code: 301 | 302 | 307 | 308 | 410, note }`. Paths are normalized the same way for rules
 and requests (one leading slash, no trailing slash except `/`, letters in one Unicode form (NFC), percent-encoded, letter
 case kept); rules match the path only and pass the visitor's query string on; a prefix rule keeps the rest of the path.
@@ -42,14 +42,14 @@ never passes two rules).
 
 - The website's server reads them with the server token: `GET /v1/redirects/match?path=` (the rule and its `location`,
   or 204) or, for edge middleware, `GET /v1/redirects/all` with an ETag and `Cache-Control: private, max-age=300`; a 304
-  costs one read of `ss_growth_redirect_versions` (a new random version on every change), never of the rules.
+  costs one read of `shelfway_growth_redirect_versions` (a new random version on every change), never of the rules.
 - Staff use the `redirects` admin widget (`redirects.edit`) or the server-token twins: list with counts, create, change,
   delete, suggestions from the 404 log, CSV export and CSV import with a dry run. Every change goes to the activity log.
 
 ## Import
 
 The `import` feature (price 0; our admins switch it on for a migration and off after it) takes daily totals rebuilt
-from another system's analytics, from `ss-import` with the server token only (PLAN.md 0.8.10 K10, G8). Nothing is sent
+from another system's analytics, from `shelfway-import` with the server token only (PLAN.md 0.8.10 K10, G8). Nothing is sent
 and no raw events are made.
 
 - `POST /v1/import/totals?dryRun=1` takes NDJSON (at most 1,000 records or 4 MB per call), one day per record:
@@ -62,7 +62,7 @@ and no raw events are made.
   recorded live for that day before the import are replaced too.
 - `POST /v1/import/totals/prune` with `{ "keep": [{ "day", "part" }, â€¦] }` removes imported days the source no longer
   has (days counted live are never removed); `POST /v1/import/finish` has nothing to derive; `GET /v1/import/status`
-  answers the counts and the sums `ss-import verify` compares (`days`, `visits`, `page_views`). The analytics report
+  answers the counts and the sums `shelfway-import verify` compares (`days`, `visits`, `page_views`). The analytics report
   reads imported days like any other.
 
 ## Environment
@@ -81,13 +81,13 @@ Three variables, and one optional while the encryption key is changed (`.env.exa
 Each deployable has its own port, so all run at once: the Portal 3000, Accounts 3001, Notifications 3002, Chat 3003,
 Payments 3004, Ecommerce 3005, Growth 3006. This product runs on **3006**.
 
-1. One local MongoDB for everything (keep it running): `pnpm --filter @ss/platform db:local` (kept in
+1. One local MongoDB for everything (keep it running): `pnpm --filter @shelfway/platform db:local` (kept in
    `platform/.mongo-data`) or `db:memory` (lost on stop). Start the Portal as its README says.
 2. `products/growth/.env.local` (git-ignored), each secret random and different (make one with
    `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`):
 
    ```bash
-   MONGODB_URI=mongodb://127.0.0.1:27999/ss_growth?replicaSet=testset
+   MONGODB_URI=mongodb://127.0.0.1:27999/shelfway_growth?replicaSet=testset
    CONNECT_SECRET=<random>
    ENCRYPTION_KEY=<random>
    ```
@@ -111,4 +111,4 @@ does: only public https addresses and TLS databases.
 ## Scripts
 
 `pnpm dev` and `pnpm build` regenerate `openapi.json` and `server/widget-script.js` first; `pnpm check` runs format, lint,
-typecheck and tests with coverage; `pnpm validate` runs `ss app validate`.
+typecheck and tests with coverage; `pnpm validate` runs `shelfway app validate`.

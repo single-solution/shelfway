@@ -11,22 +11,22 @@
  *
  * The theme and the Format of a website are the Portal's alone (`website-settings.js`; Website settings › Brand and look
  * and Region and format): they are read from the Portal's copy (source `portal`; the built-in defaults, source
- * `built-in`, while the Portal holds nothing yet) and a save is refused with 409 `managed_by_portal`.
+ * `built-in`, while the Portal holds nothing yet) and a save is refused with 409 `managed_by_platform`.
  *
  * Settings come in sections: each feature's settings, plus the product's shared settings (PLAN 0.8.10 A2, A11): a
  * group of settings several features use, stored once under the group's key (`<group>.<setting>`) and in use, and
  * shown to merchants, while any of its features is on.
  * @module
  */
-import { validateSettingValue } from '@ss/contracts';
-import { FORMAT_FIELDS } from '@ss/contracts/format';
-import { placeholdersOf } from '@ss/contracts/templates';
+import { validateSettingValue } from '@shelfway/contracts';
+import { FORMAT_FIELDS } from '@shelfway/contracts/format';
+import { placeholdersOf } from '@shelfway/contracts/templates';
 import {
 	formatOf as formatFrom,
 	isUnsetWebsiteValue,
 	themeOf as themeFrom,
 	websiteSettingAt,
-} from '@ss/contracts/website-settings';
+} from '@shelfway/contracts/website-settings';
 import { problem } from './http/results.js';
 
 /**
@@ -36,8 +36,8 @@ import { problem } from './http/results.js';
  */
 const samePlaceholders = (a, b) => placeholdersOf(a).sort().join('\n') === placeholdersOf(b).sort().join('\n');
 
-/** @typedef {import('@ss/contracts').Manifest} Manifest */
-/** @typedef {import('@ss/contracts').ManifestFeature} ManifestFeature */
+/** @typedef {import('@shelfway/contracts').Manifest} Manifest */
+/** @typedef {import('@shelfway/contracts').ManifestFeature} ManifestFeature */
 /** @typedef {import('./stores/types.js').Store} Store */
 /** @typedef {import('./recent.js').Who} Who */
 /** @typedef {import('./http/results.js').ProblemResult} ProblemResult */
@@ -62,10 +62,10 @@ const THEME_FIELDS = /** @type {const} */ (['colors', 'fontFamily', 'radius', 'm
 /**
  * @param {{ store: Store, manifest: Manifest, strings: Record<string, string>, recent: import('./recent.js').RecentChanges,
  *   now: () => number, shared?: Record<string, SharedSettings>, website: import('./website-settings.js').WebsiteSettingsCache,
- *   portalUrl: () => string | null }} options `website`: the Portal's copy of the website's settings; `portalUrl`: the
+ *   platformUrl: () => string | null }} options `website`: the Portal's copy of the website's settings; `platformUrl`: the
  *   pinned Portal address, named in the answer of a refused save
  */
-export const createSettings = ({ store, manifest, strings, recent, now, shared = {}, website, portalUrl }) => {
+export const createSettings = ({ store, manifest, strings, recent, now, shared = {}, website, platformUrl }) => {
 	/** Every settings section: the features', then the shared ones. @type {ReadonlyArray<Section>} */
 	const sections = Object.freeze([
 		...manifest.features.map((feature) => ({
@@ -130,14 +130,14 @@ export const createSettings = ({ store, manifest, strings, recent, now, shared =
 	};
 
 	/**
-	 * The refusal of a save the Portal owns: 409 `managed_by_portal`, naming the Portal and where to change it.
+	 * The refusal of a save the Portal owns: 409 `managed_by_platform`, naming the Portal and where to change it.
 	 * @param {string} where the section of Website settings
 	 * @returns {Change}
 	 */
 	const managedByPortal = (where) => ({
 		ok: false,
-		problem: problem('managed_by_portal', `This is set in the Portal: Website settings › ${where}.`, {
-			extensions: { portalUrl: portalUrl(), section: where },
+		problem: problem('managed_by_platform', `This is set in the Portal: Website settings › ${where}.`, {
+			extensions: { platformUrl: platformUrl(), section: where },
 		}),
 	});
 
@@ -164,7 +164,7 @@ export const createSettings = ({ store, manifest, strings, recent, now, shared =
 	 * @param {ManifestFeature['settings']} schema
 	 * @param {string} key
 	 * @param {{ value: any, source: Source }} found what the website, the global defaults and the schema say
-	 * @param {import('@ss/contracts').WebsiteSettings | null} portal
+	 * @param {import('@shelfway/contracts').WebsiteSettings | null} portal
 	 * @returns {{ value: any, source: Source, from?: string }}
 	 */
 	const startsFromPortal = (schema, key, found, portal) => {
@@ -180,7 +180,7 @@ export const createSettings = ({ store, manifest, strings, recent, now, shared =
 	 * The settings of a feature with their values and sources, from a snapshot.
 	 * @param {string} featureKey
 	 * @param {Awaited<ReturnType<typeof snapshot>>} resolve
-	 * @param {import('@ss/contracts').WebsiteSettings | null} portal the website's settings in the Portal (null: none, or the global defaults)
+	 * @param {import('@shelfway/contracts').WebsiteSettings | null} portal the website's settings in the Portal (null: none, or the global defaults)
 	 * @returns {Record<string, { value: any, source: Source, from?: string }>}
 	 */
 	const valuesOf = (featureKey, resolve, portal) => {
@@ -289,14 +289,14 @@ export const createSettings = ({ store, manifest, strings, recent, now, shared =
 	/**
 	 * The Format with the source of each field (K7), as the theme.
 	 * @param {string} websiteId
-	 * @returns {Promise<{ format: import('@ss/contracts').Format, sources: Record<keyof import('@ss/contracts').Format, Source> }>}
+	 * @returns {Promise<{ format: import('@shelfway/contracts').Format, sources: Record<keyof import('@shelfway/contracts').Format, Source> }>}
 	 */
 	const formatOf = async (websiteId) => {
 		const document = await website.document(websiteId);
 		const source = /** @type {Source} */ (document.version > 0 ? 'portal' : 'built-in');
 		return {
 			format: formatFrom(document),
-			sources: /** @type {Record<keyof import('@ss/contracts').Format, Source>} */ (
+			sources: /** @type {Record<keyof import('@shelfway/contracts').Format, Source>} */ (
 				Object.fromEntries(FORMAT_FIELDS.map((field) => [field, source]))
 			),
 		};

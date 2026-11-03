@@ -10,8 +10,8 @@
  * is escaped.
  * @module
  */
-import { docsBlock, docsFeatureSections, docsList, docsOperations, docsParagraph, renderDocsPage } from '@ss/app-kit';
-import { escapeHtml } from '@ss/contracts/text';
+import { docsBlock, docsFeatureSections, docsList, docsOperations, docsParagraph, renderDocsPage } from '@shelfway/app-kit';
+import { escapeHtml } from '@shelfway/contracts/text';
 import guide from '../docs/guide.json' with { type: 'json' };
 import openapi from '../openapi.json' with { type: 'json' };
 import declaration from '../schemas/messages.json' with { type: 'json' };

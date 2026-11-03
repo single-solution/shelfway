@@ -7,23 +7,22 @@
  * `callProduct` (the Portal's links only, PLAN 0.4.6).
  * @module
  */
-import { actorOf, problem } from '@ss/app-kit';
-import { zonedParts } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
+import { actorOf, problem } from '@shelfway/app-kit';
+import { zonedParts } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
 import { createOrdersStore } from '../adapters/orders-store.js';
 import { KEEP_MS, createOutbox } from '../adapters/outbox.js';
-import { DEMOTE, DEMOTE_PARENTS, expandFeaturesOn, sliceValues } from '../core/demoted.js';
 import { DEFAULT_CURRENCY } from '../core/limits.js';
 import { unitOf } from '../core/money.js';
 import { createPaymentMethods } from './payment-methods.js';
 
 /** @typedef {import('../adapters/product.js').Product} Product */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/model.js').OrderRecord} OrderRecord */
 /** @typedef {import('../core/model.js').OrderFlow} OrderFlow */
 
 /** The header a signed-in shopper's Accounts sign-in comes in (the kit's CORS allows it). */
-const SIGN_IN_HEADER = 'ss-sign-in';
+const SIGN_IN_HEADER = 'shelfway-sign-in';
 
 /** One rate limit: `limit` calls in `windowSeconds`, for the whole website or for each visitor. @typedef {{ limit: number, windowSeconds: number, per?: 'website' | 'visitor' }} RateLimit */
 
@@ -72,7 +71,7 @@ const SERVER_ACTOR = Object.freeze({ kind: 'server', id: 'server', name: 'Server
 /**
  * The sign-in of the staff member who asked, to send with a call to another product that only a verified staff member may
  * make (a refund through Payments): the server token alone could not do it there either. It is the sign-in this request
- * carried (`SS-Sign-In`, which the widget sends next to its ticket), verified here, and only when it names the same person
+ * carried (`Shelfway-Sign-In`, which the widget sends next to its ticket), verified here, and only when it names the same person
  * as `by`. Nothing is sent for the server itself or when the request carried none: the other product then refuses.
  * @param {{ ctx: any }} s
  * @param {{ kind: string, id: string }} by
@@ -80,7 +79,7 @@ const SERVER_ACTOR = Object.freeze({ kind: 'server', id: 'server', name: 'Server
  */
 export const staffSignInHeaders = async (s, by) => {
 	const found = await s.ctx?.staffSignIn?.();
-	return found?.ok && found.user.id === by.id ? { 'ss-sign-in': found.token } : {};
+	return found?.ok && found.user.id === by.id ? { 'shelfway-sign-in': found.token } : {};
 };
 
 /**
@@ -103,7 +102,7 @@ export const staffSignInHeaders = async (s, by) => {
  * @property {() => Promise<WebsiteData>} data the guarded merchant database
  * @property {() => ReturnType<Product['business']>} business the business facts (the Portal's website settings; defaults:
  *   name = the domain, time zone UTC)
- * @property {() => Promise<import('@ss/contracts').WebsiteSettings>} website the website's settings from the Portal
+ * @property {() => Promise<import('@shelfway/contracts').WebsiteSettings>} website the website's settings from the Portal
  *   (business, brand, region, pages, team), read once per request
  * @property {() => Promise<Record<string, string>>} texts the website's widget texts
  * @property {(name: string) => Promise<any[]>} list a list setting of the product database (`adapters/lists.js`)
@@ -236,34 +235,16 @@ export const createService = (product) => {
 	const site = async (ctx) => {
 		const websiteId = /** @type {string} */ (ctx.websiteId);
 		const merchantId = ctx.merchantId ?? null;
-		const baseOn = await product.featuresOn(websiteId);
+		const on = await product.featuresOn(websiteId);
 		/** @type {Map<string, Promise<Record<string, any>>>} */
 		const values = new Map();
-		/** Parent settings bags used to expand demoted peers (loaded once per site). */
-		/** @type {Promise<Record<string, Record<string, any>>> | null} */
-		let parents = null;
-		const parentsOf = () => {
-			parents ??= (async () => {
-				/** @type {Record<string, Record<string, any>>} */
-				const out = {};
-				await Promise.all(
-					DEMOTE_PARENTS.filter((key) => baseOn.includes(key)).map(async (key) => {
-						out[key] = await product.settings.values(websiteId, key);
-					}),
-				);
-				return out;
-			})();
-			return parents;
-		};
-		const parentBags = await parentsOf();
-		const on = expandFeaturesOn(baseOn, parentBags);
 		/** @type {Promise<WebsiteData> | null} */
 		let data = null;
 		/** @type {Map<string, Promise<any[]>>} */
 		const lists = new Map();
 		/** @type {ReturnType<Product['format']> | null} */
 		let formatted = null;
-		/** @type {Promise<import('@ss/contracts').WebsiteSettings> | null} */
+		/** @type {Promise<import('@shelfway/contracts').WebsiteSettings> | null} */
 		let website = null;
 		const portal = await product.website(websiteId);
 		/** @type {Site} */
@@ -277,13 +258,7 @@ export const createService = (product) => {
 			values: (feature) => {
 				let found = values.get(feature);
 				if (!found) {
-					const demoted = DEMOTE[feature];
-					found = demoted
-						? (async () => {
-								const bag = parentBags[demoted.parent] ?? (await product.settings.values(websiteId, demoted.parent));
-								return /** @type {Record<string, any>} */ (sliceValues(bag, feature));
-							})()
-						: product.settings.values(websiteId, feature);
+					found = product.settings.values(websiteId, feature);
 					values.set(feature, found);
 				}
 				return found;
@@ -315,7 +290,7 @@ export const createService = (product) => {
 	};
 
 	/**
-	 * The shopper of a visitor request: the verified Accounts sign-in in `SS-Sign-In` (the kit's `ctx.signIn()`, for the
+	 * The shopper of a visitor request: the verified Accounts sign-in in `Shelfway-Sign-In` (the kit's `ctx.signIn()`, for the
 	 * website of the request's own token), or null (none, invalid, expired or no link to Accounts). From the
 	 * merchant's server the kit has already refused an invalid sign-in (401 `invalid_sign_in`); a user id alone never
 	 * names a shopper.
@@ -438,7 +413,7 @@ export const createService = (product) => {
 
 	/**
 	 * Who acts (PLAN 0.8.10 K2): the member of the merchant's staff in the ticket, else the one a server-token call names
-	 * in its verified `SS-Sign-In` (with their role), else the server.
+	 * in its verified `Shelfway-Sign-In` (with their role), else the server.
 	 * @param {any} ctx
 	 * @returns {{ kind: string, id: string, name: string, role?: string, email?: string }}
 	 */

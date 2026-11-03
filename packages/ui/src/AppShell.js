@@ -94,7 +94,7 @@ function NavMarks({ item, rail }) {
 			<>
 				{tone ? (
 					<span
-						data-ss-mark=""
+						data-shelfway-mark=""
 						aria-hidden="true"
 						className={cx('absolute top-1 right-2 size-2 rounded-full ring-2 ring-surface', DOTS[tone])}
 					/>
@@ -109,10 +109,10 @@ function NavMarks({ item, rail }) {
 		<>
 			{badge ? (
 				<span
-					data-ss-badge=""
+					data-shelfway-badge=""
 					{...(badge.label ? { title: badge.label } : {})}
 					className={cx(
-						'ss-motion inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full px-1.5 text-micro leading-none font-semibold tabular-nums',
+						'shelfway-motion inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full px-1.5 text-micro leading-none font-semibold tabular-nums',
 						TINTS[badge.tone ?? 'neutral'],
 					)}>
 					{badge.label ? (
@@ -126,7 +126,7 @@ function NavMarks({ item, rail }) {
 				</span>
 			) : null}
 			{dotTone ? (
-				<span data-ss-dot="" title={dotLabel} className="flex shrink-0 items-center">
+				<span data-shelfway-dot="" title={dotLabel} className="flex shrink-0 items-center">
 					<span aria-hidden="true" className={cx('size-2 rounded-full', DOTS[dotTone])} />
 					<span className="sr-only">{dotLabel}</span>
 				</span>
@@ -136,7 +136,7 @@ function NavMarks({ item, rail }) {
 }
 
 /** Where the folded state of the sidebar is kept (this browser only). */
-const RAIL_KEY = 'ss-nav-rail';
+const RAIL_KEY = 'shelfway-nav-rail';
 
 /**
  * A plain left click (not a new tab or window).
@@ -180,8 +180,8 @@ function Nav({ sections, linkAs, onNavigate, rail = false }) {
 				ref={marker}
 				aria-hidden="true"
 				className={cx(
-					'pointer-events-none absolute inset-x-0 top-0 -z-10 rounded-control border border-line bg-surface ss-hard opacity-0',
-					placed && 'transition-[transform,opacity,height] duration-(--ss-motion) ease-ss-move',
+					'pointer-events-none absolute inset-x-0 top-0 -z-10 rounded-control border border-line bg-surface shelfway-hard opacity-0',
+					placed && 'transition-[transform,opacity,height] duration-(--shelfway-motion) ease-shelfway-move',
 				)}
 			/>
 			{sections.map((section, i) => (
@@ -207,13 +207,13 @@ function Nav({ sections, linkAs, onNavigate, rail = false }) {
 										aria-current={item.current ? 'page' : undefined}
 										{...(rail && typeof item.label === 'string' ? { title: item.label } : {})}
 										className={cx(
-											'ss-motion ss-press relative flex h-9 items-center gap-2.5 rounded-control text-sm',
+											'shelfway-motion shelfway-press relative flex h-9 items-center gap-2.5 rounded-control text-sm',
 											'focus-visible:outline-2 focus-visible:outline-focus',
 											rail ? 'justify-center px-0' : 'px-2.5',
 											on
 												? cx(
 														'font-medium text-fg',
-														placed ? 'bg-transparent' : 'border border-line bg-surface ss-hard',
+														placed ? 'bg-transparent' : 'border border-line bg-surface shelfway-hard',
 													)
 												: 'font-medium text-muted hover:bg-surface/70 hover:text-fg',
 										)}>
@@ -221,7 +221,7 @@ function Nav({ sections, linkAs, onNavigate, rail = false }) {
 											<span
 												aria-hidden="true"
 												className={cx(
-													'ss-motion flex size-5 shrink-0 items-center justify-center',
+													'shelfway-motion flex size-5 shrink-0 items-center justify-center',
 													on ? 'text-primary' : 'text-muted',
 												)}>
 												<Icon name={item.icon} size={16} />
@@ -257,8 +257,8 @@ function Brand({ name, tagline, product, compact = false, markOnly = false }) {
 					.filter(Boolean)
 					.slice(0, 2)
 					.map((part) => part[0]?.toUpperCase() ?? '')
-					.join('') || 'SS'
-			: 'SS';
+					.join('') || 'SW'
+			: 'SW';
 	return (
 		<div className={cx('flex min-w-0 items-center gap-2.5', markOnly && 'justify-center')}>
 			{product ? (
@@ -309,7 +309,7 @@ export function SwitcherSelect({ label, value, options, onChange, placeholder, d
 			<div
 				title={title}
 				className={cx(
-					'ss-motion relative flex size-10 min-w-0 items-center justify-center rounded-control border border-line bg-surface hover:bg-surface-2',
+					'shelfway-motion relative flex size-10 min-w-0 items-center justify-center rounded-control border border-line bg-surface hover:bg-surface-2',
 					'hover:border-line-strong has-[select:focus-visible]:border-primary has-[select:focus-visible]:ring-[3px] has-[select:focus-visible]:ring-primary/20',
 					disabled && 'opacity-60',
 					className,
@@ -338,7 +338,7 @@ export function SwitcherSelect({ label, value, options, onChange, placeholder, d
 	return (
 		<div
 			className={cx(
-				'ss-motion relative flex h-10 min-w-0 items-center gap-2.5 rounded-control border border-line bg-surface pr-8 pl-2 hover:bg-surface-2',
+				'shelfway-motion relative flex h-10 min-w-0 items-center gap-2.5 rounded-control border border-line bg-surface pr-8 pl-2 hover:bg-surface-2',
 				'hover:border-line-strong has-[select:focus-visible]:border-primary has-[select:focus-visible]:ring-[3px] has-[select:focus-visible]:ring-primary/20',
 				disabled && 'opacity-60',
 				className,
@@ -394,7 +394,7 @@ function TitleTrail({ crumbs, title, linkAs }) {
 						) : null}
 						<li className="hidden min-w-0 shrink truncate font-mono text-micro tracking-[0.04em] text-muted uppercase sm:block">
 							{crumb.href ? (
-								<LinkTag href={crumb.href} className="ss-motion rounded-control hover:text-fg">
+								<LinkTag href={crumb.href} className="shelfway-motion rounded-control hover:text-fg">
 									{crumb.label}
 								</LinkTag>
 							) : (
@@ -435,7 +435,7 @@ export function ScrollArea({ children, className, label, ref, as = 'div' }) {
 	return (
 		<Tag
 			ref={ref}
-			className={cx('ss-scroll min-h-0 min-w-0 focus-visible:outline-2 focus-visible:-outline-offset-2', className)}
+			className={cx('shelfway-scroll min-h-0 min-w-0 focus-visible:outline-2 focus-visible:-outline-offset-2', className)}
 			{...(label ? { role: 'region', 'aria-label': label, tabIndex: 0 } : {})}>
 			{children}
 		</Tag>
@@ -533,7 +533,7 @@ export function AppShell({
 							type="button"
 							onClick={() => setOpen(false)}
 							aria-label="Close navigation"
-							className="ss-motion ss-press rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg">
+							className="shelfway-motion shelfway-press rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg">
 							<Icon name="close" size={16} />
 						</button>
 					) : null}
@@ -547,7 +547,7 @@ export function AppShell({
 					/>
 				</ScrollArea>
 				<div
-					data-ss-part="sidebar-bottom"
+					data-shelfway-part="sidebar-bottom"
 					className={cx('shrink-0 space-y-1 border-t border-line p-3', narrow && 'flex flex-col items-center')}>
 					{switcher ? (
 						<div className={cx('pb-2', narrow && 'flex w-full justify-center')}>{slotOf(switcher, narrow)}</div>
@@ -577,7 +577,7 @@ export function AppShell({
 									aria-label="Expand sidebar"
 									aria-pressed={true}
 									title="Expand sidebar"
-									className="ss-motion ss-press flex size-9 items-center justify-center rounded-control text-muted hover:bg-surface-2 hover:text-fg">
+									className="shelfway-motion shelfway-press flex size-9 items-center justify-center rounded-control text-muted hover:bg-surface-2 hover:text-fg">
 									<Icon name="panelLeft" size={16} />
 								</button>
 							) : null}
@@ -592,7 +592,7 @@ export function AppShell({
 									aria-label="Collapse sidebar"
 									aria-pressed={false}
 									title="Collapse sidebar"
-									className="ss-motion ss-press flex size-8 items-center justify-center rounded-control text-muted hover:bg-surface-2 hover:text-fg">
+									className="shelfway-motion shelfway-press flex size-8 items-center justify-center rounded-control text-muted hover:bg-surface-2 hover:text-fg">
 									<Icon name="panelLeft" size={16} />
 								</button>
 							) : null}
@@ -611,8 +611,8 @@ export function AppShell({
 					className={cx(
 						'relative flex h-dvh w-full overflow-hidden bg-canvas p-2 text-fg sm:p-2.5',
 						// save bar centres on the page area inside the frame
-						'[--ss-pane-left:0.5rem] [--ss-pane-right:0.5rem] sm:[--ss-pane-left:0.625rem] sm:[--ss-pane-right:0.625rem]',
-						rail ? 'lg:[--ss-pane-left:5.125rem]' : 'lg:[--ss-pane-left:16.625rem]',
+						'[--shelfway-pane-left:0.5rem] [--shelfway-pane-right:0.5rem] sm:[--shelfway-pane-left:0.625rem] sm:[--shelfway-pane-right:0.625rem]',
+						rail ? 'lg:[--shelfway-pane-left:5.125rem]' : 'lg:[--shelfway-pane-left:16.625rem]',
 					)}>
 					<div className="wash" aria-hidden="true" />
 					<div className="grid-hard" aria-hidden="true" />
@@ -626,8 +626,8 @@ export function AppShell({
 							data-rail={rail || undefined}
 							className={cx(
 								// menus open upward over the page from the rail
-								'relative z-30 hidden h-full shrink-0 border-r border-line bg-surface/80 backdrop-blur-md [view-transition-name:ss-sidebar] lg:block',
-								'transition-[width] duration-(--ss-motion) ease-ss',
+								'relative z-30 hidden h-full shrink-0 border-r border-line bg-surface/80 backdrop-blur-md [view-transition-name:shelfway-sidebar] lg:block',
+								'transition-[width] duration-(--shelfway-motion) ease-shelfway',
 								rail ? 'w-16' : 'w-[15.5rem]',
 							)}>
 							{sidebar(rail, false)}
@@ -636,7 +636,7 @@ export function AppShell({
 							<div
 								ref={drawer.ref}
 								data-state={drawer.closing ? 'closed' : 'open'}
-								className="group fixed inset-0 z-50 animate-ss-fade bg-overlay p-2 data-[state=closed]:pointer-events-none data-[state=closed]:animate-ss-fade-out lg:hidden"
+								className="group fixed inset-0 z-50 animate-shelfway-fade bg-overlay p-2 data-[state=closed]:pointer-events-none data-[state=closed]:animate-shelfway-fade-out lg:hidden"
 								onMouseDown={(event) => {
 									if (event.target === event.currentTarget) setOpen(false);
 								}}>
@@ -645,19 +645,19 @@ export function AppShell({
 									role="dialog"
 									aria-modal="true"
 									aria-label="Navigation"
-									className="h-full w-60 max-w-[85vw] animate-ss-drawer rounded-panel border border-line bg-surface/95 backdrop-blur-md group-data-[state=closed]:animate-ss-drawer-out">
+									className="h-full w-60 max-w-[85vw] animate-shelfway-drawer rounded-panel border border-line bg-surface/95 backdrop-blur-md group-data-[state=closed]:animate-shelfway-drawer-out">
 									{sidebar(false, true)}
 								</div>
 							</div>
 						) : null}
-						<div className="group/main flex h-full min-w-0 flex-1 flex-col ss-grid-wash">
-							<header className="flex h-12 shrink-0 items-center gap-2 border-b border-line bg-surface/80 backdrop-blur-md px-2 group-has-[[data-ss-page]]/main:hidden [view-transition-name:ss-topbar] sm:gap-3 sm:px-3">
+						<div className="group/main flex h-full min-w-0 flex-1 flex-col shelfway-grid-wash">
+							<header className="flex h-12 shrink-0 items-center gap-2 border-b border-line bg-surface/80 backdrop-blur-md px-2 group-has-[[data-shelfway-page]]/main:hidden [view-transition-name:shelfway-topbar] sm:gap-3 sm:px-3">
 								<button
 									type="button"
 									onClick={() => setOpen(true)}
 									aria-label="Open navigation"
 									aria-expanded={open}
-									className="ss-motion ss-press shrink-0 rounded-control p-2 text-fg hover:bg-surface-2 lg:hidden">
+									className="shelfway-motion shelfway-press shrink-0 rounded-control p-2 text-fg hover:bg-surface-2 lg:hidden">
 									<Icon name="menu" size={18} />
 								</button>
 								<div className="flex min-w-0 flex-1 items-center gap-2.5">
@@ -676,7 +676,7 @@ export function AppShell({
 										{back ? (
 											<a
 												href={back.href}
-												className="ss-motion inline-flex h-8 items-center gap-1 rounded-control border border-transparent px-2 text-label font-medium text-muted hover:border-line hover:bg-surface hover:text-fg">
+												className="shelfway-motion inline-flex h-8 items-center gap-1 rounded-control border border-transparent px-2 text-label font-medium text-muted hover:border-line hover:bg-surface hover:text-fg">
 												<Icon name="chevronLeft" size={14} />
 												<span className="sr-only sm:not-sr-only">{back.label}</span>
 											</a>
@@ -703,13 +703,13 @@ export function AppShell({
 							</header>
 							<ScrollArea
 								ref={pane}
-								className="flex-1 [--ss-pane-h:calc(100dvh-5.5rem)] lg:[--ss-pane-h:calc(100dvh-5.75rem)] has-[[data-ss-page]]:overflow-hidden has-[[data-ss-page]]:pb-1">
-								<div className="flex w-full min-w-0 flex-col gap-5 p-3 pb-5 has-[[data-ss-page]]:h-full has-[[data-ss-page]]:gap-2 has-[[data-ss-page]]:p-2 has-[[data-ss-page]]:pb-0 lg:has-[[data-ss-page]]:gap-3 sm:p-3.5">
+								className="flex-1 [--shelfway-pane-h:calc(100dvh-5.5rem)] lg:[--shelfway-pane-h:calc(100dvh-5.75rem)] has-[[data-shelfway-page]]:overflow-hidden has-[[data-shelfway-page]]:pb-1">
+								<div className="flex w-full min-w-0 flex-col gap-5 p-3 pb-5 has-[[data-shelfway-page]]:h-full has-[[data-shelfway-page]]:gap-2 has-[[data-shelfway-page]]:p-2 has-[[data-shelfway-page]]:pb-0 lg:has-[[data-shelfway-page]]:gap-3 sm:p-3.5">
 									{banner}
 									<main
 										id={mainId}
 										tabIndex={-1}
-										className="min-w-0 space-y-5 focus:outline-none has-[[data-ss-page]]:flex has-[[data-ss-page]]:min-h-0 has-[[data-ss-page]]:flex-1 has-[[data-ss-page]]:flex-col">
+										className="min-w-0 space-y-5 focus:outline-none has-[[data-shelfway-page]]:flex has-[[data-shelfway-page]]:min-h-0 has-[[data-shelfway-page]]:flex-1 has-[[data-shelfway-page]]:flex-col">
 										{children}
 									</main>
 								</div>

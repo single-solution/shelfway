@@ -5,7 +5,7 @@
  * is read at the path the merchant names. Known providers use their own id paths and HTTP statuses.
  */
 import { describe, expect, it } from 'vitest';
-import { createOutboundPolicy } from '@ss/net';
+import { createOutboundPolicy } from '@shelfway/net';
 import { httpOutcome, parseStatusRule, valueAt } from '../core/gateway.js';
 import { createProviders, providerViolation } from '../adapters/providers.js';
 

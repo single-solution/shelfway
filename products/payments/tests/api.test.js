@@ -1,5 +1,5 @@
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
-import { signWebhook } from '@ss/protocol';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
+import { signWebhook } from '@shelfway/protocol';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { formSignature } from '../adapters/gateways/payfast.js';
 import { pakistanTime, secureHash } from '../adapters/gateways/jazzcash.js';
@@ -262,7 +262,7 @@ describe('the payment API and Stripe', () => {
 
 		const result = await page(`/pay/${env.websiteId}/${payment.id}`);
 		expect(result.text).toContain('Payment received');
-		expect(result.text).toContain(`${RETURN}?ss_payment=${payment.id}`);
+		expect(result.text).toContain(`${RETURN}?shelfway_payment=${payment.id}`);
 	});
 
 	it('verifies a payment only for its exact amount and currency', async () => {
@@ -519,7 +519,7 @@ describe('the other gateways', () => {
 			form: { ...answer, pp_SecureHash: secureHash(answer, JAZZCASH.integritySalt) },
 		});
 		expect(back.status).toBe(303);
-		expect(back.headers.get('location')).toBe(`${RETURN}?ss_payment=${payment.id}`);
+		expect(back.headers.get('location')).toBe(`${RETURN}?shelfway_payment=${payment.id}`);
 		// the payer's return is a public page: its paid event is forwarded right after it all the same
 		expect(
 			events.find((/** @type {any} */ e) => e.type === 'payments.payment.paid' && e.data.payment.id === payment.id),
@@ -615,7 +615,7 @@ describe('the other gateways', () => {
 		expect(env.gateways.callsTo('https://api.payfast.co.za').at(-1)?.path).toBe('/refunds/777');
 		// the payer back on PayFast's return address
 		expect((await page(`/return/payfast/${env.websiteId}/${payment.id}`)).headers.get('location')).toBe(
-			`${RETURN}?ss_payment=${payment.id}`,
+			`${RETURN}?shelfway_payment=${payment.id}`,
 		);
 	});
 
@@ -640,10 +640,10 @@ describe('the other gateways', () => {
 			}).toString();
 		// what the browser brings back unsigned changes nothing
 		const forged = await page(`/return/payfast_pk/${env.websiteId}/${payment.id}?basket_id=${payment.id}&err_code=000`);
-		expect(forged.headers.get('location')).toBe(`${RETURN}?ss_payment=${payment.id}`);
+		expect(forged.headers.get('location')).toBe(`${RETURN}?shelfway_payment=${payment.id}`);
 		expect((await env.api('GET', `/v1/payments/${payment.id}`)).json.status).toBe('pending');
 		const back = await page(`/return/payfast_pk/${env.websiteId}/${payment.id}?${signed(payment.id, '000')}`);
-		expect(back.headers.get('location')).toBe(`${RETURN}?ss_payment=${payment.id}`);
+		expect(back.headers.get('location')).toBe(`${RETURN}?shelfway_payment=${payment.id}`);
 		expect((await env.api('GET', `/v1/payments/${payment.id}`)).json).toMatchObject({
 			status: 'paid',
 			gatewayReference: payment.id,
@@ -782,7 +782,10 @@ describe('the other gateways', () => {
 	it('Rapid Gateway: payment created at Rapid, redirect, confirmed by the signed webhook only', async () => {
 		env.gateways.respond('https://api.rapidgateway.pk', (c) => {
 			const sent = JSON.parse(c.body);
-			return { status: 201, body: { id: `rp_${sent.metadata.ss_payment}`, checkout_url: 'https://checkout.rapid.test/x' } };
+			return {
+				status: 201,
+				body: { id: `rp_${sent.metadata.shelfway_payment}`, checkout_url: 'https://checkout.rapid.test/x' },
+			};
 		});
 		expect(await env.connect('rapid', RAPID)).toMatchObject({ status: 'connected', set: true });
 		const payment = await createPayment({ gateway: 'rapid', currency: 'PKR' });
@@ -790,7 +793,7 @@ describe('the other gateways', () => {
 		expect(go.headers.get('location')).toBe('https://checkout.rapid.test/x');
 		// back from Rapid: still pending until the webhook
 		const back = await page(`/return/rapid/${env.websiteId}/${payment.id}`);
-		expect(back.headers.get('location')).toBe(`${RETURN}?ss_payment=${payment.id}`);
+		expect(back.headers.get('location')).toBe(`${RETURN}?shelfway_payment=${payment.id}`);
 		expect((await env.api('GET', `/v1/payments/${payment.id}`)).json.status).toBe('pending');
 		/** @param {object} event @param {string} [signature] */
 		const hook = (event, signature) => {
@@ -800,7 +803,7 @@ describe('the other gateways', () => {
 				headers: { 'x-rg-signature': signature ?? webhookSignature(body, RAPID.webhookSecret) },
 			});
 		};
-		const event = { id: `rp_${payment.id}`, status: 'succeeded', amount: 2500, metadata: { ss_payment: payment.id } };
+		const event = { id: `rp_${payment.id}`, status: 'succeeded', amount: 2500, metadata: { shelfway_payment: payment.id } };
 		expect((await hook(event, 'x')).status).toBe(401);
 		expect((await hook(event)).json).toEqual({ received: true });
 		expect((await env.api('GET', `/v1/payments/${payment.id}`)).json).toMatchObject({
@@ -810,7 +813,7 @@ describe('the other gateways', () => {
 		// a webhook for another amount is recorded and pays nothing
 		const other = await createPayment({ gateway: 'rapid', currency: 'PKR' });
 		await page(`/pay/${env.websiteId}/${other.id}`);
-		await hook({ id: `rp_${other.id}`, status: 'paid', amount: 25, metadata: { ss_payment: other.id } });
+		await hook({ id: `rp_${other.id}`, status: 'paid', amount: 25, metadata: { shelfway_payment: other.id } });
 		const unpaid = (await env.api('GET', `/v1/payments/${other.id}`)).json;
 		expect(unpaid.status).toBe('pending');
 		expect(unpaid.history.at(-1)).toMatchObject({ event: 'mismatch', detail: 'rapid confirmed 2500 PKR' });
@@ -831,13 +834,13 @@ describe('the other gateways', () => {
 		// the other custom gateway's secret does not sign for this one
 		const forged = await env.call('POST', `/v1/gateways/generic/bridge/${env.websiteId}`, {
 			body,
-			headers: { 'ss-signature': signWebhook({ body, secret: BRIDGE.secret, now: env.now }) },
+			headers: { 'shelfway-signature': signWebhook({ body, secret: BRIDGE.secret, now: env.now }) },
 		});
 		expect((await env.api('GET', `/v1/payments/${payment.id}`)).json.status).toBe('pending');
 		expect(forged.status).toBeLessThan(500);
 		const res = await env.call('POST', `/v1/gateways/generic/paynow/${env.websiteId}`, {
 			body,
-			headers: { 'ss-signature': signWebhook({ body, secret: GENERIC.secret, now: env.now }) },
+			headers: { 'shelfway-signature': signWebhook({ body, secret: GENERIC.secret, now: env.now }) },
 		});
 		expect(res.json).toEqual({ received: true });
 		expect((await env.api('GET', `/v1/payments/${payment.id}`)).json.status).toBe('paid');
@@ -871,7 +874,7 @@ describe('the other gateways', () => {
 		expect((await page(`/pay/${env.websiteId}/${payment.id}`)).text).toContain('The payment was canceled.');
 		const withCancel = await createPayment({ gateway: 'stripe', cancelUrl: `${ORIGIN}/cart` });
 		expect((await page(`/return/cancel/${env.websiteId}/${withCancel.id}`)).headers.get('location')).toBe(
-			`${ORIGIN}/cart?ss_payment=${withCancel.id}`,
+			`${ORIGIN}/cart?shelfway_payment=${withCancel.id}`,
 		);
 		expect((await page(`/return/stripe/${env.websiteId}/pay_unknown`)).status).toBe(404);
 		expect((await page(`/return/stripe/web_nope/${payment.id}`)).status).toBe(404);
@@ -1455,10 +1458,10 @@ describe('subscriptions', () => {
 		});
 		expect(made.json.checkoutUrl).toBe('https://paypal.test/s');
 		const back = await page(`/return/paypal/${env.websiteId}/${made.json.id}?subscription_id=I-1`);
-		expect(back.headers.get('location')).toBe(`${RETURN}?ss_subscription=${made.json.id}`);
+		expect(back.headers.get('location')).toBe(`${RETURN}?shelfway_subscription=${made.json.id}`);
 		expect((await env.api('GET', `/v1/subscriptions/${made.json.id}`)).json.status).toBe('active');
 		expect((await page(`/return/cancel/${env.websiteId}/${made.json.id}`)).headers.get('location')).toBe(
-			`${ORIGIN}/plans?ss_subscription=${made.json.id}`,
+			`${ORIGIN}/plans?shelfway_subscription=${made.json.id}`,
 		);
 		expect((await page(`/return/paypal/${env.websiteId}/sub_unknown`)).status).toBe(404);
 		const refused = await env.api('POST', `/v1/subscriptions/${made.json.id}/cancel`, {});
@@ -1563,7 +1566,11 @@ describe('kit features (PLAN 0.8.10)', () => {
 			cursor = res.json.nextCursor;
 		}
 	};
-	const ACTOR = { 'ss-actor-id': 'staff_7', 'ss-actor-name': encodeURIComponent('Zoë Martin'), 'ss-actor-role': 'Manager' };
+	const ACTOR = {
+		'shelfway-actor-id': 'staff_7',
+		'shelfway-actor-name': encodeURIComponent('Zoë Martin'),
+		'shelfway-actor-role': 'Manager',
+	};
 
 	it('counts payments with the list’s own filters (K4), also with a ticket', async () => {
 		const all = await listAll('/v1/payments');
@@ -1663,7 +1670,7 @@ describe('kit features (PLAN 0.8.10)', () => {
 			token: env.server,
 			bare: true,
 			body: {},
-			headers: { 'ss-actor-id': 'staff_7', 'ss-actor-name': 'Zo%C3%AB%20Martin' },
+			headers: { 'shelfway-actor-id': 'staff_7', 'shelfway-actor-name': 'Zo%C3%AB%20Martin' },
 		});
 		expect(forged.status).toBe(403);
 		expect(forged.json.type).toMatch(/needs_signed_in_staff$/);
@@ -1693,17 +1700,17 @@ describe('kit features (PLAN 0.8.10)', () => {
 		const made = await env.call('POST', `/v1/checkout/links/${link.id}`, {
 			token: env.server,
 			body,
-			headers: { 'ss-visitor-ip': '203.0.113.7' },
+			headers: { 'shelfway-visitor-ip': '203.0.113.7' },
 		});
 		expect(made.status).toBe(201);
 		expect(made.json.checkoutUrl).toBe(`${BASE}/pay/${env.websiteId}/${made.json.paymentId}`);
 		const payment = await env.call('GET', `/v1/checkout/payments/${made.json.paymentId}`, { token: env.server });
 		expect(payment.json).toMatchObject({ amount: 70000, status: 'pending' });
-		// the per-visitor limit (30 a minute) counts by SS-Visitor-IP
+		// the per-visitor limit (30 a minute) counts by Shelfway-Visitor-IP
 		env.advance(61_000);
 		/** @param {string} ip */
 		const visit = (ip) =>
-			env.call('GET', `/v1/checkout/links/${link.id}`, { token: env.server, headers: { 'ss-visitor-ip': ip } });
+			env.call('GET', `/v1/checkout/links/${link.id}`, { token: env.server, headers: { 'shelfway-visitor-ip': ip } });
 		for (let i = 0; i < 30; i += 1) expect((await visit('198.51.100.1')).status).toBe(200);
 		expect((await visit('198.51.100.1')).status).toBe(429);
 		expect((await visit('198.51.100.2')).status).toBe(200);
@@ -1713,7 +1720,7 @@ describe('kit features (PLAN 0.8.10)', () => {
 	it('formats money with the website’s Format on hosted pages, in activity details and in the widget config (K7)', async () => {
 		// the Format is the Portal's (Website settings › Region and format): a server cannot save it
 		const refused = await env.api('PUT', '/v1/format', { wholeUnits: true });
-		expect([refused.status, refused.json.type.split('/').pop()]).toEqual([409, 'managed_by_portal']);
+		expect([refused.status, refused.json.type.split('/').pop()]).toEqual([409, 'managed_by_platform']);
 		const empty = emptyWebsiteSettings(env.websiteId);
 		await env.setWebsite({
 			region: {
@@ -1825,7 +1832,7 @@ describe('data rights, statuses and public files', () => {
 		// the API reference: what each call takes and answers, from schemas/api.json
 		for (const part of [
 			'<a href="#op-post-v1-payments"><code>POST /v1/payments</code></a> Create a payment',
-			'<section class="ss-api-op" id="op-post-v1-payments"><h3><code>POST /v1/payments</code> Create a payment</h3>',
+			'<section class="shelfway-api-op" id="op-post-v1-payments"><h3><code>POST /v1/payments</code> Create a payment</h3>',
 			'<td><code>amount</code></td><td>integer</td><td>yes</td><td>Minor units (cents, pence …). 1–1000000000000.</td>',
 			'<td><code>customer</code></td><td><a href="#schema-CustomerInput">CustomerInput</a></td>',
 			'<h4>Answer 201 (JSON)</h4><p><a href="#schema-Payment">Payment</a></p>',
@@ -1833,7 +1840,7 @@ describe('data rights, statuses and public files', () => {
 			'<td><code>gateway</code></td><td><a href="#schema-Method">Method</a> or null</td>',
 			'<td><code>status</code></td><td>query</td><td>&#34;pending&#34; | &#34;paid&#34;',
 			'<td><code>Idempotency-Key</code></td><td>header</td><td>string</td><td>no</td><td>A key of your own per request',
-			'Optional headers: <code>SS-Sign-In</code>',
+			'Optional headers: <code>Shelfway-Sign-In</code>',
 			'id="schema-PaymentsEvent"',
 		])
 			expect(docs.text).toContain(part);

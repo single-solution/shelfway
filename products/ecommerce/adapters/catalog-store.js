@@ -5,14 +5,14 @@
  * retry, so a product edit never undoes one). `price` and `inStock` are recomputed by the ledger's `refreshProducts`.
  * @module
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { contentChanged, freeSlug, slugify } from '../core/catalog.js';
 import { categoryTypeKey, elementsOf, typeOf, typeTree } from '../core/item-types.js';
 import { sameMeaning } from '../core/measure.js';
 import { COLLECTIONS, ID_PREFIX } from '../core/model.js';
 import { refreshProducts } from './ledger.js';
 
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('mongodb').ClientSession} Session */
 /** @typedef {import('../core/model.js').ProductRecord} ProductRecord */
 /** @typedef {import('../core/model.js').CategoryRecord} CategoryRecord */
@@ -21,7 +21,7 @@ import { refreshProducts } from './ledger.js';
 /** @typedef {import('../core/model.js').LocationRecord} LocationRecord */
 /** @typedef {import('../core/catalog.js').CatalogRules} CatalogRules */
 
-/** Merchant database indexes of this part. @type {import('@ss/app-kit').IndexDefinition[]} */
+/** Merchant database indexes of this part. @type {import('@shelfway/app-kit').IndexDefinition[]} */
 export const INDEXES = [
 	{ collection: COLLECTIONS.products, keys: { websiteId: 1, id: 1 }, name: 'by_id', unique: true },
 	{

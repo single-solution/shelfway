@@ -341,7 +341,7 @@ export const openDialog = (
 		let confirmField = null;
 		if (confirm) {
 			confirmIds += 1;
-			const id = `ss-confirm-${confirmIds}`;
+			const id = `shelfway-confirm-${confirmIds}`;
 			const field = /** @type {HTMLInputElement} */ (element(doc, 'input', { id, autocomplete: 'off' }));
 			confirmField = field;
 			const wrap = element(doc, 'div', { class: 'field' });

@@ -6,7 +6,7 @@
  * @module
  */
 import { useState } from 'react';
-import { Button, Form, FormError, Input, SettingsCard, fieldErrors, useToast } from '@ss/ui';
+import { Button, Form, FormError, Input, SettingsCard, fieldErrors, useToast } from '@shelfway/ui';
 import { ADMIN, LOGIN, TWO_STEP } from '../../../texts/console.js';
 import { apiFetch, useResource } from '../../client.js';
 import { AccountPage } from '../../views/account.js';
@@ -14,7 +14,7 @@ import { EmailPanel, PasswordPanel, TwoStepPanel } from '../../views/login-setti
 import { adminApi, adminRoutes } from '../paths.js';
 import { AdminProblem, RoleBadge } from './shell.js';
 
-/** @typedef {import('@ss/ui').Problem} Problem */
+/** @typedef {import('@shelfway/ui').Problem} Problem */
 
 /** @param {{ admin: any, onSaved: () => void }} props */
 function NameCard({ admin, onSaved }) {

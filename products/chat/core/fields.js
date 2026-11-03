@@ -2,12 +2,12 @@
  * Fields (pure): the merchant's custom fields for conversations and leads (label, key, type text, number, yes/no or a
  * choice list), the standard contact fields (name, email, phone) shared by lead capture, guest contact capture and
  * flows, leads with their optional consent, and proactive page rules. Phones are kept as E.164, read by the normalizer
- * every product shares (`@ss/contracts/phone`) with the website's default calling code.
+ * every product shares (`@shelfway/contracts/phone`) with the website's default calling code.
  * @module
  */
-import { normalizeEmail } from '@ss/contracts/email';
-import { normalizePhone } from '@ss/contracts/phone';
-import { isObject } from '@ss/contracts/util';
+import { normalizeEmail } from '@shelfway/contracts/email';
+import { normalizePhone } from '@shelfway/contracts/phone';
+import { isObject } from '@shelfway/contracts/util';
 
 /** Most custom fields a website has. */
 const MAX_CUSTOM_FIELDS = 30;

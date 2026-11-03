@@ -16,10 +16,10 @@ import {
 const OPENAPI = {
 	paths: {
 		'/v1/notes': {
-			get: { 'x-ss-auth': 'browser', 'x-ss-feature': 'notes', summary: 'List <notes>' },
-			post: { 'x-ss-auth': 'ticket', 'x-ss-feature': ['notes', 'inbox'], 'x-ss-permission': 'notes.write' },
+			get: { 'x-shelfway-auth': 'browser', 'x-shelfway-feature': 'notes', summary: 'List <notes>' },
+			post: { 'x-shelfway-auth': 'ticket', 'x-shelfway-feature': ['notes', 'inbox'], 'x-shelfway-permission': 'notes.write' },
 		},
-		'/v1/tickets': { post: { 'x-ss-auth': 'server' }, parameters: [] },
+		'/v1/tickets': { post: { 'x-shelfway-auth': 'server' }, parameters: [] },
 		'/v1/odd': 'not an operation list',
 	},
 };
@@ -81,7 +81,7 @@ describe('the feature sections', () => {
 		const [notes, inbox, quiet] = html.split('\n');
 		expect(notes).toBe(
 			'<section id="feature-notes"><h3>Notes <code>notes</code></h3><p>Leave notes &#38; more.</p><p>More about notes.</p>' +
-				'<ul><li>visitor widget <code>data-ss-notes=&#34;form&#34;</code></li><li>admin widget <code>data-ss-notes=&#34;inbox&#34;</code></li></ul>' +
+				'<ul><li>visitor widget <code>data-shelfway-notes=&#34;form&#34;</code></li><li>admin widget <code>data-shelfway-notes=&#34;inbox&#34;</code></li></ul>' +
 				`${docsRouteTable(docsOperations(OPENAPI).slice(0, 2))}</section>`,
 		);
 		expect(inbox).toContain('<p>Needs: Notes, gone.</p><p><strong>What your website builds.</strong> An admin page.</p>');
@@ -108,7 +108,7 @@ describe('the docs page', () => {
 		);
 		for (const section of KIT_GUIDE) expect(html).toContain(`<h2 id="${section.id}">`);
 		expect(html).toContain(`<h2 id="business">Your website's settings</h2>\n<p>Your business facts`);
-		expect(html).toContain('PUT on them answers 409 managed_by_portal');
+		expect(html).toContain('PUT on them answers 409 managed_by_platform');
 		expect(html).toContain('\n<p>Your business.</p>\n<h2 id="api">');
 		expect(html).not.toContain('business.json');
 		expect(html).toContain(
@@ -126,6 +126,6 @@ describe('the docs page', () => {
 			'Your business.',
 		);
 		expect(renderDocsPage({ guide: { ...GUIDE, kit: 'Our lists: a, b.' }, openapi: OPENAPI, body: '' })).toBe(html);
-		expect(renderDocsPage({ guide: GUIDE, openapi: null, body: '' })).toContain('<div class="ss-api">\n\n</div>');
+		expect(renderDocsPage({ guide: GUIDE, openapi: null, body: '' })).toContain('<div class="shelfway-api">\n\n</div>');
 	});
 });

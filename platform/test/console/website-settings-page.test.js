@@ -7,8 +7,8 @@
  * changes, and which people get the settings in the Portal and in the Admin Console.
  */
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { ToastProvider } from '@ss/ui';
-import { act, byLabel, cleanup, render, type } from '@ss/ui/testing';
+import { ToastProvider } from '@shelfway/ui';
+import { act, byLabel, cleanup, render, type } from '@shelfway/ui/testing';
 import { closeMongoClients } from '../../src/testing.js';
 import { AdminWebsiteView } from '../../src/console/admin/views/merchants.js';
 import * as admin from '../../src/console/admin/loaders.js';

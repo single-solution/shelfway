@@ -19,7 +19,7 @@ import {
 	openDialog,
 	segmented,
 	stateSlot,
-} from '@ss/app-kit/widget';
+} from '@shelfway/app-kit/widget';
 import { PROBLEM_TEXTS, chipGroup, problemKey } from './admin-kit.js';
 import { WIDGET_CSS } from './styles.js';
 
@@ -54,7 +54,7 @@ export const REDIRECT_PROBLEMS = Object.freeze({
 /** @typedef {{ line: number, path: string, code: string, steps?: string[] }} RowProblem */
 
 /**
- * @param {{ host: HTMLElement, api: import('@ss/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig,
+ * @param {{ host: HTMLElement, api: import('@shelfway/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig,
  *   viewer: import('./widget.js').Viewer, download: (name: string, bytes: ArrayBuffer) => void }} input `viewer`: the
  *   browser's language and time zone; `download`: save a file the widget made
  */

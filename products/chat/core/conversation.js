@@ -5,7 +5,7 @@
  * templates Chat sends with their values, and a transcript as one long value.
  * @module
  */
-import { LONG_VALUE_LIMIT } from '@ss/contracts/templates';
+import { LONG_VALUE_LIMIT } from '@shelfway/contracts/templates';
 import { cardsOf } from './shop.js';
 import { truncate } from './text.js';
 import { pageTypeOf } from './pages.js';
@@ -14,7 +14,7 @@ import { MAX_MESSAGE_LENGTH, attachmentKind } from './widgets.js';
 export const STATUSES = Object.freeze(/** @type {const} */ (['open', 'awaiting_visitor', 'resolved']));
 /** Staff presence values. */
 export const PRESENCES = Object.freeze(['online', 'away', 'offline']);
-/** An Accounts user id, a staff id or a pause's actor id (as the inbox and the verified `SS-Sign-In` take them). */
+/** An Accounts user id, a staff id or a pause's actor id (as the inbox and the verified `Shelfway-Sign-In` take them). */
 export const USER_ID = /^[A-Za-z0-9_.:@-]{1,64}$/;
 /** @typedef {(typeof STATUSES)[number]} Status */
 /** @typedef {'visitor' | 'ai' | 'staff' | 'system'} Author */
@@ -250,7 +250,7 @@ export const messageText = (value, { allowEmpty = false } = {}) => {
 const short = (value, max) => (typeof value === 'string' && value.trim() ? value.trim().slice(0, max) : null);
 
 /**
- * The page a visitor message came from (`SSChat.setPage` or the URL and title); unknown fields are dropped. Its kind is
+ * The page a visitor message came from (`ShelfwayChat.setPage` or the URL and title); unknown fields are dropped. Its kind is
  * one of the website's page types (C6): the one it named, else the first whose path pattern matches its address, else
  * `other`.
  * @param {unknown} raw

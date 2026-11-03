@@ -6,7 +6,7 @@
  */
 import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { byLabel, byText, cleanup, click, render, type } from '@ss/ui/testing';
+import { byLabel, byText, cleanup, click, render, type } from '@shelfway/ui/testing';
 import { SegmentsEditor } from '../app/dashboard/lists.js';
 import { DEFAULT_SEGMENTS, checkSegments } from '../core/customer-segments.js';
 import { closeEditor, drawerOf, inDashboard, openRow, rowNames } from './dashboard-provider.js';

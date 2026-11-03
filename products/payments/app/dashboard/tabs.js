@@ -6,8 +6,8 @@
  * ones as they are.
  * @module
  */
-import { Button, CodeBlock, Section, Stat } from '@ss/ui';
-import { DevelopersTab, OverviewTab, SettingsTab, fill, useLoad, useSetupSteps } from '@ss/ui/dashboard';
+import { Button, CodeBlock, Section, Stat } from '@shelfway/ui';
+import { DevelopersTab, OverviewTab, SettingsTab, fill, useLoad, useSetupSteps } from '@shelfway/ui/dashboard';
 import manifest from '../../manifest.json' with { type: 'json' };
 import { CUSTOM_GATEWAY_CONNECTIONS, GATEWAY_CONNECTIONS, GATEWAY_FEATURES, GATEWAYS } from '../../core/gateways.js';
 import { methodReady } from '../../core/methods.js';
@@ -16,7 +16,7 @@ import { ConnectionForm, FORMS } from './forms.js';
 import { MethodsEditor } from './methods.js';
 import { TEXTS } from './texts.js';
 
-/** @type {ReadonlyArray<import('@ss/ui/dashboard').SetupRequirement>} */
+/** @type {ReadonlyArray<import('@shelfway/ui/dashboard').SetupRequirement>} */
 const SETUP = Object.freeze([
 	{
 		key: 'way-to-pay',
@@ -37,8 +37,8 @@ const SETUP = Object.freeze([
 	},
 ]);
 
-/** @typedef {import('@ss/ui/dashboard').Answer} Answer */
-/** @typedef {import('@ss/ui/dashboard').TabProps} TabProps */
+/** @typedef {import('@shelfway/ui/dashboard').Answer} Answer */
+/** @typedef {import('@shelfway/ui/dashboard').TabProps} TabProps */
 
 /**
  * The manual payment methods payers see and those they do not see yet (a method paid first without an account with
@@ -85,7 +85,7 @@ const gatewaysReady = (data, methods) =>
  * Payments' part of the Overview (PLAN 0.6 "Overviews talk"): the ways to pay ready, and, while Manual payment methods
  * is on (its list is read only then), the methods payers do not see yet, and Storage missing while a method takes
  * proofs (the connections are read only then).
- * @type {import('@ss/ui/dashboard').UseOverviewMore}
+ * @type {import('@shelfway/ui/dashboard').UseOverviewMore}
  */
 const usePaymentsOverview = (overview, { websiteId, open }) => {
 	const setup = useSetupSteps({ overview, websiteId, open }, SETUP);
@@ -178,7 +178,7 @@ const PaymentsSettings = (props) => (
 
 /**
  * Each gateway's keys and the proof storage have their own form; the tokens keep the one value field.
- * @type {NonNullable<import('@ss/ui/dashboard').ConnectionParts['form']>}
+ * @type {NonNullable<import('@shelfway/ui/dashboard').ConnectionParts['form']>}
  */
 const connectionForm = (item, save) => (item.name in FORMS ? <ConnectionForm name={item.name} onSave={save} /> : null);
 
@@ -199,7 +199,7 @@ function PaymentsDevelopers(props) {
 	const addresses = useLoad(props.websiteId ? `/v1/dashboard/websites/${props.websiteId}/gateway-addresses` : null);
 	/** @type {Array<{ gateway: string, name: string, urls: string[] }>} */
 	const items = addresses.answer?.ok ? addresses.answer.data.items : [];
-	/** @param {string} id @param {string} title @param {string} help @param {import('react').ReactNode} body @param {import('@ss/ui').IconName} icon */
+	/** @param {string} id @param {string} title @param {string} help @param {import('react').ReactNode} body @param {import('@shelfway/ui').IconName} icon */
 	const part = (id, title, help, body, icon) => ({
 		id,
 		label: title,

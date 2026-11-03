@@ -1,5 +1,5 @@
 /**
- * The product on the kit: `createProductInstance(options)` wires `@ss/app-kit` `createProduct` with Ecommerce's
+ * The product on the kit: `createProductInstance(options)` wires `@shelfway/app-kit` `createProduct` with Ecommerce's
  * manifest (each feature's settings schema from `schemas/` inline), its widget texts, its Connections (storage, the
  * Accounts, Payments, Notifications and Growth tokens, courier keys and the Portal's AI key), the merchant database indexes of every
  * part, the data-rights and widget-config hooks (filled in by `server/routes.js`), the Owner's Re-seal of the deal-lock
@@ -12,14 +12,19 @@
  * clock, network). Public entry `./product` of this package, so a system test can compose the product with `./routes`.
  * @module
  */
-import { createProduct, createProductBase } from '@ss/app-kit';
+import { createProduct, createProductBase } from '@shelfway/app-kit';
 import guide from '../docs/guide.json' with { type: 'json' };
 import manifestFile from '../manifest.json' with { type: 'json' };
 import openapi from '../openapi.json' with { type: 'json' };
 import strings from '../strings/en.json' with { type: 'json' };
 import catalogSettings from '../schemas/catalog.settings.json' with { type: 'json' };
+import variantsSettings from '../schemas/variants.settings.json' with { type: 'json' };
+import sizeChartsSettings from '../schemas/size_charts.settings.json' with { type: 'json' };
+import multiLocationSettings from '../schemas/multi_location.settings.json' with { type: 'json' };
+import gradesSerialsSettings from '../schemas/grades_serials.settings.json' with { type: 'json' };
 import digitalGoodsSettings from '../schemas/digital_goods.settings.json' with { type: 'json' };
 import bookingsSettings from '../schemas/bookings.settings.json' with { type: 'json' };
+import measuredSalesSettings from '../schemas/measured_sales.settings.json' with { type: 'json' };
 import checkoutSettings from '../schemas/checkout.settings.json' with { type: 'json' };
 import deliveryZonesSettings from '../schemas/delivery_zones.settings.json' with { type: 'json' };
 import courierApisSettings from '../schemas/courier_apis.settings.json' with { type: 'json' };
@@ -29,11 +34,17 @@ import dealsSettings from '../schemas/deals.settings.json' with { type: 'json' }
 import loyaltySettings from '../schemas/loyalty.settings.json' with { type: 'json' };
 import bundlesSettings from '../schemas/bundles.settings.json' with { type: 'json' };
 import reviewsSettings from '../schemas/reviews.settings.json' with { type: 'json' };
+import storeDetailsSettings from '../schemas/store_details.settings.json' with { type: 'json' };
+import wishlistSettings from '../schemas/wishlist.settings.json' with { type: 'json' };
+import rolePricingSettings from '../schemas/role_pricing.settings.json' with { type: 'json' };
+import eventsSettings from '../schemas/events.settings.json' with { type: 'json' };
 import staffAlertsSettings from '../schemas/staff_alerts.settings.json' with { type: 'json' };
 import alertsSettings from '../schemas/alerts.settings.json' with { type: 'json' };
+import compareSettings from '../schemas/compare.settings.json' with { type: 'json' };
 import returnsSettings from '../schemas/returns.settings.json' with { type: 'json' };
 import invoicesSettings from '../schemas/invoices.settings.json' with { type: 'json' };
 import csvSettings from '../schemas/csv.settings.json' with { type: 'json' };
+import bulkActionsSettings from '../schemas/bulk_actions.settings.json' with { type: 'json' };
 import reportsSettings from '../schemas/reports.settings.json' with { type: 'json' };
 import seoSettings from '../schemas/seo.settings.json' with { type: 'json' };
 import landingPagesSettings from '../schemas/landing_pages.settings.json' with { type: 'json' };
@@ -42,7 +53,6 @@ import aiCopySettings from '../schemas/ai_copy.settings.json' with { type: 'json
 import llmsTxtSettings from '../schemas/llms_txt.settings.json' with { type: 'json' };
 import importSettings from '../schemas/import.settings.json' with { type: 'json' };
 import messages from '../schemas/messages.json' with { type: 'json' };
-import { DEMOTE, DEMOTE_PARENTS, expandFeaturesOn, sliceValues } from '../core/demoted.js';
 import { flowChangeProblems } from '../core/flow.js';
 import { typeChangeProblems } from '../core/item-types.js';
 import { COLLECTIONS } from '../core/model.js';
@@ -64,87 +74,47 @@ import { INDEXES as PROMOTIONS_INDEXES } from './promotions-store.js';
 import { createSearchState } from './search-state.js';
 import { createSealer, createSiteSecrets } from './site-secret.js';
 
-/**
- * Fold demoted peer schemas into a parent settings object (PLAN E).
- * @param {Record<string, any>} base
- * @param {...Record<string, any>} extras
- */
-const foldSettings = (base, ...extras) => ({
-	...base,
-	properties: Object.assign({}, base.properties, ...extras.map((extra) => extra.properties ?? extra)),
-});
-
-/** Enable toggles for demoted peers folded into Checkout. */
-const checkoutEnables = {
-	enableStaffAlerts: {
-		type: 'boolean',
-		title: 'Staff order alerts',
-		default: false,
-		description: 'Notify staff when orders move into selected statuses.',
-		'x-ui': { group: 'Staff alerts', order: 80 },
-	},
-	enableRolePricing: {
-		type: 'boolean',
-		title: 'Role prices',
-		default: false,
-		description: 'Discount by Accounts role.',
-		'x-ui': { group: 'Role prices', order: 90 },
-	},
-};
-
-/** Enable toggles for demoted peers folded into Delivery. */
-const deliveryEnables = {
-	enableCourierApis: {
-		type: 'boolean',
-		title: 'Courier booking APIs',
-		default: false,
-		description: 'Book shipments through a connected courier.',
-		'x-ui': { group: 'Courier APIs', order: 80 },
-	},
-};
-
-/** Enable toggles for demoted peers folded into SEO. */
-const seoEnables = {
-	enableLandingPages: {
-		type: 'boolean',
-		title: 'Landing pages',
-		default: false,
-		description: 'Category, brand and facet landing pages.',
-		'x-ui': { group: 'Landing pages', order: 80 },
-	},
-	enableLlmsTxt: {
-		type: 'boolean',
-		title: 'llms.txt',
-		default: false,
-		description: 'Serve llms.txt for AI assistants.',
-		'x-ui': { group: 'llms.txt', order: 90 },
-	},
-};
-
 /** Settings schema of each feature (manifest.json points at them with `$ref`). @type {Record<string, unknown>} */
 const SETTINGS = {
-	catalog: foldSettings(catalogSettings, csvSettings, alertsSettings),
-	checkout: foldSettings(checkoutSettings, staffAlertsSettings, checkoutEnables),
+	store_details: storeDetailsSettings,
+	catalog: catalogSettings,
+	variants: variantsSettings,
+	size_charts: sizeChartsSettings,
+	multi_location: multiLocationSettings,
+	grades_serials: gradesSerialsSettings,
 	digital_goods: digitalGoodsSettings,
 	bookings: bookingsSettings,
-	delivery_zones: foldSettings(deliveryZonesSettings, courierApisSettings, deliveryEnables),
+	measured_sales: measuredSalesSettings,
+	checkout: checkoutSettings,
+	delivery_zones: deliveryZonesSettings,
+	courier_apis: courierApisSettings,
 	taxes: taxesSettings,
 	coupons: couponsSettings,
 	deals: dealsSettings,
 	loyalty: loyaltySettings,
+	role_pricing: rolePricingSettings,
 	bundles: bundlesSettings,
 	reviews: reviewsSettings,
+	wishlist: wishlistSettings,
+	alerts: alertsSettings,
+	compare: compareSettings,
 	returns: returnsSettings,
 	invoices: invoicesSettings,
-	seo: foldSettings(seoSettings, landingPagesSettings, llmsTxtSettings, seoEnables),
+	csv: csvSettings,
+	bulk_actions: bulkActionsSettings,
+	reports: reportsSettings,
+	events: eventsSettings,
+	staff_alerts: staffAlertsSettings,
+	seo: seoSettings,
+	landing_pages: landingPagesSettings,
 	feeds: feedsSettings,
 	ai_copy: aiCopySettings,
-	reports: reportsSettings,
+	llms_txt: llmsTxtSettings,
 	import: importSettings,
 };
 
 /** The manifest as the kit and the Portal take it: settings schemas inline. */
-export const manifest = /** @type {import('@ss/contracts').Manifest} */ (
+export const manifest = /** @type {import('@shelfway/contracts').Manifest} */ (
 	/** @type {unknown} */ ({
 		...manifestFile,
 		features: manifestFile.features.map((feature) => ({ ...feature, settings: SETTINGS[feature.key] })),
@@ -214,7 +184,7 @@ export const INDEXES = [
 
 /**
  * What the Next.js route and the tests pass: every option but those the adapter sets itself.
- * @typedef {Omit<import('@ss/app-kit').ProductOptions, 'manifest' | 'strings' | 'hooks' | 'connections' | 'data'
+ * @typedef {Omit<import('@shelfway/app-kit').ProductOptions, 'manifest' | 'strings' | 'hooks' | 'connections' | 'data'
  *   | 'problemCodes' | 'messages' | 'imports' | 'events' | 'lists' | 'openapi' | 'build'>} InstanceOptions
  */
 
@@ -272,7 +242,7 @@ export const createProductInstance = (options) => {
 	const keys = healthy ? options.config : undefined;
 	const sealer = createSealer(keys?.encryptionKey || UNCONFIGURED_KEY, keys?.previousEncryptionKey ?? null);
 	const secrets = createSiteSecrets({ store, sealer, now });
-	/** @type {NonNullable<import('@ss/app-kit').ProductOptions['hooks']>} */
+	/** @type {NonNullable<import('@shelfway/app-kit').ProductOptions['hooks']>} */
 	const hooks = {};
 
 	/**
@@ -282,15 +252,7 @@ export const createProductInstance = (options) => {
 	 * secret.
 	 * @param {{ websiteId: string, on: string[] }} website
 	 */
-	const setupPart = async ({ websiteId, on: baseOn }) => {
-		/** @type {Record<string, Record<string, any>>} */
-		const parentBags = {};
-		await Promise.all(
-			DEMOTE_PARENTS.filter((key) => baseOn.includes(key)).map(async (key) => {
-				parentBags[key] = await product.settings.values(websiteId, key);
-			}),
-		);
-		const on = expandFeaturesOn(baseOn, parentBags);
+	const setupPart = async ({ websiteId, on }) => {
 		const names = /** @type {Array<keyof typeof LISTS>} */ (Object.keys(LISTS)).filter((name) =>
 			on.includes(LISTS[name].feature),
 		);
@@ -304,19 +266,11 @@ export const createProductInstance = (options) => {
 			}),
 		);
 		/** @param {string} feature */
-		const valuesOf = async (feature) => {
-			if (!on.includes(feature) && feature !== 'seo') return null;
-			const demoted = DEMOTE[feature];
-			if (demoted) {
-				const bag = parentBags[demoted.parent];
-				return bag ? sliceValues(bag, feature) : null;
-			}
-			if (feature === 'seo' && on.includes('catalog') && !on.includes('seo')) return SEO_DEFAULTS;
-			return parentBags[feature] ?? (on.includes(feature) ? product.settings.values(websiteId, feature) : null);
-		};
+		const valuesOf = (feature) => (on.includes(feature) ? product.settings.values(websiteId, feature) : null);
 		const [catalog, seo, landing, alerts, llms, storage] = await Promise.all([
 			valuesOf('catalog'),
-			valuesOf('seo'),
+			// the seo settings the pages follow while Catalog is on: the merchant's while SEO is on, else the defaults
+			on.includes('catalog') && !on.includes('seo') ? SEO_DEFAULTS : valuesOf('seo'),
 			valuesOf('landing_pages'),
 			valuesOf('alerts'),
 			valuesOf('llms_txt'),
@@ -351,7 +305,7 @@ export const createProductInstance = (options) => {
 			storage: {
 				label: 'Storage for product images, downloads and return photos (S3-compatible)',
 				kind: 'storage',
-				neededBy: ['catalog', 'digital_goods'],
+				neededBy: ['catalog', 'digital_goods', 'store_details'],
 			},
 			// one courier API per courier the merchant books with, named by its entry of the couriers list (E25): the
 			// feature needs the first; the others are there for more
@@ -361,7 +315,7 @@ export const createProductInstance = (options) => {
 					{
 						label: `Courier API keys ${index + 1}`,
 						kind: /** @type {const} */ ('secret'),
-						neededBy: index === 0 ? ['delivery_zones'] : [],
+						neededBy: index === 0 ? ['courier_apis'] : [],
 						secretField: 'apiKey',
 						test: (/** @type {unknown} */ value) => couriers.test(value),
 					},
@@ -392,29 +346,12 @@ export const createProductInstance = (options) => {
 		// the website Setup sheet: the API document and what the merchant's website builds per feature
 		openapi,
 		build: guide.build,
-		// records moved in from another system with ss-import (feature `import`, PLAN 0.8.10 K10)
+		// records moved in from another system with shelfway-import (feature `import`, PLAN 0.8.10 K10)
 		imports: createImportOptions({
 			list: (websiteId, name) => lists.get(websiteId, /** @type {any} */ (name)),
-			settings: async (websiteId, feature) => {
-				const demoted = DEMOTE[feature];
-				if (demoted) {
-					const bag = await product.settings.values(websiteId, demoted.parent);
-					return sliceValues(bag, feature);
-				}
-				return product.settings.values(websiteId, feature);
-			},
+			settings: (websiteId, feature) => product.settings.values(websiteId, feature),
 			website: (websiteId) => product.website(websiteId),
-			featuresOn: async (websiteId) => {
-				const baseOn = await product.featuresOn(websiteId);
-				/** @type {Record<string, Record<string, any>>} */
-				const parentBags = {};
-				await Promise.all(
-					DEMOTE_PARENTS.filter((key) => baseOn.includes(key)).map(async (key) => {
-						parentBags[key] = await product.settings.values(websiteId, key);
-					}),
-				);
-				return expandFeaturesOn(baseOn, parentBags);
-			},
+			featuresOn: (websiteId) => product.featuresOn(websiteId),
 			now,
 		}),
 		// order, return, review, catalog and stock events (PLAN 0.8.10 K5, E32)
@@ -442,7 +379,7 @@ export const createProductInstance = (options) => {
 		ai,
 		send,
 		now,
-		/** Attach the data-rights and widget-config hooks (api/routes.js). @param {NonNullable<import('@ss/app-kit').ProductOptions['hooks']>} attached */
+		/** Attach the data-rights and widget-config hooks (api/routes.js). @param {NonNullable<import('@shelfway/app-kit').ProductOptions['hooks']>} attached */
 		attach: (attached) => Object.assign(hooks, attached),
 	});
 };

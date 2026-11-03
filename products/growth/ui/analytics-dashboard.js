@@ -24,7 +24,7 @@ import {
 	moreMenu,
 	mountWidget,
 	openDialog,
-} from '@ss/app-kit/widget';
+} from '@shelfway/app-kit/widget';
 import { PRESETS, dayStart, presetRange } from '../core/analytics.js';
 import { DIRECT, EVENT_FEATURES, UNKNOWN } from '../core/events.js';
 import { PROBLEM_TEXTS, chipGroup, rankList, problemKey } from './admin-kit.js';
@@ -58,7 +58,7 @@ const EVENT_TYPES = Object.freeze(Object.keys(EVENT_FEATURES));
 export const ANALYTICS_PROBLEMS = Object.freeze({ ...PROBLEM_TEXTS, 'validation_failed:from': 'analytics.problem.range' });
 
 /**
- * @param {{ host: HTMLElement, api: import('@ss/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig,
+ * @param {{ host: HTMLElement, api: import('@shelfway/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig,
  *   viewer: import('./widget.js').Viewer, now: () => number, download?: (name: string, bytes: ArrayBuffer) => void }} input
  *   `viewer`: the browser's language and time zone; `download`: save a file the widget made (the products' CSV file)
  */

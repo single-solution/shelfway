@@ -1,7 +1,7 @@
-import * as net from '@ss/net';
+import * as net from '@shelfway/net';
 import { describe, expect, it } from 'vitest';
 import { configFromEnv, createLogger, createProduct, defineRoute } from '../src/index.js';
-import { noopLogger, redact } from '@ss/net';
+import { noopLogger, redact } from '@shelfway/net';
 import { createMemoryStore } from '../src/testing.js';
 import { BASE, manifest, setup } from './helpers.js';
 
@@ -14,7 +14,7 @@ const capture = () => {
 };
 
 describe('the kit logger', () => {
-	it('is the one logger of @ss/net', () => {
+	it('is the one logger of @shelfway/net', () => {
 		expect(createLogger).toBe(net.createLogger);
 		expect(noopLogger).toBe(net.noopLogger);
 		expect(redact).toBe(net.redact);

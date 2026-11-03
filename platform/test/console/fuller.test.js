@@ -10,8 +10,8 @@
  * @module
  */
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { ToastProvider } from '@ss/ui';
-import { byLabel, cleanup, keydown, render, type } from '@ss/ui/testing';
+import { ToastProvider } from '@shelfway/ui';
+import { byLabel, cleanup, keydown, render, type } from '@shelfway/ui/testing';
 import { closeMongoClients } from '../../src/testing.js';
 import * as admin from '../../src/console/admin/loaders.js';
 import * as loaders from '../../src/console/loaders.js';
@@ -26,7 +26,7 @@ import { ProductsView } from '../../src/console/admin/views/products.js';
 import { CreditsView } from '../../src/console/views/credits.js';
 import { presetOf, rangePresets } from '../../src/console/views/range.js';
 import { OverviewView as MerchantOverview, WebsiteView } from '../../src/console/views/websites.js';
-import { PORTAL_URL, startMongo } from '../helpers.js';
+import { PLATFORM_URL, startMongo } from '../helpers.js';
 import {
 	buttons,
 	clickEl,
@@ -105,7 +105,7 @@ describe('fuller Portal screens (jsdom)', () => {
 			await world.addProduct(merchantId, websiteId, 'notes');
 			// Notes costs 100 credits an hour (2,400 a day); Notes inbox needs Notes
 			const priced = await world.portal.handle(
-				new Request(`${PORTAL_URL}/v1/product/prices`, {
+				new Request(`${PLATFORM_URL}/v1/product/prices`, {
 					method: 'PUT',
 					headers: { 'content-type': 'application/json', authorization: `Bearer ${await notes.assertion()}` },
 					body: JSON.stringify({
@@ -173,7 +173,7 @@ describe('fuller Portal screens (jsdom)', () => {
 			await menu('Actions for Notes');
 			await clickEl(menuItem('Open as admin'));
 			await ownerBrowser.api.post('/v1/me/step-up-otp', {});
-			fillDialog('Two-step or recovery code', world.lastOtp('olivia@ss.test'));
+			fillDialog('Two-step or recovery code', world.lastOtp('olivia@shelfway.test'));
 			await pressDialog('Open configure');
 			await until(() => open.mock.calls.length > 0);
 			await press('Add credits');
@@ -202,7 +202,7 @@ describe('fuller Portal screens (jsdom)', () => {
 			expect(shows('Products on websites')).toBe(false); // the Websites part shows the count
 			showMerchant('activity');
 			expect(shows('Activity')).toBe(true);
-			await clickEl(/** @type {HTMLElement} */ (document.querySelector('#activity [data-ss-row]')));
+			await clickEl(/** @type {HTMLElement} */ (document.querySelector('#activity [data-shelfway-row]')));
 			expect(shows('Activity entry') && shows('Changes')).toBe(true);
 			await press('Close');
 			await menu('More actions');
@@ -268,7 +268,7 @@ describe('fuller Portal screens (jsdom)', () => {
 			expect(activity.admins?.map((a) => a.value)).toEqual([owner.adminId]);
 			render(<ActivityView {...activity} />);
 			// a row opens a drawer with what the entry changed
-			await clickEl(/** @type {HTMLElement} */ (document.querySelector('[data-ss-row]')));
+			await clickEl(/** @type {HTMLElement} */ (document.querySelector('[data-shelfway-row]')));
 			expect(shows('Activity entry') && shows('Changes')).toBe(true);
 			await press('Close');
 			const only = /** @type {HTMLAnchorElement} */ (document.querySelector('a[title="Show only Shop & Co"]'));
@@ -288,9 +288,9 @@ describe('fuller Portal screens (jsdom)', () => {
 			if (!first.ok) throw new Error('my activity');
 			const mine = await admin.loadMyAccount(ownerBrowser.api);
 			withToasts(<MyAccountView {...mine} activity={first.data} part="activity" />);
-			expect(document.querySelectorAll('[data-ss-row]').length).toBe(1);
+			expect(document.querySelectorAll('[data-shelfway-row]').length).toBe(1);
 			await press('Show more');
-			await until(() => document.querySelectorAll('[data-ss-row]').length > 1);
+			await until(() => document.querySelectorAll('[data-shelfway-row]').length > 1);
 			cleanup();
 
 			// ---------------------------------------------------------------- Admins
@@ -312,7 +312,7 @@ describe('fuller Portal screens (jsdom)', () => {
 			cleanup();
 			const ownActivity = await admin.loadAdmin(ownerBrowser.api, owner, owner.adminId);
 			withToasts(<AdminsView {...ownActivity} selectedId={owner.adminId} section="activity" />);
-			expect(document.querySelectorAll('[data-ss-row]').length).toBeGreaterThan(0);
+			expect(document.querySelectorAll('[data-shelfway-row]').length).toBeGreaterThan(0);
 			await pressMenu('More actions', 'Open in Activity');
 			expect(pushed(`/admin/activity?adminId=${owner.adminId}`)).toBe(true);
 			cleanup();

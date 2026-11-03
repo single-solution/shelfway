@@ -3,7 +3,7 @@
  * product's variants, price range, stock and first photo, a customer's last order, order count, spend and points. The
  * lists read a page with a projection and add what they need in one query for the page, never one query per row.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { COLLECTIONS } from '../core/model.js';
 import { ORDER_ROW_LINES } from '../core/orders.js';

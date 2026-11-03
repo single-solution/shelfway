@@ -1,4 +1,4 @@
-import { adviseFeatures, validateManifest, validateProductBlueprint } from '@ss/contracts';
+import { adviseFeatures, validateManifest, validateProductBlueprint } from '@shelfway/contracts';
 import { describe, expect, it } from 'vitest';
 import guide from '../docs/guide.json' with { type: 'json' };
 import nextConfig from '../next.config.js';
@@ -58,7 +58,7 @@ describe('the website Setup sheet', () => {
 
 		await env.switchOn(['whatsapp', 'email', 'staff_push', 'webhooks', 'send_api']);
 		const value = [
-			{ url: 'https://hooks.example.com/ss?token=tok-0123456789', events: [] },
+			{ url: 'https://hooks.example.com/shelfway?token=tok-0123456789', events: [] },
 			{ url: 'https://api.example.com:8443/notify/key-abcdefghij', events: ['message.failed', 'payments.payment.paid'] },
 			{ url: 'https://hooks.example.com/other', events: ['message.sent'] },
 		];

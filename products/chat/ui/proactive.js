@@ -3,11 +3,11 @@
  * only) and page-started flows after their delay. Each kind shows at most once per visitor session (sessionStorage),
  * never while the window is open, and none shows for `PROACTIVE_DISMISS_DAYS` days after the visitor dismisses one
  * (localStorage, both under PROACTIVE_STORAGE_KEY). The idle nudge (PLAN 0.8.10 C14) says the merchant's text for the
- * kind of page `SSChat.setPage()` named, may show once per product instead of once per session, and may stay away
+ * kind of page `ShelfwayChat.setPage()` named, may show once per product instead of once per session, and may stay away
  * from phones.
  * @module
  */
-import { formatText } from '@ss/app-kit/widget';
+import { formatText } from '@shelfway/app-kit/widget';
 import { PROACTIVE_DISMISS_DAYS } from '../core/limits.js';
 import { pageTypeOf } from '../core/pages.js';
 import { pathMatches } from '../core/text.js';
@@ -98,7 +98,7 @@ export const isPhone = (win) => media(win, PHONE_MEDIA);
  * names the product when the page gave one. A text of the merchant that names the product needs the product's name,
  * so without it the general text shows.
  * @param {import('./common.js').ChatSettings['pageTypes']} types
- * @param {PageInfo | null} page what `SSChat.setPage()` gave
+ * @param {PageInfo | null} page what `ShelfwayChat.setPage()` gave
  * @param {import('./common.js').Texts} t
  * @param {string} [path] the page's path
  */
@@ -128,7 +128,7 @@ export const idleOnce = (oncePer, page) => {
  *   page: () => PageInfo | null,
  *   offer: (kind: Kind, text: string, once?: string) => boolean,
  *   startFlow: (flow: import('./common.js').ChatSettings['flows'][number]) => void }} input `page`: what
- *   `SSChat.setPage()` gave last; `offer` shows a message once per `once` (default: its kind) and answers false while
+ *   `ShelfwayChat.setPage()` gave last; `offer` shows a message once per `once` (default: its kind) and answers false while
  *   the window is open (the idle nudge waits again)
  * @returns {() => void} stop
  */

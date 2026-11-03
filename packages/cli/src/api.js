@@ -1,9 +1,9 @@
 /**
  * A product's API description, `schemas/api.json` (the format is in README.md, "API descriptions"): what every
- * browser-token, server-token and ticket route takes and answers. `ss app assets` merges it into `openapi.json` with the
- * kit's own routes (described once in the kit, `@ss/app-kit/api`); `ss app validate` checks it against the routes
+ * browser-token, server-token and ticket route takes and answers. `shelfway app assets` merges it into `openapi.json` with the
+ * kit's own routes (described once in the kit, `@shelfway/app-kit/api`); `shelfway app validate` checks it against the routes
  * (`api.invalid`, `api.unknown`, `api.missing`); the product's tests check every answer against it
- * (`apiChecker` from `@ss/app-kit/testing`).
+ * (`apiChecker` from `@shelfway/app-kit/testing`).
  * @module
  */
 import {
@@ -14,14 +14,14 @@ import {
 	checkApiDescription,
 	parseRouteKey,
 	sharedSchemas,
-} from '@ss/app-kit/api';
+} from '@shelfway/app-kit/api';
 import { isObject, parseJson } from './fsutil.js';
 import { problemOf } from './manifest.js';
 
 /** @typedef {import('./manifest.js').Problem} Problem */
 /** @typedef {import('./project.js').ProjectFiles} ProjectFiles */
 /** @typedef {import('./routes.js').ScannedRoute} ScannedRoute */
-/** @typedef {import('@ss/app-kit/api').ApiDescription} ApiDescription */
+/** @typedef {import('@shelfway/app-kit/api').ApiDescription} ApiDescription */
 
 /** Project-relative path of the API description. */
 export const API_FILE = 'schemas/api.json';
@@ -35,7 +35,7 @@ export { KIT_API, KIT_ROUTES };
  * The import routes the kit serves for a product whose manifest has the feature `import` (it passes `imports`); the
  * product describes them in its own `schemas/api.json`.
  * @param {unknown} manifest
- * @returns {ReadonlyArray<import('@ss/app-kit/api').KitRoute>}
+ * @returns {ReadonlyArray<import('@shelfway/app-kit/api').KitRoute>}
  */
 export const kitImportRoutesOf = (manifest) =>
 	isObject(manifest) &&

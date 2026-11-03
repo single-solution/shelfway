@@ -18,10 +18,10 @@
  *   or a stop restarts the merchant's products (`status.changed`).
  * @module
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { isProblem, problem } from '../../../infra/http.js';
 import { afterResponse, memoize } from '../../../infra/request-scope.js';
-import { sha256Hex } from '@ss/protocol';
+import { sha256Hex } from '@shelfway/protocol';
 import {
 	OPEN_PHASE,
 	billingStateOf,
@@ -128,7 +128,7 @@ export const createBilling = ({ ctx, repo, deps, ledger, statusChanged }) => {
 	/**
 	 * Store an accepted price list of a product (one hourly price per feature in millicredits, never negative); it
 	 * applies from now on. The version must be higher than the last accepted one (409 `conflict`).
-	 * @param {{ productId: string, prices: import('@ss/contracts').PriceList }} input
+	 * @param {{ productId: string, prices: import('@shelfway/contracts').PriceList }} input
 	 * @returns {Promise<{ productId: string, version: number, at: string, features: Doc[], previous: Doc | null }>}
 	 */
 	const recordPriceList = async ({ productId, prices }) => {

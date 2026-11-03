@@ -3,8 +3,8 @@
  *
  * - `getMongoClient` — one pooled `MongoClient` per URI, cached on `globalThis` so warm serverless invocations
  *   reuse it; importing never needs a database. `connectMongoClient` connects it before use (the Portal before it is
- *   built), and again after a failed connect. Every call has deadlines (`@ss/net` `DATABASE_DEADLINES`); a database
- *   that cannot be reached or does not answer in time fails fast with an error `@ss/net` `isDatabaseUnavailable` recognizes,
+ *   built), and again after a failed connect. Every call has deadlines (`@shelfway/net` `DATABASE_DEADLINES`); a database
+ *   that cannot be reached or does not answer in time fails fast with an error `@shelfway/net` `isDatabaseUnavailable` recognizes,
  *   which requests answer 503 `database_unavailable`.
  * - `defineCollection` / `createRegistry` — every module declares its collections (indexes, TTL, `appendOnly`,
  *   `tenant: 'merchant'`). Names are global and owned: a module's collections are named `<module>_<name>`.
@@ -25,14 +25,14 @@
  */
 import { MongoClient } from 'mongodb';
 import { platformError } from './errors.js';
-import { isObject } from '@ss/contracts/util';
-import { databaseClientOptions } from '@ss/net';
-import { randomToken, sha256Hex } from '@ss/protocol';
+import { isObject } from '@shelfway/contracts/util';
+import { databaseClientOptions } from '@shelfway/net';
+import { randomToken, sha256Hex } from '@shelfway/protocol';
 import { isDuplicateKey, defaultRandomBytes } from './util.js';
 
 /** @typedef {import('mongodb').Db} Db */
 /** @typedef {import('mongodb').Document} Document */
-/** @typedef {import('@ss/net').Logger} Logger */
+/** @typedef {import('@shelfway/net').Logger} Logger */
 
 /**
  * @typedef {object} IndexSpec
@@ -58,7 +58,7 @@ import { isDuplicateKey, defaultRandomBytes } from './util.js';
 const NAME = /^[a-z][a-z0-9]*(_[a-z0-9]+)+$/;
 const MODULE = /^[a-z][a-z0-9]*$/;
 /** Where {@link getMongoClient} caches its clients on `globalThis` (one per URI and pool size). */
-export const MONGO_CLIENTS = Symbol.for('ss.platform.mongo-clients');
+export const MONGO_CLIENTS = Symbol.for('shelfway.platform.mongo-clients');
 const WRITE_STAGES = new Set(['$out', '$merge']);
 const CROSS_STAGES = new Set([
 	'$lookup',
@@ -82,7 +82,7 @@ const CROSS_STAGES = new Set([
  * @param {{ uri: string, maxPoolSize?: number, appName?: string, createClient?: (uri: string, options: import('mongodb').MongoClientOptions) => MongoClient }} options
  * @returns {MongoClient}
  */
-export const getMongoClient = ({ uri, maxPoolSize = 5, appName = 'ss-portal', createClient }) => {
+export const getMongoClient = ({ uri, maxPoolSize = 5, appName = 'shelfway-platform', createClient }) => {
 	const store = /** @type {any} */ (globalThis);
 	/** @type {Map<string, MongoClient>} */
 	const cache = (store[MONGO_CLIENTS] ??= new Map());
@@ -101,7 +101,7 @@ export const getMongoClient = ({ uri, maxPoolSize = 5, appName = 'ss-portal', cr
  * The cached client of `uri` (see {@link getMongoClient}), connected. A mongodb 6.x client whose first connect fails (the
  * database cannot be reached while a serverless instance starts) keeps a closed topology, and every later call fails
  * with `MongoTopologyClosedError`, even once the database is back; `client.connect()` opens a new one (within
- * `@ss/net`'s `DATABASE_DEADLINES`), so the next request after an outage succeeds on the same warm instance. On a connected
+ * `@shelfway/net`'s `DATABASE_DEADLINES`), so the next request after an outage succeeds on the same warm instance. On a connected
  * client it returns at once (it finds its database again by itself after an outage); concurrent calls share one attempt.
  * @param {Parameters<typeof getMongoClient>[0]} options
  * @returns {Promise<MongoClient>}

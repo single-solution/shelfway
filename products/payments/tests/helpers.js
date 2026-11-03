@@ -1,5 +1,5 @@
 /**
- * Test harness: Payments on the kit, connected to the kit's fake Portal (`@ss/app-kit/testing`), with one website, its
+ * Test harness: Payments on the kit, connected to the kit's fake Portal (`@shelfway/app-kit/testing`), with one website, its
  * two tokens, dashboard sessions, a merchant database on the run's MongoDB (`TEST_MONGODB_URI`), a fake Notifications
  * (its `POST /v1/events`), a fake S3 bucket and fake gateways: every gateway call is answered in process (no real
  * network call is ever made). Every answer `call()` sees is checked against `schemas/api.json` and the kit's own
@@ -14,7 +14,7 @@ import {
 	createNetwork,
 	portalConnector,
 	staffCaller,
-} from '@ss/app-kit/testing';
+} from '@shelfway/app-kit/testing';
 import apiJson from '../schemas/api.json' with { type: 'json' };
 import { createProductInstance, manifest } from '../adapters/product.js';
 import { createRoutes } from '../server/routes.js';
@@ -158,7 +158,7 @@ export const setup = async ({ start = Date.parse('2026-10-01T10:00:00Z') } = {})
 		path,
 		{ token, origin, body, form, cookie, headers = {}, after = true, bare = false, staff } = {},
 	) => {
-		if (token === server && !bare && headers['ss-sign-in'] === undefined && headers['ss-visitor-ip'] === undefined)
+		if (token === server && !bare && headers['shelfway-sign-in'] === undefined && headers['shelfway-visitor-ip'] === undefined)
 			// eslint-disable-next-line no-param-reassign -- the harness signs the staff member in
 			headers = await staffHeaders({ headers, staff });
 		const raw = form === undefined ? undefined : typeof form === 'string' ? form : new URLSearchParams(form).toString();

@@ -7,7 +7,7 @@
  * @module
  */
 
-/** @typedef {import('@ss/ui/problems').Problem} Problem */
+/** @typedef {import('@shelfway/ui/problems').Problem} Problem */
 /**
  * @template [T=any]
  * @typedef {{ ok: true, status: number, data: T } | { ok: false, status: number, problem: Problem }} ApiResult

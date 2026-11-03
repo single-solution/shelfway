@@ -1,6 +1,6 @@
 'use client';
 /**
- * `@ss/ui/dashboard` — the product dashboard (PLAN 0.4.3), one for every product: one page, opened from the Portal
+ * `@shelfway/ui/dashboard` — the product dashboard (PLAN 0.4.3), one for every product: one page, opened from the Portal
  * (`/sso` → `/dashboard?websiteId=…`), with the left sidebar Overview · Settings · Texts ·
  * Developers (the connections come first), plus Defaults and Prices for Owners. The look, the Format and the business facts are not here: they are the
  * Portal's Website settings, shown read-only where a value is used (`ManagedNote`) with a link to the place to change it.
@@ -15,7 +15,7 @@
  * (refreshed in the background) or its skeleton (PLAN 0.6 motion).
  *
  * A product's `app/dashboard/page.js` renders `<ProductDashboard manifest texts tabs?>` with its manifest, its words
- * (`dashboardTexts` from `@ss/ui`) and the tabs it fills in or adds; its own tabs are built from the pieces exported
+ * (`dashboardTexts` from `@shelfway/ui`) and the tabs it fills in or adds; its own tabs are built from the pieces exported
  * here.
  * @module
  */
@@ -367,7 +367,7 @@ function FrameFooter({ rail, note, links }) {
 					title={link.label}
 					{...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
 					className={cx(
-						'ss-motion ss-press flex h-9 items-center gap-2.5 rounded-control text-sm font-medium text-fg/80 hover:bg-surface-2 hover:text-fg focus-visible:outline-2 focus-visible:outline-focus',
+						'shelfway-motion shelfway-press flex h-9 items-center gap-2.5 rounded-control text-sm font-medium text-fg/80 hover:bg-surface-2 hover:text-fg focus-visible:outline-2 focus-visible:outline-focus',
 						rail ? 'justify-center' : 'px-2.5',
 					)}>
 					<span aria-hidden="true" className="text-muted">
@@ -447,8 +447,8 @@ function DashboardPage({ tabs: own, product }) {
 			</main>
 		);
 
-	/** @type {{ who: Who, portalUrl: string, branding: { name: string }, support: { channels: import('./format.js').SupportChannel[] }, switcher: Array<{ merchantId: string, merchantName: string, websites: Array<{ websiteId: string, domain: string }> }> }} */
-	const { who, portalUrl, branding, support, switcher } = session.data;
+	/** @type {{ who: Who, platformUrl: string, branding: { name: string }, support: { channels: import('./format.js').SupportChannel[] }, switcher: Array<{ merchantId: string, merchantName: string, websites: Array<{ websiteId: string, domain: string }> }> }} */
+	const { who, platformUrl, branding, support, switcher } = session.data;
 	const admin = who.kind === 'admin';
 	const owner = admin && who.role === 'portal_owner';
 	const shown = tabsOf(own).filter(([, tab]) => owner || !tab.global);
@@ -509,7 +509,7 @@ function DashboardPage({ tabs: own, product }) {
 							rail={rail}
 							links={[
 								{ href: '/docs', label: texts.developers.openDocs, icon: 'help', external: true },
-								{ href: portalUrl, label: texts.backToPortal, icon: 'chevronLeft' },
+								{ href: platformUrl, label: texts.backToPortal, icon: 'chevronLeft' },
 							]}
 							{...(admin && site
 								? { note: fill(texts.adminView, { merchant: site.merchantName, domain: site.domain }) }
@@ -532,7 +532,7 @@ function DashboardPage({ tabs: own, product }) {
 									domain={site ? site.domain : ''}
 									who={who}
 									support={support}
-									portal={portalUrl}
+									portal={platformUrl}
 									brand={branding.name}
 									open={(tab, section) => go(href(tab) + (section ? `#${encodeURIComponent(section)}` : ''))}
 								/>

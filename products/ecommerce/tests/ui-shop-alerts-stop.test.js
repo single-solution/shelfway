@@ -37,7 +37,7 @@ describe('alert stop page', () => {
 			routes: { [`POST /v1/shop/alerts/unsubscribe/${TOKEN}`]: () => answer },
 		});
 		const host = await mount(fake);
-		expect(host.getAttribute('data-ss-mounted')).toBe('alerts-stop');
+		expect(host.getAttribute('data-shelfway-mounted')).toBe('alerts-stop');
 		expect(textOf(host)).toContain(text('alertsStop.intro'));
 		expect(fake.all(`POST /v1/shop/alerts/unsubscribe/${TOKEN}`)).toHaveLength(0);
 		await click(buttonOf(host, text('alertsStop.stop')));

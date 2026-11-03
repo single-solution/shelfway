@@ -159,7 +159,7 @@ export function ActionMenu({
 					onClick={toggle}
 					className={
 						triggerClassName ??
-						'ss-motion ss-press flex w-full min-w-0 items-center gap-2.5 rounded-control p-1 text-left hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-focus aria-expanded:bg-surface-2'
+						'shelfway-motion shelfway-press flex w-full min-w-0 items-center gap-2.5 rounded-control p-1 text-left hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-focus aria-expanded:bg-surface-2'
 					}>
 					{trigger}
 				</button>
@@ -198,7 +198,7 @@ export function ActionMenu({
 								: align === 'start'
 									? 'absolute left-0 mt-2 w-60 origin-top-left'
 									: 'absolute right-0 mt-2 w-60 origin-top-right',
-						'animate-ss-pop data-[state=closed]:pointer-events-none data-[state=closed]:animate-ss-pop-out',
+						'animate-shelfway-pop data-[state=closed]:pointer-events-none data-[state=closed]:animate-shelfway-pop-out',
 					)}>
 					{header ? <div className="mb-1 border-b border-line px-2.5 pt-1.5 pb-2.5">{header}</div> : null}
 					{items.map((item, index) => {
@@ -240,7 +240,7 @@ export function ActionMenu({
 										item.onSelect();
 									}}
 									className={cx(
-										'ss-motion flex h-8 w-full items-center gap-2.5 rounded-control px-2.5 text-left text-sm font-medium hover:bg-surface-2 focus:bg-surface-2',
+										'shelfway-motion flex h-8 w-full items-center gap-2.5 rounded-control px-2.5 text-left text-sm font-medium hover:bg-surface-2 focus:bg-surface-2',
 										'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-50',
 										'disabled:hover:bg-transparent',
 										item.danger ? 'text-danger' : 'text-fg',

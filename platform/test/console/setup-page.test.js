@@ -8,9 +8,9 @@
  * admin.
  */
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { ToastProvider } from '@ss/ui';
-import { productBlueprint } from '@ss/contracts/testing';
-import { act, byLabel, cleanup, render, type } from '@ss/ui/testing';
+import { ToastProvider } from '@shelfway/ui';
+import { productBlueprint } from '@shelfway/contracts/testing';
+import { act, byLabel, cleanup, render, type } from '@shelfway/ui/testing';
 import { closeMongoClients } from '../../src/testing.js';
 import * as admin from '../../src/console/admin/loaders.js';
 import { AdminWebsiteView } from '../../src/console/admin/views/merchants.js';
@@ -185,7 +185,7 @@ describe('Setup page (jsdom)', () => {
 
 			await press('Copy JSON');
 			await until(() => shows('The JSON is in your clipboard.'));
-			expect(JSON.parse(String(/** @type {any} */ (writeText.mock.calls[0])?.[0])).schema).toBe('ss.blueprint/1');
+			expect(JSON.parse(String(/** @type {any} */ (writeText.mock.calls[0])?.[0])).schema).toBe('shelfway.blueprint/1');
 			await press('Refresh');
 			await b.waitCall(
 				'GET',
@@ -324,7 +324,7 @@ describe('Setup page (jsdom)', () => {
 			render(<SharedSetupView brand="Shelfway" />);
 			await until(() => shows('It may have expired or been revoked.'));
 			await settle();
-			expect(window.sessionStorage.getItem('ss-shared-setup-key')).toBeNull();
+			expect(window.sessionStorage.getItem('shelfway-shared-setup-key')).toBeNull();
 		} finally {
 			restore();
 			await w.close();

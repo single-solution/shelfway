@@ -1,6 +1,6 @@
 'use client';
 /**
- * Notifications' own parts of the shared dashboard tabs (`@ss/ui/dashboard`, PLAN 0.4.3): the templates counted in the
+ * Notifications' own parts of the shared dashboard tabs (`@shelfway/ui/dashboard`, PLAN 0.4.3): the templates counted in the
  * Overview and a webhook URL asked for while Outgoing webhooks is on without one; Settings → Templates on top of
  * Settings and the webhook URLs and the merchant's lists (topics, template settings, fallback channels, quiet hours)
  * beside the feature settings; and the developer sections (send API, template keys, widget and ticket snippets, the
@@ -8,8 +8,8 @@
  * email, SMS and WhatsApp.
  * @module
  */
-import { Button, Card, CodeBlock, EmptyState, Row, RowListSkeleton, Section, Stat } from '@ss/ui';
-import { DevelopersTab, OverviewTab, SettingsTab, useLoad, useSetupSteps } from '@ss/ui/dashboard';
+import { Button, Card, CodeBlock, EmptyState, Row, RowListSkeleton, Section, Stat } from '@shelfway/ui';
+import { DevelopersTab, OverviewTab, SettingsTab, useLoad, useSetupSteps } from '@shelfway/ui/dashboard';
 import manifest from '../../manifest.json' with { type: 'json' };
 import { createSnippets } from '../../core/snippets.js';
 import { PROVIDER_FORMS, ProviderForm } from './providers.js';
@@ -18,7 +18,7 @@ import { TEXTS } from './texts.js';
 import { FallbackChainsCard, QuietHoursCard, StopKeywordsCard, TemplateSettingsCard, TopicsCard } from './lists.js';
 import { WebhookUrlsCard } from './webhooks.js';
 
-/** @type {ReadonlyArray<import('@ss/ui/dashboard').SetupRequirement>} */
+/** @type {ReadonlyArray<import('@shelfway/ui/dashboard').SetupRequirement>} */
 const SETUP = Object.freeze([
 	{
 		key: 'channel',
@@ -38,12 +38,12 @@ const SETUP = Object.freeze([
 	},
 ]);
 
-/** @typedef {import('@ss/ui/dashboard').TabProps} TabProps */
+/** @typedef {import('@shelfway/ui/dashboard').TabProps} TabProps */
 
 /**
  * The Overview's own part: the merchant's templates counted, the setup steps (`setup-steps.js`) and, while Outgoing
  * webhooks is on (its address list is read only then), an address to add while there is none.
- * @type {import('@ss/ui/dashboard').UseOverviewMore}
+ * @type {import('@shelfway/ui/dashboard').UseOverviewMore}
  */
 const useNotificationsOverview = (overview, { websiteId, open }) => {
 	const base = `/v1/dashboard/websites/${websiteId}`;
@@ -153,7 +153,7 @@ function NotificationsSettings(props) {
 
 /**
  * The email, SMS and WhatsApp providers take their settings as one structured value (null: the one value field).
- * @param {import('@ss/ui/dashboard').Connection} item
+ * @param {import('@shelfway/ui/dashboard').Connection} item
  * @param {(value: unknown) => Promise<void>} save
  */
 const providerForm = (item, save) => (item.name in PROVIDER_FORMS ? <ProviderForm name={item.name} onSave={save} /> : null);
@@ -172,7 +172,7 @@ function NotificationsDevelopers(props) {
 	for (const item of templates.answer?.ok ? templates.answer.data.items : [])
 		keys.set(item.key, [...new Set([...(keys.get(item.key) ?? []), item.channel])]);
 	const D = TEXTS.developers;
-	/** @param {string} id @param {string} title @param {string} help @param {import('react').ReactNode} body @param {import('@ss/ui').IconName} icon */
+	/** @param {string} id @param {string} title @param {string} help @param {import('react').ReactNode} body @param {import('@shelfway/ui').IconName} icon */
 	const part = (id, title, help, body, icon) => ({
 		id,
 		label: title,

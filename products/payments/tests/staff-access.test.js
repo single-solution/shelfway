@@ -101,7 +101,7 @@ describe('a staff sign-in', () => {
 		const refused = await env.call('POST', '/v1/payments/pay_none/refunds', {
 			token: env.server,
 			bare: true,
-			headers: { 'ss-sign-in': other },
+			headers: { 'shelfway-sign-in': other },
 			body: { amount: 100 },
 		});
 		expect([refused.status, typeOf(refused)]).toEqual([401, 'invalid_sign_in']);

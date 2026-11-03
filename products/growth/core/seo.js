@@ -6,7 +6,7 @@
  * @module
  */
 
-import { escapeHtml } from '@ss/contracts/text';
+import { escapeHtml } from '@shelfway/contracts/text';
 import { readList, verificationContentOf } from './lists.js';
 
 /** URLs one IndexNow submission takes (the IndexNow limit). */

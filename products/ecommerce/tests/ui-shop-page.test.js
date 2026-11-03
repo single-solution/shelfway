@@ -142,15 +142,15 @@ describe('product page', () => {
 			text('page.showImage', { n: 2, total: 2 }),
 		);
 		// variant picker: Green does not exist, Red / 256 GB does not exist, Red / 128 GB is out of stock
-		const color = $(host, '#ss-page-option-0');
+		const color = $(host, '#shelfway-page-option-0');
 		expect([...color.options].find((/** @type {any} */ o) => o.value === 'Green').disabled).toBe(true);
 		expect([...color.options].find((/** @type {any} */ o) => o.value === 'Red').textContent).toBe(
 			text('page.optionOutOfStock', { value: 'Red' }),
 		);
-		await setValue($(host, '#ss-page-option-1'), '256 GB');
+		await setValue($(host, '#shelfway-page-option-1'), '256 GB');
 		expect(textOf(host)).toContain('EUR 1,200.00');
 		// quantity stepper
-		const qty = $(host, '#ss-page-qty');
+		const qty = $(host, '#shelfway-page-qty');
 		await click(buttonOf(host, text('page.more')));
 		await click(buttonOf(host, text('page.more')));
 		await click(buttonOf(host, text('page.less')));
@@ -166,13 +166,13 @@ describe('product page', () => {
 		expect($(host, '.buy-status, [role="status"]')).toBeTruthy();
 		expect(textOf(host)).toContain(text('page.addedStatus', { name: 'Phone One' }));
 		// out of stock variant: Add to cart disabled; Red exists only with 128 GB, so picking Red moves there
-		await setValue($(host, '#ss-page-option-0'), 'Red');
-		expect($(host, '#ss-page-option-1').value).toBe('128 GB');
+		await setValue($(host, '#shelfway-page-option-0'), 'Red');
+		expect($(host, '#shelfway-page-option-1').value).toBe('128 GB');
 		expect(textOf(host)).toContain(text('page.outOfStock'));
 		expect(buttonOf(host, text('page.addToCart')).disabled).toBe(true);
 		// a combination that does not exist moves to the nearest variant with the value picked
-		await setValue($(host, '#ss-page-option-1'), '256 GB');
-		expect($(host, '#ss-page-option-0').value).toBe('Blue');
+		await setValue($(host, '#shelfway-page-option-1'), '256 GB');
+		expect($(host, '#shelfway-page-option-0').value).toBe('Blue');
 		expect(textOf(host)).toContain('EUR 1,200.00');
 		expect(textOf(host)).not.toContain(text('page.noVariant'));
 	});
@@ -196,21 +196,21 @@ describe('product page', () => {
 			url: at('?storage=256-gb&color=blue&utm_source=feed'),
 		});
 		const host = await mountPage(linked);
-		expect($(host, '#ss-page-option-0').value).toBe('Blue');
-		expect($(host, '#ss-page-option-1').value).toBe('256 GB');
+		expect($(host, '#shelfway-page-option-0').value).toBe('Blue');
+		expect($(host, '#shelfway-page-option-1').value).toBe('256 GB');
 		expect(textOf(host)).toContain('EUR 1,200.00');
 		await click(buttonOf(host, text('page.addToCart')));
 		expect(linked.cart.state().lines).toEqual([{ productId: 'prd_1', variantId: 'var_b2', quantity: 1 }]);
 		// the address naming the most of a variant wins; an out-of-stock variant is still the one shown
 		resetPage();
 		const red = await mountPage(makeShop({ features: ['catalog'], routes, url: at('?color=red') }));
-		expect($(red, '#ss-page-option-0').value).toBe('Red');
+		expect($(red, '#shelfway-page-option-0').value).toBe('Red');
 		expect(textOf(red)).toContain(text('page.outOfStock'));
 		// an address naming no variant opens the first one in stock
 		resetPage();
 		const plain = await mountPage(makeShop({ features: ['catalog'], routes, url: at('?color=green') }));
-		expect($(plain, '#ss-page-option-0').value).toBe('Blue');
-		expect($(plain, '#ss-page-option-1').value).toBe('128 GB');
+		expect($(plain, '#shelfway-page-option-0').value).toBe('Blue');
+		expect($(plain, '#shelfway-page-option-1').value).toBe('128 GB');
 	});
 
 	it('shows the price after deals with the saving, as the page answer gives it (G4)', async () => {
@@ -229,10 +229,10 @@ describe('product page', () => {
 		expect(textOf(host)).toContain('EUR 1,050.00');
 		expect(textOf(host)).toContain(text('page.save', { amount: 'EUR 100.00' }));
 		expect(textOf(host)).toContain('Autumn sale');
-		await setValue($(host, '#ss-page-option-1'), '256 GB');
+		await setValue($(host, '#shelfway-page-option-1'), '256 GB');
 		expect(textOf(host)).not.toContain(text('page.save', { amount: 'EUR 100.00' }));
 		expect(textOf(host)).not.toContain('Autumn sale');
-		await setValue($(host, '#ss-page-option-0'), 'Red');
+		await setValue($(host, '#shelfway-page-option-0'), 'Red');
 		expect(textOf(host)).toContain('EUR 1,000.00');
 		expect(textOf(host)).toContain('EUR 1,100.00');
 		// one read: the page answer has every variant's price
@@ -334,7 +334,7 @@ describe('product page', () => {
 		expect(page).toContain(text('shop.perUnit', { unit }));
 		expect(page).toContain(text('page.onlyLeftAmount', { quantity: '2.5', unit }));
 		expect(page).toContain(text('page.amountHelp', { step: '0.5', min: '1', unit }));
-		const amount = /** @type {HTMLInputElement} */ ($(host, '#ss-page-qty'));
+		const amount = /** @type {HTMLInputElement} */ ($(host, '#shelfway-page-qty'));
 		expect(amount.value).toBe('1');
 		await click(buttonOf(host, text('page.more')));
 		expect(amount.value).toBe('1.5');
@@ -399,18 +399,18 @@ describe('product page', () => {
 		});
 		const host = await mountPage(fake);
 		expect(textOf(host)).toContain(text('page.duration', { minutes: 30 }));
-		expect($(host, '#ss-page-qty')).toBeNull();
+		expect($(host, '#shelfway-page-qty')).toBeNull();
 		expect(buttonOf(host, text('page.addToCart')).disabled).toBe(true);
 		expect(textOf(host)).toContain(text('page.chooseSlotFirst'));
-		const picker = $(host, '#ss-page-slot');
-		expect($$(host, '#ss-page-slot optgroup')).toHaveLength(2);
+		const picker = $(host, '#shelfway-page-slot');
+		expect($$(host, '#shelfway-page-slot optgroup')).toHaveLength(2);
 		expect(fake.calls.find((c) => c.path === '/v1/shop/slots')?.query.productId).toBe('prd_1');
 		await click(buttonOf(host, text('page.laterSlots')));
 		expect(textOf(host)).toContain(text('page.noMoreSlots'));
 		await click(buttonOf(host, text('page.laterSlots')));
 		expect(textOf(host)).toContain(text('page.slotsError'));
 		await click(buttonOf(host, text('page.laterSlots')));
-		expect($$(host, '#ss-page-slot optgroup')).toHaveLength(3);
+		expect($$(host, '#shelfway-page-slot optgroup')).toHaveLength(3);
 		await setValue(picker, '2026-10-09T05:30:00.000Z');
 		await click(buttonOf(host, text('page.addToCart')));
 		expect(fake.cart.state().lines).toEqual([
@@ -453,8 +453,8 @@ describe('product page', () => {
 		});
 		const host = await mountPage(fake, 'phone', { alerts: { guests: true, targetPrice: true } });
 		expect(textOf(host)).not.toContain(text('alerts.signIn'));
-		await setValue($(host, '#ss-page-alert-phone'), '+44 7700 900123', 'input');
-		await setValue($(host, '#ss-page-alert-target'), '999.5', 'input');
+		await setValue($(host, '#shelfway-page-alert-phone'), '+44 7700 900123', 'input');
+		await setValue($(host, '#shelfway-page-alert-target'), '999.5', 'input');
 		await click(buttonOf(host, text('alerts.priceDrop')));
 		expect(fake.last('POST /v1/shop/alerts')?.body).toEqual({
 			kind: 'price_drop',
@@ -465,10 +465,10 @@ describe('product page', () => {
 		});
 		expect(textOf(host)).toContain(text('alerts.priceSet'));
 		// what the guest typed stays when the variant changes; a bad price or phone is told
-		await setValue($(host, '#ss-page-option-0'), 'Red');
+		await setValue($(host, '#shelfway-page-option-0'), 'Red');
 		await flush();
-		expect($(host, '#ss-page-alert-phone').value).toBe('+44 7700 900123');
-		await setValue($(host, '#ss-page-alert-target'), 'cheap', 'input');
+		expect($(host, '#shelfway-page-alert-phone').value).toBe('+44 7700 900123');
+		await setValue($(host, '#shelfway-page-alert-target'), 'cheap', 'input');
 		await click(buttonOf(host, text('alerts.priceDrop')));
 		expect(textOf(host)).toContain(text('alerts.targetInvalid'));
 		expect(fake.all('POST /v1/shop/alerts')).toHaveLength(1);
@@ -484,8 +484,8 @@ describe('product page', () => {
 		// a website that knows guests by email asks for it instead of a phone (checkout.guestIdentity, E15)
 		alertAnswer = ok({ id: 'alr_2' }, 201);
 		const byEmail = await mountPage(fake, 'phone', { alerts: { guests: true, targetPrice: false, contact: 'email' } });
-		expect($(byEmail, '#ss-page-alert-phone')).toBeNull();
-		await setValue($(byEmail, '#ss-page-alert-email'), 'guest@example.com', 'input');
+		expect($(byEmail, '#shelfway-page-alert-phone')).toBeNull();
+		await setValue($(byEmail, '#shelfway-page-alert-email'), 'guest@example.com', 'input');
 		await click(buttonOf(byEmail, text('alerts.priceDrop')));
 		expect(fake.last('POST /v1/shop/alerts')?.body).toEqual({
 			kind: 'price_drop',
@@ -496,7 +496,7 @@ describe('product page', () => {
 		// a guest without the setting is asked to sign in, and a price field shows only with targetPrice
 		const plain = await mountPage(makeShop({ features: ['catalog', 'alerts'], routes: fake.routes }), 'phone');
 		expect(textOf(plain)).toContain(text('alerts.signIn'));
-		expect($(plain, '#ss-page-alert-target')).toBeNull();
+		expect($(plain, '#shelfway-page-alert-target')).toBeNull();
 	});
 
 	it('sets alerts, saves to the wishlist and compares when signed in', async () => {
@@ -528,7 +528,7 @@ describe('product page', () => {
 		expect(fake.last('POST /v1/shop/alerts')?.body).toEqual({ kind: 'price_drop', productId: 'prd_1', variantId: 'var_b1' });
 		expect(fake.last('POST /v1/shop/alerts')?.key).toBe('key-1');
 		expect(textOf(host)).toContain(text('alerts.priceSet'));
-		await setValue($(host, '#ss-page-option-0'), 'Red');
+		await setValue($(host, '#shelfway-page-option-0'), 'Red');
 		await flush();
 		alertAnswer = fail(422, 'validation_failed');
 		await click(buttonOf(host, text('alerts.backInStock')));
@@ -549,7 +549,7 @@ describe('product page', () => {
 		await flush();
 		expect(compareIds(window)).toEqual(['prd_1']);
 		expect(buttonOf(host, text('page.compare')).getAttribute('aria-pressed')).toBe('true');
-		window.localStorage.setItem('ss-ecommerce-compare', '["prd_9","prd_8","prd_7","prd_6"]');
+		window.localStorage.setItem('shelfway-ecommerce-compare', '["prd_9","prd_8","prd_7","prd_6"]');
 		await click(buttonOf(host, text('page.compare')));
 		expect(textOf(host)).toContain(text('compare.full', { max: COMPARE_MAX_PRODUCTS }));
 	});
@@ -615,9 +615,9 @@ describe('reviews block', () => {
 		fake.identify('s1');
 		await flush();
 		const form = () => $(host, 'form.box');
-		$(host, '#ss-review-rating').value = '4';
-		$(host, '#ss-review-title').value = ' Nice ';
-		$(host, '#ss-review-body').value = 'Works';
+		$(host, '#shelfway-review-rating').value = '4';
+		$(host, '#shelfway-review-title').value = ' Nice ';
+		$(host, '#shelfway-review-body').value = 'Works';
 		await submit(form());
 		expect(fake.last('POST /v1/shop/reviews')?.body).toEqual({ productId: 'prd_1', rating: 4, title: 'Nice', body: 'Works' });
 		expect(textOf(host)).toContain(text('reviews.pending'));
@@ -737,7 +737,7 @@ describe('reviews block', () => {
 		await submit(form());
 		expect(textOf(host)).toContain(text('reviews.answerNeeded', { question: 'Fit' }));
 		expect(fake.all('POST /v1/shop/reviews')).toHaveLength(0);
-		$(host, '#ss-review-q-fit').value = 'Runs small';
+		$(host, '#shelfway-review-q-fit').value = 'Runs small';
 		await submit(form());
 		expect(fake.last('POST /v1/shop/reviews')?.body).toEqual({
 			productId: 'prd_1',

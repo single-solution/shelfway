@@ -4,7 +4,7 @@
  * switched-off message is skipped, and WhatsApp (no default possible) is recorded as not set up, then goes to the
  * fallback channel. The dashboard lists every product's messages through the Portal's directory.
  */
-import { TEMPLATE_CHANNELS } from '@ss/contracts/templates';
+import { TEMPLATE_CHANNELS } from '@shelfway/contracts/templates';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { DEFAULTS_TTL_MS } from '../adapters/defaults.js';
 import { CHANNELS } from '../core/channels.js';
@@ -574,7 +574,7 @@ describe('a product made after Notifications (any product the Portal’s directo
 		expect((await confirm(own, 'notifications.test')).status).toBe(403);
 		const listed = await own.dashboard(cookie, 'GET', `/v1/dashboard/websites/${own.websiteId}/messages`);
 		expect(listed.status).toBe(503);
-		expect((await listed.json()).type).toMatch(/portal_unreachable$/);
+		expect((await listed.json()).type).toMatch(/platform_unreachable$/);
 	});
 });
 

@@ -44,7 +44,7 @@ const place = async (fields) => {
 			},
 			...(fields ? { fields } : {}),
 		},
-		headers: { 'x-forwarded-for': `10.8.0.${ip}`, 'ss-sign-in': token, 'idempotency-key': `fields-${ip}` },
+		headers: { 'x-forwarded-for': `10.8.0.${ip}`, 'shelfway-sign-in': token, 'idempotency-key': `fields-${ip}` },
 	});
 	return { answer, token };
 };
@@ -110,7 +110,7 @@ describe('order fields', () => {
 		const view = await shop.call('GET', `/v1/shop/orders/${ids.order.id}`, {
 			token: shop.browser,
 			origin: ORIGIN,
-			headers: { 'ss-sign-in': token, 'x-forwarded-for': '10.8.1.1' },
+			headers: { 'shelfway-sign-in': token, 'x-forwarded-for': '10.8.1.1' },
 		});
 		expect(view.json.fields).toEqual([
 			{ name: 'Gift message', value: 'Happy birthday' },

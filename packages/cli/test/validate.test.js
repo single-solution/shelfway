@@ -16,7 +16,7 @@ let base;
 let counter = 0;
 
 beforeAll(async () => {
-	root = await tempDir('ss-validate-');
+	root = await tempDir('shelfway-validate-');
 	base = path.join(root, 'base');
 	await initApp({ dir: base, id: 'demo', name: 'Demo' });
 }, 60_000);
@@ -44,7 +44,7 @@ const rules = (report) => report.problems.map((problem) => problem.rule);
 /** @param {import('../src/validate/index.js').ValidationReport} report @param {string} rule */
 const messages = (report, rule) => report.problems.filter((problem) => problem.rule === rule).map((problem) => problem.message);
 
-describe('ss app validate', () => {
+describe('shelfway app validate', () => {
 	it('accepts a freshly generated product', async () => {
 		const report = await validateProject(await project());
 		expect(report.problems).toEqual([]);
@@ -66,7 +66,7 @@ describe('ss app validate', () => {
 		expect(formatValidation(report)).toMatch(/✖ \d+ errors, 0 warnings/);
 	});
 
-	it('checks the manifest with @ss/contracts, $refs included', async () => {
+	it('checks the manifest with @shelfway/contracts, $refs included', async () => {
 		const dir = await project();
 		await edit(dir, 'manifest.json', (text) =>
 			text.replace('"feature": "notes", "kind": "admin"', '"feature": "nope", "kind": "admin"'),
@@ -90,7 +90,7 @@ describe('ss app validate', () => {
 			dir,
 			'server/extra.js',
 			[
-				"import { defineRoute } from '@ss/app-kit';",
+				"import { defineRoute } from '@shelfway/app-kit';",
 				'export const extra = [',
 				"\tdefineRoute({ method: 'GET', path: '/v1/a', auth: 'server', feature: 'nope', handler: () => 1 }),",
 				"\tdefineRoute({ method: 'GET', path: '/v1/b', auth: 'ticket', permission: 'nope.read', handler: () => 1 }),",
@@ -137,7 +137,7 @@ describe('ss app validate', () => {
 			live,
 			'server/live-ops.js',
 			[
-				"import { defineRoute } from '@ss/app-kit';",
+				"import { defineRoute } from '@shelfway/app-kit';",
 				'export const live = [',
 				"\tdefineRoute({ method: 'GET', path: '/v1/inbox', auth: 'dashboard', handler: () => 1 }),",
 				"\tdefineRoute({ method: 'GET', path: '/v1/dashboard/websites/:websiteId/orders', auth: 'dashboard', handler: () => 1 }),",
@@ -185,11 +185,11 @@ describe('ss app validate', () => {
 
 	it('checks .env.example and vercel.json', async () => {
 		const dir = await project();
-		await edit(dir, '.env.example', (text) => `${text}export PORTAL_URL=x\n`);
+		await edit(dir, '.env.example', (text) => `${text}export PLATFORM_URL=x\n`);
 		await put(dir, 'vercel.json', JSON.stringify({ crons: [{ path: '/v1/x', schedule: '* * * * *' }] }));
 		const report = await validateProject(dir);
 		expect(messages(report, 'env.example')).toEqual([
-			'must list exactly MONGODB_URI, CONNECT_SECRET, ENCRYPTION_KEY, and may list ENCRYPTION_KEY_PREVIOUS (found: MONGODB_URI, CONNECT_SECRET, ENCRYPTION_KEY, ENCRYPTION_KEY_PREVIOUS, PORTAL_URL)',
+			'must list exactly MONGODB_URI, CONNECT_SECRET, ENCRYPTION_KEY, and may list ENCRYPTION_KEY_PREVIOUS (found: MONGODB_URI, CONNECT_SECRET, ENCRYPTION_KEY, ENCRYPTION_KEY_PREVIOUS, PLATFORM_URL)',
 		]);
 		expect(rules(report)).toContain('vercel.crons');
 		// the previous key, set only while ENCRYPTION_KEY changes, may be listed (once)
@@ -208,17 +208,17 @@ describe('ss app validate', () => {
 		expect(rules(second)).not.toContain('vercel.crons');
 	});
 
-	it('lets ui/ draw the shared SEO preview without React (@ss/ui/seo-preview), not the rest of @ss/ui', async () => {
+	it('lets ui/ draw the shared SEO preview without React (@shelfway/ui/seo-preview), not the rest of @shelfway/ui', async () => {
 		const dir = await project();
 		await edit(dir, 'package.json', (text) => {
 			const pkg = JSON.parse(text);
-			pkg.dependencies['@ss/ui'] = 'workspace:^';
+			pkg.dependencies['@shelfway/ui'] = 'workspace:^';
 			return JSON.stringify(pkg);
 		});
 		await edit(
 			dir,
 			'ui/styles.js',
-			(text) => `import { seoPreview } from '@ss/ui/seo-preview';\nimport { Button } from '@ss/ui';\n${text}`,
+			(text) => `import { seoPreview } from '@shelfway/ui/seo-preview';\nimport { Button } from '@shelfway/ui';\n${text}`,
 		);
 		const report = await validateProject(dir);
 		expect(report.problems.filter((p) => p.rule === 'imports.package').map((p) => `${p.file}:${p.line}`)).toEqual([
@@ -269,15 +269,15 @@ describe('ss app validate', () => {
 		const dir = await project();
 		await edit(dir, 'package.json', (text) => {
 			const pkg = JSON.parse(text);
-			delete pkg.dependencies['@ss/app-kit'];
-			delete pkg.devDependencies['@ss/cli'];
+			delete pkg.dependencies['@shelfway/app-kit'];
+			delete pkg.devDependencies['@shelfway/cli'];
 			delete pkg.scripts.validate;
 			return JSON.stringify(pkg);
 		});
 		const report = await validateProject(dir);
 		expect(rules(report)).toEqual(expect.arrayContaining(['package.dependency', 'package.devDependency', 'package.script']));
 		expect(report.problems.find((p) => p.rule === 'package.script')?.severity).toBe('warning');
-		expect(messages(report, 'package.missing')[0]).toContain("'@ss/app-kit' is imported");
+		expect(messages(report, 'package.missing')[0]).toContain("'@shelfway/app-kit' is imported");
 
 		const broken = await project();
 		await put(broken, 'package.json', '{ nope');
@@ -429,8 +429,10 @@ describe('API descriptions (schemas/api.json)', () => {
 		expect(messages(report, 'api.missing')[0]).toBe(
 			'GET /v1/notes/count has no entry in schemas/api.json: describe what it takes and answers',
 		);
-		// ss app assets refuses an invalid description
-		await expect(writeAssets(dir)).rejects.toThrow(/schemas\/api.json is invalid \(1 problem; ss app validate lists them\)/);
+		// shelfway app assets refuses an invalid description
+		await expect(writeAssets(dir)).rejects.toThrow(
+			/schemas\/api.json is invalid \(1 problem; shelfway app validate lists them\)/,
+		);
 
 		const broken = await project();
 		await put(broken, 'schemas/api.json', '{ nope');
@@ -454,7 +456,7 @@ describe('helpers', () => {
 	it('resolve layers, packages and imports', () => {
 		expect(layerOf('core/a.js')).toBe('core');
 		expect(layerOf('manifest.json')).toBe('.');
-		expect(packageOf('@ss/app-kit/widget')).toBe('@ss/app-kit');
+		expect(packageOf('@shelfway/app-kit/widget')).toBe('@shelfway/app-kit');
 		expect(packageOf('next/server.js')).toBe('next');
 		expect(packageOf('node:fs')).toBe('node:fs');
 		const files = new Set(['core/a.js', 'core/b/index.js']);
@@ -501,15 +503,15 @@ describe('helpers', () => {
 					'GET /v1/chat': {
 						headers: {
 							type: 'object',
-							properties: { 'SS-Guest': { type: 'string', description: "The visitor's guest key." } },
-							required: ['SS-Guest'],
+							properties: { 'Shelfway-Guest': { type: 'string', description: "The visitor's guest key." } },
+							required: ['Shelfway-Guest'],
 						},
 					},
 				},
 			})
 		);
 		expect(doc.paths['/v1/chat'].get.parameters).toContainEqual({
-			name: 'SS-Guest',
+			name: 'Shelfway-Guest',
 			in: 'header',
 			required: true,
 			description: "The visitor's guest key.",
@@ -552,12 +554,12 @@ describe('helpers', () => {
 			'itemId',
 			'Idempotency-Key',
 			// a server route with no `runtime` is a staff route: the signed-in staff member's sign-in is required
-			'#/components/parameters/SSSignInStaff',
+			'#/components/parameters/ShelfwaySignInStaff',
 		]);
-		expect(doc.paths['/v1/items/{itemId}'].delete['x-ss-access']).toBe('staff');
+		expect(doc.paths['/v1/items/{itemId}'].delete['x-shelfway-access']).toBe('staff');
 		expect(doc.paths['/v1/items/{itemId}'].delete.security).toEqual([{ serverToken: [] }]);
-		expect(doc.paths['/v1/x'].get).toMatchObject({ 'x-ss-permission': 'x.read', security: [{ ticket: [] }] });
-		expect(doc.paths['/v1/x'].get['x-ss-feature']).toBeUndefined();
+		expect(doc.paths['/v1/x'].get).toMatchObject({ 'x-shelfway-permission': 'x.read', security: [{ ticket: [] }] });
+		expect(doc.paths['/v1/x'].get['x-shelfway-feature']).toBeUndefined();
 		expect(doc.paths['/docs']).toBeUndefined();
 	});
 });

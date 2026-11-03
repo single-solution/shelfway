@@ -282,7 +282,7 @@ function SetupRow({ step, labels, LinkTag }) {
 		: null;
 	const lines = words || step.detail;
 	return (
-		<li className="ss-motion min-w-0 py-3 first:pt-0 last:pb-0">
+		<li className="shelfway-motion min-w-0 py-3 first:pt-0 last:pb-0">
 			<div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
 				<div className="flex min-w-0 flex-1 basis-56 items-center gap-3">
 					<span
@@ -353,7 +353,7 @@ export function SetupChecklist({ title, progress, steps, labels, linkAs, id, cla
 				aria-valuemax={counted.length}
 				aria-valuenow={done}>
 				<div
-					className="h-full rounded-full bg-success-solid transition-[width] duration-(--ss-motion-slow) ease-ss"
+					className="h-full rounded-full bg-success-solid transition-[width] duration-(--shelfway-motion-slow) ease-shelfway"
 					style={{ width: `${counted.length === 0 ? 100 : Math.round((done / counted.length) * 100)}%` }}
 				/>
 			</div>
@@ -841,7 +841,7 @@ export function ProductOverview({
  */
 export function OverviewSkeleton() {
 	return (
-		<div className="@container animate-ss-fade">
+		<div className="@container animate-shelfway-fade">
 			<div className="grid items-start gap-5 @4xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
 				<div className="min-w-0 space-y-5">
 					<SettingsCardSkeleton rows={3} />

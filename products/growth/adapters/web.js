@@ -1,5 +1,5 @@
 /**
- * Growth's calls to the web, all through `@ss/net` (PLAN 0.10: https only, public addresses only, every DNS answer
+ * Growth's calls to the web, all through `@shelfway/net` (PLAN 0.10: https only, public addresses only, every DNS answer
  * checked): reading the merchant's own site for the SEO checklist and sending an IndexNow submission. Both run only
  * when the merchant asks (widget or API); nothing is fetched on a timer. A read never follows a redirect (the checks
  * judge the redirect itself), has a time limit (and stops at the run's deadline) and a size limit, and reads at most a
@@ -9,7 +9,7 @@
 import { gunzipSync } from 'node:zlib';
 import { INDEXNOW_ENDPOINT } from '../core/seo.js';
 
-/** @typedef {(url: string, init?: import('@ss/net').SafeFetchInit) => Promise<import('@ss/net').SafeResponse>} OutboundSend */
+/** @typedef {(url: string, init?: import('@shelfway/net').SafeFetchInit) => Promise<import('@shelfway/net').SafeResponse>} OutboundSend */
 /** @typedef {import('../core/seo-checks.js').Fetched} Fetched */
 
 /** Time limit of one read. */

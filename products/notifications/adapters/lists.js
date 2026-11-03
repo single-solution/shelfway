@@ -51,7 +51,7 @@ const DEFAULTS = Object.freeze({
 });
 
 /**
- * @param {{ store: import('@ss/app-kit').Store, now: () => number }} options
+ * @param {{ store: import('@shelfway/app-kit').Store, now: () => number }} options
  */
 export const createLists = ({ store, now }) => {
 	/** @param {string} websiteId @param {ListName} name */
@@ -125,7 +125,7 @@ export const createLists = ({ store, now }) => {
 		stopKeywords: (websiteId) => read('stop_keywords', websiteId),
 		/**
 		 * The lists as the kit serves them (`GET|PUT /v1/lists/<name>` and the dashboard twin).
-		 * @returns {Record<string, import('@ss/app-kit').ListDefinition>}
+		 * @returns {Record<string, import('@shelfway/app-kit').ListDefinition>}
 		 */
 		definitions: () =>
 			Object.fromEntries(

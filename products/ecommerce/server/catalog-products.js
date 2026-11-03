@@ -13,8 +13,8 @@
  * the page to IndexNow when the website asks (E16).
  * @module
  */
-import { createId } from '@ss/contracts';
-import { countHandlers, created, defineRoute, ok, paginate, problem } from '@ss/app-kit';
+import { createId } from '@shelfway/contracts';
+import { countHandlers, created, defineRoute, ok, paginate, problem } from '@shelfway/app-kit';
 import {
 	NO_KEYS,
 	attributesOf,
@@ -67,7 +67,7 @@ import { SERVER_LIMITS, bodyOf } from './service.js';
 /** @typedef {import('./catalog-common.js').CatalogCommon} CatalogCommon */
 /** @typedef {import('../core/model.js').ProductRecord} ProductRecord */
 /** @typedef {import('../core/model.js').VariantRecord} VariantRecord */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 
 /** The staff list's order. */
 const STAFF_SORT = /** @type {const} */ ({ field: 'createdAt', dir: -1 });
@@ -791,7 +791,7 @@ export const createCatalogProducts = (product, service, common) => {
 			path: '/v1/products/variants/generate',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'variants',
 			rateLimit: SERVER_LIMITS,
 			handler: generateMany,
 		}),
@@ -800,7 +800,7 @@ export const createCatalogProducts = (product, service, common) => {
 			path: '/v1/products/:id/variants/generate',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'variants',
 			rateLimit: SERVER_LIMITS,
 			handler: generate,
 		}),
@@ -809,7 +809,7 @@ export const createCatalogProducts = (product, service, common) => {
 			path: '/v1/admin/products/variants/generate',
 			auth: 'ticket',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'variants',
 			rateLimit: SERVER_LIMITS,
 			handler: generateMany,
 		}),
@@ -818,7 +818,7 @@ export const createCatalogProducts = (product, service, common) => {
 			path: '/v1/admin/products/:id/variants/generate',
 			auth: 'ticket',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'variants',
 			rateLimit: SERVER_LIMITS,
 			handler: generate,
 		}),

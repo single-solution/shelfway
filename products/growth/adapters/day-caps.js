@@ -29,7 +29,7 @@ export const REFRESH_MS = 15_000;
 const KEPT = 2_000;
 
 /**
- * @param {{ now: () => number, logger: import('@ss/net').Logger }} options
+ * @param {{ now: () => number, logger: import('@shelfway/net').Logger }} options
  */
 export const createDayCaps = ({ now, logger }) => {
 	/** @type {Map<string, DayCounts & { at: number, loose: Set<string>, told: Set<string> }>} */

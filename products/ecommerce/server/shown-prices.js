@@ -10,7 +10,7 @@ import { listShown, shownPrice } from '../core/promotions.js';
 
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/model.js').ProductRecord} ProductRecord */
 /** @typedef {import('../core/model.js').VariantRecord} VariantRecord */
 /** @typedef {import('../core/promotions.js').ShownPrice} ShownPrice */

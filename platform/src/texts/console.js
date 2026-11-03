@@ -326,7 +326,7 @@ export const WEBSITE = Object.freeze({
 	setupLeft: (/** @type {string} */ name) => `${name}: no feature on yet`,
 });
 
-/** The Setup sheet of a website and its share links (`ss.blueprint/1`). */
+/** The Setup sheet of a website and its share links (`shelfway.blueprint/1`). */
 export const SETUP = Object.freeze({
 	sharedTitle: (/** @type {string} */ domain) => `Setup of ${domain}`,
 	sharedIntro:
@@ -465,7 +465,7 @@ export const SETUP = Object.freeze({
 });
 
 /**
- * The business profile of a website (the Setup sheet's advisor, `@ss/contracts/profile`): its questions and options, and
+ * The business profile of a website (the Setup sheet's advisor, `@shelfway/contracts/profile`): its questions and options, and
  * what each tag says, joined into why a feature is recommended or not.
  */
 export const PROFILE = Object.freeze({
@@ -557,7 +557,7 @@ export const PROFILE = Object.freeze({
 	yes: 'Yes',
 	no: 'No',
 	fromSettings: 'The countries and languages come from the website’s settings (Region and format), set once for every product.',
-	/** What a tag says, as part of a sentence (`@ss/contracts/profile` tags; codes are kept as written). */
+	/** What a tag says, as part of a sentence (`@shelfway/contracts/profile` tags; codes are kept as written). */
 	tag: (/** @type {string} */ tag) => {
 		const [question = '', option = ''] = tag.split('.');
 		if (question === 'countries') {
@@ -1357,7 +1357,7 @@ export const WEBSITE_SETTINGS = Object.freeze({
 		remove: 'Remove',
 		database: Object.freeze({
 			title: 'Database (MongoDB)',
-			help: 'One MongoDB connection string for the whole website. Create an Atlas user with read and write on exactly the databases named below (ss_ and the product), so a leaked string reaches nothing else. It is checked and tested by each product; this Portal never opens it.',
+			help: 'One MongoDB connection string for the whole website. Create an Atlas user with read and write on exactly the databases named below (shelfway_ and the product), so a leaked string reaches nothing else. It is checked and tested by each product; this Platform never opens it.',
 			field: 'Connection string',
 			fieldHelp: 'Starts with mongodb+srv:// or mongodb://. It stays secret: it is not shown again after you save.',
 			placeholder: 'mongodb+srv://user:password@cluster.example.net/',

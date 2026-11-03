@@ -1,8 +1,8 @@
 /**
- * `@ss/platform/testing` — the one entry point for system tests that run the REAL Portal in process (the `e2e/`
+ * `@shelfway/platform/testing` — the one entry point for system tests that run the REAL Portal in process (the `e2e/`
  * workspace) and for the Portal's own tests: the composition root, the module factories (to point outbound calls
  * at loopback hosts), configuration, a complete system state, closing the cached
- * Mongo clients and a small HTTP driver of the Portal API (`createPortalClient`). Nothing else of the Portal's
+ * Mongo clients and a small HTTP driver of the Portal API (`createPlatformClient`). Nothing else of the Portal's
  * internals is public; add to this list rather than importing deep paths. Test-only code lives here, never in the
  * Portal's own modules.
  * @module
@@ -10,7 +10,7 @@
 import { MONGO_CLIENTS } from './infra/db.js';
 import { generateSecrets, secretsOf } from './infra/system.js';
 
-export { createPortal } from './portal.js';
+export { createPlatform } from './platform.js';
 export { loadConfig } from './infra/config.js';
 export { createSystemStore } from './infra/system.js';
 export { systemModule } from './modules/system/index.js';
@@ -45,7 +45,7 @@ export const closeMongoClients = async () => {
 
 // ---------------------------------------------------------------------------------------------------------------
 // A small driver of the Portal HTTP API: requests go straight to `portal.handle(request)` the way a browser on
-// `PORTAL_URL` would send them (same Origin, JSON bodies, an `Idempotency-Key` on every POST), and each signed-in
+// `PLATFORM_URL` would send them (same Origin, JSON bodies, an `Idempotency-Key` on every POST), and each signed-in
 // client keeps its own session cookie. `settle()` (optional) is awaited after every call, so work that runs right after
 // a response (notices, emails) is done before the caller looks.
 
@@ -61,9 +61,9 @@ export const closeMongoClients = async () => {
 /** @typedef {{ status: number, headers: Headers, json: any }} CallResult */
 
 /**
- * @param {{ handle: (request: Request) => Promise<Response>, portalUrl: string, settle?: () => Promise<unknown> }} options
+ * @param {{ handle: (request: Request) => Promise<Response>, platformUrl: string, settle?: () => Promise<unknown> }} options
  */
-export const createPortalClient = ({ handle, portalUrl, settle }) => {
+export const createPlatformClient = ({ handle, platformUrl, settle }) => {
 	let counter = 0;
 
 	/**
@@ -75,11 +75,11 @@ export const createPortalClient = ({ handle, portalUrl, settle }) => {
 	const call = async (method, path, { body, cookie, bearer, headers = {}, idempotencyKey } = {}) => {
 		counter += 1;
 		const response = await handle(
-			new Request(`${portalUrl}${path}`, {
+			new Request(`${platformUrl}${path}`, {
 				method,
 				headers: {
 					...(body === undefined ? {} : { 'content-type': 'application/json' }),
-					...(cookie ? { cookie, origin: portalUrl, 'sec-fetch-site': 'same-origin' } : {}),
+					...(cookie ? { cookie, origin: platformUrl, 'sec-fetch-site': 'same-origin' } : {}),
 					...(bearer ? { authorization: `Bearer ${bearer}` } : {}),
 					...(method === 'POST' && idempotencyKey !== null ? { 'idempotency-key': idempotencyKey ?? `key-${counter}` } : {}),
 					...headers,

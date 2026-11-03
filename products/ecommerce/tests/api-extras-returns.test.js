@@ -5,7 +5,7 @@
  * and the shopper's own view, and the alert answers (the same alert set again answers 201 with the waiting one).
  * Delivered orders are placed with the ledger and moved to delivered directly.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { placeOrder } from '../adapters/ledger.js';
 import { INDEXES } from '../adapters/product.js';
@@ -15,7 +15,7 @@ import { readyShop, storedOrder } from './helpers.js';
 
 /** @type {Awaited<ReturnType<typeof readyShop>>} */
 let shop;
-/** @type {import('@ss/app-kit').WebsiteData} */
+/** @type {import('@shelfway/app-kit').WebsiteData} */
 let data;
 /** @type {string} */
 let ticket;
@@ -202,7 +202,7 @@ describe('claim outcomes', () => {
 			'POST',
 			`/v1/returns/${exchange}/replace`,
 			{ note: 'New one sent' },
-			{ 'ss-actor-id': 'usr_staff0000009', 'ss-actor-name': encodeURIComponent('Rida Staff') },
+			{ 'shelfway-actor-id': 'usr_staff0000009', 'shelfway-actor-name': encodeURIComponent('Rida Staff') },
 		);
 		expect(replaced.status).toBe(200);
 		expect(replaced.json).toMatchObject({

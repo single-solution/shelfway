@@ -1,10 +1,10 @@
 /**
  * Amounts people type (P6): read with the decimal sign money is shown with, or the other of `.` and `,` when it cannot
  * be a thousands separator, and written back for typing. The rest of money (minor units, ISO 4217 checks, the plain
- * decimal of gateways and the API) is `@ss/contracts/format`'s. No I/O.
+ * decimal of gateways and the API) is `@shelfway/contracts/format`'s. No I/O.
  * @module
  */
-import { fromDecimal, toDecimal } from '@ss/contracts/format';
+import { fromDecimal, toDecimal } from '@shelfway/contracts/format';
 
 /**
  * The decimal sign money is shown with in a language (`.` for '' and for a language the runtime does not know).

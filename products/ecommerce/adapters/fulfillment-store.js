@@ -10,7 +10,7 @@ import { COLLECTIONS, NO_ID } from '../core/model.js';
 import { isCustomerId, spentKey } from '../core/orders.js';
 import { escapeRegex } from '../core/search.js';
 
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/model.js').OrderRecord} OrderRecord */
 /** @typedef {import('../core/model.js').CustomerRecord} CustomerRecord */
 /** @typedef {{ id?: string, email?: string, phone?: string }} Person */
@@ -31,7 +31,7 @@ export const ownerOrders = (owner) => {
 	return owner.customerId ? { $or: [{ 'customer.userId': owner.userId }, linked] } : { 'customer.userId': owner.userId };
 };
 
-/** Merchant database indexes of this part. @type {import('@ss/app-kit').IndexDefinition[]} */
+/** Merchant database indexes of this part. @type {import('@shelfway/app-kit').IndexDefinition[]} */
 export const INDEXES = [
 	{ collection: COLLECTIONS.orders, keys: { websiteId: 1, createdAt: -1, id: -1 }, name: 'fulfill_recent' },
 	{ collection: COLLECTIONS.orders, keys: { websiteId: 1, status: 1, createdAt: -1, id: -1 }, name: 'fulfill_by_status' },

@@ -6,18 +6,18 @@
  * not loaded, Tag Manager missing for GA4, what robots.txt, the verification tags and the IndexNow key file serve, the
  * notice bar now, and Web Vitals to Google Analytics without Google tags (on Defaults, only what the values say).
  * Setup only: no business data. Times are computed in UTC and shown in the viewer's local time (owner 2026-10-14): UTC on
- * the server and in the first render. The tabs render inside the shared dashboard's provider (`@ss/ui/dashboard`).
+ * the server and in the first render. The tabs render inside the shared dashboard's provider (`@shelfway/ui/dashboard`).
  */
 import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { DashboardProvider } from '@ss/ui/dashboard';
-import { byText, cleanup, click, render } from '@ss/ui/testing';
+import { DashboardProvider } from '@shelfway/ui/dashboard';
+import { byText, cleanup, click, render } from '@shelfway/ui/testing';
 import { manifest, SHARED_SETTINGS } from '../adapters/product.js';
 import { TABS } from '../app/dashboard/tabs.js';
 import { TEXTS } from '../app/dashboard/texts.js';
 import { LISTS } from '../core/lists.js';
 import { closeEditor, editorOf, openRow, rowMenu, rowNames } from './dashboard-provider.js';
-import { type } from '@ss/ui/testing';
+import { type } from '@shelfway/ui/testing';
 
 const WEBSITE = 'web_1';
 const DOMAIN = 'shop.example.com';
@@ -162,8 +162,8 @@ const Defaults = (tab) => (
 const openSection = (root, id) =>
 	click(
 		/** @type {HTMLElement} */ (
-			root.querySelector(`[role="option"][data-ss-id="${id}"]`) ??
-				root.querySelector(`[role="option"][data-ss-id="${id.split('.')[0]}"]`)
+			root.querySelector(`[role="option"][data-shelfway-id="${id}"]`) ??
+				root.querySelector(`[role="option"][data-shelfway-id="${id.split('.')[0]}"]`)
 		),
 	);
 
@@ -175,8 +175,8 @@ const visitAll = async (root) => {
 	/** @type {Set<string>} */
 	const seen = new Set();
 	for (let pass = 0; pass < 3; pass += 1)
-		for (const row of [...root.querySelectorAll('[role="option"][data-ss-id]')]) {
-			const id = String(row.getAttribute('data-ss-id'));
+		for (const row of [...root.querySelectorAll('[role="option"][data-shelfway-id]')]) {
+			const id = String(row.getAttribute('data-shelfway-id'));
 			if (seen.has(id)) continue;
 			seen.add(id);
 			openSection(root, id);

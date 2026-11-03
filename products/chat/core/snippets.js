@@ -4,7 +4,7 @@
  * and the tool signature check on the merchant's server. Plain text; no I/O.
  * @module
  */
-import { widgetScriptTag } from '@ss/contracts/text';
+import { widgetScriptTag } from '@shelfway/contracts/text';
 import { TOOL_SIGNATURE_HEADER } from './tools.js';
 import { WIDGET_ATTRIBUTE, WIDGET_GLOBAL } from './widgets.js';
 
@@ -17,9 +17,9 @@ export const createSnippets = ({ base, widgets, permissions }) => {
 	const visitor = [
 		widgetScriptTag({ src: `${base}/widget.js`, token: 'YOUR_BROWSER_TOKEN' }),
 		'<script>',
-		'  // after the script loaded (window.SSChat exists):',
+		'  // after the script loaded (window.ShelfwayChat exists):',
 		'  // a visitor signed in with Accounts chats as themselves (call identify(null) on sign-out)',
-		`  window.SSAccounts.getSignIn().then((signIn) => window.${WIDGET_GLOBAL}.identify(signIn));`,
+		`  window.ShelfwayAccounts.getSignIn().then((signIn) => window.${WIDGET_GLOBAL}.identify(signIn));`,
 		'  // what the visitor is viewing, for the nudge and the opener (product, category, deals, cart or other)',
 		`  window.${WIDGET_GLOBAL}.setPage({ kind: 'product', productId: 'p_123', productName: 'Blue kettle' });`,
 		'  // your own menu badge: replies the visitor has not seen',
@@ -32,7 +32,7 @@ export const createSnippets = ({ base, widgets, permissions }) => {
 		'<script>',
 		`  window.${WIDGET_GLOBAL}.admin({`,
 		'    // your own server route (below): it checks the signed-in user and their role, then asks for a ticket',
-		"    getTicket: () => fetch('/api/ss-chat-ticket', { method: 'POST' }).then((response) => response.json()),",
+		"    getTicket: () => fetch('/api/shelfway-ticket', { method: 'POST' }).then((response) => response.json()),",
 		'  });',
 		`  window.${WIDGET_GLOBAL}.onUnread((count) => { /* the unread count of the inbox, for your own menu */ });`,
 		'</script>',
@@ -46,7 +46,7 @@ export const createSnippets = ({ base, widgets, permissions }) => {
 		"// your server, after checking the user's sign-in and role (Node.js 18+, also inside a Next.js route handler)",
 		`const response = await fetch('${base}/v1/tickets', {`,
 		"  method: 'POST',",
-		"  headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}`, 'content-type': 'application/json' },",
+		"  headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}`, 'content-type': 'application/json' },",
 		'  body: JSON.stringify({',
 		'    user: { id: user.id, name: user.name, email: user.email },',
 		`    permissions: ${JSON.stringify(permissions)},`,
@@ -57,7 +57,7 @@ export const createSnippets = ({ base, widgets, permissions }) => {
 	].join('\n');
 	const ticketCurl = [
 		`curl -X POST '${base}/v1/tickets' \\`,
-		'  -H "Authorization: Bearer $SS_SERVER_TOKEN" \\',
+		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN" \\',
 		"  -H 'Content-Type: application/json' \\",
 		`  -d '${JSON.stringify(ticketBody)}'`,
 	].join('\n');

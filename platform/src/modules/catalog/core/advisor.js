@@ -1,15 +1,15 @@
 /**
  * The setup advisor of the website Setup sheet (PLAN.md, website setup sheet and setup advisor), pure: the business profile a request saves, and the advice for a reachable product from its features'
- * `recommendFor` rules (`@ss/contracts` `adviseFeatures`), worded with `texts/console.js` `PROFILE`.
+ * `recommendFor` rules (`@shelfway/contracts` `adviseFeatures`), worded with `texts/console.js` `PROFILE`.
  * @module
  */
-import { PROFILE_CHOICES, adviseFeatures, validateBusinessProfile } from '@ss/contracts';
-import { PROFILE_OTHER, PROFILE_YES_NO } from '@ss/contracts/profile';
+import { PROFILE_CHOICES, adviseFeatures, validateBusinessProfile } from '@shelfway/contracts';
+import { PROFILE_OTHER, PROFILE_YES_NO } from '@shelfway/contracts/profile';
 import { PROFILE } from '../../../texts/console.js';
 
-/** @typedef {import('@ss/contracts').BusinessProfile} BusinessProfile */
+/** @typedef {import('@shelfway/contracts').BusinessProfile} BusinessProfile */
 
-/** @typedef {import('@ss/contracts').BlueprintAdvice} BlueprintAdvice */
+/** @typedef {import('@shelfway/contracts').BlueprintAdvice} BlueprintAdvice */
 
 /** The profile answers that are the website's settings, not the advisor's own. */
 export const SETTINGS_ANSWERS = Object.freeze(/** @type {const} */ (['countries', 'languages']));
@@ -39,7 +39,7 @@ const tidy = (profile) => {
 };
 
 /**
- * The body of Save profile: a business profile (`@ss/contracts` `validateBusinessProfile`), kept tidy; null when it
+ * The body of Save profile: a business profile (`@shelfway/contracts` `validateBusinessProfile`), kept tidy; null when it
  * answers nothing (the profile is then removed). The countries and languages are refused: they are the website's
  * settings, which the sheet adds to the profile.
  * @param {unknown} body

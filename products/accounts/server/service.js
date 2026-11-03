@@ -12,11 +12,11 @@
  *   again right after later requests; the data-rights fan-out to every connected product and the export.
  * @module
  */
-import { problem, verifyIdentityToken } from '@ss/app-kit';
-import { createId } from '@ss/contracts';
-import { normalizePhone, websiteCallingCode } from '@ss/contracts/phone';
-import { addressRequiredOf } from '@ss/contracts/website-settings';
-import { constantTimeEqual, randomToken, sha256Hex } from '@ss/protocol';
+import { problem, verifyIdentityToken } from '@shelfway/app-kit';
+import { createId } from '@shelfway/contracts';
+import { normalizePhone, websiteCallingCode } from '@shelfway/contracts/phone';
+import { addressRequiredOf } from '@shelfway/contracts/website-settings';
+import { constantTimeEqual, randomToken, sha256Hex } from '@shelfway/protocol';
 import { labelOf, valuesOf } from '../core/activity.js';
 import { OWNER_ROLE, ROLE_TEMPLATES, SIGN_UP_TEMPLATE, remembered, sessionEnd, signInRefusal } from '../core/roles.js';
 import { answerConsents, consentsToAsk } from '../core/consents.js';
@@ -55,7 +55,7 @@ import { createStore } from '../adapters/store.js';
  */
 
 /** The visitor's browser on a sign-in from the merchant's server (A12; the device list names it). */
-const VISITOR_AGENT_HEADER = 'ss-visitor-agent';
+const VISITOR_AGENT_HEADER = 'shelfway-visitor-agent';
 /** Time a two-step step or a social hand-over stays open. */
 const STEP_MS = 10 * 60_000;
 /** Data exports are single-use links valid for 15 minutes (PLAN 0.4.11). */
@@ -146,7 +146,7 @@ export const createService = (product) => {
 	};
 
 	/**
-	 * @param {{ websiteId: string, merchantId: string | null, domain: string, base: string, data: import('@ss/app-kit').WebsiteData,
+	 * @param {{ websiteId: string, merchantId: string | null, domain: string, base: string, data: import('@shelfway/app-kit').WebsiteData,
 	 *   ip?: string, after?: Site['after'] }} input
 	 * @returns {Promise<Site>}
 	 */
@@ -467,7 +467,7 @@ export const createService = (product) => {
 
 	/**
 	 * How the request's device signs in: remember me, the device name, the device id and the network for risk checks.
-	 * The network is the kit's visitor address (`SS-Visitor-IP` on a visitor call from the merchant's server, else the
+	 * The network is the kit's visitor address (`Shelfway-Visitor-IP` on a visitor call from the merchant's server, else the
 	 * first `X-Forwarded-For` address; PLAN 0.8.10 K3).
 	 * @param {any} ctx
 	 */
@@ -475,7 +475,7 @@ export const createService = (product) => {
 		const body = bodyOf(ctx.body);
 		return {
 			remember: body.remember === true,
-			// on a visitor call from the merchant's server, the visitor's browser comes in SS-Visitor-Agent (A12)
+			// on a visitor call from the merchant's server, the visitor's browser comes in Shelfway-Visitor-Agent (A12)
 			device: deviceOf((ctx.visitor?.server ? ctx.headers.get(VISITOR_AGENT_HEADER) : null) ?? ctx.headers.get('user-agent')),
 			deviceId: deviceIdOf(body.deviceId),
 			network: String(ctx.clientIp || 'unknown'),
@@ -483,7 +483,7 @@ export const createService = (product) => {
 	};
 
 	/**
-	 * The signed-in user of a visitor request (`SS-Sign-In` header): a sign-in of this website whose session is still
+	 * The signed-in user of a visitor request (`Shelfway-Sign-In` header): a sign-in of this website whose session is still
 	 * open and whose user is not blocked.
 	 * @param {any} ctx
 	 */
@@ -724,7 +724,7 @@ export const createService = (product) => {
 	/**
 	 * Erase a user here and in every connected product (PLAN 0.8.6): products that do not confirm are asked again
 	 * right after later requests for this website.
-	 * @param {Site} s @param {UserRecord} user @param {import('@ss/app-kit').Actor} actor
+	 * @param {Site} s @param {UserRecord} user @param {import('@shelfway/app-kit').Actor} actor
 	 * @param {any} [ctx] the request (for the activity log)
 	 * @param {Record<string, string>} [why] the activity log's values: `by` (staff, request or due) and the staff's reason
 	 */

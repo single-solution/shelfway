@@ -21,7 +21,7 @@ const SCREEN_FOLDERS = [
 /** Folders that are never screens. */
 const SKIPPED = new Set(['test', 'tests', '__tests__', 'node_modules', '.next', 'coverage', '(site)']);
 
-/** Kit parts a screen does not use any more, found by their import from `@ss/ui` (or `@ss/ui/dashboard`, …). */
+/** Kit parts a screen does not use any more, found by their import from `@shelfway/ui` (or `@shelfway/ui/dashboard`, …). */
 const BANNED_IMPORTS = ['DataTable', 'Table', 'Disclosure', 'PillTabs'];
 
 /** Raw HTML a screen does not write, found as JSX tags. */
@@ -30,7 +30,7 @@ const BANNED_TAGS = ['<table', '<select', '<input', '<textarea'];
 /** Every kind a file can be listed for, in the order `uses` is written. */
 const KINDS = [...BANNED_IMPORTS, ...BANNED_TAGS];
 
-const IMPORT_FROM_KIT = /import\s*(?:type\s*)?\{([^}]*)\}\s*from\s*['"]@ss\/ui(?:\/[^'"]*)?['"]/g;
+const IMPORT_FROM_KIT = /import\s*(?:type\s*)?\{([^}]*)\}\s*from\s*['"]@shelfway\/ui(?:\/[^'"]*)?['"]/g;
 const RAW_TAG = /<(table|select|input|textarea)(?=[\s/>])/g;
 const BLOCK_COMMENT = /\/\*[\s\S]*?\*\//g;
 const LINE_COMMENT = /(^|\s)\/\/.*$/gm;
@@ -112,12 +112,12 @@ describe('kit only: screens are built from the kit', () => {
 		expect(BANNED_IMPORTS).toContain('Table');
 		expect(BANNED_IMPORTS).not.toContain('FiguresTable');
 		expect(BANNED_TAGS).toContain('<table');
-		expect(offences("import { FiguresTable } from '@ss/ui';\nexport const x = <FiguresTable />;")).toEqual([]);
-		expect(offences("import { DataTable } from '@ss/ui';\nexport const x = <DataTable />;")).toEqual(['DataTable']);
+		expect(offences("import { FiguresTable } from '@shelfway/ui';\nexport const x = <FiguresTable />;")).toEqual([]);
+		expect(offences("import { DataTable } from '@shelfway/ui';\nexport const x = <DataTable />;")).toEqual(['DataTable']);
 		expect(offences('export const x = <table><tbody /></table>;')).toEqual(['<table']);
 		expect(offences('export const x = <select><option /></select>;')).toEqual(['<select']);
 		expect(offences('export const x = <input type="text" />;')).toEqual(['<input']);
 		expect(offences('export const x = <textarea />;')).toEqual(['<textarea']);
-		expect(offences("import { Disclosure, PillTabs } from '@ss/ui';")).toEqual(['Disclosure', 'PillTabs']);
+		expect(offences("import { Disclosure, PillTabs } from '@shelfway/ui';")).toEqual(['Disclosure', 'PillTabs']);
 	});
 });

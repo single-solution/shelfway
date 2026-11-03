@@ -370,7 +370,7 @@ export function Loaded({ answer, skeleton, children }) {
 		);
 	// fades and slides in when it replaces the skeleton; a refresh of shown content changes it in place
 	return (
-		<ViewTransition enter="ss-vt-enter" default="none">
+		<ViewTransition enter="shelfway-vt-enter" default="none">
 			{children(answer.data)}
 		</ViewTransition>
 	);

@@ -87,7 +87,7 @@ describe('Growth’s writes with the server token', () => {
 		const logged = await (
 			await env.merchantDb()
 		)
-			.collection('ss_growth_activity')
+			.collection('shelfway_growth_activity')
 			.find({ action: 'redirect.created' })
 			.toArray();
 		expect(logged.at(-1)?.actor).toMatchObject({ kind: 'user', id: 'usr_sec1', name: 'Rita Redirect' });
@@ -114,7 +114,7 @@ describe('Growth’s writes with the server token', () => {
 		const refused = await env.call('POST', '/v1/redirects', {
 			token: env.server,
 			bare: true,
-			headers: { 'ss-sign-in': other },
+			headers: { 'shelfway-sign-in': other },
 			body: RULE,
 		});
 		expect([refused.status, await typeOf(refused)]).toEqual([401, 'invalid_sign_in']);
@@ -166,7 +166,7 @@ describe('custom scripts need their own permission, scripts.manage (SR-7-10)', (
 		const logged = await (
 			await env.merchantDb()
 		)
-			.collection('ss_growth_activity')
+			.collection('shelfway_growth_activity')
 			.find({ action: 'settings.changed' })
 			.toArray();
 		expect(logged.at(-1)).toMatchObject({

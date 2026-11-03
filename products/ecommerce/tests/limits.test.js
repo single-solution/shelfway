@@ -13,7 +13,7 @@ describe('fixed limits', () => {
 	it('keep the defaults of the settings they replaced', () => {
 		expect(limits.TOP_FIELD).toBe('sold');
 		expect([limits.IMAGE_MAX_BYTES, limits.VIDEO_MAX_BYTES]).toEqual([5 * 1024 * 1024, 64 * 1024 * 1024]);
-		expect(limits.SEARCH_INDEX).toBe('ss_ecommerce_products_search');
+		expect(limits.SEARCH_INDEX).toBe('shelfway_ecommerce_products_search');
 		expect([limits.OPEN_ORDER_CAP, limits.CART_MAX_LINES, limits.CART_MAX_QUANTITY, limits.COMPARE_MAX_PRODUCTS]).toEqual([
 			3, 50, 99, 4,
 		]);

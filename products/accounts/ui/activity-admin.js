@@ -7,7 +7,7 @@
  * 0.8.10 K9.
  * @module
  */
-import { adminCall, block, element, formatText, mountWidget } from '@ss/app-kit/widget';
+import { adminCall, block, element, formatText, mountWidget } from '@shelfway/app-kit/widget';
 import { datesOf, errorText, fieldMaker, setHidden, textsOf } from './common.js';
 import { chips } from './parts.js';
 import { WIDGET_CSS } from './styles.js';
@@ -16,7 +16,7 @@ import { WIDGET_CSS } from './styles.js';
 const PRODUCTS = /** @type {const} */ (['', 'accounts', 'chat', 'ecommerce', 'notifications', 'payments', 'growth']);
 
 /**
- * @param {{ host: HTMLElement, api: import('@ss/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig }} input
+ * @param {{ host: HTMLElement, api: import('@shelfway/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig }} input
  */
 export const mountActivityAdmin = ({ host, api, config }) => {
 	const t = textsOf(config);
@@ -28,7 +28,7 @@ export const mountActivityAdmin = ({ host, api, config }) => {
 		css: WIDGET_CSS,
 		render: (root) => {
 			const doc = /** @type {Document} */ (root.ownerDocument);
-			const make = fieldMaker(doc, 'ss-activity');
+			const make = fieldMaker(doc, 'shelfway-activity');
 			let product = '';
 			/** @type {string | null} */
 			let cursor = null;

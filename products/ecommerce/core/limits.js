@@ -14,7 +14,7 @@ export const IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 /** The largest product video (MP4 or WebM) that can be uploaded, in bytes (64 MB). */
 export const VIDEO_MAX_BYTES = 64 * 1024 * 1024;
 /** The name of the Atlas Search index on the products collection (the dashboard shows the definition to create). */
-export const SEARCH_INDEX = 'ss_ecommerce_products_search';
+export const SEARCH_INDEX = 'shelfway_ecommerce_products_search';
 
 /** The currency of every price until the merchant sets the shop's currency in the Portal (Website settings › Region and format). */
 export const DEFAULT_CURRENCY = 'USD';

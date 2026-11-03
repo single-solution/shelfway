@@ -5,7 +5,7 @@
  * Custom dates.
  * @module
  */
-import { Input, Select } from '@ss/ui';
+import { Input, Select } from '@shelfway/ui';
 import { MORE } from '../../texts/console.js';
 import { useNavigation } from '../navigation.js';
 
@@ -79,7 +79,7 @@ export function RangeSelect({ from = null, to = null, hrefFor, emptyLabel, omit,
  * the page with its `from` and `to`.
  * @param {{ from?: string | null, to?: string | null, hrefFor: (range: { from: string | null, to: string | null }) => string,
  *   emptyLabel: string, omit?: Preset, go: (href: string) => void }} input `go`: the console's client-side navigation
- * @returns {import('@ss/ui').ToolbarFilter}
+ * @returns {import('@shelfway/ui').ToolbarFilter}
  */
 export const periodFilter = ({ from = null, to = null, hrefFor, emptyLabel, omit, go }) => {
 	const presets = rangePresets().filter((p) => p.value !== omit);
@@ -104,7 +104,7 @@ export const periodFilter = ({ from = null, to = null, hrefFor, emptyLabel, omit
 
 /** The look of a date field in the toolbar: as high as the search box beside it. */
 const DATE_FIELD =
-	'ss-motion h-8 rounded-control border border-line bg-surface px-2 text-label text-fg focus-visible:border-primary focus-visible:outline-2 focus-visible:outline-focus';
+	'shelfway-motion h-8 rounded-control border border-line bg-surface px-2 text-label text-fg focus-visible:border-primary focus-visible:outline-2 focus-visible:outline-focus';
 
 /**
  * The two date fields (From and To, UTC days) of a toolbar: a pick opens the page with that day.

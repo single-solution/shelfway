@@ -33,7 +33,7 @@ const placeOrder = async () => {
 		token: shop.browser,
 		origin: ORIGIN,
 		body: { lines: [{ productId: item.id }], payment: 'cod', address: ADDRESS },
-		headers: { 'x-forwarded-for': `10.6.0.${users}`, 'ss-sign-in': token, 'idempotency-key': `out-${users}` },
+		headers: { 'x-forwarded-for': `10.6.0.${users}`, 'shelfway-sign-in': token, 'idempotency-key': `out-${users}` },
 	});
 	expect(placed.status).toBe(201);
 	return placed.json.order;
@@ -232,7 +232,7 @@ describe('required messages (K-17)', () => {
 			token: shop.browser,
 			origin: ORIGIN,
 			body: { lines: [{ productId: item.id }], payment: 'cod', address: ADDRESS },
-			headers: { 'x-forwarded-for': '10.6.1.1', 'ss-sign-in': other, 'idempotency-key': 'out-other' },
+			headers: { 'x-forwarded-for': '10.6.1.1', 'shelfway-sign-in': other, 'idempotency-key': 'out-other' },
 		});
 		expect(kept.status).toBe(201);
 		expect(await outbox()).toHaveLength(6);

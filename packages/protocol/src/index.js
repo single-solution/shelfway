@@ -1,5 +1,5 @@
 /**
- * @ss/protocol — signing and verification shared by the Portal and every product: Ed25519 keys and JWKS, browser and
+ * @shelfway/protocol — signing and verification shared by the Portal and every product: Ed25519 keys and JWKS, browser and
  * server tokens, tickets, launches, client assertions, notices, Portal calls and the connect handshake; the sealing
  * of stored secrets; timestamped webhook signatures; and the hashing, comparing and random-token helpers. See README.md.
  */
@@ -10,7 +10,7 @@ export { issueTicket, verifyTicket } from './tickets.js';
 export { issueLaunch, verifyLaunch } from './launch.js';
 export { signAssertion, verifyAssertion } from './assertion.js';
 export { NOTICE_PATH, signNotice, verifyNotice } from './notices.js';
-export { signPortalCall, verifyPortalCall } from './calls.js';
+export { signPlatformCall, verifyPlatformCall } from './calls.js';
 export {
 	CONNECT_PATH,
 	canonicalUrl,

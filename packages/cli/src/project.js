@@ -1,6 +1,6 @@
 /**
- * The files of a product project, listed once and read through a cache (shared by `ss app validate` and
- * `ss app assets`).
+ * The files of a product project, listed once and read through a cache (shared by `shelfway app validate` and
+ * `shelfway app assets`).
  * @module
  */
 import { readFile } from 'node:fs/promises';

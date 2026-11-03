@@ -300,7 +300,7 @@ describe('shop tools', () => {
 			'/v1/chat/products?q=desk+lamp&limit=5',
 		]);
 		expect(sys.shopCalls().every((c) => c.headers.authorization === `Bearer ${sys.ecommerceToken}`)).toBe(true);
-		expect(sys.shopCalls().every((c) => !c.headers['ss-sign-in'])).toBe(true);
+		expect(sys.shopCalls().every((c) => !c.headers['shelfway-sign-in'])).toBe(true);
 		// how many deals and top products a list asks for are fixed (C22): 10 deals, 5 products
 		sys.ai(
 			{
@@ -389,7 +389,7 @@ describe('shop tools', () => {
 			'/v1/chat/me/orders?limit=5',
 			'/v1/chat/me/shipments',
 		]);
-		expect(calls.every((c) => c.headers['ss-sign-in'] === signIn)).toBe(true);
+		expect(calls.every((c) => c.headers['shelfway-sign-in'] === signIn)).toBe(true);
 		const answers = toolAnswers(sys.aiCalls()[1]);
 		expect(JSON.parse(String(answers[0]))).toEqual({
 			name: 'Rea Der',

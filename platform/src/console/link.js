@@ -7,7 +7,7 @@
  * @module
  */
 import NextLink, { useLinkStatus } from 'next/link.js';
-import { PendingHint, useNavigationProgress } from '@ss/ui';
+import { PendingHint, useNavigationProgress } from '@shelfway/ui';
 
 /** Next's link (its typings do not resolve through the `.js` specifier). */
 const RouterLink = /** @type {import('react').ElementType} */ (/** @type {any} */ (NextLink));

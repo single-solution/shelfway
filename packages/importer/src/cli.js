@@ -1,10 +1,10 @@
 /**
- * `ss-import` command dispatcher. Every side effect is injected (`io`, `env`, `fetch`, `connect`), so the whole CLI is
+ * `shelfway-import` command dispatcher. Every side effect is injected (`io`, `env`, `fetch`, `connect`), so the whole CLI is
  * testable in process; `bin.js` wires the real process.
  *
- * Secrets never go on the command line: the store database's address comes from `SS_IMPORT_SOURCE_URI` (or
- * `--source`) and each product's server token from `SS_IMPORT_TOKEN_<PRODUCT ID>` (for example
- * `SS_IMPORT_TOKEN_ACCOUNTS`).
+ * Secrets never go on the command line: the store database's address comes from `SHELFWAY_IMPORT_SOURCE_URI` (or
+ * `--source`) and each product's server token from `SHELFWAY_IMPORT_TOKEN_<PRODUCT ID>` (for example
+ * `SHELFWAY_IMPORT_TOKEN_ACCOUNTS`).
  * @module
  */
 import { readFile } from 'node:fs/promises';
@@ -25,22 +25,22 @@ import { verify } from './verify.js';
  *   (default: the store mappings; tests pass the test mappings)
  */
 
-export const USAGE = `ss-import — moves a store's records into the products (PLAN 0.8.10 Migration)
+export const USAGE = `shelfway-import — moves a store's records into the products (PLAN 0.8.10 Migration)
 
 Usage:
-  ss-import read --mapping <name> --out <dir> [--source <mongodb uri>]
-        read the store database (read only; default address SS_IMPORT_SOURCE_URI) into NDJSON files, idmap.json,
+  shelfway-import read --mapping <name> --out <dir> [--source <mongodb uri>]
+        read the store database (read only; default address SHELFWAY_IMPORT_SOURCE_URI) into NDJSON files, idmap.json,
         settings.json and manifest.json in <dir>
-  ss-import send --dir <dir> --product <id>=<url> [--product …] [--dry-run] [--prune] [--only <id>.<collection> …]
+  shelfway-import send --dir <dir> --product <id>=<url> [--product …] [--dry-run] [--prune] [--only <id>.<collection> …]
                  [--settings <file>] [--json]
         write the settings (settings.json, then the per-store table <file>) through PUT <url>/v1/settings
         and /v1/lists (the Format is the Portal's: none is sent), post the files to POST <url>/v1/import/<collection> (?dryRun=1), with --prune remove what the
         source no longer has (POST …/prune; the final pass), and after each product's last file POST
         /v1/import/finish (again with ?after=<next> while it answers more; not on a dry run); a dry run lists every
         refused record and setting and the settings that would change; the server token of each product comes from
-        SS_IMPORT_TOKEN_<ID>; the settings, the Format, the lists and the count routes are a staff member's, so the
-        Accounts sign-in of the person who runs the migration comes from SS_IMPORT_SIGN_IN_<ID> (valid 15 minutes)
-  ss-import verify --dir <dir> --product <id>=<url> [--product …] [--json]
+        SHELFWAY_IMPORT_TOKEN_<ID>; the settings, the Format, the lists and the count routes are a staff member's, so the
+        Accounts sign-in of the person who runs the migration comes from SHELFWAY_IMPORT_SIGN_IN_<ID> (valid 15 minutes)
+  shelfway-import verify --dir <dir> --product <id>=<url> [--product …] [--json]
         compare the records read and their sums with GET /v1/import/status and the mapping's count routes
 
 Mappings: ${Object.keys(MAPPINGS).join(', ')}
@@ -52,7 +52,7 @@ Exit codes: 0 ok, 1 failed records, mismatches or errors, 2 usage error.
  * @param {string} message
  */
 const usageError = (io, message) => {
-	io.err(`ss-import: ${message}\n\n${USAGE}`);
+	io.err(`shelfway-import: ${message}\n\n${USAGE}`);
 	return 2;
 };
 
@@ -69,10 +69,10 @@ const productsOf = (pairs, env) => {
 		const match = /^([a-z][a-z0-9-]{1,30})=(https?:\/\/\S+)$/.exec(pair);
 		if (!match) return { ok: false, message: `--product takes <id>=<url>, not ${pair}` };
 		const [, id = '', url = ''] = match;
-		const variable = `SS_IMPORT_TOKEN_${id.toUpperCase().replace(/-/g, '_')}`;
+		const variable = `SHELFWAY_IMPORT_TOKEN_${id.toUpperCase().replace(/-/g, '_')}`;
 		const token = env[variable];
 		if (!token) return { ok: false, message: `set ${variable} to the website's server token of ${id}` };
-		const signIn = env[`SS_IMPORT_SIGN_IN_${id.toUpperCase().replace(/-/g, '_')}`];
+		const signIn = env[`SHELFWAY_IMPORT_SIGN_IN_${id.toUpperCase().replace(/-/g, '_')}`];
 		products[id] = { url, token, ...(signIn ? { signIn } : {}) };
 	}
 	return { ok: true, products };
@@ -119,8 +119,8 @@ export const main = async (argv, { io, env, fetch, connect, mappings = MAPPINGS 
 			const mapping = values.mapping && Object.hasOwn(mappings, values.mapping) ? mappings[values.mapping] : undefined;
 			if (!mapping) return usageError(io, `--mapping is one of: ${Object.keys(mappings).join(', ')}`);
 			if (!values.out) return usageError(io, '--out <dir> is required');
-			const uri = values.source ?? env.SS_IMPORT_SOURCE_URI;
-			if (!uri) return usageError(io, 'set SS_IMPORT_SOURCE_URI (or --source) to the store database address');
+			const uri = values.source ?? env.SHELFWAY_IMPORT_SOURCE_URI;
+			if (!uri) return usageError(io, 'set SHELFWAY_IMPORT_SOURCE_URI (or --source) to the store database address');
 			const source = await connect(uri);
 			try {
 				const manifest = await read({ mapping, db: source.db, dir: values.out });
@@ -190,7 +190,7 @@ export const main = async (argv, { io, env, fetch, connect, mappings = MAPPINGS 
 		}
 		return usageError(io, `unknown command ${command}`);
 	} catch (error) {
-		io.err(`ss-import: ${error instanceof Error ? error.message : String(error)}\n`);
+		io.err(`shelfway-import: ${error instanceof Error ? error.message : String(error)}\n`);
 		return 1;
 	}
 };

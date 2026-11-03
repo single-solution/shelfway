@@ -27,8 +27,8 @@
  * time and a crawler its patience). Every change is checked against the whole set ({@link newProblems}).
  * @module
  */
-import { csvRecords, parseCsv, toCsv } from '@ss/contracts/csv';
-import { isObject } from '@ss/contracts/util';
+import { csvRecords, parseCsv, toCsv } from '@shelfway/contracts/csv';
+import { isObject } from '@shelfway/contracts/util';
 
 /** Most rules of one website. */
 export const MAX_RULES = 5000;

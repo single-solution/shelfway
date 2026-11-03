@@ -72,9 +72,9 @@ describe('Drawer parts', () => {
 				<p>Body text</p>
 			</Drawer>,
 		);
-		const header = /** @type {HTMLElement} */ (dialog().querySelector('[data-ss-part="header"]'));
-		const body = /** @type {HTMLElement} */ (dialog().querySelector('[data-ss-part="body"]'));
-		const footer = /** @type {HTMLElement} */ (dialog().querySelector('[data-ss-part="footer"]'));
+		const header = /** @type {HTMLElement} */ (dialog().querySelector('[data-shelfway-part="header"]'));
+		const body = /** @type {HTMLElement} */ (dialog().querySelector('[data-shelfway-part="body"]'));
+		const footer = /** @type {HTMLElement} */ (dialog().querySelector('[data-shelfway-part="footer"]'));
 		expect(header.className).toBe(DRAWER.header);
 		expect(header.className).toContain(METRICS.drawerHeader);
 		expect(header.querySelector('h2')?.textContent).toBe('Order #12');
@@ -86,7 +86,7 @@ describe('Drawer parts', () => {
 		expect(header.querySelector('button[aria-label="More actions"]')).not.toBeNull();
 		click(/** @type {HTMLElement} */ (header.querySelector('button[aria-label="Close"]')));
 		expect(onClose).toHaveBeenCalledTimes(1);
-		expect(body.className).toContain('ss-scroll');
+		expect(body.className).toContain('shelfway-scroll');
 		expect(body.className).toContain('min-h-0 flex-1');
 		expect(body.textContent).toContain('Body text');
 		expect(footer.className).toBe(DRAWER.footer);
@@ -102,10 +102,10 @@ describe('Drawer parts', () => {
 				<input aria-label="Name" />
 			</Drawer>,
 		);
-		expect(dialog().querySelector('[data-ss-part="footer"]')).toBeNull();
-		expect(dialog().querySelector('[data-ss-part="header"] [role="status"]')).toBeNull();
+		expect(dialog().querySelector('[data-shelfway-part="footer"]')).toBeNull();
+		expect(dialog().querySelector('[data-shelfway-part="header"] [role="status"]')).toBeNull();
 		const text = /** @type {HTMLElement} */ (byText(dialog(), 'Change the name'));
-		expect(text.closest('[data-ss-part="body"]')).not.toBeNull();
+		expect(text.closest('[data-shelfway-part="body"]')).not.toBeNull();
 		expect(dialog().getAttribute('aria-describedby')).toBe(text.id);
 	});
 
@@ -120,7 +120,7 @@ describe('Drawer parts', () => {
 				x
 			</Drawer>,
 		);
-		const header = /** @type {HTMLElement} */ (dialog().querySelector('[data-ss-part="header"]'));
+		const header = /** @type {HTMLElement} */ (dialog().querySelector('[data-shelfway-part="header"]'));
 		expect(byText(header, 'Save', 'button')).not.toBeNull();
 		click(/** @type {HTMLElement} */ (header.querySelector('button[aria-label="More actions"]')));
 		expect(document.querySelector('[role="menu"]')?.textContent).toContain('Duplicate');
@@ -164,7 +164,7 @@ describe('Drawer parts', () => {
 		const { container } = render(<Harness initial={false} />);
 		expect(document.querySelector('[role="dialog"]')).toBeNull();
 		click(byText(container, 'Toggle', 'button'));
-		expect(dialog().className).toContain('animate-ss-side');
+		expect(dialog().className).toContain('animate-shelfway-side');
 	});
 });
 
@@ -175,13 +175,13 @@ describe('Drawer while loading', () => {
 				<p>Real body</p>
 			</Drawer>,
 		);
-		const body = /** @type {HTMLElement} */ (dialog().querySelector('[data-ss-part="body"]'));
+		const body = /** @type {HTMLElement} */ (dialog().querySelector('[data-shelfway-part="body"]'));
 		expect(dialog().getAttribute('aria-busy')).toBe('true');
 		expect(body.className).toBe(DRAWER.body);
 		expect(body.textContent).not.toContain('Real body');
 		expect(body.querySelector('[role="status"]')).not.toBeNull();
 		expect(dialog().querySelector('h2')?.textContent).toBe('Order #12');
-		expect(dialog().querySelector('[data-ss-part="footer"]')?.textContent).toBe('Save');
+		expect(dialog().querySelector('[data-shelfway-part="footer"]')?.textContent).toBe('Save');
 	});
 
 	it('can show its own skeleton body', () => {
@@ -201,16 +201,16 @@ describe('DrawerSkeleton', () => {
 		expect(root.getAttribute('aria-busy')).toBe('true');
 		expect(root.className).toContain(DRAWER.panel);
 		expect(root.className).toContain(DRAWER_WIDTH.lg);
-		expect(root.querySelector('[data-ss-part="header"]')?.className).toBe(DRAWER.header);
-		expect(root.querySelector('[data-ss-part="body"]')?.className).toBe(DRAWER.body);
-		expect(root.querySelector('[data-ss-part="footer"]')?.className).toBe(DRAWER.footer);
+		expect(root.querySelector('[data-shelfway-part="header"]')?.className).toBe(DRAWER.header);
+		expect(root.querySelector('[data-shelfway-part="body"]')?.className).toBe(DRAWER.body);
+		expect(root.querySelector('[data-shelfway-part="footer"]')?.className).toBe(DRAWER.footer);
 	});
 
 	it('leaves the footer out and takes the md width by default', () => {
 		const { container } = render(<DrawerSkeleton footer={false} />);
 		const root = /** @type {HTMLElement} */ (container.firstElementChild);
 		expect(root.className).toContain(DRAWER_WIDTH.md);
-		expect(root.querySelector('[data-ss-part="footer"]')).toBeNull();
+		expect(root.querySelector('[data-shelfway-part="footer"]')).toBeNull();
 	});
 
 	it('has a body skeleton of its own for a loading drawer', () => {
@@ -233,9 +233,9 @@ describe('Dialog on the right is the same drawer', () => {
 			</Dialog>,
 		);
 		expect(dialog().className).toContain(DRAWER_WIDTH.lg);
-		expect(dialog().querySelector('[data-ss-part="header"] h2')?.textContent).toBe('Add a merchant');
-		expect(dialog().querySelector('[data-ss-part="body"]')?.textContent).toContain('Fill in the form');
-		expect(dialog().querySelector('[data-ss-part="footer"]')?.textContent).toBe('foot');
+		expect(dialog().querySelector('[data-shelfway-part="header"] h2')?.textContent).toBe('Add a merchant');
+		expect(dialog().querySelector('[data-shelfway-part="body"]')?.textContent).toContain('Fill in the form');
+		expect(dialog().querySelector('[data-shelfway-part="footer"]')?.textContent).toBe('foot');
 	});
 
 	it('stays a centered dialog for a short confirmation', () => {
@@ -245,6 +245,6 @@ describe('Dialog on the right is the same drawer', () => {
 			</Dialog>,
 		);
 		expect(/** @type {HTMLElement} */ (dialog().parentElement).getAttribute('data-placement')).toBe('center');
-		expect(dialog().querySelector('[data-ss-part="header"]')).toBeNull();
+		expect(dialog().querySelector('[data-shelfway-part="header"]')).toBeNull();
 	});
 });

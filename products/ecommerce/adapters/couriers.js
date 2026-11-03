@@ -14,11 +14,11 @@
  * - `headers`: an object (or JSON object text) of extra headers whose values may hold `{apiKey}`; without it the key
  *   goes as `Authorization: Bearer <apiKey>`.
  *
- * Every call goes through the injected `send` (`@ss/net` under the product's outbound policy: https only, every DNS
+ * Every call goes through the injected `send` (`@shelfway/net` under the product's outbound policy: https only, every DNS
  * answer vetted, no redirects) with an 8 s timeout and a 64 kB answer cap. The key never appears in errors.
  * @module
  */
-import { checkUrl, createOutboundPolicy, isNetError } from '@ss/net';
+import { checkUrl, createOutboundPolicy, isNetError } from '@shelfway/net';
 import {
 	DEFAULT_BODY_TEMPLATE,
 	TRACKING_TOKEN,
@@ -30,10 +30,10 @@ import {
 	readPath,
 } from '../core/couriers.js';
 import { orderMoney } from '../core/orders.js';
-import { toDecimal } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
+import { toDecimal } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
 
-/** @typedef {(url: string, init?: import('@ss/net').SafeFetchInit) => Promise<import('@ss/net').SafeResponse>} OutboundSend */
+/** @typedef {(url: string, init?: import('@shelfway/net').SafeFetchInit) => Promise<import('@shelfway/net').SafeResponse>} OutboundSend */
 /** @typedef {import('../core/model.js').OrderRecord} OrderRecord */
 
 /** One courier call's deadline. */
@@ -79,7 +79,7 @@ const headersOf = (value) => {
 /**
  * Why a connection value is not usable, or null.
  * @param {unknown} value
- * @param {import('@ss/net').OutboundPolicy} policy
+ * @param {import('@shelfway/net').OutboundPolicy} policy
  * @returns {string | null}
  */
 export const courierViolation = (value, policy) => {
@@ -141,7 +141,7 @@ export const bookingValues = (order, weightG) => {
 };
 
 /**
- * @param {{ send: OutboundSend, policy?: import('@ss/net').OutboundPolicy }} options
+ * @param {{ send: OutboundSend, policy?: import('@shelfway/net').OutboundPolicy }} options
  */
 export const createCouriers = ({ send, policy = createOutboundPolicy() }) => {
 	/**
@@ -162,7 +162,7 @@ export const createCouriers = ({ send, policy = createOutboundPolicy() }) => {
 	/**
 	 * One call: the status and the JSON answer (null when not JSON); status 0 when the courier could not be reached.
 	 * @param {string} url
-	 * @param {import('@ss/net').SafeFetchInit} init
+	 * @param {import('@shelfway/net').SafeFetchInit} init
 	 * @returns {Promise<{ status: number, json: unknown }>}
 	 */
 	const call = async (url, init) => {

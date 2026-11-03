@@ -6,14 +6,14 @@
  * sections. Plain HTML: every value is escaped (pieces documented as HTML are taken as they are).
  * @module
  */
-import { escapeHtml } from '@ss/contracts/text';
-import { isObject } from '@ss/contracts/util';
+import { escapeHtml } from '@shelfway/contracts/text';
+import { isObject } from '@shelfway/contracts/util';
 import { apiAnchor, renderApiReference } from './api-reference.js';
 import { KIT_GUIDE } from './guide.js';
 
 /**
  * An operation of `openapi.json` as the docs read it.
- * @typedef {{ 'x-ss-auth'?: string, 'x-ss-feature'?: string | string[], 'x-ss-permission'?: string, summary?: string }} DocsOperation
+ * @typedef {{ 'x-shelfway-auth'?: string, 'x-shelfway-feature'?: string | string[], 'x-shelfway-permission'?: string, summary?: string }} DocsOperation
  */
 /** One documented operation: `[METHOD, path, operation]`. @typedef {readonly [string, string, DocsOperation]} DocsRow */
 /**
@@ -31,7 +31,7 @@ import { KIT_GUIDE } from './guide.js';
 /**
  * The manifest parts the feature sections read.
  * @typedef {object} DocsManifest
- * @property {string} id the product id (widgets are placed with `data-ss-<id>="<widget key>"`)
+ * @property {string} id the product id (widgets are placed with `data-shelfway-<id>="<widget key>"`)
  * @property {ReadonlyArray<{ key: string, name: string, description: string, dependsOn?: ReadonlyArray<string> }>} features
  * @property {ReadonlyArray<{ key: string, kind: string, feature: string | ReadonlyArray<string> }>} widgets
  */
@@ -41,11 +41,11 @@ const STYLE = `body { font: 16px/1.6 system-ui, sans-serif; max-width: 860px; ma
 pre { overflow-x: auto; padding: 12px; border: 1px solid GrayText; border-radius: 8px; }
 table { border-collapse: collapse; width: 100%; } th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid GrayText; }
 td code { overflow-wrap: anywhere; }
-.ss-api-op { margin-top: 32px; } .ss-api-op h3 code, .ss-api-schema h4 { overflow-wrap: anywhere; }`;
+.shelfway-api-op { margin-top: 32px; } .shelfway-api-op h3 code, .shelfway-api-schema h4 { overflow-wrap: anywhere; }`;
 
-/** What every product's docs say of the website's settings (Portal › Website settings). */
+/** What every product's docs say of the website's settings (Platform › Website settings). */
 const WEBSITE_SETTINGS_NOTE =
-	'Your business facts (name, contact, address, hours), the look of the widgets (colors, font, logo), the region (country, time zone, currencies, languages, units, how money and dates look), your site pages and the people who get alerts are set once, in the Portal under Website settings, and every product of your website uses them. Nothing is read from your website, and nothing is saved twice. GET /v1/theme and GET /v1/format read the look and the Format; PUT on them answers 409 managed_by_portal. While the Portal holds nothing yet, the name is your domain, times use UTC and the look is the built-in one; the dashboard Overview says what to set.';
+	'Your business facts (name, contact, address, hours), the look of the widgets (colors, font, logo), the region (country, time zone, currencies, languages, units, how money and dates look), your site pages and the people who get alerts are set once, in the Platform under Website settings, and every product of your website uses them. Nothing is read from your website, and nothing is saved twice. GET /v1/theme and GET /v1/format read the look and the Format; PUT on them answers 409 managed_by_platform. While the Platform holds nothing yet, the name is your domain, times use UTC and the look is the built-in one; the dashboard Overview says what to set.';
 
 /** The API reference of each `openapi.json`, rendered once (it is the same for every request). @type {WeakMap<object, string>} */
 const references = new WeakMap();
@@ -86,11 +86,11 @@ export const docsOperations = (openapi) => {
 };
 
 /**
- * The features an operation belongs to (`x-ss-feature`: one key, or a list when any of them is enough).
+ * The features an operation belongs to (`x-shelfway-feature`: one key, or a list when any of them is enough).
  * @param {DocsOperation} operation
  * @returns {string[]}
  */
-export const operationFeatures = (operation) => [operation['x-ss-feature'] ?? []].flat();
+export const operationFeatures = (operation) => [operation['x-shelfway-feature'] ?? []].flat();
 
 /**
  * The route table (route linked to its place in the API reference, auth with the permission, feature), or nothing when
@@ -104,7 +104,7 @@ export const docsRouteTable = (rows) =>
 		: `<table><thead><tr><th>Route</th><th>Auth</th><th>Feature</th></tr></thead><tbody>${rows
 				.map(([method, path, operation]) => {
 					const features = operationFeatures(operation);
-					const auth = `${operation['x-ss-auth'] ?? ''}${operation['x-ss-permission'] ? ` (${operation['x-ss-permission']})` : ''}`;
+					const auth = `${operation['x-shelfway-auth'] ?? ''}${operation['x-shelfway-permission'] ? ` (${operation['x-shelfway-permission']})` : ''}`;
 					return `<tr><td><a href="#${escapeHtml(apiAnchor(method, path))}"><code>${escapeHtml(`${method} ${path}`)}</code></a>${
 						operation.summary ? ` ${escapeHtml(operation.summary)}` : ''
 					}</td><td>${escapeHtml(auth)}</td><td>${escapeHtml(features.length > 0 ? features.join(' or ') : 'always')}</td></tr>`;
@@ -121,7 +121,7 @@ export const docsRouteTable = (rows) =>
  */
 export const docsFeatureSections = ({ manifest, rows, guide = {} }) => {
 	const nameOf = new Map(manifest.features.map((feature) => [feature.key, feature.name]));
-	const attribute = `data-ss-${manifest.id}`;
+	const attribute = `data-shelfway-${manifest.id}`;
 	return manifest.features
 		.map((feature) => {
 			const widgets = manifest.widgets.filter((widget) => [widget.feature].flat().includes(feature.key));

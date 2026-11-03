@@ -9,7 +9,7 @@
  * `transport.js`.
  * @module
  */
-import { element, formatText, mountWidget } from '@ss/app-kit/widget';
+import { element, formatText, mountWidget } from '@shelfway/app-kit/widget';
 import { pageTypeOf } from '../core/pages.js';
 import { ATTACHMENT_TYPES, MAX_ATTACHMENT_BYTES, MAX_MESSAGE_LENGTH, PACE } from '../core/widgets.js';
 import { cardsPart, contactPart, flowPart, leadPart, ratingPart, signInPart, transcriptPart } from './chat-parts.js';
@@ -32,7 +32,7 @@ import { messageBody } from './rich.js';
 import { WIDGET_CSS } from './styles.js';
 import { createChecks, createUnreadChecks } from './transport.js';
 
-/** @typedef {{ kind: string, productId?: string, productName?: string }} PageInfo what `SSChat.setPage()` gave */
+/** @typedef {{ kind: string, productId?: string, productName?: string }} PageInfo what `ShelfwayChat.setPage()` gave */
 /**
  * @typedef {object} Message
  * @property {string} id
@@ -73,7 +73,7 @@ export const mountChat = ({ win, host, config, visitor, clock, page, onUnread })
 	const on = (feature) => config.features.includes(feature);
 	const doc = win.document;
 	const memory = createMemory({ win, now: clock.now });
-	const make = fieldMaker(doc, 'ss-chat');
+	const make = fieldMaker(doc, 'shelfway-chat');
 	const botName = t('chat.botName');
 	const fileTypes = s.attachments.types.filter((type) => ATTACHMENT_TYPES.includes(type));
 	/** The cap of a file type (C11: each type its own, as the server checks it). @param {string} type */
@@ -179,7 +179,7 @@ export const mountChat = ({ win, host, config, visitor, clock, page, onUnread })
 	};
 	/**
 	 * What to tell the visitor when a call failed: the widget's own texts, never the server's English detail.
-	 * @param {import('@ss/app-kit/widget').Answer} answer
+	 * @param {import('@shelfway/app-kit/widget').Answer} answer
 	 * @param {string} [invalid] the text of a refused value (`validation_failed`) for this action
 	 */
 	const failure = (answer, invalid = 'chat.error') => {

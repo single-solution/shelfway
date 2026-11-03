@@ -8,7 +8,7 @@
 /** @typedef {{ missing: boolean, at: number, message: string }} SearchState */
 
 /**
- * @param {{ store: import('@ss/app-kit').Store, now: () => number }} options
+ * @param {{ store: import('@shelfway/app-kit').Store, now: () => number }} options
  */
 export const createSearchState = ({ store, now }) => {
 	/** @param {string} websiteId */

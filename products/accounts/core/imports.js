@@ -1,6 +1,6 @@
 /**
  * Import mode of Accounts' records (PLAN 0.8.10 K10, Migration; A1, A5, A8), pure: the checks of the `import` feature
- * for each record ss-import sends, built on the product's own checks (roles, custom fields, names, addresses, custom
+ * for each record shelfway-import sends, built on the product's own checks (roles, custom fields, names, addresses, custom
  * values, activity copies) with what an import needs on top: given ids and past times, password hashes from another system and
  * history (blocked users, consents given, requests already invited, completed or declined).
  *
@@ -10,10 +10,10 @@
  * - A user's role and a request's role must exist (a ready-made role, or one imported before).
  * @module
  */
-import { isId, validateActivityCopy } from '@ss/contracts';
-import { normalizeEmail } from '@ss/contracts/email';
-import { normalizePhone } from '@ss/contracts/phone';
-import { isObject } from '@ss/contracts/util';
+import { isId, validateActivityCopy } from '@shelfway/contracts';
+import { normalizeEmail } from '@shelfway/contracts/email';
+import { normalizePhone } from '@shelfway/contracts/phone';
+import { isObject } from '@shelfway/contracts/util';
 import { MAX_ADDRESSES, checkAddresses, checkTags, checkCustomValues, checkFieldDefinition, checkName } from './profile.js';
 import { checkRole } from './roles.js';
 import { PROVIDERS } from './widgets.js';

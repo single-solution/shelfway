@@ -216,7 +216,7 @@ describe('the page script', () => {
 		const page = startWidget({ window, script: script('browser-token') });
 		// a shop event before the config is there waits for it
 		window.dispatchEvent(
-			new window.CustomEvent('ss:view_item', { detail: { currency: 'USD', value: 1250, items: [{ id: 'p1' }] } }),
+			new window.CustomEvent('shelfway:view_item', { detail: { currency: 'USD', value: 1250, items: [{ id: 'p1' }] } }),
 		);
 		await vi.advanceTimersByTimeAsync(0);
 		await page.ready;
@@ -285,7 +285,7 @@ describe('the page script', () => {
 		expect(document.body.querySelector('noscript')).not.toBeNull();
 		w.ttq.track = vi.fn();
 		window.dispatchEvent(
-			new window.CustomEvent('ss:purchase', {
+			new window.CustomEvent('shelfway:purchase', {
 				detail: { orderId: 'o1', currency: 'USD', value: 2500, items: [{ id: 'p1', price: 1250, quantity: 2 }] },
 			}),
 		);
@@ -358,7 +358,7 @@ describe('the page script', () => {
 	it('records without consent when the merchant does not require it, with the merchant’s own consent tool', async () => {
 		vi.useFakeTimers({ toFake: ['setTimeout'] });
 		const marker = document.createElement('meta');
-		marker.setAttribute('name', 'ss-growth-page');
+		marker.setAttribute('name', 'shelfway-growth-page');
 		marker.setAttribute('content', 'not_found');
 		document.head.append(marker);
 		serve({
@@ -382,11 +382,11 @@ describe('the page script', () => {
 		w[WIDGET_GLOBAL].consent.set({ analytics: true });
 		expect(w[WIDGET_GLOBAL].consent.get()).toMatchObject({ categories: { analytics: true, marketing: false } });
 		expect(document.head.querySelector('script[src*="gtag"]')).not.toBeNull();
-		window.dispatchEvent(new window.CustomEvent('ss:add_to_cart', { detail: null }));
+		window.dispatchEvent(new window.CustomEvent('shelfway:add_to_cart', { detail: null }));
 		expect([...w.dataLayer].map((args) => args[1])).toContain('add_to_cart');
 	});
 
-	it('G2: SSGrowth.track records the page’s own event and sends it to the pixels its conversion action names; contacts count', async () => {
+	it('G2: ShelfwayGrowth.track records the page’s own event and sends it to the pixels its conversion action names; contacts count', async () => {
 		vi.useFakeTimers({ toFake: ['setTimeout'] });
 		serve({
 			[`GET ${CONFIG_PATH}`]: () =>
@@ -418,7 +418,7 @@ describe('the page script', () => {
 		await page.ready;
 		w[WIDGET_GLOBAL].track('Bad Name');
 		w[WIDGET_GLOBAL].track('purchase', {});
-		window.dispatchEvent(new window.CustomEvent('ss:contact', { detail: { method: 'whatsapp' } }));
+		window.dispatchEvent(new window.CustomEvent('shelfway:contact', { detail: { method: 'whatsapp' } }));
 		await vi.advanceTimersByTimeAsync(1000);
 		expect(collected().filter((event) => event.type !== 'page_view')).toEqual([
 			{ type: 'custom', name: 'book_demo', props: { plan: 'pro' }, path: '/' },
@@ -487,7 +487,7 @@ describe('store-conversion options with the real page script (PLAN 0.8.10 G1–G
 		expect(inside(banner, '[role="dialog"]').hasAttribute('hidden')).toBe(false);
 		// shop events reach the container's dataLayer as GA4 ecommerce events
 		window.dispatchEvent(
-			new window.CustomEvent('ss:purchase', {
+			new window.CustomEvent('shelfway:purchase', {
 				detail: { orderId: 'o1', currency: 'USD', value: 2500, items: [{ id: 'p1', price: 1250, quantity: 2 }] },
 			}),
 		);
@@ -532,16 +532,16 @@ describe('store-conversion options with the real page script (PLAN 0.8.10 G1–G
 		});
 		const page = startWidget({ window, script: script('t') });
 		// a search the page dispatches before the config is there waits for it
-		window.dispatchEvent(new window.CustomEvent('ss:search', { detail: { term: '  red   lamp ', results: 3 } }));
+		window.dispatchEvent(new window.CustomEvent('shelfway:search', { detail: { term: '  red   lamp ', results: 3 } }));
 		await vi.advanceTimersByTimeAsync(0);
 		await page.ready;
 		w.ttq.track = vi.fn();
-		window.dispatchEvent(new window.CustomEvent('ss:contact', { detail: { method: 'WhatsApp' } }));
+		window.dispatchEvent(new window.CustomEvent('shelfway:contact', { detail: { method: 'WhatsApp' } }));
 		w[WIDGET_GLOBAL].contact();
 		w[WIDGET_GLOBAL].search('cables', { results: 0 });
-		window.dispatchEvent(new window.CustomEvent('ss:search', { detail: { term: '' } }));
+		window.dispatchEvent(new window.CustomEvent('shelfway:search', { detail: { term: '' } }));
 		window.dispatchEvent(
-			new window.CustomEvent('ss:view_item', {
+			new window.CustomEvent('shelfway:view_item', {
 				detail: { currency: 'USD', value: 1250, items: [{ id: 'prd_1', variantId: 'var_9', price: 1250 }, { id: 'prd_2' }] },
 			}),
 		);
@@ -728,7 +728,7 @@ describe('store-conversion options with the real page script (PLAN 0.8.10 G1–G
 		await vi.advanceTimersByTimeAsync(0);
 		await second.ready;
 		w[WIDGET_GLOBAL].notFound();
-		window.dispatchEvent(new window.CustomEvent('ss:search', { detail: { term: 'lost' } }));
+		window.dispatchEvent(new window.CustomEvent('shelfway:search', { detail: { term: 'lost' } }));
 		await vi.advanceTimersByTimeAsync(1000);
 		const latest = collected().filter((event) => event.path === '/missing');
 		expect(latest).toEqual(
@@ -788,7 +788,7 @@ describe('single-page apps (SG-4)', () => {
 		window.history.pushState(null, '', '/search?q=Case');
 		window.history.pushState(null, '', '/search?q=Case&page=2');
 		const marker = document.createElement('meta');
-		marker.setAttribute('name', 'ss-growth-page');
+		marker.setAttribute('name', 'shelfway-growth-page');
 		marker.setAttribute('content', 'not_found');
 		window.history.pushState(null, '', '/old-lamp');
 		document.head.append(marker);
@@ -1832,11 +1832,11 @@ describe('admin widgets', () => {
 		expect(cards()).toEqual(['Whole site', '/', '/products/blue-lamp']);
 		// a page read shows its search result and share preview (R7 #105); one not read has none
 		const [, home, lamp] = /** @type {HTMLElement[]} */ ([...(host.shadowRoot?.querySelectorAll('.masonry .card') ?? [])]);
-		expect(home?.querySelector('.ss-seo')).toBeNull();
+		expect(home?.querySelector('.shelfway-seo')).toBeNull();
 		expect(lamp?.querySelector('details > summary')?.textContent).toBe(strings['seo.preview.show']);
-		expect(lamp?.querySelector('.ss-seo-title')?.textContent).toBe('Blue Lamp | Shop');
-		expect(lamp?.querySelector('.ss-seo-trail')?.textContent).toBe('https://shop.example.com › products › blue-lamp');
-		expect(lamp?.querySelector('.ss-seo-head')?.textContent).toBe(strings['seo.preview.result']);
+		expect(lamp?.querySelector('.shelfway-seo-title')?.textContent).toBe('Blue Lamp | Shop');
+		expect(lamp?.querySelector('.shelfway-seo-trail')?.textContent).toBe('https://shop.example.com › products › blue-lamp');
+		expect(lamp?.querySelector('.shelfway-seo-head')?.textContent).toBe(strings['seo.preview.result']);
 		expect([...(host.shadowRoot?.querySelectorAll('.masonry .card .kind') ?? [])].map((k) => k.textContent)).toEqual([
 			strings['seo.kind.home'],
 			`Product group · ${strings['seo.sampled']}`,

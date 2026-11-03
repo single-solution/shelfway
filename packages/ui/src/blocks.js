@@ -294,7 +294,7 @@ export function SaveBar({
 					aria-label={saveLabel}
 					data-state={closing ? 'closed' : 'open'}
 					className={cx(SAVE_BAR.strip, className)}>
-					<div className={cx(SAVE_BAR.bar, closing ? 'animate-ss-sheet-out' : 'animate-ss-sheet')}>
+					<div className={cx(SAVE_BAR.bar, closing ? 'animate-shelfway-sheet-out' : 'animate-shelfway-sheet')}>
 						<p role="status" className="flex items-center gap-2 text-sm font-medium text-fg">
 							<span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-attention-solid" />
 							{named ? (
@@ -307,7 +307,7 @@ export function SaveBar({
 												<button
 													type="button"
 													onClick={() => onJump(one.id)}
-													className="ss-motion rounded underline decoration-dotted underline-offset-4 hover:text-primary focus-visible:outline-2 focus-visible:outline-focus">
+													className="shelfway-motion rounded underline decoration-dotted underline-offset-4 hover:text-primary focus-visible:outline-2 focus-visible:outline-focus">
 													{one.label}
 												</button>
 											) : (
@@ -399,11 +399,11 @@ export function useHashSection(ids, initial) {
 }
 
 /** The look of a strip of tabs ({@link PillTabs}): a sage track whose current item is raised. */
-const TAB_STRIP = 'ss-scroll flex w-fit max-w-full min-w-0 gap-0.5 rounded-control bg-surface-2 p-0.5';
+const TAB_STRIP = 'shelfway-scroll flex w-fit max-w-full min-w-0 gap-0.5 rounded-control bg-surface-2 p-0.5';
 /** @param {boolean} on */
 const tabLook = (on) =>
 	cx(
-		'ss-motion inline-flex h-7 shrink-0 items-center rounded-control px-3 text-label font-medium focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus',
+		'shelfway-motion inline-flex h-7 shrink-0 items-center rounded-control px-3 text-label font-medium focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus',
 		on ? 'bg-surface text-fg ring-1 ring-line-soft' : 'text-muted hover:text-fg',
 	);
 
@@ -453,8 +453,8 @@ export function Disclosure({ title, description, badge, defaultOpen = false, for
 				aria-expanded={shown}
 				aria-controls={shown ? id : undefined}
 				onClick={() => setOpen(!shown)}
-				className="ss-motion flex min-h-12 w-full items-center gap-2.5 rounded-card px-5 py-3 text-left hover:bg-surface-2/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus">
-				<span aria-hidden="true" className={cx('ss-motion text-muted', shown && 'rotate-90')}>
+				className="shelfway-motion flex min-h-12 w-full items-center gap-2.5 rounded-card px-5 py-3 text-left hover:bg-surface-2/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus">
+				<span aria-hidden="true" className={cx('shelfway-motion text-muted', shown && 'rotate-90')}>
 					<Icon name="chevronRight" size={16} />
 				</span>
 				<span className="text-title font-semibold text-fg">{title}</span>
@@ -477,7 +477,7 @@ export const NEXT_STEP_TEXTS = Object.freeze({ dismiss: 'Dismiss' });
 
 /** The one action of a hint: its words, and where it goes (`href`) or what it does (`onClick`). */
 const NEXT_STEP_ACTION =
-	'ss-motion ss-press inline-flex shrink-0 items-center gap-1 rounded-sm font-semibold underline-offset-2 hover:underline ' +
+	'shelfway-motion shelfway-press inline-flex shrink-0 items-center gap-1 rounded-sm font-semibold underline-offset-2 hover:underline ' +
 	'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
 
 /**
@@ -495,7 +495,7 @@ export function NextStep({ icon = 'bulb', tone = 'accent', children, action, onD
 		<div
 			role="note"
 			className={cx(
-				'flex animate-ss-fade items-center gap-2.5 rounded-card px-3.5 py-2 text-sm',
+				'flex animate-shelfway-fade items-center gap-2.5 rounded-card px-3.5 py-2 text-sm',
 				CALLOUTS[tone === 'accent' ? 'primary' : tone].box,
 				className,
 			)}>
@@ -522,7 +522,7 @@ export function NextStep({ icon = 'bulb', tone = 'accent', children, action, onD
 					aria-label={words.dismiss}
 					title={words.dismiss}
 					onClick={onDismiss}
-					className="ss-motion ss-press -mr-1 inline-flex size-6 shrink-0 items-center justify-center rounded-control hover:bg-fg/10 focus-visible:outline-2 focus-visible:outline-focus">
+					className="shelfway-motion shelfway-press -mr-1 inline-flex size-6 shrink-0 items-center justify-center rounded-control hover:bg-fg/10 focus-visible:outline-2 focus-visible:outline-focus">
 					<Icon name="close" size={13} />
 				</button>
 			) : null}

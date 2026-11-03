@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 /* global document, window */
-import { DEFAULT_FORMAT } from '@ss/app-kit/widget';
+import { DEFAULT_FORMAT } from '@shelfway/app-kit/widget';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { COMPARE_MAX_PRODUCTS } from '../core/limits.js';
 import { STORAGE_KEYS } from '../core/widgets.js';
@@ -243,7 +243,7 @@ describe('product grid', () => {
 			featured: '1',
 			sort: 'updated',
 		});
-		expect(host.getAttribute('data-ss-mounted')).toBe('product-grid');
+		expect(host.getAttribute('data-shelfway-mounted')).toBe('product-grid');
 		expect(fake.all('GET /v1/shop/products')[0]?.query).toEqual({
 			q: 'pixel',
 			category: 'phones',
@@ -304,7 +304,7 @@ describe('product grid', () => {
 		expect(buttonOf(host, text('grid.nextPage')).disabled).toBe(true);
 		expect(buttonOf(host, text('grid.more')).hidden).toBe(true);
 		// the facets of the first page stay while other pages are shown
-		expect($(host, '#ss-grid-category')).not.toBeNull();
+		expect($(host, '#shelfway-grid-category')).not.toBeNull();
 	});
 
 	it('filters by category, several brands, grades and attribute values, price, stock, featured and deal', async () => {
@@ -334,7 +334,7 @@ describe('product grid', () => {
 		expect(toggle.getAttribute('aria-expanded')).toBe('true');
 		expect($(host, '.filter-panel').hasAttribute('data-open')).toBe(true);
 		// the category tree: counts from the facets, a child indented, coming soon not to be chosen
-		const category = $(host, '#ss-grid-category');
+		const category = $(host, '#shelfway-grid-category');
 		const options = [...category.options].map((/** @type {any} */ o) => [o.value, o.textContent, o.disabled]);
 		expect(options).toEqual([
 			['', text('grid.allCategories'), false],
@@ -384,15 +384,15 @@ describe('product grid', () => {
 		expect(asked.at(-1).inStock).toBe('true');
 		await setValue(checkOf(host, text('grid.featured')), true);
 		expect(asked.at(-1).featured).toBe('1');
-		const deal = $(host, '#ss-grid-deal');
+		const deal = $(host, '#shelfway-grid-deal');
 		expect([...deal.options].map((/** @type {any} */ o) => o.textContent)).toEqual([text('grid.anyDeal'), 'Autumn sale']);
 		await setValue(deal, 'dl_1');
 		expect(asked.at(-1).deal).toBe('dl_1');
 		// sorts include recently updated and fewest sold
-		const sorts = [...$(host, '#ss-grid-sort').options].map((/** @type {any} */ o) => o.value);
+		const sorts = [...$(host, '#shelfway-grid-sort').options].map((/** @type {any} */ o) => o.value);
 		expect(sorts).toContain('updated');
 		expect(sorts).toContain('sold_asc');
-		await setValue($(host, '#ss-grid-sort'), 'sold_asc');
+		await setValue($(host, '#shelfway-grid-sort'), 'sold_asc');
 		expect(asked.at(-1).sort).toBe('sold_asc');
 		$(host, 'input[type="search"]').value = ' phone ';
 		await submit($(host, 'form'));
@@ -452,7 +452,7 @@ describe('product grid', () => {
 			{ category: 'cat_9', brand: 'brd_9', grade: 'z' },
 			{ catalog: { grades: [{ key: 'a', label: 'Like new' }] } },
 		);
-		expect($(host, '#ss-grid-category').value).toBe('cat_9');
+		expect($(host, '#shelfway-grid-category').value).toBe('cat_9');
 		expect(checkOf(host, 'brd_9').checked).toBe(true);
 		expect(checkOf(host, 'z').checked).toBe(true);
 		// the website's grades are offered before any facet names them
@@ -488,10 +488,10 @@ describe('product grid', () => {
 		const host = await mountGrid(fake, { category: 'tablets', limit: '2' });
 		expect($(host, '[role="status"]').textContent).toBe(text('grid.comingSoon', { name: 'Tablets' }));
 		// the chosen coming-soon category stays shown
-		expect([...$(host, '#ss-grid-category').options].find((/** @type {any} */ o) => o.value === 'tablets').disabled).toBe(
+		expect([...$(host, '#shelfway-grid-category').options].find((/** @type {any} */ o) => o.value === 'tablets').disabled).toBe(
 			false,
 		);
-		await setValue($(host, '#ss-grid-category'), '');
+		await setValue($(host, '#shelfway-grid-category'), '');
 		expect($(host, '.foot .meta').textContent).toContain(text('grid.totalCapped', { count: 10000 }));
 		expect($$(host, '.pages button').map((b) => b.textContent)).toEqual([
 			text('grid.prevPage'),
@@ -536,7 +536,7 @@ describe('product grid', () => {
 		await click(buttonOf(host, text('grid.showFewer')));
 		expect(brands()).toHaveLength(9);
 		// the category select falls back to the facets when the tree cannot be read
-		expect([...$(host, '#ss-grid-category').options].map((/** @type {any} */ o) => o.value)).toEqual(['', 'phones']);
+		expect([...$(host, '#shelfway-grid-category').options].map((/** @type {any} */ o) => o.value)).toEqual(['', 'phones']);
 		// a new search forgets the attribute values seen before
 		expect(textOf(host)).toContain('Storage');
 		const before = asked.length;
@@ -636,7 +636,7 @@ describe('product grid', () => {
 		expect(compareIds(window)).toEqual(['prd_a']);
 		expect(compare('prd_a').getAttribute('aria-pressed')).toBe('true');
 		// the list holds COMPARE_MAX_PRODUCTS: with the others in it, one more is refused
-		window.localStorage.setItem('ss-ecommerce-compare', JSON.stringify(['prd_a', 'prd_x2', 'prd_x3', 'prd_x4']));
+		window.localStorage.setItem('shelfway-ecommerce-compare', JSON.stringify(['prd_a', 'prd_x2', 'prd_x3', 'prd_x4']));
 		await click(compare('prd_b'));
 		expect(status()).toBe(text('compare.full', { max: COMPARE_MAX_PRODUCTS }));
 		await click(compare('prd_a'));
@@ -799,7 +799,7 @@ describe('shared helpers', () => {
 		/** @type {HTMLElement} */ (box.querySelector('[data-focus="bad key!"]')).focus();
 		keepFocus(box, render);
 		expect(host.shadowRoot?.activeElement).toBeNull();
-		expect(COMPARE_EVENT).toBe('ss-ecommerce:compare');
+		expect(COMPARE_EVENT).toBe('shelfway-ecommerce:compare');
 	});
 
 	it('reads the catalog and checkout settings and words warranties', () => {
@@ -883,11 +883,11 @@ describe('shared helpers', () => {
 		expect(text).toContain('gone');
 		expect(text).toContain('slim');
 		const deal = /** @type {HTMLSelectElement} */ (
-			parts.find((part) => part.querySelector('#ss-grid-deal'))?.querySelector('select')
+			parts.find((part) => part.querySelector('#shelfway-grid-deal'))?.querySelector('select')
 		);
 		expect(deal.value).toBe('dl_9');
 		const price = /** @type {HTMLInputElement} */ (
-			parts.find((part) => part.querySelector('#ss-grid-min'))?.querySelector('#ss-grid-min')
+			parts.find((part) => part.querySelector('#shelfway-grid-min'))?.querySelector('#shelfway-grid-min')
 		);
 		expect(price.placeholder).toBe('');
 		const gone = /** @type {HTMLInputElement} */ (

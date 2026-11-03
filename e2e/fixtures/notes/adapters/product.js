@@ -1,5 +1,5 @@
 /**
- * The product on the kit: `createProductInstance(options)` wires `@ss/app-kit` `createProduct` with this product's
+ * The product on the kit: `createProductInstance(options)` wires `@shelfway/app-kit` `createProduct` with this product's
  * manifest (each feature's settings schema from `schemas/` inline), its English widget texts, the merchant database
  * indexes, the data-rights hooks, the widget settings the kit's widget config routes answer and its part of the
  * website Setup sheet (the OpenAPI document, the guide's "What your website builds" per feature and a short summary in
@@ -7,7 +7,7 @@
  * Public entry `./product` of this package, so a system test can compose the product with `./routes`.
  * @module
  */
-import { createProduct } from '@ss/app-kit';
+import { createProduct } from '@shelfway/app-kit';
 import guide from '../docs/guide.json' with { type: 'json' };
 import manifestFile from '../manifest.json' with { type: 'json' };
 import openapi from '../openapi.json' with { type: 'json' };
@@ -21,7 +21,7 @@ import { NOTE_INDEXES, createNotesStore } from './notes-store.js';
 const SETTINGS = { notes: notesSettings, import: importSettings };
 
 /** The manifest as the kit and the Portal take it: settings schemas inline. */
-export const manifest = /** @type {import('@ss/contracts').Manifest} */ (
+export const manifest = /** @type {import('@shelfway/contracts').Manifest} */ (
 	/** @type {unknown} */ ({
 		...manifestFile,
 		features: manifestFile.features.map((feature) => ({ ...feature, settings: SETTINGS[feature.key] })),
@@ -32,7 +32,7 @@ export { strings };
 
 /**
  * Data rights (PLAN 0.4.11): a visitor's notes are found by the email they left.
- * @type {NonNullable<import('@ss/app-kit').ProductOptions['hooks']>}
+ * @type {NonNullable<import('@shelfway/app-kit').ProductOptions['hooks']>}
  */
 const dataRights = {
 	exportUser: async (ctx, user) =>
@@ -44,7 +44,7 @@ const dataRights = {
 };
 
 /**
- * @typedef {Omit<import('@ss/app-kit').ProductOptions, 'manifest' | 'strings' | 'hooks' | 'connections' | 'data' | 'openapi' | 'build'>} InstanceOptions
+ * @typedef {Omit<import('@shelfway/app-kit').ProductOptions, 'manifest' | 'strings' | 'hooks' | 'connections' | 'data' | 'openapi' | 'build'>} InstanceOptions
  */
 
 /**
@@ -79,7 +79,7 @@ export const createProductInstance = (options) => {
 		// the website Setup sheet: the API document and what the merchant's website builds per feature
 		openapi,
 		build: guide.build,
-		// the import feature (test-only here, PLAN 0.8.10 K10): notes moved in with ss-import
+		// the import feature (test-only here, PLAN 0.8.10 K10): notes moved in with shelfway-import
 		imports: { collections: { notes: { check: checkImportedNote } } },
 	});
 	return product;

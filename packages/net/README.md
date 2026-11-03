@@ -1,4 +1,4 @@
-# @ss/net
+# @shelfway/net
 
 The server-side networking and runtime shared by the Portal and products. It provides SSRF policy and IP address
 classification, DNS-pinned guarded lookups, a guarded HTTP(S) client, MongoDB connection strings and client rules, AWS
@@ -52,7 +52,7 @@ import {
 	objectUrl,
 	isNetError,
 	netError,
-} from '@ss/net';
+} from '@shelfway/net';
 ```
 
 `isNetError(error, code?)` tells a `NetError` (`{ code, reason, detail? }`) apart; `netError(code, reason, message,
@@ -89,7 +89,7 @@ classified, with `canonical: false`.
 | ------------ | ------------------ | ------------------------------------------------------------------------------ |
 | `allowHosts` | `[]`               | exact host names / IP literals admitted despite the rules (development only)   |
 | `resolve`    | `dns.lookup` (all) | `(host, { family? }) => Promise<Array<{ address, family }>>` — inject in tests |
-| `userAgent`  | `ss-net/1`         | default `user-agent`                                                           |
+| `userAgent`  | `shelfway-net/1`   | default `user-agent`                                                           |
 
 Hosts not on the allowlist need https on port 443 or 8443. Allowlisted hosts skip the port and address rules and may
 use http. An allowlisted IP literal also admits that address as a DNS answer for another name. Only enable the

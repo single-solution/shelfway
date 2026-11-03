@@ -2,16 +2,16 @@
  * Guest checkout (PLAN 0.8.10 E21; dynamic model §5): a guest orders with a name and the contact the `checkout` setting
  * `guestIdentity` asks for — a phone (the default), an email address, or either — and a phone while
  * `checkout.phoneRequired` is on. The phone is read as E.164 by the normalizer every product shares
- * (`@ss/contracts/phone`, K12) with the website's phone rules (`phoneRules`: the Portal's Region and format › Phone
+ * (`@shelfway/contracts/phone`, K12) with the website's phone rules (`phoneRules`: the Portal's Region and format › Phone
  * rules, the calling code its own or its country's, and the trunk prefix); the email address is kept in lower case.
  * One guest has one customer record, found by its key (`guestKey`): `p:<E.164>` or `e:<email>` (under `either` the phone
  * when given). A guest order gets a key — 32 random characters, shown once and kept only as its hash — that the guest
- * sends as `SS-Order-Key` to read, pay, cancel and send proof for it (made and checked in `adapters/crypto.js`). Orders
+ * sends as `Shelfway-Order-Key` to read, pay, cancel and send proof for it (made and checked in `adapters/crypto.js`). Orders
  * and customers also keep the phone's digits for search (E31). No I/O.
  * @module
  */
-import { normalizeEmail } from '@ss/contracts/email';
-import { normalizePhone, phoneInCountries, websiteCallingCode } from '@ss/contracts/phone';
+import { normalizeEmail } from '@shelfway/contracts/email';
+import { normalizePhone, phoneInCountries, websiteCallingCode } from '@shelfway/contracts/phone';
 import { postcodeKey } from './address.js';
 
 /** An order key's length. */

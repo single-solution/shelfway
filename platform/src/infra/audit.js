@@ -7,10 +7,10 @@
  * denormalized so merchant consoles can list their own history.
  * @module
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { platformError } from './errors.js';
-import { redact } from '@ss/net';
-import { isObject } from '@ss/contracts/util';
+import { redact } from '@shelfway/net';
+import { isObject } from '@shelfway/contracts/util';
 import { defaultRandomBytes } from './util.js';
 
 /** @typedef {import('./db.js').ReadOps} ReadOps */

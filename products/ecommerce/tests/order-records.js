@@ -3,7 +3,7 @@
  * tests): an order in the shape checkout writes (or delivered with earned points and an approved return claim), its
  * record, claim and product's stock read back, a move through the API, and Payments' refunds answered as a test says.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { givePoints } from '../adapters/ledger.js';
 import { COLLECTIONS } from '../core/model.js';
 import { PAYMENTS, storedOrder } from './helpers.js';

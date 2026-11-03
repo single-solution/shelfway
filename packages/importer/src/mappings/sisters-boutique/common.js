@@ -2,12 +2,12 @@
  * Helpers of the Sisters Boutique mapping (PLAN 0.8.10 Migration, "Per store", SB): the store's values (its calling
  * code, its order number form), its shapes (Mongoose documents with ObjectIds, rupees, `StoredImage` photos with
  * full https addresses, SEO blocks) and the rules that turn them into the products' shapes (paisa, storage keys, the
- * products' SEO fields, E.164 phones through `@ss/contracts/phone`). Store names and shapes appear only here and in the
+ * products' SEO fields, E.164 phones through `@shelfway/contracts/phone`). Store names and shapes appear only here and in the
  * other files of this folder (PLAN 0.10, 0.13).
  * @module
  */
 import { createHash } from 'node:crypto';
-import { normalizePhone } from '@ss/contracts/phone';
+import { normalizePhone } from '@shelfway/contracts/phone';
 import { hexOf, legacyId } from '../../mapping.js';
 
 /** @typedef {import('../../mapping.js').MapContext} MapContext */

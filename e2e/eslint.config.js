@@ -1,4 +1,4 @@
-import { createEslintConfig } from '@ss/config/eslint';
+import { createEslintConfig } from '@shelfway/config/eslint';
 
 // the test product mirrors a generated product's own config: ui/ runs in browsers, app/ holds React components and
 // the dashboard test renders them

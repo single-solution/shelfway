@@ -1,4 +1,4 @@
-import { validateManifest, validateProductBlueprint } from '@ss/contracts';
+import { validateManifest, validateProductBlueprint } from '@shelfway/contracts';
 import { describe, expect, it } from 'vitest';
 import guide from '../docs/guide.json' with { type: 'json' };
 import nextConfig from '../next.config.js';
@@ -79,7 +79,7 @@ describe('the website Setup sheet', () => {
 			'<p><strong>What your website builds.</strong> In your Google OAuth client, add the return address shown in Connections',
 		);
 		expect(docs.text).toContain(
-			'<p><strong>What your website builds.</strong> Add a page with &#60;div data-ss-accounts=&#34;role_request&#34;&#62;&#60;/div&#62;',
+			'<p><strong>What your website builds.</strong> Add a page with &#60;div data-shelfway-accounts=&#34;role_request&#34;&#62;&#60;/div&#62;',
 		);
 	});
 

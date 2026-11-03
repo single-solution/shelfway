@@ -3,7 +3,7 @@
  * what each paid, one customer with their latest orders, the blocklist, the staff note and the RTO count; guests and
  * members by customer id, with their orders, spend and points (K-6, CU-5).
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { COLLECTIONS } from '../core/model.js';
 import { ACCOUNTS, ORIGIN, readyShop, storedOrder } from './helpers.js';
@@ -355,7 +355,7 @@ describe('customers without orders and when records are made (CU-2, CU-4)', () =
 			const answer = await shop.call('GET', '/v1/shop/orders', {
 				token: shop.browser,
 				origin: ORIGIN,
-				headers: { 'ss-sign-in': token },
+				headers: { 'shelfway-sign-in': token },
 			});
 			expect(answer.status).toBe(200);
 		};

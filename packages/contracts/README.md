@@ -1,4 +1,4 @@
-# @ss/contracts
+# @shelfway/contracts
 
 Versioned JSON Schemas (2020-12) and validators that bind the Portal and every product (PLAN.md Part 0: 0.4.9,
 0.4.11, 0.4.12, 0.4.13): the product manifest and its settings schemas, the Product ↔ Portal wire shapes,
@@ -14,7 +14,7 @@ functions share one lazily created validator.
 ## Manifest
 
 ```js
-import { validateManifest, manifestPriceList } from '@ss/contracts';
+import { validateManifest, manifestPriceList } from '@shelfway/contracts';
 
 const result = validateManifest(json);
 const prices = manifestPriceList(json); // { version: 1, features: [{ key, name, description, dependsOn, millicreditsPerHour: 0 }] }
@@ -35,7 +35,7 @@ order; only with a widget script), `docsUrl`, `features: [{ key, name, descripti
 - Every feature's `settings` is a valid settings schema (below), defaults included.
 - `recommendFor` (optional, at most 20 rules, each once): the business profile answers the feature suits, for the
   Setup sheet's advisor (below). A rule is one to four tags joined by `+` (all must hold), each a tag of
-  `@ss/contracts/profile` (`recommendRule` otherwise), for example `["pays.cod"]` or
+  `@shelfway/contracts/profile` (`recommendRule` otherwise), for example `["pays.cod"]` or
   `["pays.online+countries.za"]`.
 
 ## Settings schemas
@@ -66,7 +66,7 @@ be valid (`settingLabels` for a label of no choice or suggestions where they do 
 | `validateDirectoryList`  | `{ items: [{ productId, name, baseUrl }] }`: every connected product once, by id                                               |
 
 Times are ISO-8601 UTC strings (`Z`) and must be real instants; `graceEndsAt` is set exactly while the status is
-`grace`. Money is integer millicredits. Notice bodies are checked by `@ss/protocol` (`verifyNotice`).
+`grace`. Money is integer millicredits. Notice bodies are checked by `@shelfway/protocol` (`verifyNotice`).
 
 Vocabularies: `ADMIN_ROLES` (`owner`, `support`, `finance`) and `PRODUCT_UNAVAILABLE_REASONS` (`stopped`, `suspended`,
 `removed`: the `reason` of a `product_unavailable` problem).
@@ -101,12 +101,12 @@ same checks and normalizing, and only the members that have a value are kept (it
   `{unsubscribeUrl}` in a message that is not required; each long value is one of the `values` and used in no subject
   or title.
 
-## Website Setup sheet (`ss.blueprint/1`)
+## Website Setup sheet (`shelfway.blueprint/1`)
 
 One sheet per website: every product's features, settings, connections state, widgets,
 permissions, events, checklist and docs, generated on request and never stored.
 
-- `validateProductBlueprint`: a product's part, answered by `@ss/app-kit` at `GET /v1/blueprint?websiteId=` (a signed
+- `validateProductBlueprint`: a product's part, answered by `@shelfway/app-kit` at `GET /v1/blueprint?websiteId=` (a signed
   Portal call): `{ productId, name, version, status, docs: { guide, openapi }, business, install, features, shared,
 connections, widgets, staffPermissions, events, checklist, summaries, build }`. Features carry their `recommendFor`
   rules and their settings `{ key, title, value, default }` (`default: true` while the website has not saved its own
@@ -115,7 +115,7 @@ connections, widgets, staffPermissions, events, checklist, summaries, build }`. 
 kind, neededBy, needed, set, state, testedAt }`: never a value, its last characters or a test message (the schema
   refuses them). `build: [{ feature, what, docs }]`: what the merchant's website builds for each feature that is on
   (at most `BUILD_TEXT_MAX` characters) and the guide's section of it.
-- `validateBlueprint`: the Portal's sheet `{ schema: 'ss.blueprint/1' (BLUEPRINT_SCHEMA), generatedAt, website: { id,
+- `validateBlueprint`: the Portal's sheet `{ schema: 'shelfway.blueprint/1' (BLUEPRINT_SCHEMA), generatedAt, website: { id,
 domain, status, business, profile }, access: { allowedOrigins, testingOrigins, serverTokens }, products, share? }`.
   `status` is the status of the website's products (`active`, `grace`, `stopped`, `suspended`); `profile` the website's
   business profile (or `null`). A product is its blueprint plus `reachable: true`, `apiBase` (its address, before the
@@ -128,7 +128,7 @@ domain, status, business, profile }, access: { allowedOrigins, testingOrigins, s
   has `share: { expiresAt, values, install }`: without values every setting's `value` is left out, without install
   the browser token and snippet.
 
-## Business profile and recommendations (`@ss/contracts/profile`, browser-safe)
+## Business profile and recommendations (`@shelfway/contracts/profile`, browser-safe)
 
 A website's business profile is a few optional answers kept by the Portal: what it sells, how shoppers pay, how
 orders reach them, how shoppers sign in, who answers the chat, how it messages customers, marketing, what it offers
@@ -149,10 +149,10 @@ the profile asks for. A feature is `recommended` (with the tags of the first rul
 fails on a question the profile answered; `missing` one tag per rule) or `neutral` (no rules, or an open question could
 still make a rule hold): `adviseFeatures(features, profile)` → `{ recommended, notRecommended }` for a product's
 features (`notRecommended`: ruled out and on). The root entry has `PROFILE_CHOICES`, `adviseFeatures` and
-`validateBusinessProfile` for servers; `@ss/contracts/profile` has the whole vocabulary and `adviseFeatures` for the
+`validateBusinessProfile` for servers; `@shelfway/contracts/profile` has the whole vocabulary and `adviseFeatures` for the
 browser.
 
-## Message templates (`@ss/contracts/templates`)
+## Message templates (`@shelfway/contracts/templates`)
 
 Pure and browser-safe; Notifications checks every template with it, and `validateMessageDefaults` checks products'
 defaults with the same rules.
@@ -169,9 +169,9 @@ defaults with the same rules.
   `wordsProblem(channel, { subject, text })` (the text written and within the channel's limit, a subject on email and
   push, one line of at most 200 characters, sections well formed), each null when fine.
 
-## Format and time zone (`@ss/contracts/format`, PLAN 0.8.10 K7, K8)
+## Format and time zone (`@shelfway/contracts/format`, PLAN 0.8.10 K7, K8)
 
-Pure and browser-safe, so products' `core/` and widgets (through `@ss/app-kit/widget`) use the same code.
+Pure and browser-safe, so products' `core/` and widgets (through `@shelfway/app-kit/widget`) use the same code.
 
 - `DEFAULT_FORMAT` `{ locale: '', currencyDisplay: 'code', currencySymbols: {}, wholeUnits: false, times: 'viewer' }`,
   `FORMAT_FIELDS`, `formatViolation(field, value)`, `normalizeFormat(value)`. `currencySymbols` is the merchant's own
@@ -192,7 +192,7 @@ Pure and browser-safe, so products' `core/` and widgets (through `@ss/app-kit/wi
   the currency's digits, no grouping: `1050 USD` → `10.50`, `-5 USD` → `-0.05`) and `fromDecimal(text, currency)`
   (`10.5` → `1050`; null unless 1 to `MAX_AMOUNT` minor units with at most the currency's decimals).
 
-## Address formats (`@ss/contracts/address`)
+## Address formats (`@shelfway/contracts/address`)
 
 Pure and browser-safe; Accounts and Ecommerce build their address forms, checks and printed addresses from this one
 table, after Google's address data (as CLDR and Shopify). An address has a country (ISO 3166-1 alpha-2) and the place
@@ -211,7 +211,7 @@ parts `line1`, `line2`, `area`, `city`, `region`, `postalCode` (`PLACE_PARTS`, l
 - `ADDRESS_COUNTRIES` (the phone list's ISO codes), `isAddressCountry`, `countryName(code)` (US English),
   `countryCodeOf(codeOrName)` and `countryChoices()` (sorted by name) for pickers.
 
-## Phone numbers (`@ss/contracts/phone`)
+## Phone numbers (`@shelfway/contracts/phone`)
 
 Pure and browser-safe; every product normalizes phones with it, so one person has one number everywhere.
 
@@ -228,7 +228,7 @@ Pure and browser-safe; every product normalizes phones with it, so one person ha
 - `nationalNumberOf(phone)`: the national significant number of an E.164 number (its digits after the calling code),
   or null; products search numbers by its end, never by a fixed count of last digits.
 
-## CSV (`@ss/contracts/csv`)
+## CSV (`@shelfway/contracts/csv`)
 
 Pure and browser-safe; every export and import (RFC 4180) uses it.
 
@@ -244,7 +244,7 @@ Pure and browser-safe; every export and import (RFC 4180) uses it.
 - `csvRecords(rows)` → `{ header, records: [{ line, values }] }`: names trimmed and in lower case (first column of a
   repeated name wins, empty names skipped), values trimmed, `line` counted from the header (line 1).
 
-## Email addresses (`@ss/contracts/email`)
+## Email addresses (`@shelfway/contracts/email`)
 
 Pure and browser-safe; every product and the Portal check addresses with it, so an address one accepts is never
 refused by another.
@@ -258,7 +258,7 @@ refused by another.
 - `isEmailAddress(value)`: true for an address already in its stored form (check stored and received values before
   sending; check what people type with `normalizeEmail`).
 
-## Text (`@ss/contracts/text`)
+## Text (`@shelfway/contracts/text`)
 
 Pure and browser-safe; servers, products' `core/` and widget bundles share it.
 
@@ -279,7 +279,7 @@ Pure and browser-safe; servers, products' `core/` and widget bundles share it.
 - `luhnValid(digits)`: true for a string of at least 2 ASCII digits whose last digit is its Luhn check digit (cards,
   IMEIs); callers add their own length rules.
 
-## Value helpers (`@ss/contracts/util`)
+## Value helpers (`@shelfway/contracts/util`)
 
 Pure and browser-safe.
 
@@ -290,7 +290,7 @@ Pure and browser-safe.
 ## Problems (RFC 9457)
 
 ```js
-import { createProblemFactory } from '@ss/contracts';
+import { createProblemFactory } from '@shelfway/contracts';
 
 const problems = createProblemFactory({ baseUri: 'https://errors.example.dev' });
 problems.create('feature_off', { detail: 'Notes is off' });
@@ -299,7 +299,7 @@ problems.fromValidation(result.problems, { code: 'invalid_manifest' });
 ```
 
 Codes include `invalid_token` (401), `product_unavailable` (403, with `reason`), `feature_off` (403),
-`database_not_connected` (403), `website_not_found` (404), `portal_unreachable` (503) and the generic HTTP ones
+`database_not_connected` (403), `website_not_found` (404), `platform_unreachable` (503) and the generic HTTP ones
 (`PROBLEM_CODES`). Products may add their own codes with `createProblemFactory({ baseUri, codes })`.
 
 ## Ids and domains
@@ -313,11 +313,11 @@ lower-case punycode, no scheme, port, path or trailing dot; IP literals, `localh
 
 ## Testing entry
 
-`@ss/contracts/testing` returns fresh fixtures: `manifest()` (product `notes`: two features with a dependency, a
+`@shelfway/contracts/testing` returns fresh fixtures: `manifest()` (product `notes`: two features with a dependency, a
 permission, a visitor and an admin widget) and `productBlueprint()` (its Setup sheet part).
 
 ## Versioning
 
 Additive only within v1: new optional members, new schemas, new problem codes. Objects are closed
 (`additionalProperties: false`), so validators upgrade before producers send new members. Anything else ships as
-`urn:ss:contracts:v2:*` alongside v1.
+`urn:shelfway:contracts:v2:*` alongside v1.

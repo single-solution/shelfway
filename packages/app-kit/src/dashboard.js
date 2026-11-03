@@ -2,7 +2,7 @@
  * The product dashboard (PLAN 0.4.3): sessions from Portal launches, the website switcher, rights per role and the
  * dashboard API every product's `app/` pages call.
  *
- * - `GET /sso?launch=` verifies the launch (single use here and at the Portal), creates the `__Host-ss_session` cookie
+ * - `GET /sso?launch=` verifies the launch (single use here and at the Platform), creates the `__Host-shelfway_session` cookie
  *   (HttpOnly, Secure, SameSite=Lax, Path=/, host-only; the `__Host-` prefix makes a browser refuse one set any other
  *   way, so a sibling subdomain cannot plant it) ending at the launch's `sessionExpiresAt`, and redirects to the
  *   dashboard: `<dashboard>?websiteId=<id>`, or `<dashboard>?view=defaults` for an admin launch without a website.
@@ -14,9 +14,9 @@
  * - Writes are refused unless their Origin is the product's own address; dashboard responses are never framed.
  * @module
  */
-import { canonicalOrigin, isProtocolError, randomToken, sha256Hex, verifyLaunch } from '@ss/protocol';
-import { isObject } from '@ss/contracts/util';
-import { missingWebsiteSettings } from '@ss/contracts/website-settings';
+import { canonicalOrigin, isProtocolError, randomToken, sha256Hex, verifyLaunch } from '@shelfway/protocol';
+import { isObject } from '@shelfway/contracts/util';
+import { missingWebsiteSettings } from '@shelfway/contracts/website-settings';
 import { currentFeatures } from './connection.js';
 import { defineRoute } from './http/routes.js';
 import { noContent, problem } from './http/results.js';
@@ -33,12 +33,12 @@ import { effectiveStatus } from './status.js';
  * @property {'portal_owner' | 'portal_support'} [role] Portal admins (mapped from launch `owner`/`support`)
  * @property {Array<{ websiteId: string, domain: string }>} [websites] merchants: the websites of the launch
  * @property {{ name: string, accent: string, logoUrl: string | null }} branding
- * @property {{ channels: import('@ss/contracts/text').SupportChannel[] }} support the Portal's support contact
+ * @property {{ channels: import('@shelfway/contracts/text').SupportChannel[] }} support the Portal's support contact
  * @property {number} expiresAt epoch ms
  */
 
 /** Name of the dashboard session cookie (the `__Host-` prefix: Secure, Path=/ and no Domain, or a browser drops it). */
-const SESSION_COOKIE = '__Host-ss_session';
+const SESSION_COOKIE = '__Host-shelfway_session';
 /** A widget counts as installed when it was seen within this time. */
 export const WIDGET_SEEN_MS = 7 * 24 * 60 * 60_000;
 const SWITCHER_PAGES = 50;
@@ -82,7 +82,7 @@ export const createDashboard = (kit) => {
 	 * @param {RequestContext} ctx
 	 * @param {import('./http/routes.js').CompiledRoute} r
 	 * @returns {Promise<{ ok: false, problem: ProblemResult } | { ok: true, session: Session, websiteId: string | null,
-	 *   merchantId: string | null, status: import('@ss/contracts').StatusResponse | null }>}
+	 *   merchantId: string | null, status: import('@shelfway/contracts').StatusResponse | null }>}
 	 */
 	const authorize = async (ctx, r) => {
 		/** @param {ProblemResult} p */
@@ -104,7 +104,7 @@ export const createDashboard = (kit) => {
 		// the dashboard shows the status and today's charges: it waits for a copy older than 5 minutes
 		const found = await kit.status.lookup(websiteId, { wait: true, after: ctx.after });
 		if (!found.ok)
-			return refuse(found.code === 'portal_unreachable' ? problem('portal_unreachable') : problem('website_not_found'));
+			return refuse(found.code === 'platform_unreachable' ? problem('platform_unreachable') : problem('website_not_found'));
 		if (found.status.status === 'removed')
 			return refuse(problem('website_not_found', 'This website does not have this product.'));
 		return { ok: true, session, websiteId, merchantId: found.status.merchantId, status: found.status };
@@ -116,15 +116,15 @@ export const createDashboard = (kit) => {
 	 */
 	const sso = async (ctx) => {
 		if (!kit.connection.connected()) return problem('unavailable', 'This product is not connected to a Portal yet.');
-		const { portalUrl, portalKeys, client } = kit.connection.active();
-		/** @type {import('@ss/protocol').LaunchClaims} */
+		const { platformUrl, portalKeys, client } = kit.connection.active();
+		/** @type {import('@shelfway/protocol').LaunchClaims} */
 		let claims;
 		try {
 			claims = await verifyLaunch({
 				token: ctx.query.launch,
 				keyResolver: portalKeys,
 				audience: manifest.id,
-				issuer: portalUrl,
+				issuer: platformUrl,
 				now,
 				consume: async (jti, expiresAtMs) =>
 					!(await store.seen(`launch|${jti}`, expiresAtMs)) && (await client.consumeLaunch(jti)).consumed,
@@ -132,7 +132,7 @@ export const createDashboard = (kit) => {
 		} catch (error) {
 			if (isProtocolError(error))
 				return problem('invalid_token', 'This link to the dashboard is not valid any more. Open it again from the Portal.');
-			return problem('portal_unreachable', 'The Portal cannot be reached. Try again.');
+			return problem('platform_unreachable', 'The Portal cannot be reached. Try again.');
 		}
 		const expiresAt = Date.parse(claims.sessionExpiresAt);
 		if (!Number.isFinite(expiresAt) || expiresAt <= now())
@@ -184,7 +184,7 @@ export const createDashboard = (kit) => {
 	const statusOf = async (ctx) => {
 		if (ctx.status) return ctx.status;
 		const found = await kit.status.lookup(website(ctx), { wait: true, after: ctx.after });
-		if (!found.ok) throw found.code === 'portal_unreachable' ? problem('portal_unreachable') : problem('website_not_found');
+		if (!found.ok) throw found.code === 'platform_unreachable' ? problem('platform_unreachable') : problem('website_not_found');
 		return found.status;
 	};
 	/**
@@ -234,7 +234,7 @@ export const createDashboard = (kit) => {
 		/** @type {string | null} */
 		let cursor = null;
 		for (let page = 0; page < SWITCHER_PAGES; page += 1) {
-			/** @type {import('@ss/contracts').WebsitesPage} */
+			/** @type {import('@shelfway/contracts').WebsitesPage} */
 			const result = await kit.connection.active().client.websites(cursor);
 			for (const row of result.items) {
 				const group = groups.get(row.merchantId) ?? {
@@ -268,13 +268,13 @@ export const createDashboard = (kit) => {
 				try {
 					return {
 						who: whoOf(session),
-						portalUrl: kit.connection.active().portalUrl,
+						platformUrl: kit.connection.active().platformUrl,
 						branding: session.branding,
 						support: session.support,
 						switcher: await switcher(session),
 					};
 				} catch {
-					return problem('portal_unreachable', 'The website list cannot be loaded right now.');
+					return problem('platform_unreachable', 'The website list cannot be loaded right now.');
 				}
 			},
 		}),

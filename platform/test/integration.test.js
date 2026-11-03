@@ -1,19 +1,19 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createJwks, createKeyResolver, generateSigningKey, signAssertion } from '@ss/protocol';
+import { createJwks, createKeyResolver, generateSigningKey, signAssertion } from '@shelfway/protocol';
 import { defineCollection } from '../src/infra/db.js';
 import { created, defineRoute, ok, problem } from '../src/infra/http.js';
 import { defineModule } from '../src/infra/modules.js';
 import { COLLECTIONS } from '../src/infra/schema.js';
 import { systemModule } from '../src/modules/system/index.js';
-import { createPortal } from '../src/portal.js';
+import { createPlatform } from '../src/platform.js';
 import { can } from '../src/infra/rbac.js';
 import { createBackground } from '../src/infra/background.js';
 import { afterResponse } from '../src/infra/request-scope.js';
 import { toNextRoute } from '../src/infra/http.js';
-import { getPortal } from '../src/runtime.js';
+import { getPlatform } from '../src/runtime.js';
 import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { isDatabaseUnavailable } from '@ss/net';
+import { isDatabaseUnavailable } from '@shelfway/net';
 import { getMongoClient } from '../src/infra/db.js';
 import { closeMongoClients } from '../src/testing.js';
 import { createSystemStore } from '../src/infra/system.js';
@@ -21,7 +21,7 @@ import {
 	ENCRYPTION_KEY,
 	MERCHANT,
 	MERCHANT_2,
-	PORTAL_URL,
+	PLATFORM_URL,
 	createClock,
 	createTestLogger,
 	startMongo,
@@ -31,11 +31,11 @@ import {
 } from './helpers.js';
 
 /**
- * Forget the Portal this process built (`runtime.js` keeps it on `globalThis`), so the next `getPortal` builds a new
+ * Forget the Portal this process built (`runtime.js` keeps it on `globalThis`), so the next `getPlatform` builds a new
  * one from the options it is given.
  */
 const resetPortal = () => {
-	delete (/** @type {any} */ (globalThis)[Symbol.for('ss.platform.portal')]);
+	delete (/** @type {any} */ (globalThis)[Symbol.for('shelfway.platform')]);
 };
 
 /** @type {Awaited<ReturnType<typeof startMongo>>} */
@@ -49,7 +49,7 @@ afterAll(async () => {
 	await mongo?.stop();
 });
 
-const ORIGIN = PORTAL_URL;
+const ORIGIN = PLATFORM_URL;
 const SAME_ORIGIN = { origin: ORIGIN, 'sec-fetch-site': 'same-origin' };
 
 /** A module exercising the extension points the real modules will use. */
@@ -92,7 +92,7 @@ const probeModule = ({ productJwks = /** @type {any} */ (null) } = {}) =>
 				path: '/v1/probe/info',
 				auth: 'public',
 				rateLimit: { limit: 120, windowMs: 60_000 },
-				handler: () => ok({ portalUrl: ctx.config.portalUrl }, { headers: { 'cache-control': 'public, max-age=30' } }),
+				handler: () => ok({ platformUrl: ctx.config.platformUrl }, { headers: { 'cache-control': 'public, max-age=30' } }),
 			}),
 			defineRoute({
 				method: 'GET',
@@ -110,7 +110,7 @@ const probeModule = ({ productJwks = /** @type {any} */ (null) } = {}) =>
 				method: 'PUT',
 				path: '/v1/probe/setting',
 				auth: 'admin',
-				permission: 'portal_settings.write',
+				permission: 'platform_settings.write',
 				handler: async (c) => {
 					const text = /** @type {any} */ (c.body)?.text;
 					if (typeof text !== 'string' || text === '') return problem('validation_failed', 'text is required');
@@ -144,7 +144,7 @@ const boot = async ({ dbName, modules, clock = createClock(), db, background, sy
 	const config = await testConfig();
 	const { logger, entries } = createTestLogger();
 	const database = db ?? mongo.db(dbName);
-	const portal = createPortal({
+	const portal = createPlatform({
 		config,
 		db: database,
 		modules: modules ?? [systemModule, probeModule()],
@@ -191,7 +191,7 @@ describe('Portal end to end', () => {
 
 		const info = await call('GET', '/api/v1/probe/info');
 		expect(info.status).toBe(200);
-		expect(info.json).toEqual({ portalUrl: PORTAL_URL });
+		expect(info.json).toEqual({ platformUrl: PLATFORM_URL });
 		expect(info.headers.get('cache-control')).toBe('public, max-age=30');
 		expect(info.headers.get('ratelimit-limit')).toBe('120');
 		expect((await call('GET', '/v1/probe/info')).status).toBe(200);
@@ -204,7 +204,7 @@ describe('Portal end to end', () => {
 		expect((await call('GET', '/v1/probe/foreign')).status).toBe(500); // modules cannot reach other modules' collections
 	});
 
-	it('admin sessions: Require two-step, RBAC, CSRF against PORTAL_URL, audit', async () => {
+	it('admin sessions: Require two-step, RBAC, CSRF against PLATFORM_URL, audit', async () => {
 		const { portal, call } = await boot({ dbName: 'it_staff' });
 		const admin = await login(portal, { kind: 'admin', subject: 'adm_owner' });
 		const support = await login(portal, { kind: 'admin', subject: 'adm_support' });
@@ -218,7 +218,7 @@ describe('Portal end to end', () => {
 		});
 		// Require two-step for admins: only the setup routes open (`mfa: false`)
 		const pending = await call('GET', '/v1/probe/whoami', { headers: { cookie: halfway.cookie } });
-		expect([pending.status, pending.json.type]).toEqual([403, `${PORTAL_URL}/problems/two_step_required`]);
+		expect([pending.status, pending.json.type]).toEqual([403, `${PLATFORM_URL}/problems/two_step_required`]);
 		expect(
 			(
 				await call('GET', '/v1/probe/whoami', {
@@ -309,9 +309,9 @@ describe('Portal end to end', () => {
 			dbName: 'it_product',
 			modules: [systemModule, probeModule({ productJwks: createJwks([publicJwk]) })],
 		});
-		const { createSigner } = await import('@ss/protocol');
+		const { createSigner } = await import('@shelfway/protocol');
 		const signer = createSigner(privateJwk);
-		const assertion = await signAssertion({ signer, productId: 'probe', audience: PORTAL_URL, now: clock.now });
+		const assertion = await signAssertion({ signer, productId: 'probe', audience: PLATFORM_URL, now: clock.now });
 		const who = await call('GET', '/v1/probe/whoami', { headers: { authorization: `Bearer ${assertion}` } });
 		expect(who.json).toEqual({
 			authMode: 'product',
@@ -321,12 +321,12 @@ describe('Portal end to end', () => {
 		expect((await call('GET', '/v1/probe/whoami', { headers: { authorization: `Bearer ${assertion}` } })).status).toBe(401); // replay
 		const wrongAudience = await signAssertion({ signer, productId: 'probe', audience: 'https://other.test', now: clock.now });
 		expect((await call('GET', '/v1/probe/whoami', { headers: { authorization: `Bearer ${wrongAudience}` } })).status).toBe(401);
-		const unknown = await signAssertion({ signer, productId: 'other', audience: PORTAL_URL, now: clock.now });
+		const unknown = await signAssertion({ signer, productId: 'other', audience: PLATFORM_URL, now: clock.now });
 		expect((await call('GET', '/v1/probe/whoami', { headers: { authorization: `Bearer ${unknown}` } })).status).toBe(401);
 		expect((await call('GET', '/v1/probe/whoami', { headers: { authorization: 'Bearer not-a-jwt' } })).status).toBe(401);
 
 		const noPort = await boot({ dbName: 'it_product_noport', modules: [systemModule, probeModule()] });
-		const fresh = await signAssertion({ signer, productId: 'probe', audience: PORTAL_URL, now: noPort.clock.now });
+		const fresh = await signAssertion({ signer, productId: 'probe', audience: PLATFORM_URL, now: noPort.clock.now });
 		expect((await noPort.call('GET', '/v1/probe/whoami', { headers: { authorization: `Bearer ${fresh}` } })).status).toBe(401);
 	});
 
@@ -367,11 +367,11 @@ describe('Portal end to end', () => {
 		await one.call('GET', '/v1/probe2/defer', { headers: { authorization: 'Bearer nope' } });
 		for (const task of scheduled.splice(0)) await task();
 		expect(called).toEqual([]); // unauthenticated (public route): no product
-		const { createSigner } = await import('@ss/protocol');
+		const { createSigner } = await import('@shelfway/protocol');
 		const assertion = await signAssertion({
 			signer: createSigner(privateJwk),
 			productId: 'probe',
-			audience: PORTAL_URL,
+			audience: PLATFORM_URL,
 			now: one.clock.now,
 		});
 		expect((await one.call('GET', '/v1/probe2/product', { headers: { authorization: `Bearer ${assertion}` } })).status).toBe(
@@ -526,7 +526,7 @@ describe('sessions (Mongo)', () => {
 		// a merchant cookie does not authenticate as an admin
 		const staffName = portal.shared.cookies.name('admin');
 		expect((await call('GET', '/v1/probe/whoami', { headers: { cookie: `${staffName}=${live.token}` } })).status).toBe(401);
-		expect(portal.shared.cookies.set('merchant', live.token, 60)).toContain('__Host-ss_merchant=');
+		expect(portal.shared.cookies.set('merchant', live.token, 60)).toContain('__Host-shelfway_merchant=');
 		expect(portal.shared.cookies.clear('merchant')).toContain('Max-Age=0');
 	});
 });
@@ -588,7 +588,7 @@ describe('Settings (stored in the database, never in the environment; Owner only
 		expect(read.status).toBe(200);
 		expect(read.json).toMatchObject({ mail: null, security: { sessionHours: 12, requireTwoStepForAdmins: false } });
 		expect(JSON.stringify(read.json)).not.toMatch(/seed|keys/);
-		// no stored Portal URL (it is PORTAL_URL) and no key rotation
+		// no stored Portal URL (it is PLATFORM_URL) and no key rotation
 		expect((await call('PUT', '/v1/admin/settings/portal-url', { headers: as(owner), body: {} })).status).toBe(404);
 		expect((await call('POST', '/v1/admin/system/keys/signing/rotate', { headers: as(owner) })).status).toBe(404);
 
@@ -658,7 +658,7 @@ describe('Settings (stored in the database, never in the environment; Owner only
 				})
 			).status,
 		).toBe(422);
-		const served = await portal.handle(new Request(`${PORTAL_URL}/branding/logo`));
+		const served = await portal.handle(new Request(`${PLATFORM_URL}/branding/logo`));
 		expect([served.status, served.headers.get('content-type')]).toEqual([200, 'image/png']);
 		expect(Buffer.from(await served.arrayBuffer()).equals(png)).toBe(true);
 		expect((await call('DELETE', '/v1/admin/settings/branding/logo', { headers: as(owner) })).json.branding.hasLogo).toBe(
@@ -760,26 +760,26 @@ describe('Settings (stored in the database, never in the environment; Owner only
 describe('runtime', () => {
 	it('builds one cached Portal: secrets generated on first start, schema prepared, the API at once', async () => {
 		resetPortal();
-		await expect(getPortal({ env: {} })).rejects.toThrow(/Invalid Portal configuration/);
+		await expect(getPlatform({ env: {} })).rejects.toThrow(/Invalid Portal configuration/);
 		/** @type {string[]} */
 		const lines = [];
 		const runtimeDb = mongo.dbName('it_runtime');
 		const env = await testEnv({ MONGODB_URI: `${mongo.uri.replace(/\/?(\?|$)/, `/${runtimeDb}$1`)}`, LOG_LEVEL: 'info' });
-		const before = await getPortal({ env, write: (line) => lines.push(line) });
-		expect(await getPortal()).toBe(before);
+		const before = await getPlatform({ env, write: (line) => lines.push(line) });
+		expect(await getPlatform()).toBe(before);
 		expect(before.config.mongo.dbName).toBe(runtimeDb);
 		const db = mongo.client.db(runtimeDb);
 		expect(await db.collection('platform_system').countDocuments({ _id: /** @type {any} */ ('secrets') })).toBe(1);
 		expect(await db.collection('platform_system').findOne({ _id: /** @type {any} */ ('schema') })).toMatchObject({
 			fingerprint: expect.any(String),
 		});
-		// no setup step: the API answers at once; the Portal's address is PORTAL_URL, never the request's headers
+		// no setup step: the API answers at once; the Portal's address is PLATFORM_URL, never the request's headers
 		const portal = before;
-		expect(portal.config.portalUrl).toBe(PORTAL_URL);
+		expect(portal.config.platformUrl).toBe(PLATFORM_URL);
 		const forwarded = {
 			host: 'evil.example.test',
 			'x-forwarded-proto': 'https',
-			origin: PORTAL_URL,
+			origin: PLATFORM_URL,
 			'sec-fetch-site': 'same-origin',
 		};
 		const first = await portal.handle(
@@ -791,14 +791,14 @@ describe('runtime', () => {
 		);
 		expect(first.status).toBe(201);
 		const [cookie = ''] = String(first.headers.get('set-cookie')).split(';');
-		expect(cookie).toMatch(/^__Host-ss_admin=/);
+		expect(cookie).toMatch(/^__Host-shelfway_admin=/);
 		const settings = await portal.handle(
 			new Request('http://internal/v1/admin/settings', { headers: { ...forwarded, cookie } }),
 		);
 		// a fresh Portal requires two-step of every admin: until the first admin sets it up, only its setup routes open
 		expect(settings.status).toBe(403);
 		expect((await settings.json()).type).toMatch(/two_step_required$/);
-		// a write whose Origin is the request's host (not PORTAL_URL) is refused
+		// a write whose Origin is the request's host (not PLATFORM_URL) is refused
 		const forged = await portal.handle(
 			new Request('http://internal/v1/me', {
 				method: 'PATCH',
@@ -823,18 +823,18 @@ describe('runtime', () => {
 		expect((await system('/.well-known/jwks.json', 'HEAD')).status).toBe(200);
 		expect((await system('/.well-known/jwks.json', 'POST')).status).toBe(404);
 		resetPortal();
-		await expect(getPortal({ env: {} })).rejects.toThrow(/MONGODB_URI/);
+		await expect(getPlatform({ env: {} })).rejects.toThrow(/MONGODB_URI/);
 		const invalid = await system('/v1/catalog/products'); // config invalid
 		expect(invalid.status).toBe(503);
 		expect((await invalid.json()).status).toBe('misconfigured');
 		// a control database that cannot be reached: 503, never 500 (its client, made here first, waits 0.2 s, not 5 s)
 		resetPortal();
-		const down = 'mongodb://127.0.0.1:1/ss_portal_down';
+		const down = 'mongodb://127.0.0.1:1/shelfway_platform_down';
 		getMongoClient({
 			uri: down,
 			createClient: (uri, options) => new MongoClient(uri, { ...options, serverSelectionTimeoutMS: 200 }),
 		});
-		const failure = await getPortal({ env: await testEnv({ MONGODB_URI: down }) }).catch((error) => error);
+		const failure = await getPlatform({ env: await testEnv({ MONGODB_URI: down }) }).catch((error) => error);
 		expect(isDatabaseUnavailable(failure)).toBe(true);
 		const unreachable = await system('/v1/catalog/products');
 		expect([unreachable.status, unreachable.headers.get('retry-after')]).toEqual([503, '5']);
@@ -848,21 +848,21 @@ describe('runtime', () => {
 		const clock = createClock();
 		const runtimeDb = mongo.dbName('it_runtime_settings');
 		const env = await testEnv({ MONGODB_URI: `${mongo.uri.replace(/\/?(\?|$)/, `/${runtimeDb}$1`)}` });
-		const before = await getPortal({ env, now: clock.now });
+		const before = await getPlatform({ env, now: clock.now });
 		expect(before.config.settings.branding.name).toBe('Shelfway');
 		// an Owner saves a setting (on this instance or another): the settings version goes up
 		await createSystemStore(mongo.client.db(runtimeDb), { encryptionKey: ENCRYPTION_KEY }).update({
 			branding: { name: 'Renamed' },
 		});
 		clock.advance(4_000);
-		expect(await getPortal()).toBe(before);
+		expect(await getPlatform()).toBe(before);
 		clock.advance(1_000);
-		const after = await getPortal();
+		const after = await getPlatform();
 		expect(after).not.toBe(before);
 		expect(after.config.settings.branding.name).toBe('Renamed');
 		// the same version: the same Portal
 		clock.advance(5_000);
-		expect(await getPortal()).toBe(after);
+		expect(await getPlatform()).toBe(after);
 		resetPortal();
 	}, 60_000);
 
@@ -870,12 +870,12 @@ describe('runtime', () => {
 		// a database of its own (the shared one serves every test file), stopped while the instance starts; its client,
 		// made here first, waits 0.3 s for a server, not 5 s
 		const mongod = await MongoMemoryServer.create();
-		const uri = mongod.getUri('ss_portal_outage');
+		const uri = mongod.getUri('shelfway_platform_outage');
 		try {
 			await mongod.stop({ doCleanup: false });
 			resetPortal();
 			getMongoClient({ uri, createClient: (u, options) => new MongoClient(u, { ...options, serverSelectionTimeoutMS: 300 }) });
-			const failure = await getPortal({ env: await testEnv({ MONGODB_URI: uri }) }).catch((error) => error);
+			const failure = await getPlatform({ env: await testEnv({ MONGODB_URI: uri }) }).catch((error) => error);
 			expect(isDatabaseUnavailable(failure)).toBe(true);
 			const api = await import('../app/api/[...path]/route.js');
 			const branding = () => api.GET(new Request('https://portal.example.test/api/v1/branding'));
@@ -912,7 +912,7 @@ describe('infra hardening (Mongo)', () => {
 		const first = await call('POST', '/v1/secrets', { headers, body: { password: 'hunter2-long' } });
 		expect(first.json.secret).toBe('sk_secret_1');
 		const replay = await call('POST', '/v1/secrets', { headers, body: { password: 'hunter2-long' } });
-		expect([replay.status, replay.json.type]).toEqual([409, `${PORTAL_URL}/problems/idempotency_replay_no_body`]);
+		expect([replay.status, replay.json.type]).toEqual([409, `${PLATFORM_URL}/problems/idempotency_replay_no_body`]);
 		expect(runs).toBe(1);
 		const stored = JSON.stringify(await mongo.db('it_no_store').collection(COLLECTIONS.idempotency).find({}).toArray());
 		expect(stored).not.toContain('sk_secret');
@@ -942,7 +942,7 @@ describe('infra hardening (Mongo)', () => {
 		const config = await testConfig();
 		const { logger } = createTestLogger();
 		const build = (/** @type {any} */ definition) =>
-			createPortal({
+			createPlatform({
 				config,
 				db: mongo.db('it_reserved'),
 				modules: [defineModule({ name: 'clash', ...definition })],

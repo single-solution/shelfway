@@ -66,7 +66,7 @@ const placeOrder = async ({ payment = 'cod', price = 1000, stock = 10 } = {}) =>
 		token: shop.browser,
 		origin: ORIGIN,
 		body: { lines: [{ productId: item.id }], payment, address: ADDRESS },
-		headers: { 'x-forwarded-for': `10.7.0.${ip}`, 'ss-sign-in': token, 'idempotency-key': `pay-${users}` },
+		headers: { 'x-forwarded-for': `10.7.0.${ip}`, 'shelfway-sign-in': token, 'idempotency-key': `pay-${users}` },
 	});
 	expect(placed.status).toBe(201);
 	return { item, order: placed.json.order, token };
@@ -122,7 +122,7 @@ describe('the payments log (E26)', () => {
 		const mine = await shop.call('GET', `/v1/shop/orders/${order.id}`, {
 			token: shop.browser,
 			origin: ORIGIN,
-			headers: { 'ss-sign-in': token, 'x-forwarded-for': '10.7.1.1' },
+			headers: { 'shelfway-sign-in': token, 'x-forwarded-for': '10.7.1.1' },
 		});
 		expect(mine.json.payment).toMatchObject({ paid: 1000, balanceDue: 0 });
 		expect(mine.json.payment.entries[0]).toEqual({
@@ -176,7 +176,7 @@ describe('the payments log (E26)', () => {
 		const mine = await shop.call('GET', `/v1/shop/orders/${order.id}`, {
 			token: shop.browser,
 			origin: ORIGIN,
-			headers: { 'ss-sign-in': token, 'x-forwarded-for': '10.7.1.9' },
+			headers: { 'shelfway-sign-in': token, 'x-forwarded-for': '10.7.1.9' },
 		});
 		expect(mine.json.payment).toMatchObject({ paid: 1000, refunded: 300, balanceDue: 0 });
 		const staff = await shop.api('GET', `/v1/orders/${order.id}`);
@@ -200,7 +200,7 @@ describe('the payments log (E26)', () => {
 		const read = await shop.call('GET', `/v1/shop/orders/${order.id}`, {
 			token: shop.browser,
 			origin: ORIGIN,
-			headers: { 'ss-sign-in': token, 'x-forwarded-for': '10.7.1.10' },
+			headers: { 'shelfway-sign-in': token, 'x-forwarded-for': '10.7.1.10' },
 		});
 		expect(read.json.payment).toMatchObject({ state: 'paid', paid: order.totals.total });
 		shop.responders.set(`${PAYMENTS}/v1/payments/${paymentId}/refunds`, (call) => ({
@@ -366,7 +366,7 @@ describe('more moves (E27)', () => {
 		const before = await shop.call('GET', '/v1/shop/loyalty', {
 			token: shop.browser,
 			origin: ORIGIN,
-			headers: { 'ss-sign-in': token, 'x-forwarded-for': '10.7.2.1' },
+			headers: { 'shelfway-sign-in': token, 'x-forwarded-for': '10.7.2.1' },
 		});
 		expect(before.json.balance).toBeGreaterThan(0);
 		const back = await moveTo(order.id, 'customer-returned');
@@ -375,7 +375,7 @@ describe('more moves (E27)', () => {
 		const after = await shop.call('GET', '/v1/shop/loyalty', {
 			token: shop.browser,
 			origin: ORIGIN,
-			headers: { 'ss-sign-in': token, 'x-forwarded-for': '10.7.2.2' },
+			headers: { 'shelfway-sign-in': token, 'x-forwarded-for': '10.7.2.2' },
 		});
 		expect(after.json.balance).toBe(0);
 		expect((await moveTo(order.id, 'refunded')).json.status).toBe('refunded');

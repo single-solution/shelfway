@@ -8,11 +8,11 @@
  * sentence in one language).
  * @module
  */
-import { activityFilter, actorOf, countHandlers, paginate, problem } from '@ss/app-kit';
-import { createId, validateActivityCopy } from '@ss/contracts';
-import { normalizeEmail } from '@ss/contracts/email';
-import { nationalNumberOf } from '@ss/contracts/phone';
-import { randomToken, sha256Hex } from '@ss/protocol';
+import { activityFilter, actorOf, countHandlers, paginate, problem } from '@shelfway/app-kit';
+import { createId, validateActivityCopy } from '@shelfway/contracts';
+import { normalizeEmail } from '@shelfway/contracts/email';
+import { nationalNumberOf } from '@shelfway/contracts/phone';
+import { randomToken, sha256Hex } from '@shelfway/protocol';
 import { labelOf, valuesOf } from '../core/activity.js';
 import { MAX_CONSENTS, checkConsent } from '../core/consents.js';
 import { MAX_CUSTOM_FIELDS, MAX_ROLES, STAFF_CODE_MINUTES } from '../core/limits.js';
@@ -436,7 +436,7 @@ export const createManage = (product, service, flows) => {
 
 	/**
 	 * A setup link for a user (A3, also A5's invites): it sets a password, also for users with no email address. A new
-	 * one cancels the old. The setup page takes `{code}`; without one the link goes to the website with `?ss_setup=`.
+	 * one cancels the old. The setup page takes `{code}`; without one the link goes to the website with `?shelfway_setup=`.
 	 * The link leaves a trace (its hash, its user and its end; SETUP_TRACE_DAYS past its end) for the setup page's
 	 * lookup to tell "used", "expired" or "canceled" apart.
 	 * @param {import('./service.js').Site} s @param {import('../core/profile.js').UserRecord} user

@@ -8,9 +8,9 @@
  * ever deleted (CA-5).
  * @module
  */
-import { createId } from '@ss/contracts';
-import { defineRoute, problem } from '@ss/app-kit';
-import { isObject } from '@ss/contracts/util';
+import { createId } from '@shelfway/contracts';
+import { defineRoute, problem } from '@shelfway/app-kit';
+import { isObject } from '@shelfway/contracts/util';
 import { NO_KEYS } from '../adapters/catalog-store.js';
 import { LIMITS, cleanText, heldKeys } from '../core/catalog.js';
 import { IMAGE_TYPES, VIDEO_TYPES, mediaExtras } from '../core/catalog-content.js';
@@ -24,7 +24,7 @@ import { SERVER_LIMITS, UPLOAD_SECONDS, bodyOf } from './service.js';
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./catalog-common.js').CatalogCommon} CatalogCommon */
 /** @typedef {import('../core/model.js').MediaRecord} MediaRecord */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 
 /** What an image can belong to: the collection, the storage folder and the activity name. */
 const OWNERS = Object.freeze({

@@ -1,10 +1,10 @@
 /**
  * The dashboard's words (US English, kept in this file; the dashboard is not translated, PLAN 0.6): Chat's title and
  * its own words laid over the words every product dashboard shares (`dashboardTexts`). The server's page title reads
- * it too, so it comes from the `@ss/ui` root.
+ * it too, so it comes from the `@shelfway/ui` root.
  * @module
  */
-import { dashboardTexts } from '@ss/ui';
+import { dashboardTexts } from '@shelfway/ui';
 
 export const TEXTS = dashboardTexts({
 	title: 'Chat',
@@ -202,7 +202,7 @@ export const TEXTS = dashboardTexts({
 		},
 		pageTypes: {
 			title: 'Page types',
-			help: 'The kinds of pages on your website. A page is typed by SSChat.setPage({ kind: key }), else by the first path pattern it matches (* is one segment, ** any). The idle nudge says the type’s own text ({product} = the product the page names; empty = the general text in Texts), and the AI is told the type.',
+			help: 'The kinds of pages on your website. A page is typed by ShelfwayChat.setPage({ kind: key }), else by the first path pattern it matches (* is one segment, ** any). The idle nudge says the type’s own text ({product} = the product the page names; empty = the general text in Texts), and the AI is told the type.',
 			item: 'Page type',
 			key: 'Key (lower-case letters, digits, - or _)',
 			name: 'Name',
@@ -335,7 +335,7 @@ export const TEXTS = dashboardTexts({
 		adminHelp: 'The inbox, knowledge editor and reports widgets in your own admin.',
 		ticket: 'Ticket',
 		ticketHelp:
-			"Your server asks for a ticket for the admin widgets after checking its user and role. Keep the website's server token from the Portal in SS_SERVER_TOKEN, on your server only.",
+			"Your server asks for a ticket for the admin widgets after checking its user and role. Keep the website's server token from the Portal in SHELFWAY_SERVER_TOKEN, on your server only.",
 		tools: 'Tool signature check',
 		toolsHelp: 'Your tool and booking endpoints check that a call comes from Chat with the tool signing secret.',
 	},

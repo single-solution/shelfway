@@ -149,7 +149,7 @@ describe('two-step whose secret no longer opens (ST-18)', () => {
 		const self = await env.call('PATCH', `/v1/users/${zed.id}`, {
 			token: env.server,
 			body: { twoStep: false },
-			headers: { 'ss-actor-id': zed.id, 'ss-actor-name': 'Zed' },
+			headers: { 'shelfway-actor-id': zed.id, 'shelfway-actor-name': 'Zed' },
 		});
 		expect(code(self)).toBe('forbidden');
 		const off = await env.serverCall('PATCH', `/v1/users/${zed.id}`, { twoStep: false });

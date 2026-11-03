@@ -1,5 +1,5 @@
 /**
- * Test harness: Notifications on the kit, connected to the kit's fake Portal (`@ss/app-kit/testing`), with one
+ * Test harness: Notifications on the kit, connected to the kit's fake Portal (`@shelfway/app-kit/testing`), with one
  * website, its two tokens, dashboard sessions, a merchant database on the run's MongoDB (`TEST_MONGODB_URI`), the
  * website's settings (the Portal's, saved by a test) and fake providers: every provider call is answered in process
  * (no real network call is ever made). Every answer `call()` sees is checked against `schemas/api.json` and the kit's
@@ -17,7 +17,7 @@ import {
 	portalConnector,
 	portalSectionsOf,
 	staffCaller,
-} from '@ss/app-kit/testing';
+} from '@shelfway/app-kit/testing';
 import apiJson from '../schemas/api.json' with { type: 'json' };
 import { createProductInstance, manifest } from '../adapters/product.js';
 import { createRoutes } from '../server/routes.js';
@@ -30,7 +30,7 @@ const DOMAIN = 'shop.example.com';
 export const ORIGIN = `https://${DOMAIN}`;
 export const ADMIN_ORIGIN = 'https://admin.shop.example.com';
 export const PUSH_ORIGIN = 'https://push.example.net';
-export const HOOK_URL = 'https://hooks.example.org/ss';
+export const HOOK_URL = 'https://hooks.example.org/shelfway';
 export const GATEWAY_URL = 'https://gateway.example.org/send';
 const SECRET = 'connect-secret-0123456789-abcdefghij';
 const ENCRYPTION_KEY = 'encryption-key-0123456789-abcdefghij';
@@ -156,7 +156,7 @@ export const setup = async ({ start = Date.parse('2026-10-01T10:00:00Z') } = {})
 	/** Product database reads that fail while a test says so (`<collection>|<id>` prefixes). @type {Set<string>} */
 	const failing = new Set();
 	const memory = createMemoryStore({ now });
-	/** @type {import('@ss/app-kit').Store} */
+	/** @type {import('@shelfway/app-kit').Store} */
 	const store = Object.freeze({
 		...memory,
 		get: async (collection, id) => {
@@ -167,7 +167,7 @@ export const setup = async ({ start = Date.parse('2026-10-01T10:00:00Z') } = {})
 	});
 	/** @type {Array<{ level: string, message: string, fields: Record<string, any> }>} what the product logged */
 	const logs = [];
-	/** @type {import('@ss/net').Logger} */
+	/** @type {import('@shelfway/net').Logger} */
 	const logger = Object.freeze({
 		debug: () => {},
 		info: (message, fields = {}) => void logs.push({ level: 'info', message, fields }),
@@ -219,7 +219,7 @@ export const setup = async ({ start = Date.parse('2026-10-01T10:00:00Z') } = {})
 		path,
 		{ token, origin, body, raw, type, cookie, headers = {}, after = true, bare = false, staff } = {},
 	) => {
-		if (token === server && !bare && headers['ss-sign-in'] === undefined && headers['ss-visitor-ip'] === undefined)
+		if (token === server && !bare && headers['shelfway-sign-in'] === undefined && headers['shelfway-visitor-ip'] === undefined)
 			// eslint-disable-next-line no-param-reassign -- the harness signs the staff member in
 			headers = await staffHeaders({ headers, staff });
 		const response = await handler(
@@ -404,7 +404,7 @@ export const setup = async ({ start = Date.parse('2026-10-01T10:00:00Z') } = {})
 		merchantIndexes: async (name) => {
 			const client = await MongoClient.connect(databaseUri);
 			try {
-				return await client.db().collection(`ss_notifications_${name}`).indexes();
+				return await client.db().collection(`shelfway_notifications_${name}`).indexes();
 			} finally {
 				await client.close();
 			}

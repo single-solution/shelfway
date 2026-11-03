@@ -23,7 +23,7 @@ describe('the website’s database, entered once in the Portal', () => {
 		const before = await call('POST', '/v1/notes', { token: browser.token, origin: ORIGIN, body: { text: 'x' } });
 		expect([before.status, await typeOf(before)]).toEqual([403, 'database_not_connected']);
 		const dbName = await connectDatabase();
-		expect(await store.get('portal_connections', websiteId)).toMatchObject({ version: 1, linksIn: [] });
+		expect(await store.get('platform_connections', websiteId)).toMatchObject({ version: 1, linksIn: [] });
 		expect(portal.health(websiteId, 'notes', 'database')).toMatchObject({ ok: true, version: 1 });
 		const stored = JSON.stringify(await store.list('connections', { websiteId }));
 		expect(stored).not.toContain('mongodb');
@@ -33,7 +33,7 @@ describe('the website’s database, entered once in the Portal', () => {
 		const after = await call('POST', '/v1/notes', { token: browser.token, origin: ORIGIN, body: { text: 'hello' } });
 		expect(after.status).toBe(200);
 		const { client, db } = await openDb(dbName);
-		expect(await db.collection('ss_notes_notes').countDocuments({ websiteId })).toBe(1);
+		expect(await db.collection('shelfway_notes_notes').countDocuments({ websiteId })).toBe(1);
 		await client.close();
 	});
 
@@ -78,12 +78,12 @@ describe('the website’s database, entered once in the Portal', () => {
 		// the Portal holds a database already; this product was just added: no notice reached it yet, but its first status shows it
 		await portal.saveConnections(websiteId, { database: mongoUri(name), dbNames: { notes: name } }, { notify: false });
 		await switchOn(['notes']);
-		expect(await store.get('portal_connections', websiteId)).toBeNull();
+		expect(await store.get('platform_connections', websiteId)).toBeNull();
 		const posted = await call('POST', '/v1/notes', { token: browser.token, origin: ORIGIN, body: { text: 'hello' } });
 		expect(posted.status).toBe(200);
-		expect(await store.get('portal_connections', websiteId)).toMatchObject({ version: 1 });
+		expect(await store.get('platform_connections', websiteId)).toMatchObject({ version: 1 });
 		const { client, db } = await openDb(name);
-		expect(await db.collection('ss_notes_notes').countDocuments({ websiteId })).toBe(1);
+		expect(await db.collection('shelfway_notes_notes').countDocuments({ websiteId })).toBe(1);
 		await client.close();
 	});
 

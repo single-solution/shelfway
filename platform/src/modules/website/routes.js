@@ -13,7 +13,7 @@
  *   PUT /v1/product/websites/:websiteId/connections/:name/health { version, ok, message? }
  * @module
  */
-import { validateConnectionHealth } from '@ss/contracts';
+import { validateConnectionHealth } from '@shelfway/contracts';
 import { defineRoute, ok, problem } from '../../infra/http.js';
 import { PERMISSIONS as P, can } from '../../infra/rbac.js';
 

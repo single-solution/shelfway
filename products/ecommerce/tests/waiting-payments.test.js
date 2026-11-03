@@ -85,7 +85,11 @@ const visit = (method, path, token, body) => {
 		token: shop.browser,
 		origin: ORIGIN,
 		...(body === undefined ? {} : { body }),
-		headers: { 'ss-sign-in': token, 'x-forwarded-for': `10.12.${(ip >> 8) & 255}.${ip & 255}`, 'idempotency-key': `w-${ip}` },
+		headers: {
+			'shelfway-sign-in': token,
+			'x-forwarded-for': `10.12.${(ip >> 8) & 255}.${ip & 255}`,
+			'idempotency-key': `w-${ip}`,
+		},
 	});
 };
 

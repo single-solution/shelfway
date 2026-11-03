@@ -10,8 +10,8 @@ import { valueLabel } from './catalog.js';
 import { TOP_FIELD } from './limits.js';
 import { levelOf } from './measure.js';
 import { MAX_PAGE_NUMBER, SORTS, STOCK_STATES } from './model.js';
-import { MAX_AMOUNT } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
+import { MAX_AMOUNT } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
 import { escapeRegex } from './search.js';
 
 /** @typedef {import('./model.js').AttributeRecord} AttributeRecord */

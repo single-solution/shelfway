@@ -11,9 +11,9 @@
  * units in stock another type is refused (409), and units are added only to products whose type numbers them.
  * @module
  */
-import { createId } from '@ss/contracts';
-import { created, defineRoute, ok, paginate, problem } from '@ss/app-kit';
-import { isObject } from '@ss/contracts/util';
+import { createId } from '@shelfway/contracts';
+import { created, defineRoute, ok, paginate, problem } from '@shelfway/app-kit';
+import { isObject } from '@shelfway/contracts/util';
 import {
 	NO_KEYS,
 	attributesOf,
@@ -56,7 +56,7 @@ import { SERVER_LIMITS, bodyOf } from './service.js';
 /** @typedef {import('../core/model.js').AttributeRecord} AttributeRecord */
 /** @typedef {import('../core/model.js').LocationRecord} LocationRecord */
 /** @typedef {import('../core/model.js').SerialRecord} SerialRecord */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 
 /** Most serials added at once. */
 const MAX_SERIALS = 500;
@@ -1036,7 +1036,7 @@ export const createCatalogTaxonomy = (product, service, common) => {
 			path: '/v1/locations',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'multi_location',
 			rateLimit: SERVER_LIMITS,
 			handler: locations.list,
 		}),
@@ -1045,7 +1045,7 @@ export const createCatalogTaxonomy = (product, service, common) => {
 			path: '/v1/locations',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'multi_location',
 			idempotent: true,
 			rateLimit: SERVER_LIMITS,
 			handler: locations.create,
@@ -1055,7 +1055,7 @@ export const createCatalogTaxonomy = (product, service, common) => {
 			path: '/v1/locations/:id',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'multi_location',
 			rateLimit: SERVER_LIMITS,
 			handler: locations.update,
 		}),
@@ -1064,7 +1064,7 @@ export const createCatalogTaxonomy = (product, service, common) => {
 			path: '/v1/locations/:id',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'multi_location',
 			rateLimit: SERVER_LIMITS,
 			handler: locations.remove,
 		}),
@@ -1072,7 +1072,7 @@ export const createCatalogTaxonomy = (product, service, common) => {
 			method: 'GET',
 			path: '/v1/admin/locations',
 			auth: 'ticket',
-			feature: 'catalog',
+			feature: 'multi_location',
 			permission: 'catalog.edit',
 			rateLimit: SERVER_LIMITS,
 			handler: locations.list,
@@ -1081,7 +1081,7 @@ export const createCatalogTaxonomy = (product, service, common) => {
 			method: 'POST',
 			path: '/v1/admin/locations',
 			auth: 'ticket',
-			feature: 'catalog',
+			feature: 'multi_location',
 			permission: 'catalog.edit',
 			idempotent: true,
 			rateLimit: SERVER_LIMITS,
@@ -1091,7 +1091,7 @@ export const createCatalogTaxonomy = (product, service, common) => {
 			method: 'PATCH',
 			path: '/v1/admin/locations/:id',
 			auth: 'ticket',
-			feature: 'catalog',
+			feature: 'multi_location',
 			permission: 'catalog.edit',
 			rateLimit: SERVER_LIMITS,
 			handler: locations.update,
@@ -1100,7 +1100,7 @@ export const createCatalogTaxonomy = (product, service, common) => {
 			method: 'DELETE',
 			path: '/v1/admin/locations/:id',
 			auth: 'ticket',
-			feature: 'catalog',
+			feature: 'multi_location',
 			permission: 'catalog.edit',
 			rateLimit: SERVER_LIMITS,
 			handler: locations.remove,
@@ -1112,7 +1112,7 @@ export const createCatalogTaxonomy = (product, service, common) => {
 			path: '/v1/serials',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'grades_serials',
 			rateLimit: SERVER_LIMITS,
 			handler: serials.list,
 		}),
@@ -1121,7 +1121,7 @@ export const createCatalogTaxonomy = (product, service, common) => {
 			path: '/v1/serials',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'grades_serials',
 			idempotent: true,
 			rateLimit: SERVER_LIMITS,
 			handler: serials.add,
@@ -1131,7 +1131,7 @@ export const createCatalogTaxonomy = (product, service, common) => {
 			path: '/v1/serials/:id',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'grades_serials',
 			rateLimit: SERVER_LIMITS,
 			handler: serials.update,
 		}),
@@ -1140,7 +1140,7 @@ export const createCatalogTaxonomy = (product, service, common) => {
 			path: '/v1/serials/:id',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'grades_serials',
 			rateLimit: SERVER_LIMITS,
 			handler: serials.remove,
 		}),
@@ -1148,7 +1148,7 @@ export const createCatalogTaxonomy = (product, service, common) => {
 			method: 'GET',
 			path: '/v1/admin/serials',
 			auth: 'ticket',
-			feature: 'catalog',
+			feature: 'grades_serials',
 			permission: 'catalog.edit',
 			rateLimit: SERVER_LIMITS,
 			handler: serials.list,
@@ -1157,7 +1157,7 @@ export const createCatalogTaxonomy = (product, service, common) => {
 			method: 'POST',
 			path: '/v1/admin/serials',
 			auth: 'ticket',
-			feature: 'catalog',
+			feature: 'grades_serials',
 			permission: 'catalog.edit',
 			idempotent: true,
 			rateLimit: SERVER_LIMITS,
@@ -1167,7 +1167,7 @@ export const createCatalogTaxonomy = (product, service, common) => {
 			method: 'PATCH',
 			path: '/v1/admin/serials/:id',
 			auth: 'ticket',
-			feature: 'catalog',
+			feature: 'grades_serials',
 			permission: 'catalog.edit',
 			rateLimit: SERVER_LIMITS,
 			handler: serials.update,
@@ -1176,7 +1176,7 @@ export const createCatalogTaxonomy = (product, service, common) => {
 			method: 'DELETE',
 			path: '/v1/admin/serials/:id',
 			auth: 'ticket',
-			feature: 'catalog',
+			feature: 'grades_serials',
 			permission: 'catalog.edit',
 			rateLimit: SERVER_LIMITS,
 			handler: serials.remove,

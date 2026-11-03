@@ -1,12 +1,12 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { validateBlueprint } from '@ss/contracts';
-import { manifest as notesManifest, productBlueprint } from '@ss/contracts/testing';
+import { validateBlueprint } from '@shelfway/contracts';
+import { manifest as notesManifest, productBlueprint } from '@shelfway/contracts/testing';
 import { closeMongoClients } from '../../../src/testing.js';
 import { SHARE_LINKS_MAX, SHEET_CACHE_MS } from '../../../src/modules/catalog/setup.js';
 import { parseShareLink, parseSwitchOn, productEntry, sharedCopy } from '../../../src/modules/catalog/core/setup.js';
 import { adviceOf, parseProfile } from '../../../src/modules/catalog/core/advisor.js';
 import { startMongo } from '../../helpers.js';
-import { PASSWORD, bootPortal, codeOf } from './boot.js';
+import { PASSWORD, bootPlatform, codeOf } from './boot.js';
 
 vi.setConfig({ testTimeout: 60_000, hookTimeout: 180_000 });
 
@@ -49,7 +49,7 @@ const chatManifest = () => ({
  * @param {string} name
  */
 const setUp = async (name) => {
-	const h = await bootPortal({ db: mongo.db(name) });
+	const h = await bootPlatform({ db: mongo.db(name) });
 	cleanups.push(h.close);
 	const owner = await h.owner();
 	const notes = await h.connect(notesManifest());
@@ -104,7 +104,7 @@ describe('Setup sheet', () => {
 		const sheet = res.json;
 		expect(validateBlueprint(sheet).ok).toBe(true);
 		expect(sheet).toMatchObject({
-			schema: 'ss.blueprint/1',
+			schema: 'shelfway.blueprint/1',
 			generatedAt: '2026-10-01T10:00:00.000Z',
 			website: {
 				id: w1,
@@ -172,7 +172,7 @@ describe('Setup sheet', () => {
 		const file = await m.client.get(`${base}/setup?download=1`);
 		expect(notes.blueprintCalls).toEqual([w1, w1, w1]);
 		expect(file.headers.get('content-disposition')).toBe('attachment; filename="setup-shop.example.com.json"');
-		expect(file.json.schema).toBe('ss.blueprint/1');
+		expect(file.json.schema).toBe('shelfway.blueprint/1');
 		expect(await h.activity('website.setup_downloaded')).toHaveLength(1);
 	});
 
@@ -389,7 +389,7 @@ describe('business profile and advisor', () => {
 		);
 
 		// the Install and tokens page gets the manifest's loading with each product
-		const h = await bootPortal({ db: mongo.db('setup_loading') });
+		const h = await bootPlatform({ db: mongo.db('setup_loading') });
 		cleanups.push(h.close);
 		const owner = await h.owner();
 		await h.connect({ ...notesManifest(), widgetScriptLoading: 'blocking' });
@@ -617,7 +617,7 @@ describe('share links', () => {
 
 	it('leaves every reachable product alone in a copy with everything shown, and missing ones as they are', () => {
 		const sheet = /** @type {any} */ ({
-			schema: 'ss.blueprint/1',
+			schema: 'shelfway.blueprint/1',
 			products: [{ productId: 'chat', name: 'Chat', reachable: false, reason: 'timeout' }],
 		});
 		expect(sharedCopy(sheet, { values: true, install: true, expiresAt: '2026-10-08T00:00:00Z' }).products).toEqual(

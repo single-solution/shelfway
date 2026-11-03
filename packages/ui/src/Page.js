@@ -24,7 +24,7 @@
  * With `sections` the body shows every section of the page at once, all open, and the page has one save bar for all of
  * them (see `page-sections.js`); from four sections up the inner navigation lists them as jumps.
  *
- * Inside an `AppShell` the frame's own header hides itself while a page draws this one (`:has([data-ss-page])`), so old
+ * Inside an `AppShell` the frame's own header hides itself while a page draws this one (`:has([data-shelfway-page])`), so old
  * pages keep working until they move onto this component.
  * @module
  */
@@ -121,7 +121,7 @@ export function ShellMenuButton({ texts }) {
 			type="button"
 			onClick={openNav}
 			aria-label={texts?.menu ?? PAGE_TEXTS.menu}
-			className="ss-motion ss-press shrink-0 rounded-control p-2 text-fg hover:bg-surface-2 lg:hidden">
+			className="shelfway-motion shelfway-press shrink-0 rounded-control p-2 text-fg hover:bg-surface-2 lg:hidden">
 			<Icon name="menu" size={18} />
 		</button>
 	);
@@ -155,7 +155,7 @@ export function Crumbs({ crumbs, linkAs, titleId, texts }) {
 									<LinkTag
 										href={crumb.href}
 										{...(typeof crumb.label === 'string' ? { title: crumb.label } : {})}
-										className="ss-motion rounded-control hover:text-fg">
+										className="shelfway-motion rounded-control hover:text-fg">
 										{crumb.label}
 									</LinkTag>
 								) : (
@@ -196,7 +196,7 @@ export function Fact({ fact, linkAs }) {
 		([fact.label, fact.value].every((part) => typeof part === 'string' || typeof part === 'number')
 			? `${fact.label} ${fact.value}`
 			: undefined);
-	const common = { 'data-ss-fact': '', ...(tip ? { title: tip } : {}) };
+	const common = { 'data-shelfway-fact': '', ...(tip ? { title: tip } : {}) };
 	if (fact.onClick)
 		return (
 			<button
@@ -206,15 +206,15 @@ export function Fact({ fact, linkAs }) {
 				onClick={fact.onClick}
 				className={cx(
 					FACT,
-					'ss-motion ss-press focus-visible:outline-2 focus-visible:outline-focus',
-					fact.active ? 'border-line bg-surface text-fg ss-hard' : 'hover:bg-surface-2',
+					'shelfway-motion shelfway-press focus-visible:outline-2 focus-visible:outline-focus',
+					fact.active ? 'border-line bg-surface text-fg shelfway-hard' : 'hover:bg-surface-2',
 				)}>
 				{body}
 			</button>
 		);
 	if (fact.href)
 		return (
-			<LinkTag href={fact.href} {...common} className={cx(FACT, 'ss-motion hover:bg-line-soft')}>
+			<LinkTag href={fact.href} {...common} className={cx(FACT, 'shelfway-motion hover:bg-line-soft')}>
 				{body}
 			</LinkTag>
 		);
@@ -232,12 +232,16 @@ export function Fact({ fact, linkAs }) {
 export function InfoButton({ label, children }) {
 	const [open, setOpen] = useState(false);
 	const root = useRef(/** @type {HTMLDivElement | null} */ (null));
+	const buttonRef = useRef(/** @type {HTMLButtonElement | null} */ (null));
 	const id = useId();
 	useEffect(() => {
 		if (!open) return undefined;
 		/** @param {KeyboardEvent} event */
 		const onKey = (event) => {
-			if (event.key === 'Escape') setOpen(false);
+			if (event.key === 'Escape') {
+				setOpen(false);
+				buttonRef.current?.focus();
+			}
 		};
 		/** @param {MouseEvent} event */
 		const onDown = (event) => {
@@ -253,18 +257,19 @@ export function InfoButton({ label, children }) {
 	return (
 		<div ref={root} className="relative shrink-0">
 			<button
+				ref={buttonRef}
 				type="button"
 				aria-label={label}
 				aria-expanded={open}
 				{...(open ? { 'aria-controls': id } : {})}
 				onClick={() => setOpen((o) => !o)}
-				className="ss-motion ss-press flex size-8 items-center justify-center rounded-control text-muted hover:bg-surface-2 hover:text-fg focus-visible:outline-2 focus-visible:outline-focus">
+				className="shelfway-motion shelfway-press flex size-8 items-center justify-center rounded-control text-muted hover:bg-surface-2 hover:text-fg focus-visible:outline-2 focus-visible:outline-focus">
 				<Icon name="info" size={16} />
 			</button>
 			{open ? (
 				<div
 					id={id}
-					className="absolute top-full left-0 z-30 mt-2 w-80 max-w-[85vw] origin-top-left animate-ss-pop rounded-card border border-line bg-surface p-3 text-sm text-pretty text-muted shadow-overlay">
+					className="absolute top-full left-0 z-30 mt-2 w-80 max-w-[85vw] origin-top-left animate-shelfway-pop rounded-card border border-line bg-surface p-3 text-sm text-pretty text-muted shadow-overlay">
 					{children}
 				</div>
 			) : null}
@@ -427,8 +432,8 @@ export function Page({
 	const bar = !failure && toolbar;
 	const end = !failure && footer;
 	return (
-		<div data-ss-page="" className={cx(PAGE.root, className)}>
-			<header data-ss-part="header" className={PAGE.header}>
+		<div data-shelfway-page="" className={cx(PAGE.root, className)}>
+			<header data-shelfway-part="header" className={PAGE.header}>
 				<ShellMenuButton texts={words} />
 				{back ? (
 					<IconButton label={list?.props.texts?.back ?? LIST_COLUMN_TEXTS.back} onClick={back}>
@@ -480,18 +485,18 @@ export function Page({
 				{listOnly ? null : (
 					<section className={PAGE.main}>
 						{bar ? (
-							<div data-ss-part="toolbar" className={PAGE.toolbar}>
+							<div data-shelfway-part="toolbar" className={PAGE.toolbar}>
 								{bar}
 							</div>
 						) : null}
 						<div
 							ref={flow.body}
-							data-ss-part="body"
+							data-shelfway-part="body"
 							className={pageBody({ toolbar: Boolean(bar), footer: Boolean(end) })}
 							{...(flush ? {} : { role: 'region', tabIndex: 0, 'aria-labelledby': titleId })}>
 							<div
 								key={bodyKey ?? (list ? String(picked ?? '') : undefined)}
-								className={cx(flush ? PAGE.flush : PAGE.padded, 'animate-ss-enter')}>
+								className={cx(flush ? PAGE.flush : PAGE.padded, 'animate-shelfway-enter')}>
 								{failure ? (
 									<ErrorState
 										{...(failure.title ? { title: failure.title } : {})}
@@ -517,7 +522,7 @@ export function Page({
 							</div>
 						</div>
 						{end ? (
-							<div data-ss-part="footer" className={PAGE.footer}>
+							<div data-shelfway-part="footer" className={PAGE.footer}>
 								{end}
 							</div>
 						) : null}

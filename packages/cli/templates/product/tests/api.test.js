@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { validateProductBlueprint } from '@ss/contracts';
+import { validateProductBlueprint } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import guide from '../docs/guide.json' with { type: 'json' };
 import openapi from '../openapi.json' with { type: 'json' };
@@ -120,9 +120,9 @@ describe('notes routes', () => {
 		const html = await docs.text();
 		for (const part of [
 			'/v1/tickets',
-			'SS_SERVER_TOKEN',
+			'SHELFWAY_SERVER_TOKEN',
 			'curl -X POST',
-			'managed_by_portal',
+			'managed_by_platform',
 			'localhost',
 			'data-token',
 			'notes.read',

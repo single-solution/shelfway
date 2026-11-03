@@ -53,7 +53,7 @@ const addressLabel = (t, name, kind) =>
 
 /**
  * The delivery address form: the name and phone, the country (a picker of every country, the business country
- * chosen first), the place parts the country's format uses (`@ss/contracts/address`: its order, its labels such as
+ * chosen first), the place parts the country's format uses (`@shelfway/contracts/address`: its order, its labels such as
  * State, Province or ZIP code, the region and postal code it requires) plus those the website requires, then the
  * delivery directions. Picking another country lays the place parts out again, keeping what was typed. Each field takes
  * at most its length in the one address table (`core/address.js`); the region is a list to pick from in a country
@@ -82,7 +82,7 @@ export const addressForm = ({ doc, t, settings, onPlace }) => {
 		if (['city', 'area', 'region', 'postalCode', 'country'].includes(name)) node.addEventListener('change', onPlace);
 		inputs.set(name, node);
 		labels.set(name, label);
-		return field(doc, `ss-cart-${name}`, needed ? label : t('checkout.optional', { field: label }), node);
+		return field(doc, `shelfway-cart-${name}`, needed ? label : t('checkout.optional', { field: label }), node);
 	};
 	/** @param {AddressField} name */
 	const input = (name) =>
@@ -91,7 +91,7 @@ export const addressForm = ({ doc, t, settings, onPlace }) => {
 				maxlength: String(ADDRESS_LIMITS[name]),
 				autocomplete: AUTOFILL[name],
 				...(name === 'phone' ? { type: 'tel', inputmode: 'tel' } : {}),
-				...(name === 'city' && settings.checkout.cities.length > 0 ? { list: 'ss-cart-cities' } : {}),
+				...(name === 'city' && settings.checkout.cities.length > 0 ? { list: 'shelfway-cart-cities' } : {}),
 			})
 		);
 	const country = select(
@@ -144,7 +144,7 @@ export const addressForm = ({ doc, t, settings, onPlace }) => {
 			? h(
 					doc,
 					'datalist',
-					{ id: 'ss-cart-cities' },
+					{ id: 'shelfway-cart-cities' },
 					...settings.checkout.cities.map((city) => h(doc, 'option', { value: city })),
 				)
 			: null;
@@ -173,7 +173,9 @@ export const addressForm = ({ doc, t, settings, onPlace }) => {
 		 */
 		problem: () => {
 			// in the order the form shows them
-			const shown = [...node.querySelectorAll('input, select, textarea')].map((control) => control.id.slice(8));
+			const shown = [...node.querySelectorAll('input, select, textarea')].map((control) =>
+				control.id.replace(/^shelfway-cart-/, ''),
+			);
 			const empty = shown.find((name) => isRequired(name) && value(name) === '');
 			if (empty) return { name: empty, text: t('checkout.missing', { field: labels.get(empty) ?? empty }) };
 			const refused = addressProblem({
@@ -227,7 +229,7 @@ export const guestForm = ({ doc, t, rules }) => {
 		const label = t(`checkout.guest.${name}`);
 		return field(
 			doc,
-			`ss-cart-guest-${name}`,
+			`shelfway-cart-guest-${name}`,
 			needed[name] || eitherOne ? label : t('checkout.optional', { field: label }),
 			control,
 		);
@@ -257,12 +259,12 @@ export const guestForm = ({ doc, t, rules }) => {
 };
 
 /**
- * The return address for Payments: this page without a previous `ss_order`.
+ * The return address for Payments: this page without a previous `shelfway_order`.
  * @param {Shop} shop
  */
 export const returnUrlOf = (shop) => {
 	const url = shop.location();
-	url.searchParams.delete('ss_order');
+	url.searchParams.delete('shelfway_order');
 	url.hash = '';
 	return url.toString();
 };

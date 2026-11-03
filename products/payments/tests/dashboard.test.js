@@ -6,8 +6,8 @@
  */
 import { act } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { DashboardProvider } from '@ss/ui/dashboard';
-import { byLabel, byText, cleanup, click, render, type } from '@ss/ui/testing';
+import { DashboardProvider } from '@shelfway/ui/dashboard';
+import { byLabel, byText, cleanup, click, render, type } from '@shelfway/ui/testing';
 import manifest from '../manifest.json' with { type: 'json' };
 import { MethodsEditor } from '../app/dashboard/methods.js';
 import { TABS } from '../app/dashboard/tabs.js';
@@ -358,7 +358,7 @@ describe("Payments's dashboard Developers tab", () => {
 			</DashboardProvider>,
 		);
 		await settle();
-		click(/** @type {HTMLElement} */ (container.querySelector('[role="option"][data-ss-id="callbacks"]')));
+		click(/** @type {HTMLElement} */ (container.querySelector('[role="option"][data-shelfway-id="callbacks"]')));
 		expect(container.textContent).toContain('Stripe: https://p.example/v1/gateways/stripe/web_9');
 		expect(container.textContent).toContain('JazzCash (Pakistan): https://p.example/return/jazzcash/web_9/<paymentId>');
 	});

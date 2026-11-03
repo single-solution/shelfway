@@ -1,6 +1,6 @@
 /**
  * A deliberately small static scanner for JavaScript sources: it strips comments and blanks string contents (keeping
- * offsets, so line numbers stay exact), then answers the questions `ss app validate` and `ss app assets` ask: which
+ * offsets, so line numbers stay exact), then answers the questions `shelfway app validate` and `shelfway app assets` ask: which
  * modules are imported, which DOM globals are touched, which widget-text keys are used and which routes are defined.
  * It is a lexer, not a parser: good enough for linting conventions, never used for security decisions.
  * @module

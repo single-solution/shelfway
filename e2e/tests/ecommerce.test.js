@@ -14,24 +14,28 @@ import {
 	createProductInstance as createAccounts,
 	manifest as accountsManifest,
 	strings as accountsStrings,
-} from '@ss/product-accounts/product';
-import { createRoutes as accountsRoutes } from '@ss/product-accounts/routes';
-import { createProductInstance as createChat, manifest as chatManifest, strings as chatStrings } from '@ss/product-chat/product';
-import { createRoutes as chatRoutes } from '@ss/product-chat/routes';
-import { createProductInstance, manifest, strings } from '@ss/product-ecommerce/product';
-import { createRoutes } from '@ss/product-ecommerce/routes';
+} from '@shelfway/product-accounts/product';
+import { createRoutes as accountsRoutes } from '@shelfway/product-accounts/routes';
+import {
+	createProductInstance as createChat,
+	manifest as chatManifest,
+	strings as chatStrings,
+} from '@shelfway/product-chat/product';
+import { createRoutes as chatRoutes } from '@shelfway/product-chat/routes';
+import { createProductInstance, manifest, strings } from '@shelfway/product-ecommerce/product';
+import { createRoutes } from '@shelfway/product-ecommerce/routes';
 import {
 	createProductInstance as createNotifications,
 	manifest as notifyManifest,
 	strings as notifyStrings,
-} from '@ss/product-notifications/product';
-import { createRoutes as notifyRoutes } from '@ss/product-notifications/routes';
+} from '@shelfway/product-notifications/product';
+import { createRoutes as notifyRoutes } from '@shelfway/product-notifications/routes';
 import {
 	createProductInstance as createPayments,
 	manifest as payManifest,
 	strings as payStrings,
-} from '@ss/product-payments/product';
-import { createRoutes as payRoutes } from '@ss/product-payments/routes';
+} from '@shelfway/product-payments/product';
+import { createRoutes as payRoutes } from '@shelfway/product-payments/routes';
 import { HOUR, codeOf, startSystem } from './helpers.js';
 
 const SHOP = 'https://ecommerce.test';
@@ -160,7 +164,7 @@ const shopper = (method, path, { body, key } = {}) =>
 		token: tokens.ecommerce?.browser,
 		origin: ORIGIN,
 		...(body === undefined ? {} : { body }),
-		headers: { ...(signIn ? { 'ss-sign-in': signIn } : {}), ...(key ? { 'idempotency-key': key } : {}) },
+		headers: { ...(signIn ? { 'shelfway-sign-in': signIn } : {}), ...(key ? { 'idempotency-key': key } : {}) },
 	});
 
 /** @param {string} method @param {string} path @param {unknown} [body] */
@@ -253,7 +257,7 @@ describe('Ecommerce on the real Portal', () => {
 		const pasted = await sys.dashboard(cookie, 'PUT', `/v1/dashboard/websites/${websiteId}/connections/link_payments`, {
 			value: tokens.payments?.server,
 		});
-		expect([pasted.status, codeOf(pasted)]).toEqual([409, 'managed_by_portal']);
+		expect([pasted.status, codeOf(pasted)]).toEqual([409, 'managed_by_platform']);
 		const shown = await sys.dashboard(cookie, 'GET', `/v1/dashboard/websites/${websiteId}/connections`);
 		expect(
 			shown.json.connections
@@ -356,7 +360,9 @@ describe('Ecommerce on the real Portal', () => {
 		expect([go.status, go.headers.get('location')]).toEqual([303, `https://checkout.stripe.com/c/${paymentId}`]);
 		// coming back with a forged parameter changes nothing: still waiting
 		sys.clock.advance(31_000);
-		expect((await shopper('GET', `/v1/shop/orders/${paidOrderId}?ss_payment=${paymentId}`)).json.payment.state).toBe('pending');
+		expect((await shopper('GET', `/v1/shop/orders/${paidOrderId}?shelfway_payment=${paymentId}`)).json.payment.state).toBe(
+			'pending',
+		);
 		// Stripe's signed confirmation reaches Payments
 		const event = JSON.stringify({
 			type: 'checkout.session.completed',
@@ -402,12 +408,12 @@ describe('Ecommerce on the real Portal', () => {
 		expect((await sys.call('GET', '/v1/admin/orders', { token: staff, origin: ORIGIN })).status).toBe(401);
 	});
 
-	it('the merchant’s server moves an order as a named member of staff (SS-Actor), and counts match the lists', async () => {
+	it('the merchant’s server moves an order as a named member of staff (Shelfway-Actor), and counts match the lists', async () => {
 		const server = String(tokens.ecommerce?.server);
 		const actor = {
-			'ss-actor-id': 'usr_staff_7',
-			'ss-actor-name': encodeURIComponent('Alex Morgan'),
-			'ss-actor-role': 'Packer',
+			'shelfway-actor-id': 'usr_staff_7',
+			'shelfway-actor-name': encodeURIComponent('Alex Morgan'),
+			'shelfway-actor-role': 'Packer',
 		};
 		const packed = await sys.call('POST', `/v1/orders/${codOrderId}/move`, {
 			token: server,
@@ -504,7 +510,7 @@ describe('Ecommerce on the real Portal', () => {
 			base: CHAT,
 			token: tokens.chat?.browser,
 			origin: ORIGIN,
-			headers: { 'ss-guest': String(sent.json.guestKey) },
+			headers: { 'shelfway-guest': String(sent.json.guestKey) },
 		});
 		const answer = state.json.messages.at(-1);
 		expect(answer).toMatchObject({ author: 'ai', text: 'Phone X is in stock.' });
@@ -531,7 +537,7 @@ describe('Ecommerce on the real Portal', () => {
 		const pasted = await sys.dashboard(cookie, 'PUT', `${base}/ai`, {
 			value: { provider: 'openai', apiKey: 'sk-pasted-in-shop', model: 'gpt-4.1-mini' },
 		});
-		expect([pasted.status, codeOf(pasted)]).toEqual([409, 'managed_by_portal']);
+		expect([pasted.status, codeOf(pasted)]).toEqual([409, 'managed_by_platform']);
 		aiAnswers.push({ text: '{"summary":"A fast phone with a great screen."}' });
 		const copy = await merchantServer('POST', `/v1/products/${productId}/ai-copy`, { fields: ['summary'] });
 		expect(copy.json).toEqual({ suggestions: { summary: 'A fast phone with a great screen.' } });

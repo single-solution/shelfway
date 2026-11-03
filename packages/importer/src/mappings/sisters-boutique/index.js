@@ -1,5 +1,5 @@
 /**
- * The Sisters Boutique mapping (`ss-import read --mapping sisters-boutique`; PLAN 0.8.10 Migration, "Per store", SB):
+ * The Sisters Boutique mapping (`shelfway-import read --mapping sisters-boutique`; PLAN 0.8.10 Migration, "Per store", SB):
  * SB's MongoDB (its Mongoose models, `packages/db/src/models` at 8f809d8) into Accounts and Ecommerce, in import order,
  * with SB's settings and lists for every product it uses. SB has no chat, reviews, returns, stock alerts or
  * wishlists, and no analytics collection: nothing goes to Chat or Growth records (Growth gets its settings).
@@ -23,8 +23,8 @@ export {
 	BY_HAND,
 	FEATURES,
 	PENDING,
-	PORTAL_BY_HAND,
-	PORTAL_CONNECTIONS_BY_HAND,
+	PLATFORM_BY_HAND,
+	PLATFORM_CONNECTIONS_BY_HAND,
 	STORE_DEFAULTS,
 	readValues,
 	settingsPlan,

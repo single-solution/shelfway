@@ -34,10 +34,10 @@ const typeIn = (node, value) => {
 
 /** The preview's parts in a scope. @param {ParentNode} scope */
 const previewOf = (scope) => ({
-	title: scope.querySelector('[data-part="result"] .ss-seo-title')?.textContent ?? null,
-	trail: scope.querySelector('[data-part="result"] .ss-seo-trail')?.textContent ?? null,
-	text: scope.querySelector('[data-part="result"] .ss-seo-text')?.textContent ?? null,
-	warn: scope.querySelector('.ss-seo-warn')?.textContent ?? '',
+	title: scope.querySelector('[data-part="result"] .shelfway-seo-title')?.textContent ?? null,
+	trail: scope.querySelector('[data-part="result"] .shelfway-seo-trail')?.textContent ?? null,
+	text: scope.querySelector('[data-part="result"] .shelfway-seo-text')?.textContent ?? null,
+	warn: scope.querySelector('.shelfway-seo-warn')?.textContent ?? '',
 	image: scope.querySelector('[data-part="card"] img')?.getAttribute('src') ?? null,
 });
 
@@ -126,6 +126,6 @@ describe('catalog admin: search result and share preview', () => {
 		const { root } = await start(ALL);
 		const panel = panelOf(root, 'products');
 		await click(buttonIn(detailOf(panel), 'Edit'));
-		expect(detailOf(panel).querySelector('.ss-seo')).toBeNull();
+		expect(detailOf(panel).querySelector('.shelfway-seo')).toBeNull();
 	});
 });

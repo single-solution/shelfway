@@ -1,7 +1,7 @@
 /**
  * API descriptions (`schemas/api.json` of a product; the kit's own routes in `kit-api.json`): what every call takes
- * and answers, in the JSON Schema subset of `api-schema.js`. `ss app assets` merges them into `openapi.json` and the
- * docs; the products' tests check every answer against them (`apiChecker`, from `@ss/app-kit/testing`), so a
+ * and answers, in the JSON Schema subset of `api-schema.js`. `shelfway app assets` merges them into `openapi.json` and the
+ * docs; the products' tests check every answer against them (`apiChecker`, from `@shelfway/app-kit/testing`), so a
  * description cannot drift from the code. Nothing here runs in production.
  *
  * The file is an object keyed `"<METHOD> <path as in defineRoute>"` (for example `"POST /v1/payments/:id/cancel"`),
@@ -13,7 +13,7 @@
  * referenced too.
  * @module
  */
-import { isObject } from '@ss/contracts/util';
+import { isObject } from '@shelfway/contracts/util';
 import KIT_API_JSON from './kit-api.json' with { type: 'json' };
 import { escapeToken, schemaProblems } from './api-schema.js';
 
@@ -38,7 +38,7 @@ import { escapeToken, schemaProblems } from './api-schema.js';
  */
 export const KIT_API = /** @type {ApiDescription} */ (/** @type {unknown} */ (KIT_API_JSON));
 
-/** A request header's name, as the route's own headers are named (`SS-Guest`, `SS-Order-Key` …). */
+/** A request header's name, as the route's own headers are named (`Shelfway-Guest`, `Shelfway-Order-Key` …). */
 const HEADER_NAME = /^[A-Za-z][A-Za-z0-9-]{0,63}$/;
 /** Members of a route's entry. */
 const API_ENTRY_MEMBERS = Object.freeze(['summary', 'description', 'query', 'headers', 'body', 'response', 'status']);

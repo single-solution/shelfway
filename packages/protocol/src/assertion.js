@@ -1,5 +1,5 @@
 /**
- * Client assertions: product → Portal authentication (RFC 7523 style, EdDSA, `typ: ss-assertion+jwt`).
+ * Client assertions: product → Portal authentication (RFC 7523 style, EdDSA, `typ: shelfway-assertion+jwt`).
  *
  * `iss = sub = productId`, `aud` = the Portal endpoint/issuer, fresh `jti`, `iat`, `exp` with `exp - iat ≤ 300 s`. The
  * Portal picks the product's pinned keys from the claimed `iss`, verifies, then records `iss|jti` in a shared replay
@@ -9,7 +9,7 @@
  * was already recorded (a replay), `false` on first sight; it may be sync or async. A deployable uses a store shared by
  * every instance (serverless functions do not share memory) with an atomic insert-if-absent and a TTL, for example a
  * MongoDB collection with a unique index on `_id` and a TTL index on `expiresAt` (`insertOne` → a duplicate-key error
- * means "seen"). Tests use the in-memory store of `@ss/protocol/testing`.
+ * means "seen"). Tests use the in-memory store of `@shelfway/protocol/testing`.
  */
 import { createProtocolError } from './errors.js';
 import { defaultRandomBytes, randomId } from './encoding.js';
@@ -22,7 +22,7 @@ import { isProductId } from './tokens.js';
 /** @typedef {{ iss: string, sub: string, aud: string, jti: string, iat: number, exp: number }} AssertionClaims */
 
 /** JOSE `typ` of client assertions. */
-const ASSERTION_TYP = 'ss-assertion+jwt';
+const ASSERTION_TYP = 'shelfway-assertion+jwt';
 /** Maximum assertion lifetime (seconds). */
 const MAX_ASSERTION_LIFETIME_SECONDS = 300;
 

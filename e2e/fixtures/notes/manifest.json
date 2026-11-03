@@ -38,7 +38,7 @@
 		{
 			"key": "import",
 			"name": "Import",
-			"description": "Notes moved in from another system with ss-import; our admins switch it on for a migration and off after it.",
+			"description": "Notes moved in from another system with shelfway-import; our admins switch it on for a migration and off after it.",
 			"dependsOn": [],
 			"recommendFor": ["moving.yes"],
 			"settings": { "$ref": "schemas/import.settings.json" }

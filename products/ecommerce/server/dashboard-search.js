@@ -6,7 +6,7 @@
  * `atlas`. Setup only: no business data. `server/routes.js` mounts it next to the dashboard's list routes.
  * @module
  */
-import { defineRoute } from '@ss/app-kit';
+import { defineRoute } from '@shelfway/app-kit';
 import { SEARCH_INDEX } from '../core/limits.js';
 
 /**
@@ -17,7 +17,7 @@ import { SEARCH_INDEX } from '../core/limits.js';
 
 /**
  * @param {import('../adapters/product.js').Product} product
- * @returns {import('@ss/app-kit').RouteDefinition[]}
+ * @returns {import('@shelfway/app-kit').RouteDefinition[]}
  */
 export const createDashboardSearch = (product) => [
 	defineRoute({

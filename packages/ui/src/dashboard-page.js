@@ -455,7 +455,7 @@ export function SectionsPage({
 								hidden={section.id !== active || Boolean(children)}
 								className={cx(
 									section.children?.length ? 'flex min-w-0 flex-col gap-8' : section.flush ? PAGE.flush : CARD_FLOW,
-									'animate-ss-enter',
+									'animate-shelfway-enter',
 								)}>
 								<ViewBody spec={section} />
 							</div>

@@ -5,7 +5,7 @@
  */
 import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { byLabel, byText, cleanup, click, render, type } from '@ss/ui/testing';
+import { byLabel, byText, cleanup, click, render, type } from '@shelfway/ui/testing';
 import { GradesEditor } from '../app/dashboard/grades.js';
 import { inDashboard } from './dashboard-provider.js';
 
@@ -43,8 +43,8 @@ describe('a grade’s search result and share preview', () => {
 		await act(async () => click(byText(container, 'Add grade', 'button')));
 		const dialog = document.body;
 		type(byLabel(dialog, 'Name'), 'Grade A');
-		const title = () => dialog.querySelector('[data-part="result"] .ss-seo-title')?.textContent;
-		const text = () => dialog.querySelector('[data-part="result"] .ss-seo-text')?.textContent;
+		const title = () => dialog.querySelector('[data-part="result"] .shelfway-seo-title')?.textContent;
+		const text = () => dialog.querySelector('[data-part="result"] .shelfway-seo-text')?.textContent;
 		await settle();
 		expect(title()).toBe('Grade A condition | Northwind');
 		expect(text()).toBe('Phones and more.');

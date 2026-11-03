@@ -1,11 +1,11 @@
 /**
  * Text helpers (pure): Unicode-aware normalization and tokenization for retrieval and phrase matching, the words
- * around a phrase and truncation on code points; the shared path patterns (`pathMatches` of `@ss/contracts/text`), for
+ * around a phrase and truncation on code points; the shared path patterns (`pathMatches` of `@shelfway/contracts/text`), for
  * the widgets, which reach contracts helpers only through core.
  * @module
  */
 
-export { pathMatches } from '@ss/contracts/text';
+export { pathMatches } from '@shelfway/contracts/text';
 
 /** Scripts written without spaces: indexed as character bigrams. */
 const UNSPACED =

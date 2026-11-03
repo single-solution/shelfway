@@ -10,8 +10,8 @@
  * @module
  */
 import { randomBytes } from 'node:crypto';
-import { created, defineRoute, paginate, problem } from '@ss/app-kit';
-import { createId } from '@ss/contracts';
+import { created, defineRoute, paginate, problem } from '@shelfway/app-kit';
+import { createId } from '@shelfway/contracts';
 import { attributesOf, productTypes } from '../adapters/catalog-store.js';
 import { bundleView, checkBundleInput } from '../core/bundles.js';
 import { IMAGE_TYPES } from '../core/catalog-content.js';
@@ -74,7 +74,7 @@ export const createOfferRoutes = (service) => {
 	/**
 	 * A deal's rules on the merchant's fields name each field by its id: a rule that names it by slug is changed to the id,
 	 * and a rule on a key that is no field of products or variants is refused (it could never hold).
-	 * @param {import('@ss/app-kit').WebsiteData} data
+	 * @param {import('@shelfway/app-kit').WebsiteData} data
 	 * @param {Record<string, any>} value checked offer fields (changed in place)
 	 */
 	const resolveFields = async (data, value) => {
@@ -104,7 +104,7 @@ export const createOfferRoutes = (service) => {
 
 	/**
 	 * Refuse a scope (or bundle items) naming products, categories or brands that do not exist.
-	 * @param {import('@ss/app-kit').WebsiteData} data
+	 * @param {import('@shelfway/app-kit').WebsiteData} data
 	 * @param {Record<string, any>} value checked offer fields
 	 */
 	const checkRefs = async (data, value) => {
@@ -132,7 +132,7 @@ export const createOfferRoutes = (service) => {
 	/**
 	 * Refuse a bundle or buy X get Y naming items sold in a unit of their own (v1: sets are counted in pieces; a
 	 * scope by category or brand simply leaves them out).
-	 * @param {any} ctx @param {import('@ss/app-kit').WebsiteData} data @param {Record<string, any>} value checked fields
+	 * @param {any} ctx @param {import('@shelfway/app-kit').WebsiteData} data @param {Record<string, any>} value checked fields
 	 */
 	const noMeasured = async (ctx, data, value) => {
 		const named = [
@@ -173,7 +173,7 @@ export const createOfferRoutes = (service) => {
 
 	/**
 	 * Refuse a deal slug another deal uses (E18: `GET /v1/shop/deals/:ref` takes an id or a slug).
-	 * @param {import('@ss/app-kit').WebsiteData} data
+	 * @param {import('@shelfway/app-kit').WebsiteData} data
 	 * @param {OfferCollection} kind
 	 * @param {Record<string, any>} value checked offer fields
 	 * @param {string | null} id the deal being changed

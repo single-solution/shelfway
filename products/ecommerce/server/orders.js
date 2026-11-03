@@ -10,8 +10,8 @@
  * each status key in the website's order flow), `paymentMethod` and `paymentState`; customers by `blocked`.
  * @module
  */
-import { createId } from '@ss/contracts';
-import { countHandlers, created, defineRoute, paginate, problem } from '@ss/app-kit';
+import { createId } from '@shelfway/contracts';
+import { countHandlers, created, defineRoute, paginate, problem } from '@shelfway/app-kit';
 import { documentFieldsOf, fieldsOn, unitsOfOrders } from '../adapters/catalog-store.js';
 import { createFulfillmentStore, markSeenBy } from '../adapters/fulfillment-store.js';
 import { setOrderCounter } from '../adapters/ledger.js';
@@ -670,7 +670,7 @@ export const createOrders = (product, service, { ordering }) => {
 
 	/**
 	 * GET /v1/shop/orders/:id/invoice: the order the shopper may open, as on its page (their sign-in, or a guest order's
-	 * key in `SS-Order-Key`, E21); with `shopperFrom` confirmed, once the order is confirmed: not while it waits, nor once
+	 * key in `Shelfway-Order-Key`, E21); with `shopperFrom` confirmed, once the order is confirmed: not while it waits, nor once
 	 * canceled (E35).
 	 * @param {any} ctx
 	 */
@@ -926,7 +926,7 @@ export const createOrders = (product, service, { ordering }) => {
 				path: '/v1/data/delete-all',
 				auth: 'server',
 				permission: 'data.delete_all',
-				feature: 'catalog',
+				feature: 'bulk_actions',
 				rateLimit: SERVER_LIMITS,
 				handler: deleteAll,
 			}),
@@ -1052,7 +1052,7 @@ export const createOrders = (product, service, { ordering }) => {
 				path: '/v1/orders/bulk-move',
 				auth: 'server',
 				permission: 'bulk.run',
-				feature: 'catalog',
+				feature: 'bulk_actions',
 				idempotent: true,
 				rateLimit: SERVER_LIMITS,
 				handler: bulkMove,
@@ -1061,7 +1061,7 @@ export const createOrders = (product, service, { ordering }) => {
 				method: 'POST',
 				path: '/v1/admin/orders/bulk-move',
 				auth: 'ticket',
-				feature: 'catalog',
+				feature: 'bulk_actions',
 				permission: 'bulk.run',
 				idempotent: true,
 				rateLimit: SERVER_LIMITS,

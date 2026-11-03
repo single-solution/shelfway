@@ -985,7 +985,7 @@
 				"returnUrl": {
 					"type": "string",
 					"maxLength": 2048,
-					"description": "Where the payer comes back to (with ?ss_payment=<id>); on https://<your domain> (or a local address while testing)."
+					"description": "Where the payer comes back to (with ?shelfway_payment=<id>); on https://<your domain> (or a local address while testing)."
 				},
 				"cancelUrl": {
 					"type": "string",
@@ -1451,7 +1451,7 @@
 				"returnUrl": {
 					"type": "string",
 					"maxLength": 2048,
-					"description": "Where the payer comes back to (with ?ss_subscription=<id>); on https://<your domain>."
+					"description": "Where the payer comes back to (with ?shelfway_subscription=<id>); on https://<your domain>."
 				},
 				"cancelUrl": {
 					"type": "string",

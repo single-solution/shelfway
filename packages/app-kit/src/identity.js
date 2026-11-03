@@ -11,7 +11,7 @@
  * @module
  */
 import { createPublicKey, verify as cryptoVerify } from 'node:crypto';
-import { deepFreeze, isObject } from '@ss/contracts/util';
+import { deepFreeze, isObject } from '@shelfway/contracts/util';
 
 /** @typedef {{ issuer: string, jwks: Array<Record<string, any>>, audience: string }} IssuerSettings */
 
@@ -150,7 +150,7 @@ const ACCOUNTS_REFETCH_MS = 60_000;
 /**
  * Accounts sign-ins (PLAN 0.4.6): a product trusts them for a website only after the Portal has linked it to that website's
  * Accounts (a link key, never pasted). The website's public keys are fetched from Accounts with that
- * key (through `@ss/net`, cached 10 minutes; an unknown key id refetches them at most once a minute) and each sign-in
+ * key (through `@shelfway/net`, cached 10 minutes; an unknown key id refetches them at most once a minute) and each sign-in
  * is verified offline: signed by Accounts, issued for this website (`aud`) and not expired (they last 15 minutes). A
  * sign-in says who the person is and the permissions of their role; the server token alone never authorizes
  * configuration or staff work (`staff.js`).
@@ -241,7 +241,7 @@ export const createAccountsSignIns = ({ connections, now, own }) => {
 };
 
 /** The header a visitor's Accounts sign-in travels in: from the browser next to the browser token, and from the merchant's server next to the server token. */
-export const SIGN_IN_HEADER = 'ss-sign-in';
+export const SIGN_IN_HEADER = 'shelfway-sign-in';
 
 /**
  * @typedef {{ ok: true, token: string, user: AccountsUser, claims: Readonly<Record<string, unknown>> }
@@ -249,7 +249,7 @@ export const SIGN_IN_HEADER = 'ss-sign-in';
  */
 
 /**
- * The Accounts sign-in of one request (`ctx.signIn()`): read from `SS-Sign-In`, checked for the website of the request's
+ * The Accounts sign-in of one request (`ctx.signIn()`): read from `Shelfway-Sign-In`, checked for the website of the request's
  * own token, never for one the header names (signature by the website's Accounts keys, `aud`, `exp`, `iat`, see
  * `verifyIdentityToken`), and checked once however often a route asks. Null when the request carries no sign-in, or
  * when the product takes no Accounts sign-ins (it declares no `accounts` token connection: Accounts itself reads its own).
@@ -274,7 +274,7 @@ export const requestSignIn = ({ accounts, websiteId, headers }) => {
 
 /**
  * The sign-in of a staff member on a request (`ctx.staffSignIn()`), for the staff routes of the server token (`staff.js`):
- * read from `SS-Sign-In`, checked once for the website of the request's own token and judged by the product's
+ * read from `Shelfway-Sign-In`, checked once for the website of the request's own token and judged by the product's
  * verification (`verifyStaff`: with the website's Portal link to Accounts, or Accounts' own keys). Null when the request
  * carries no sign-in; a product that cannot check a sign-in at all answers `accounts_not_connected` to one.
  * @param {{ accounts: ReturnType<typeof createAccountsSignIns>, websiteId: string | null, headers: Headers, ctx?: any }} input

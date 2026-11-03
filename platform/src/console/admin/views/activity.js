@@ -5,7 +5,7 @@
  * and two date fields. The names in the entries filter by them; a row opens a drawer with what the entry changed.
  * @module
  */
-import { ButtonLink, Callout, Page, Pagination, Toolbar, describeProblem } from '@ss/ui';
+import { ButtonLink, Callout, Page, Pagination, Toolbar, describeProblem } from '@shelfway/ui';
 import { ADMIN, MORE } from '../../../texts/console.js';
 import { Link } from '../../link.js';
 import { ActivityTable } from '../../views/login-settings.js';

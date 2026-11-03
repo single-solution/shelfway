@@ -4,7 +4,7 @@
  * scores them with BM25 (+ a per-source priority boost) and keeps passages covering a minimum share of the query.
  * @module
  */
-import { decodeEntities } from '@ss/contracts/text';
+import { decodeEntities } from '@shelfway/contracts/text';
 import { tokenize, truncate } from './text.js';
 
 /** @typedef {{ id: string, sourceType: 'entry' | 'page', sourceId: string, title: string, url: string | null, text: string, terms: string[], tf: Record<string, number>, length: number, priority: number, language?: string }} Chunk `language`: the entry's ('' or none = any, C21) */

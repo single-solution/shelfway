@@ -1,5 +1,5 @@
 /**
- * Helpers used only inside @ss/contracts (not exported): JSON Pointers, UTC timestamps and service addresses.
+ * Helpers used only inside @shelfway/contracts (not exported): JSON Pointers, UTC timestamps and service addresses.
  * @module
  */
 

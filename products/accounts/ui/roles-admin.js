@@ -6,7 +6,7 @@
  * (Owner and the sign-up role; the ready-made templates too, A3), and name their own permissions (the `site` group).
  * @module
  */
-import { adminCall, block, element, formatText, mountWidget } from '@ss/app-kit/widget';
+import { adminCall, block, element, formatText, mountWidget } from '@shelfway/app-kit/widget';
 import { datesOf, errorText, fieldMaker, setHidden, textsOf } from './common.js';
 import { SIGN_IN_METHODS } from '../core/widgets.js';
 import { WIDGET_CSS } from './styles.js';
@@ -41,7 +41,7 @@ const OWN_SOURCE = 'site';
 /** @typedef {{ source: string, permissions: Array<{ key: string, name: string }> }} PermissionGroup */
 
 /**
- * @param {{ host: HTMLElement, api: import('@ss/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig }} input
+ * @param {{ host: HTMLElement, api: import('@shelfway/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig }} input
  */
 export const mountRolesAdmin = ({ host, api, config }) => {
 	const t = textsOf(config);
@@ -54,7 +54,7 @@ export const mountRolesAdmin = ({ host, api, config }) => {
 		css: WIDGET_CSS,
 		render: (root) => {
 			const doc = /** @type {Document} */ (root.ownerDocument);
-			const make = fieldMaker(doc, 'ss-roles');
+			const make = fieldMaker(doc, 'shelfway-roles');
 			/** @type {RoleView[]} */
 			let roles = [];
 			/** @type {PermissionGroup[]} */

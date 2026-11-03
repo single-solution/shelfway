@@ -13,25 +13,25 @@
  * Every request runs in a request scope (`request-scope.js`): work deferred with `ctx.defer` or `afterResponse()`
  * runs right after the response, and only then (no timers, PLAN 0.10).
  *
- * The result helpers (`ok`, `created`, `problem`, `paginate`, …) mirror `@ss/app-kit`'s so products and the Portal
+ * The result helpers (`ok`, `created`, `problem`, `paginate`, …) mirror `@shelfway/app-kit`'s so products and the Portal
  * share one wire behavior (problem documents, cursor pages `{ items, nextCursor, hasMore }` + `Link`, idempotent
  * replays with `Idempotent-Replayed: true`).
  * @module
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { checkCsrf } from './auth.js';
-import { clientIpOf, createLocalWindows, isDatabaseUnavailable } from '@ss/net';
+import { clientIpOf, createLocalWindows, isDatabaseUnavailable } from '@shelfway/net';
 import { runInRequestScope } from './request-scope.js';
-import { isObject } from '@ss/contracts/util';
-import { hmacSha256Hex, sha256Hex } from '@ss/protocol';
+import { isObject } from '@shelfway/contracts/util';
+import { hmacSha256Hex, sha256Hex } from '@shelfway/protocol';
 
-/** @typedef {import('@ss/net').Logger} Logger */
+/** @typedef {import('@shelfway/net').Logger} Logger */
 /** @typedef {import('./rbac.js').Actor} Actor */
 /** @typedef {import('./rbac.js').Resource} Resource */
 /** @typedef {import('./stores.js').StoredResponse} StoredResponse */
 /** @typedef {import('./stores.js').IdempotencyStore} IdempotencyStore */
 /** @typedef {import('./stores.js').RateLimitStore} RateLimitStore */
-/** @typedef {import('@ss/contracts').ProblemFactory} ProblemFactory */
+/** @typedef {import('@shelfway/contracts').ProblemFactory} ProblemFactory */
 
 /** @typedef {'admin' | 'merchant' | 'product' | 'public'} AuthMode */
 /** @typedef {'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'} Method */
@@ -44,7 +44,7 @@ const IDEMPOTENCY_KEY = /^[\x21-\x7e]{1,255}$/;
 const IDEMPOTENCY_TTL_MS = 24 * 60 * 60_000;
 
 /**
- * Problem codes the infra layer adds to `@ss/contracts`' set (registered by the composition root).
+ * Problem codes the infra layer adds to `@shelfway/contracts`' set (registered by the composition root).
  *
  * `idempotency_replay_no_body` (409): the request was already completed under this `Idempotency-Key` on a route
  * whose response is never stored (`idempotent: 'no-store'`, e.g. responses carrying secrets). The original status
@@ -61,7 +61,7 @@ export const INFRA_PROBLEMS = Object.freeze({
 // ---------------------------------------------------------------------------------------------------------------
 // Results
 
-const BRAND = Symbol.for('ss.platform.result');
+const BRAND = Symbol.for('shelfway.platform.result');
 
 /**
  * @typedef {{ [BRAND]: 'response', status: number, body: unknown, headers: Record<string, string>, cookies: string[] }} ResponseResult
@@ -105,7 +105,7 @@ export const accepted = (body) => ok(body, { status: 202 });
 export const noContent = ({ cookies = [] } = {}) => ok(undefined, { status: 204, cookies });
 
 /**
- * RFC 9457 problem for a registered code (`@ss/contracts` `PROBLEM_CODES` or a module's own codes). Return or throw.
+ * RFC 9457 problem for a registered code (`@shelfway/contracts` `PROBLEM_CODES` or a module's own codes). Return or throw.
  * @param {string} code
  * @param {string} [detail]
  * @param {{ errors?: FieldError[], headers?: Record<string, string>, status?: number }} [extra]
@@ -439,7 +439,7 @@ const readBody = async (request, max) => {
  *   afterResponse?: (input: AfterResponse) => void,
  *   allowedOrigin: string,
  * }} options `afterResponse` schedules the deferred tasks and any background work after each response;
- *   `allowedOrigin` is the only origin cookie-authenticated writes may come from (`PORTAL_URL`, PLAN 0.8.1)
+ *   `allowedOrigin` is the only origin cookie-authenticated writes may come from (`PLATFORM_URL`, PLAN 0.8.1)
  * @returns {(request: Request, options?: { memo?: Map<string, unknown> }) => Promise<Response>} `options.memo`: the
  *   memo of a page render the request belongs to (`memoize`, console in-process reads only)
  */
@@ -479,7 +479,7 @@ export const createApiHandler = ({
 	 */
 	const render = (result, requestId, instance) => {
 		if (isProblem(result)) {
-			/** @type {import('@ss/contracts').Problem} */
+			/** @type {import('@shelfway/contracts').Problem} */
 			let doc;
 			try {
 				doc = problems.create(result.code, {
@@ -703,7 +703,10 @@ export const createApiHandler = ({
 					const principal = actor ? `${actor.type}:${actor.id}` : `anon:${ip ?? 'unknown'}`;
 					record = sha256Hex(`${principal}\n${route.id}\n${pathname}\n${key}`);
 					// keyed: bodies may hold passwords or credentials, a plain hash could be brute-forced offline
-					const fingerprint = hmacSha256Hex(fingerprintKey, `ss-idem.v1\n${method}\n${pathname}\n${url.search}\n${rawBody}`);
+					const fingerprint = hmacSha256Hex(
+						fingerprintKey,
+						`shelfway-idem.v1\n${method}\n${pathname}\n${url.search}\n${rawBody}`,
+					);
 					const begun = await idempotency.begin(record, fingerprint, now() + IDEMPOTENCY_TTL_MS);
 					if (begun.state === 'mismatch')
 						return fail(problem('idempotency_conflict', 'This Idempotency-Key was used with a different request.'));

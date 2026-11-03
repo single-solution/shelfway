@@ -7,8 +7,8 @@
  * tab; the theme, the Format and the alert people are the Portal's Website settings.
  * @module
  */
-import { Callout } from '@ss/ui';
-import { SettingsTab as SharedSettingsTab, useLoad } from '@ss/ui/dashboard';
+import { Callout } from '@shelfway/ui';
+import { SettingsTab as SharedSettingsTab, useLoad } from '@shelfway/ui/dashboard';
 import { LABEL_LISTS } from '../../core/labels.js';
 import { aiLabelShown } from '../../core/widgets.js';
 import {
@@ -77,7 +77,7 @@ function Flows({ websiteId }) {
 /**
  * Chat's list editors, each under its feature (a feature that is off is not listed).
  * @param {string} websiteId
- * @returns {Record<string, import('@ss/ui/dashboard').FeatureExtra>}
+ * @returns {Record<string, import('@shelfway/ui/dashboard').FeatureExtra>}
  */
 const extrasOf = (websiteId) => ({
 	ai_replies: {
@@ -178,7 +178,7 @@ const extrasOf = (websiteId) => ({
 	moderation: <RedactionPatternsEditor websiteId={websiteId} off={false} />,
 });
 
-/** @param {import('@ss/ui/dashboard').TabProps & { warnings?: (on: string[]) => string[] }} props */
+/** @param {import('@shelfway/ui/dashboard').TabProps & { warnings?: (on: string[]) => string[] }} props */
 export function SettingsTab(props) {
 	return <SharedSettingsTab {...props} notice={aiLabelNotice} extras={extrasOf(String(props.websiteId))} />;
 }

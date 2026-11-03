@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { DATABASE_DEADLINES } from '@ss/net';
+import { DATABASE_DEADLINES } from '@shelfway/net';
 import {
 	connectMongoClient,
 	createLocks,
@@ -311,7 +311,7 @@ describe('getMongoClient', () => {
 		await closeMongoClients();
 	});
 
-	it('gives every database call the deadlines of @ss/net (K-16)', async () => {
+	it('gives every database call the deadlines of @shelfway/net (K-16)', async () => {
 		/** @type {any[]} */
 		const seen = [];
 		getMongoClient({
@@ -322,7 +322,7 @@ describe('getMongoClient', () => {
 			},
 		});
 		expect(seen).toEqual([
-			{ maxPoolSize: 5, minPoolSize: 0, maxIdleTimeMS: 60_000, ...DATABASE_DEADLINES, appName: 'ss-portal' },
+			{ maxPoolSize: 5, minPoolSize: 0, maxIdleTimeMS: 60_000, ...DATABASE_DEADLINES, appName: 'shelfway-platform' },
 		]);
 		await closeMongoClients();
 	});

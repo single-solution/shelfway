@@ -50,7 +50,7 @@ export const INFRA_COLLECTIONS = Object.freeze([
 	defineCollection({
 		module: 'platform',
 		name: COLLECTIONS.replay,
-		description: 'Replay store for client assertions and launch consumption (`@ss/protocol` ReplayStore).',
+		description: 'Replay store for client assertions and launch consumption (`@shelfway/protocol` ReplayStore).',
 		timestamps: false,
 		ttl: { field: 'expireAt', afterSeconds: 0 },
 	}),

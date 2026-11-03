@@ -7,7 +7,7 @@
  */
 import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { byLabel, byText, cleanup, click, render, type } from '@ss/ui/testing';
+import { byLabel, byText, cleanup, click, render, type } from '@shelfway/ui/testing';
 import { GradesEditor } from '../app/dashboard/grades.js';
 import { closeEditor, drawerOf, factsOf, inDashboard, openRow, rowMenu, rowNames, rowsOf } from './dashboard-provider.js';
 

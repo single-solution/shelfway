@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { verifyIdentityToken } from '@ss/app-kit';
+import { verifyIdentityToken } from '@shelfway/app-kit';
 import {
 	createSealer,
 	generateSigningKey,

@@ -1,6 +1,6 @@
 /**
  * PLAN 0.8.10 K3 and K4 against the real Portal, on the test product Notes: the merchant's server calls a visitor route
- * with the Portal-issued server token (no Origin) for one visitor named by `SS-Visitor-IP`; those calls count in their
+ * with the Portal-issued server token (no Origin) for one visitor named by `Shelfway-Visitor-IP`; those calls count in their
  * own window, not the browser one, but keep the per-visitor limits; a write needs the visitor's address; and a list's
  * count equals its length, for the server and the admin widget.
  */
@@ -39,7 +39,7 @@ const fromServer = (ip, text = 'Sent from the store server') =>
 	sys.call('POST', '/v1/notes', {
 		token: tokens.server,
 		body: { text },
-		headers: ip ? { 'ss-visitor-ip': ip } : {},
+		headers: ip ? { 'shelfway-visitor-ip': ip } : {},
 		tick: false,
 	});
 

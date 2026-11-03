@@ -23,7 +23,7 @@
  * it reserved (`claimBack`), so a claim never says it refunded money that did not go back.
  * @module
  */
-import { problem } from '@ss/app-kit';
+import { problem } from '@shelfway/app-kit';
 import { applyTransition, isPointsChanged, unitRefusalOf } from '../adapters/ledger.js';
 import { COLLECTIONS } from '../core/model.js';
 import { refundSplit, refundable, stateAfterRefund } from '../core/orders.js';

@@ -11,22 +11,22 @@ import {
 	createProductInstance as createAccounts,
 	manifest as accountsManifest,
 	strings as accountsStrings,
-} from '@ss/product-accounts/product';
-import { createRoutes as accountsRoutes } from '@ss/product-accounts/routes';
-import { createProductInstance, manifest, strings } from '@ss/product-chat/product';
-import { createRoutes } from '@ss/product-chat/routes';
+} from '@shelfway/product-accounts/product';
+import { createRoutes as accountsRoutes } from '@shelfway/product-accounts/routes';
+import { createProductInstance, manifest, strings } from '@shelfway/product-chat/product';
+import { createRoutes } from '@shelfway/product-chat/routes';
 import {
 	createProductInstance as createEcommerce,
 	manifest as shopManifest,
 	strings as shopStrings,
-} from '@ss/product-ecommerce/product';
-import { createRoutes as shopRoutes } from '@ss/product-ecommerce/routes';
+} from '@shelfway/product-ecommerce/product';
+import { createRoutes as shopRoutes } from '@shelfway/product-ecommerce/routes';
 import {
 	createProductInstance as createNotifications,
 	manifest as notifyManifest,
 	strings as notifyStrings,
-} from '@ss/product-notifications/product';
-import { createRoutes as notifyRoutes } from '@ss/product-notifications/routes';
+} from '@shelfway/product-notifications/product';
+import { createRoutes as notifyRoutes } from '@shelfway/product-notifications/routes';
 import { savePortalSettings, startSystem } from './helpers.js';
 
 const CHAT = 'https://chat-defaults.test';
@@ -158,7 +158,7 @@ describe('default templates: no template written, messages still go (parity P1)'
 		expect(mail.text).toMatch(
 			new RegExp(`^We got a request to reset the password of your ${DOMAIN.replaceAll('.', '\\.')} account`),
 		);
-		expect(mail.text).toContain(`${ORIGIN}/reset#ss_accounts_reset=`);
+		expect(mail.text).toContain(`${ORIGIN}/reset#shelfway_accounts_reset=`);
 		expect(mail.text).toContain('The link works for 60 minutes.');
 	});
 
@@ -176,8 +176,7 @@ describe('default templates: no template written, messages still go (parity P1)'
 	it('an order email and an Ecommerce staff alert go with Ecommerce’s default words; a per-status message falls back to the general one', async () => {
 		await sys.addProduct(merchantId, websiteId, 'ecommerce');
 		tokens.ecommerce = await sys.tokens(merchantId, websiteId, 'ecommerce');
-		expect((await dash('ecommerce', 'PUT', '/features', { on: ['catalog', 'checkout'] })).status).toBe(200);
-		expect((await dash('ecommerce', 'PUT', '/settings/checkout.enableStaffAlerts', { value: true })).status).toBe(204);
+		expect((await dash('ecommerce', 'PUT', '/features', { on: ['catalog', 'checkout', 'staff_alerts'] })).status).toBe(200);
 		await sys.connectDatabase(websiteId, SHOP);
 		await alertTeam(['ops@defaults.example.com']);
 		/** @param {string} method @param {string} path @param {unknown} [body] */
@@ -211,7 +210,7 @@ describe('default templates: no template written, messages still go (parity P1)'
 						country: 'US',
 					},
 				},
-				headers: { 'ss-sign-in': String(up.json.signIn), 'idempotency-key': key },
+				headers: { 'shelfway-sign-in': String(up.json.signIn), 'idempotency-key': key },
 			});
 			expect(placed.status, JSON.stringify(placed.json)).toBe(201);
 			return placed.json.order;

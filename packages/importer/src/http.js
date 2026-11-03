@@ -9,7 +9,7 @@
  *   token; `signIn`: the Accounts sign-in of the staff member who runs the migration. The import routes (K10) are the
  *   importer's own and take the server token alone, while the `import` feature is on. The settings, the Format and the
  *   lists it carries over, and the count routes it compares, are a staff member's: they go with this sign-in (it lasts
- *   15 minutes: a long run renews it with a new `SS_IMPORT_SIGN_IN_<ID>`), and without one the product refuses them.
+ *   15 minutes: a long run renews it with a new `SHELFWAY_IMPORT_SIGN_IN_<ID>`), and without one the product refuses them.
  */
 /** @typedef {{ ok: boolean, status: number, headers: Headers, json: any }} ProductAnswer */
 
@@ -47,7 +47,7 @@ export const requestProduct = async (fetch, target, method, route, { body, type 
 			authorization: `Bearer ${target.token}`,
 			accept: 'application/json',
 			...(type ? { 'content-type': type } : {}),
-			...(target.signIn && !route.startsWith('/v1/import/') ? { 'ss-sign-in': target.signIn } : {}),
+			...(target.signIn && !route.startsWith('/v1/import/') ? { 'shelfway-sign-in': target.signIn } : {}),
 		},
 		...(body === undefined ? {} : { body }),
 	});

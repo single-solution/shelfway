@@ -4,6 +4,6 @@
  * may reword a shared one.
  * @module
  */
-import { dashboardTexts } from '@ss/ui';
+import { dashboardTexts } from '@shelfway/ui';
 
 export const TEXTS = dashboardTexts({ title: 'Notes' });

@@ -12,9 +12,9 @@
  * actions. No I/O.
  * @module
  */
-import { isId } from '@ss/contracts';
-import { isAmount } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
+import { isId } from '@shelfway/contracts';
+import { isAmount } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
 import { checkValue, fieldApplies, gtinOf, valueProblem } from './fields.js';
 import { DURATION_RULE, durationOf } from './durations.js';
 import { gradeForType } from './grades.js';

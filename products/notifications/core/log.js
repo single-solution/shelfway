@@ -3,7 +3,7 @@
  * delivery-log widget read the same filters, so a count always matches the list. No I/O.
  * @module
  */
-import { normalizeEmail } from '@ss/contracts/email';
+import { normalizeEmail } from '@shelfway/contracts/email';
 import { CHANNELS, normalizePhone } from './channels.js';
 
 /** @typedef {'queued' | 'retrying' | 'sent' | 'failed' | 'skipped'} MessageStatus */

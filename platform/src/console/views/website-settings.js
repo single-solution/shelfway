@@ -10,14 +10,14 @@
  * @module
  */
 import { useEffect, useState } from 'react';
-import { CardFlow, describeProblem, useToast } from '@ss/ui';
+import { CardFlow, describeProblem, useToast } from '@shelfway/ui';
 import { WEBSITE_SETTINGS as T } from '../../texts/console.js';
 import { apiFetch } from '../client.js';
 import { api } from '../paths.js';
 import { ConnectionsSection, LinksSection } from './website-connections.js';
 import { BrandSection, BusinessSection, PagesSection, RegionSection, TeamSection } from './website-settings-sections.js';
 
-/** @typedef {import('@ss/contracts').WebsiteSettings} WebsiteSettings */
+/** @typedef {import('@shelfway/contracts').WebsiteSettings} WebsiteSettings */
 /** @typedef {{ productId: string, name: string, requires: string[], missing: string[] }} Readiness */
 /** @typedef {{ at: string, section: string, version: number, changed: string[], who: { type: string, name: string | null } }} Change */
 

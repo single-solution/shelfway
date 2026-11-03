@@ -3,9 +3,9 @@
  * rendered as RFC 9457 documents with the product's type base URI and the request id.
  * @module
  */
-import { isObject } from '@ss/contracts/util';
+import { isObject } from '@shelfway/contracts/util';
 
-const BRAND = Symbol.for('ss.app-kit.result');
+const BRAND = Symbol.for('shelfway.app-kit.result');
 
 /**
  * @typedef {{ [BRAND]: 'response', status: number, body: unknown, headers: Record<string, string> }} ResponseResult
@@ -55,7 +55,7 @@ const checkExtensions = (extensions) => {
 };
 
 /**
- * An RFC 9457 problem for a registered code (`@ss/contracts` `PROBLEM_CODES` or the product's own codes).
+ * An RFC 9457 problem for a registered code (`@shelfway/contracts` `PROBLEM_CODES` or the product's own codes).
  * `extensions` adds RFC 9457 extension members (e.g. `{ retryAfterSeconds: 30, limit: 'daily' }`): names must match
  * `^[A-Za-z][A-Za-z0-9_]{2,63}$` and may not redefine `type`, `title`, `status`, `detail`, `instance`, `requestId` or
  * `errors` (a TypeError is thrown at construction otherwise).

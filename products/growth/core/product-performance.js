@@ -1,6 +1,6 @@
 /**
  * Product performance (R7 #113): how each product does in the shop funnel, from the standard shop events' items
- * (`ss:view_item`, `ss:add_to_cart`, `ss:begin_checkout`, `ss:purchase`, which Ecommerce's widgets or the merchant's
+ * (`shelfway:view_item`, `shelfway:add_to_cart`, `shelfway:begin_checkout`, `shelfway:purchase`, which Ecommerce's widgets or the merchant's
  * own pages send; Growth never reads another product's data).
  *
  * Each funnel event adds to the day's totals (the one document per day, PLAN 0.8.9), per product id: `item_view`,
@@ -10,8 +10,8 @@
  * the name given most. Raw events keep only ids and quantities, so the raw events stay as light as before.
  * @module
  */
-import { toCsv } from '@ss/contracts/csv';
-import { toDecimal } from '@ss/contracts/format';
+import { toCsv } from '@shelfway/contracts/csv';
+import { toDecimal } from '@shelfway/contracts/format';
 
 /** The daily totals' metrics of product performance. */
 export const PRODUCT_METRICS = Object.freeze([

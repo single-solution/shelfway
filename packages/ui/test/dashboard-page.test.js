@@ -48,7 +48,7 @@ const rows = (root) => allByRole(root, 'option');
 const rowTexts = (root) => rows(root).map((row) => row.textContent);
 
 /** The row of a view. @param {HTMLElement} root @param {string} id */
-const rowOf = (root, id) => /** @type {HTMLElement} */ (rows(root).find((row) => row.dataset.ssId === id));
+const rowOf = (root, id) => /** @type {HTMLElement} */ (rows(root).find((row) => row.dataset.shelfwayId === id));
 
 /** @param {string} id */
 const panel = (id) => /** @type {HTMLElement | null} */ (document.getElementById(`section-${id}`));
@@ -107,7 +107,7 @@ describe('SectionsPage', () => {
 	it('draws a Page whose crumbs end in the open view, and the views as rich rows in the list beside it', () => {
 		const frame = { hrefOf: (/** @type {string} */ tab) => `?view=${tab}`, home: '?view=overview' };
 		const { container } = render(inDashboard(<SectionsPage tab="settings" sections={SPECS()} />, frame));
-		expect(container.querySelector('[data-ss-page]')).not.toBeNull();
+		expect(container.querySelector('[data-shelfway-page]')).not.toBeNull();
 		expect(crumbsOf(container)).toEqual(['Notes', 'Settings', 'One']);
 		expect(container.querySelector('h1')?.textContent).toBe('One');
 		// a section with parts is ONE row; the badge is the row's value, the status its dot with its words
@@ -273,11 +273,11 @@ describe('SectionsPage', () => {
 			{ id: 'b', label: 'B', content: <p>b</p> },
 		];
 		const { container } = render(inDashboard(<SectionsPage tab="features" sections={sections} />));
-		expect(container.querySelector('[data-ss-part="toolbar"]')?.textContent).toBe('tools of a');
-		expect(container.querySelector('[data-ss-part="footer"]')?.textContent).toBe('pages of a');
+		expect(container.querySelector('[data-shelfway-part="toolbar"]')?.textContent).toBe('tools of a');
+		expect(container.querySelector('[data-shelfway-part="footer"]')?.textContent).toBe('pages of a');
 		click(rowOf(container, 'b'));
-		expect(container.querySelector('[data-ss-part="toolbar"]')).toBeNull();
-		expect(container.querySelector('[data-ss-part="footer"]')).toBeNull();
+		expect(container.querySelector('[data-shelfway-part="toolbar"]')).toBeNull();
+		expect(container.querySelector('[data-shelfway-part="footer"]')).toBeNull();
 	});
 
 	it('draws the empty state when there is no section, and a message when it failed', () => {
@@ -296,7 +296,7 @@ describe('SectionsPage', () => {
 
 	it('draws the skeleton of the list too while it loads, when the tab asks for it', () => {
 		const { container } = render(inDashboard(<SectionsPage tab="settings" sections={[]} loading withNav />));
-		expect(container.querySelector('[data-ss-page][aria-busy="true"]')).not.toBeNull();
+		expect(container.querySelector('[data-shelfway-page][aria-busy="true"]')).not.toBeNull();
 		const statuses = (/** @type {HTMLElement} */ root) => root.querySelectorAll('[role="status"]').length;
 		const withList = statuses(container);
 		cleanup();
@@ -368,7 +368,7 @@ describe('SectionsPage', () => {
 		phone(true);
 		const { container } = render(inDashboard(<SectionsPage tab="settings" sections={SPECS()} />));
 		expect(rows(container)).toHaveLength(3);
-		expect(container.querySelector('[data-ss-part="body"]')).toBeNull();
+		expect(container.querySelector('[data-shelfway-part="body"]')).toBeNull();
 		click(rowOf(container, 'two'));
 		expect(window.location.hash).toBe('#two');
 		expect(container.querySelector('[role="listbox"]')).toBeNull();
@@ -376,7 +376,7 @@ describe('SectionsPage', () => {
 		click(/** @type {HTMLElement} */ (container.querySelector('button[aria-label="Back to the list"]')));
 		expect(window.location.hash).toBe('');
 		expect(rows(container)).toHaveLength(3);
-		expect(container.querySelector('[data-ss-part="body"]')).toBeNull();
+		expect(container.querySelector('[data-shelfway-part="body"]')).toBeNull();
 		// the browser's Back button returns to the view
 		window.history.back();
 		await act(async () => new Promise((resolve) => setTimeout(resolve, 50)));
@@ -403,7 +403,7 @@ describe('SectionsPage', () => {
 				</SectionsPage>,
 			),
 		);
-		expect(padded.container.querySelector('[data-ss-part="body"]')?.getAttribute('role')).toBe('region');
+		expect(padded.container.querySelector('[data-shelfway-part="body"]')?.getAttribute('role')).toBe('region');
 		cleanup();
 		const flush = render(
 			inDashboard(
@@ -412,7 +412,7 @@ describe('SectionsPage', () => {
 				</SectionsPage>,
 			),
 		);
-		expect(flush.container.querySelector('[data-ss-part="body"]')?.getAttribute('role')).toBeNull();
+		expect(flush.container.querySelector('[data-shelfway-part="body"]')?.getAttribute('role')).toBeNull();
 	});
 
 	it('lets the tab put its own content in place of the views (a search result)', () => {
@@ -450,7 +450,7 @@ describe('LoadedPage', () => {
 				</LoadedPage>,
 			),
 		);
-		expect(container.querySelector('[data-ss-page][aria-busy="true"]')).not.toBeNull();
+		expect(container.querySelector('[data-shelfway-page][aria-busy="true"]')).not.toBeNull();
 		expect(crumbsOf(container)).toEqual(['Notes', 'Texts']);
 		expect(byText(container, 'my skeleton')).toBeTruthy();
 		expect(container.textContent).not.toContain('never');

@@ -41,14 +41,15 @@ const create = (body) => server('POST', '/v1/redirects', { body });
 
 /** The version of the rules (the list's ETag without quotes). */
 const version = async () =>
-	(await (await env.merchantDb()).collection('ss_growth_redirect_versions').findOne({}))?.version ?? null;
+	(await (await env.merchantDb()).collection('shelfway_growth_redirect_versions').findOne({}))?.version ?? null;
 
 /** @param {string} action */
 const logged = async (action) =>
-	(await env.merchantDb()).collection('ss_growth_activity').find({ action }).sort({ _id: 1 }).toArray();
+	(await env.merchantDb()).collection('shelfway_growth_activity').find({ action }).sort({ _id: 1 }).toArray();
 
 /** @param {string} from */
-const idOf = async (from) => String((await (await env.merchantDb()).collection('ss_growth_redirects').findOne({ from }))?.id);
+const idOf = async (from) =>
+	String((await (await env.merchantDb()).collection('shelfway_growth_redirects').findOne({ from }))?.id);
 
 describe('rules', () => {
 	it('creates a rule from what staff type, normalized, and logs it', async () => {
@@ -215,7 +216,7 @@ describe('the website reads the rules', () => {
 		expect((await server('GET', '/v1/redirects/match')).json).toMatchObject({ errors: [{ path: '/path' }] });
 		expect((await match('blog')).status).toBe(422);
 		const ops = await env.operationsDuring(() => match('/blog/2019/best/more'));
-		expect(ops.names).toEqual(['find ss_growth_redirects']);
+		expect(ops.names).toEqual(['find shelfway_growth_redirects']);
 	});
 
 	it('answers wildcard and temporary rules too, in the same one read (G14)', async () => {
@@ -238,7 +239,7 @@ describe('the website reads the rules', () => {
 		// the prefix rule with more fixed segments still wins over a wildcard
 		expect((await match('/blog/2019/x')).json.location).toBe('https://archive.example.com/2019/x');
 		const ops = await env.operationsDuring(() => match('/shop/men/item/42'));
-		expect(ops.names).toEqual(['find ss_growth_redirects']);
+		expect(ops.names).toEqual(['find shelfway_growth_redirects']);
 		const loop = await create({ from: '/a/*', match: 'wildcard', to: '/a/$1' });
 		expect(loop.status).toBe(409);
 		expect(loop.json.type).toMatch(/redirect_loop$/);
@@ -263,7 +264,7 @@ describe('the website reads the rules', () => {
 			expect(again.text).toBe('');
 			expect(again.headers.get('etag')).toBe(etag);
 		});
-		expect(unchanged.names).toEqual(['find ss_growth_redirect_versions']);
+		expect(unchanged.names).toEqual(['find shelfway_growth_redirect_versions']);
 		expect((await server('GET', '/v1/redirects/all', { headers: { 'if-none-match': `"other", W/${etag}` } })).status).toBe(304);
 		expect((await server('GET', '/v1/redirects/all', { headers: { 'if-none-match': '*' } })).status).toBe(304);
 		// the instance keeps the list of this version: one read again
@@ -277,7 +278,7 @@ describe('the website reads the rules', () => {
 			expect(fresh.headers.get('etag')).not.toBe(etag);
 			expect(fresh.json.count).toBe(first.json.count + 1);
 		});
-		expect(changed.names).toEqual(['find ss_growth_redirect_versions', 'find ss_growth_redirects']);
+		expect(changed.names).toEqual(['find shelfway_growth_redirect_versions', 'find shelfway_growth_redirects']);
 	});
 });
 
@@ -321,11 +322,11 @@ describe('CSV', () => {
 		expect(done.json).toMatchObject({ dryRun: false, created: 2, updated: 1, unchanged: 1 });
 		expect(await version()).not.toBe(before);
 		const db = await env.merchantDb();
-		expect(await db.collection('ss_growth_redirects').findOne({ from: '/blog/2019/best' })).toMatchObject({
+		expect(await db.collection('shelfway_growth_redirects').findOne({ from: '/blog/2019/best' })).toMatchObject({
 			id,
 			to: '/better',
 		});
-		expect(await db.collection('ss_growth_redirects').countDocuments({ from: /^\/import\// })).toBe(2);
+		expect(await db.collection('shelfway_growth_redirects').countDocuments({ from: /^\/import\// })).toBe(2);
 		const [entry] = await logged('redirects.imported');
 		expect(entry).toMatchObject({ target: 'redirects', label: 'redirects.csv', detail: '2 new, 1 changed, 1 unchanged.' });
 
@@ -353,7 +354,7 @@ describe('CSV', () => {
 			'/csv/3/from',
 			'/csv/4/to',
 		]);
-		expect(await (await env.merchantDb()).collection('ss_growth_redirects').countDocuments({ from: '/fine' })).toBe(0);
+		expect(await (await env.merchantDb()).collection('shelfway_growth_redirects').countDocuments({ from: '/fine' })).toBe(0);
 		for (const body of [{ csv: ' ' }, { csv: 'from', dryRun: 'no' }, { csv: 'from', mode: 'replace' }, ['from']])
 			expect((await server('POST', '/v1/redirects/csv', { body })).status).toBe(422);
 	});
@@ -384,7 +385,7 @@ describe('suggestions from the 404 log', () => {
 		for (const query of ['days=0', 'days=366', 'days=x', 'limit=0', 'limit=101'])
 			expect((await server('GET', `/v1/redirects/suggestions?${query}`)).status).toBe(422);
 		const ops = await env.operationsDuring(() => server('GET', '/v1/redirects/suggestions'));
-		expect(ops.names).toEqual(['aggregate ss_growth_totals', 'find ss_growth_redirects']);
+		expect(ops.names).toEqual(['aggregate shelfway_growth_totals', 'find shelfway_growth_redirects']);
 	});
 });
 
@@ -473,7 +474,7 @@ describe('a website of its own', () => {
 		]);
 		// the whole list is one read of the rules
 		const ops = await own.operationsDuring(() => call('GET', '/v1/redirects/all'));
-		expect(ops.names).toEqual(['find ss_growth_redirect_versions', 'find ss_growth_redirects']);
+		expect(ops.names).toEqual(['find shelfway_growth_redirect_versions', 'find shelfway_growth_redirects']);
 	});
 });
 

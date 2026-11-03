@@ -191,7 +191,9 @@ describe('adminCall', () => {
 		await adminCall({ base: BASE, tickets: source, fetch }, 'POST', '/v1/admin/orders/o1/refunds', { amount: 1 });
 		expect(fetch).toHaveBeenCalledWith(
 			`${BASE}/v1/admin/orders/o1/refunds`,
-			expect.objectContaining({ headers: expect.objectContaining({ authorization: 'Bearer t1', 'ss-sign-in': 'a.sign.in' }) }),
+			expect.objectContaining({
+				headers: expect.objectContaining({ authorization: 'Bearer t1', 'shelfway-sign-in': 'a.sign.in' }),
+			}),
 		);
 	});
 

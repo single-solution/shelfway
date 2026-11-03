@@ -31,7 +31,7 @@ import {
 	humanize,
 	useToast,
 	TextLink,
-} from '@ss/ui';
+} from '@shelfway/ui';
 import { AUTH, LOGIN, MORE, TWO_STEP } from '../../texts/console.js';
 import { apiConfirm, usePagedList } from '../client.js';
 import { Link } from '../link.js';
@@ -39,7 +39,7 @@ import { withCursor } from '../paths.js';
 import { factorOf } from './common.js';
 import { ConfirmChange } from './common.js';
 
-/** @typedef {import('@ss/ui').Problem} Problem */
+/** @typedef {import('@shelfway/ui').Problem} Problem */
 
 const PASSWORD_MIN = 12;
 

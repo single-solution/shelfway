@@ -3,7 +3,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import strings from '../strings/en.json' with { type: 'json' };
 import { WIDGET_ATTRIBUTE, WIDGET_GLOBAL } from '../core/widgets.js';
-import { REFRESH_BEFORE_MS } from '@ss/app-kit/widget';
+import { REFRESH_BEFORE_MS } from '@shelfway/app-kit/widget';
 import { mountInbox } from '../ui/inbox.js';
 import { ADMIN_CONFIG_PATH, CONFIG_PATH, startWidget } from '../ui/widget.js';
 

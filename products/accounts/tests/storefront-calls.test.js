@@ -2,7 +2,7 @@
  * What a merchant's server may do without a staff member (SEC follow-up): the server token alone runs the shop, so the
  * calls a website's own pages need are public flows or the shopper's own actions, never staff routes. Forgot password
  * is public (a person who is not signed in, staff included), My account (`/v1/me`) is the shopper's own with their
- * `SS-Sign-In`, and the custom field definitions sign-up and My account show are a public read of only the fields a
+ * `Shelfway-Sign-In`, and the custom field definitions sign-up and My account show are a public read of only the fields a
  * user may see. Everything that is staff work or configuration stays closed to the bare server token.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -11,7 +11,7 @@ import { ALL, ORIGIN, setup } from './helpers.js';
 /** @type {Awaited<ReturnType<typeof setup>>} */
 let env;
 
-const VISITOR = { 'ss-visitor-ip': '203.0.113.7' };
+const VISITOR = { 'shelfway-visitor-ip': '203.0.113.7' };
 const RETURN_TO = `${ORIGIN}/reset`;
 
 /** @param {{ json: any }} res */
@@ -69,7 +69,7 @@ describe('forgot password is public: the merchant’s server asks for a person w
 		expect(sent[0]).toMatchObject({ template: 'accounts.password_reset' });
 		const link = String(sent[0].values.link);
 		expect(link.startsWith(`${RETURN_TO}#`)).toBe(true);
-		const token = new URLSearchParams(link.split('#')[1]).get('ss_accounts_reset');
+		const token = new URLSearchParams(link.split('#')[1]).get('shelfway_accounts_reset');
 		expect(token).toBeTruthy();
 
 		// the page that holds the link sets the new password, again as a public call, and the staff member signs in with it

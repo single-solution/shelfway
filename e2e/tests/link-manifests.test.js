@@ -4,21 +4,21 @@
  * kit's routes), no product needs a product that does not exist, and a need names only features the product has. The
  * Portal grants only what is offered, so a typo here would silently grant nothing.
  */
-import { createMemoryStore } from '@ss/app-kit/testing';
-import { KIT_LINK_SCOPES } from '@ss/app-kit';
+import { createMemoryStore } from '@shelfway/app-kit/testing';
+import { KIT_LINK_SCOPES } from '@shelfway/app-kit';
 import { describe, expect, it } from 'vitest';
-import * as accounts from '@ss/product-accounts/product';
-import * as accountsRoutes from '@ss/product-accounts/routes';
-import * as chat from '@ss/product-chat/product';
-import * as chatRoutes from '@ss/product-chat/routes';
-import * as ecommerce from '@ss/product-ecommerce/product';
-import * as ecommerceRoutes from '@ss/product-ecommerce/routes';
-import * as growth from '@ss/product-growth/product';
-import * as growthRoutes from '@ss/product-growth/routes';
-import * as notifications from '@ss/product-notifications/product';
-import * as notificationsRoutes from '@ss/product-notifications/routes';
-import * as payments from '@ss/product-payments/product';
-import * as paymentsRoutes from '@ss/product-payments/routes';
+import * as accounts from '@shelfway/product-accounts/product';
+import * as accountsRoutes from '@shelfway/product-accounts/routes';
+import * as chat from '@shelfway/product-chat/product';
+import * as chatRoutes from '@shelfway/product-chat/routes';
+import * as ecommerce from '@shelfway/product-ecommerce/product';
+import * as ecommerceRoutes from '@shelfway/product-ecommerce/routes';
+import * as growth from '@shelfway/product-growth/product';
+import * as growthRoutes from '@shelfway/product-growth/routes';
+import * as notifications from '@shelfway/product-notifications/product';
+import * as notificationsRoutes from '@shelfway/product-notifications/routes';
+import * as payments from '@shelfway/product-payments/product';
+import * as paymentsRoutes from '@shelfway/product-payments/routes';
 
 /** @type {Array<{ unit: any, routes: any }>} */
 const UNITS = [

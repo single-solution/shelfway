@@ -1,5 +1,5 @@
 /**
- * The product on the kit: `createProductInstance(options)` wires `@ss/app-kit` `createProduct` with Payments' manifest
+ * The product on the kit: `createProductInstance(options)` wires `@shelfway/app-kit` `createProduct` with Payments' manifest
  * (each feature's settings schema from `schemas/` inline), its widget and page texts, its Connections (storage for
  * payment proofs, each gateway's keys, the Notifications token for webhooks and the Accounts token for
  * activity-log copies), the merchant database indexes, the data-rights hooks, the kit's events (PLAN 0.8.10 K5:
@@ -10,7 +10,7 @@
  * Public entry `./product` of this package, so a system test can compose the product with `./routes`.
  * @module
  */
-import { createProduct, createProductBase } from '@ss/app-kit';
+import { createProduct, createProductBase } from '@shelfway/app-kit';
 import guide from '../docs/guide.json' with { type: 'json' };
 import manifestFile from '../manifest.json' with { type: 'json' };
 import openapi from '../openapi.json' with { type: 'json' };
@@ -52,7 +52,7 @@ const SETTINGS = {
 };
 
 /** The manifest as the kit and the Portal take it: settings schemas inline. */
-export const manifest = /** @type {import('@ss/contracts').Manifest} */ (
+export const manifest = /** @type {import('@shelfway/contracts').Manifest} */ (
 	/** @type {unknown} */ ({
 		...manifestFile,
 		features: manifestFile.features.map((feature) => ({ ...feature, settings: SETTINGS[feature.key] })),
@@ -76,7 +76,7 @@ const PROBLEM_CODES = Object.freeze({
  * phone. Delete removes their details from those records; the amounts stay, because they are the merchant's money
  * records.
  * @param {() => number} now
- * @returns {NonNullable<import('@ss/app-kit').ProductOptions['hooks']>}
+ * @returns {NonNullable<import('@shelfway/app-kit').ProductOptions['hooks']>}
  */
 const dataRights = (now) => ({
 	exportUser: async (ctx, user) => {
@@ -160,7 +160,7 @@ const setupPart = async ({ websiteId, on }, lists) => {
 };
 
 /**
- * @typedef {Omit<import('@ss/app-kit').ProductOptions, 'manifest' | 'strings' | 'hooks' | 'connections' | 'data' | 'problemCodes' | 'events' | 'openapi' | 'build'>} InstanceOptions
+ * @typedef {Omit<import('@shelfway/app-kit').ProductOptions, 'manifest' | 'strings' | 'hooks' | 'connections' | 'data' | 'problemCodes' | 'events' | 'openapi' | 'build'>} InstanceOptions
  */
 
 /**
@@ -181,7 +181,7 @@ export const createProductInstance = (options) => {
 	 * @param {string} label
 	 * @param {string} feature
 	 * @param {string} secretField the member whose last 4 characters are shown
-	 * @returns {import('@ss/app-kit').ConnectionDefinition}
+	 * @returns {import('@shelfway/app-kit').ConnectionDefinition}
 	 */
 	const gateway = (name, label, feature, secretField) => ({
 		label,
@@ -242,7 +242,7 @@ export const createProductInstance = (options) => {
 		openapi,
 		build: guide.build,
 		// payment events (`payment.paid`, `payment.failed`, `payment.refunded`, `payment.proof_uploaded`, `payment.duplicate`,
-		// `subscription.updated`) on the kit's mechanism: stored in `ss_payments_events`, listed by GET /v1/events,
+		// `subscription.updated`) on the kit's mechanism: stored in `shelfway_payments_events`, listed by GET /v1/events,
 		// forwarded through Notifications
 		events: true,
 	});

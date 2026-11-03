@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { ADMIN_ROLES } from '@ss/contracts';
+import { ADMIN_ROLES } from '@shelfway/contracts';
 import { ALL_PERMISSIONS, MERCHANT_PERMISSIONS, PERMISSIONS, ROLE_PERMISSIONS, can, permissionsFor } from '../src/infra/rbac.js';
 import { MERCHANT, MERCHANT_2, WEBSITE } from './helpers.js';
 import { isPlatformError, platformError } from '../src/infra/errors.js';
 
-// the logger is @ss/net's (tested there)
+// the logger is @shelfway/net's (tested there)
 describe('platform errors', () => {
 	it('platform errors carry codes', () => {
 		const error = platformError('x_code', 'message', { a: 1 });
@@ -41,7 +41,7 @@ const TABLE = {
 	'credits.add': { owner: true, support: false, finance: true, merchant: false },
 	'billing.read': { owner: true, support: true, finance: true, merchant: true },
 	'admins.manage': { owner: true, support: false, finance: false, merchant: false },
-	'portal_settings.write': { owner: true, support: false, finance: false, merchant: false },
+	'platform_settings.write': { owner: true, support: false, finance: false, merchant: false },
 	'website_settings.read': { owner: true, support: true, finance: false, merchant: true },
 	'website_settings.write': { owner: true, support: true, finance: false, merchant: true },
 	'connections.read': { owner: true, support: true, finance: false, merchant: true },

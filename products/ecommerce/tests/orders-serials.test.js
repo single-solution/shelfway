@@ -44,7 +44,7 @@ const place = async (lines) => {
 				country: 'US',
 			},
 		},
-		headers: { 'x-forwarded-for': `10.9.0.${ip}`, 'ss-sign-in': token, 'idempotency-key': `serial-${ip}` },
+		headers: { 'x-forwarded-for': `10.9.0.${ip}`, 'shelfway-sign-in': token, 'idempotency-key': `serial-${ip}` },
 	});
 	if (answer.status !== 201) throw new Error(`place: ${answer.status} ${answer.text}`);
 	return { order: answer.json.order ?? answer.json, token };
@@ -219,7 +219,7 @@ describe('E11 serial capture', () => {
 		const view = await shop.call('GET', `/v1/shop/orders/${order.id}`, {
 			token: shop.browser,
 			origin: ORIGIN,
-			headers: { 'ss-sign-in': token, 'x-forwarded-for': '10.9.1.1' },
+			headers: { 'shelfway-sign-in': token, 'x-forwarded-for': '10.9.1.1' },
 		});
 		expect(view.json.lines[0]).toMatchObject({
 			serials: [],

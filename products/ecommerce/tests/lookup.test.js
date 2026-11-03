@@ -2,8 +2,8 @@
  * The lookups Chat's shop tools call (exactly `products/chat/core/shop.js`) and the customer orders lookup, all with
  * the server token; the `me` lookups only with the visitor's verified Accounts sign-in, and only that user's data.
  */
-import { createId } from '@ss/contracts';
-import { DEFAULT_FORMAT, formatMoney } from '@ss/contracts/format';
+import { createId } from '@shelfway/contracts';
+import { DEFAULT_FORMAT, formatMoney } from '@shelfway/contracts/format';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
 	cardVariant,
@@ -421,7 +421,7 @@ describe('Chat lookups', () => {
 
 	it('answers a signed-in visitor’s orders, account and shipments only', async () => {
 		const token = await shop.signIn({ id: sara, name: 'Sara Shopper' });
-		const headers = { 'ss-sign-in': token };
+		const headers = { 'shelfway-sign-in': token };
 		const orders = await shop.api('GET', `/v1/chat/me/orders?userId=${other}`, undefined, headers);
 		expect(orders.status).toBe(200);
 		expect(orders.json).toMatchObject({
@@ -489,7 +489,8 @@ describe('Chat lookups', () => {
 			expect(none.status).toBe(403);
 			expect(none.json.type).toMatch(/sign_in_required$/);
 			expect(
-				(await shop.call('GET', path, { token: shop.server, bare: true, headers: { 'ss-sign-in': 'not-a-sign-in' } })).status,
+				(await shop.call('GET', path, { token: shop.server, bare: true, headers: { 'shelfway-sign-in': 'not-a-sign-in' } }))
+					.status,
 			).toBe(403);
 		}
 	});
@@ -520,7 +521,9 @@ describe('Chat lookups', () => {
 		await shop.switchOn(['catalog', 'checkout']);
 		const token = await shop.signIn({ id: sara });
 		// Loyalty off: no points field
-		expect((await shop.api('GET', '/v1/chat/me/account', undefined, { 'ss-sign-in': token })).json.extraFields).toEqual([]);
+		expect((await shop.api('GET', '/v1/chat/me/account', undefined, { 'shelfway-sign-in': token })).json.extraFields).toEqual(
+			[],
+		);
 		expect((await shop.api('GET', '/v1/chat/deals')).json.type).toMatch(/feature_off$/);
 		expect((await shop.api('GET', '/v1/chat/products/galaxy-s24')).json.variants[0].grade).toBe('a');
 		expect((await shop.api('GET', '/v1/feeds/products.xml')).status).toBe(403);

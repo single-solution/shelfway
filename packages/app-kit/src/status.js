@@ -12,7 +12,7 @@
  * - `status.changed` notices mark the copy changed, so the next use waits for it to be fetched again (and the notice
  *   fetches it right after answering); the copy itself is kept for offline grace.
  * - While the Portal cannot be reached the last copy is used for up to {@link OFFLINE_GRACE_MS} (6 hours) after its
- *   fetch, then every use is refused with 503 `portal_unreachable` (PLAN 0.4.7, 0.10, K-21). Revocations follow the
+ *   fetch, then every use is refused with 503 `platform_unreachable` (PLAN 0.4.7, 0.10, K-21). Revocations follow the
  *   same bound: when the revocation list could not be fetched for longer than that, a use waits for it (at most
  *   {@link WAITED_FETCH_MS}, and not again within {@link REFRESH_EVERY_MS} of a failure on the instance) and is refused
  *   while it cannot be fetched. A `token.revoked` notice fetches it at once.
@@ -27,7 +27,7 @@ import { isKitError } from './util.js';
 import { problem } from './http/results.js';
 import { reportingKey } from './reports.js';
 
-/** @typedef {import('@ss/contracts').StatusResponse} StatusResponse */
+/** @typedef {import('@shelfway/contracts').StatusResponse} StatusResponse */
 /** @typedef {import('./stores/types.js').Store} Store */
 /** @typedef {import('./http/results.js').ProblemResult} ProblemResult */
 /** Runs work right after the response (a request's `after`). @typedef {(task: () => Promise<unknown>) => void} After */
@@ -66,8 +66,8 @@ export const effectiveStatus = (status, nowMs) =>
 		: status.status;
 
 /**
- * @param {{ store: Store, client: () => import('./portal-client.js').PortalClient, now: () => number,
- *   logger: import('@ss/net').Logger, onRefreshed?: (websiteId: string, status: StatusResponse) => Promise<unknown> }} options
+ * @param {{ store: Store, client: () => import('./platform-client.js').PortalClient, now: () => number,
+ *   logger: import('@shelfway/net').Logger, onRefreshed?: (websiteId: string, status: StatusResponse) => Promise<unknown> }} options
  *   `onRefreshed`: runs after a status copy fetched again after a response (the settings follow the status copy's version)
  */
 export const createStatus = ({ store, client, now, logger, onRefreshed }) => {
@@ -190,7 +190,7 @@ export const createStatus = ({ store, client, now, logger, onRefreshed }) => {
 	 * @param {unknown} error
 	 */
 	const unknownWebsite = async (websiteId, error) => {
-		if (isKitError(error, 'portal_refused') && error.details?.status === 404) {
+		if (isKitError(error, 'platform_refused') && error.details?.status === 404) {
 			await store.delete('status', websiteId);
 			return true;
 		}
@@ -228,7 +228,7 @@ export const createStatus = ({ store, client, now, logger, onRefreshed }) => {
 	 * @param {{ fresh?: boolean, wait?: boolean, after?: After }} [options] `fresh` always asks the Portal; `wait` asks it
 	 *   when the copy is older than 5 minutes (dashboards); `after` runs the fetch after the response (default: at once,
 	 *   not waited for)
-	 * @returns {Promise<{ ok: true, status: StatusResponse, fetchedAt: number } | { ok: false, code: 'website_not_found' | 'portal_unreachable' }>}
+	 * @returns {Promise<{ ok: true, status: StatusResponse, fetchedAt: number } | { ok: false, code: 'website_not_found' | 'platform_unreachable' }>}
 	 */
 	const lookup = async (websiteId, { fresh = false, wait = false, after } = {}) => {
 		const cached = /** @type {StatusCopy | null} */ (await store.get('status', websiteId));
@@ -246,7 +246,7 @@ export const createStatus = ({ store, client, now, logger, onRefreshed }) => {
 		} catch (error) {
 			if (await unknownWebsite(websiteId, error)) return { ok: false, code: 'website_not_found' };
 			if (cached && usable) return { ok: true, status: cached.status, fetchedAt: cached.fetchedAt };
-			return { ok: false, code: 'portal_unreachable' };
+			return { ok: false, code: 'platform_unreachable' };
 		}
 	};
 
@@ -282,7 +282,7 @@ export const createStatus = ({ store, client, now, logger, onRefreshed }) => {
 			logger.warn('the revocation list is older than the offline grace', { websiteId });
 			return {
 				ok: false,
-				problem: problem('portal_unreachable', 'The Portal cannot be reached.', { headers: { 'retry-after': '60' } }),
+				problem: problem('platform_unreachable', 'The Portal cannot be reached.', { headers: { 'retry-after': '60' } }),
 			};
 		}
 		if (!found.ok) {
@@ -290,7 +290,7 @@ export const createStatus = ({ store, client, now, logger, onRefreshed }) => {
 				? { ok: false, problem: problem('invalid_token', 'The token is not valid.') }
 				: {
 						ok: false,
-						problem: problem('portal_unreachable', 'The Portal cannot be reached.', { headers: { 'retry-after': '60' } }),
+						problem: problem('platform_unreachable', 'The Portal cannot be reached.', { headers: { 'retry-after': '60' } }),
 					};
 		}
 		const status = effectiveStatus(found.status, now());

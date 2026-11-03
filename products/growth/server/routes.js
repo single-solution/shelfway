@@ -1,14 +1,14 @@
 /**
  * Growth's routes (the kit adds its own: connect, notices, tickets, data rights, widget config, `/sso` and the
  * dashboard API). Every browser-token, server-token and ticket route belongs to its feature (or features);
- * `openapi.json` is generated from these definitions (`ss app assets`), so `method`, `path`, `auth`, `feature` and
+ * `openapi.json` is generated from these definitions (`shelfway app assets`), so `method`, `path`, `auth`, `feature` and
  * `permission` stay string literals. Nothing runs on a timer: events are written as they arrive, the SEO checklist and
  * IndexNow run when the merchant asks, redirect rules change when staff change them. Days (daily totals, analytics
  * ranges) are days of the website's business time zone (business `timeZone`, UTC when missing; PLAN 0.8.10 K8).
  * Public entry `./routes` of this package: `product.handler(createRoutes(product))`.
  * @module
  */
-import { actorOf, countHandlers, defineRoute, ok, paginate, problem } from '@ss/app-kit';
+import { actorOf, countHandlers, defineRoute, ok, paginate, problem } from '@shelfway/app-kit';
 import { JOURNEYS, LIVE_MS, buildReport, rangeOf, shiftDay, topOf } from '../core/analytics.js';
 import { MAX_LIMIT, PRODUCT_METRICS, PRODUCT_SORTS, productReport, productsCsv } from '../core/product-performance.js';
 import { noticeAnswer, noticesOf } from '../core/config.js';
@@ -25,7 +25,7 @@ import {
 	mergeTotals,
 } from '../core/events.js';
 import { indexNowActivity, indexNowSubmission, robotsTxtOf, verificationOf } from '../core/seo.js';
-import { zonedDayStart } from '@ss/contracts/format';
+import { zonedDayStart } from '@shelfway/contracts/format';
 import { createDayCaps } from '../adapters/day-caps.js';
 import { createStore } from '../adapters/store.js';
 import { renderDocs } from './docs.js';
@@ -248,7 +248,7 @@ export const createRoutes = (product) => {
 			method: 'POST',
 			path: '/v1/collect',
 			auth: 'browser',
-			feature: 'visitor_analytics',
+			feature: ['visitor_analytics', 'conversion_funnel', 'searches_404s', 'web_vitals'],
 			maxBodyBytes: 65_536,
 			rateLimit: COLLECT_LIMITS,
 			handler: async (ctx) => {
@@ -335,7 +335,7 @@ export const createRoutes = (product) => {
 			path: '/v1/analytics/products',
 			auth: 'server',
 			permission: 'analytics.read',
-			feature: 'visitor_analytics',
+			feature: 'conversion_funnel',
 			handler: products,
 		}),
 		defineRoute({
@@ -343,7 +343,7 @@ export const createRoutes = (product) => {
 			path: '/v1/analytics/products/csv',
 			auth: 'server',
 			permission: 'analytics.read',
-			feature: 'visitor_analytics',
+			feature: 'conversion_funnel',
 			handler: productsFile,
 		}),
 		defineRoute({
@@ -351,7 +351,7 @@ export const createRoutes = (product) => {
 			path: '/v1/admin/analytics/products',
 			auth: 'ticket',
 			permission: 'analytics.read',
-			feature: 'visitor_analytics',
+			feature: 'conversion_funnel',
 			handler: products,
 		}),
 		defineRoute({
@@ -359,7 +359,7 @@ export const createRoutes = (product) => {
 			path: '/v1/admin/analytics/products/csv',
 			auth: 'ticket',
 			permission: 'analytics.read',
-			feature: 'visitor_analytics',
+			feature: 'conversion_funnel',
 			handler: productsFile,
 		}),
 		defineRoute({
@@ -496,6 +496,6 @@ export const createRoutes = (product) => {
 		// redirect rules: read by the website's server, managed by staff (feature `redirects`, SEO audit G9)
 		...redirectRoutes(product, { log: logAction }),
 
-		// days of daily totals moved in from another system (ss-import, feature `import`, PLAN 0.8.10 K10)
+		// days of daily totals moved in from another system (shelfway-import, feature `import`, PLAN 0.8.10 K10)
 	];
 };

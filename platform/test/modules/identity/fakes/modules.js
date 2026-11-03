@@ -3,7 +3,7 @@
  * (`onMerchantStatus`, the products on a website) and `catalog` (notices, product names and the `productKeys` port for
  * product routes), plus a `whoami` route that reports how a request authenticated.
  */
-import { createJwks, createKeyResolver, createSigner, generateSigningKey, signAssertion } from '@ss/protocol';
+import { createJwks, createKeyResolver, createSigner, generateSigningKey, signAssertion } from '@shelfway/protocol';
 import { ok } from '../../../../src/infra/http.js';
 import { defineModule } from '../../../../src/infra/modules.js';
 

@@ -51,7 +51,7 @@ describe('channels', () => {
 		expect(checkRecipient(null)).toEqual({ ok: false, field: 'to' });
 		expect(checkRecipient({})).toEqual({ ok: false, field: 'to' });
 		expect(checkRecipient({ email: 'x' })).toEqual({ ok: false, field: 'to/email' });
-		// the one email rule of every unit (@ss/contracts/email): a punycode top-level domain is an address, two dots
+		// the one email rule of every unit (@shelfway/contracts/email): a punycode top-level domain is an address, two dots
 		// in a row are not
 		expect(checkRecipient({ email: ' Ana@Example.XN--P1AI ' })).toMatchObject({
 			ok: true,
@@ -605,10 +605,10 @@ describe('provider answers, replies and webhook URLs', () => {
 
 	it('sums the webhook URLs up for the Setup sheet by host only, in at most 300 characters', () => {
 		expect(webhookUrlsSummary([])).toBe('No URLs yet.');
-		expect(webhookUrlsSummary([{ url: 'https://hooks.example.com/ss?token=abc', events: [] }])).toBe(
+		expect(webhookUrlsSummary([{ url: 'https://hooks.example.com/shelfway?token=abc', events: [] }])).toBe(
 			'1 URL on hooks.example.com; it takes every event.',
 		);
-		expect(webhookUrlsSummary([{ url: 'https://hooks.example.com/ss', events: ['message.failed'] }])).toBe(
+		expect(webhookUrlsSummary([{ url: 'https://hooks.example.com/shelfway', events: ['message.failed'] }])).toBe(
 			'1 URL on hooks.example.com; it takes only the events it names.',
 		);
 		expect(

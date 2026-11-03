@@ -1,14 +1,28 @@
 import { createDecipheriv, createHmac } from 'node:crypto';
-import { portalSectionsOf } from '@ss/app-kit/testing';
-import { createId } from '@ss/contracts';
-import { verifyWebhook } from '@ss/protocol';
+import { portalSectionsOf } from '@shelfway/app-kit/testing';
+import { createId } from '@shelfway/contracts';
+import { verifyWebhook } from '@shelfway/protocol';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { ADMIN_ORIGIN, GATEWAY_URL, HOOK_URL, ORIGIN, PUSH_ORIGIN, browserSubscription, pushKeys, setup } from './helpers.js';
 
 /** @type {Awaited<ReturnType<typeof setup>>} */
 let env;
 
-const ALL = ['email', 'sms', 'whatsapp', 'push', 'webhooks', 'send_api'];
+const ALL = [
+	'email',
+	'sms',
+	'whatsapp',
+	'push',
+	'browser_push',
+	'staff_push',
+	'webhooks',
+	'fallback',
+	'quiet_hours',
+	'send_limits',
+	'delayed_send',
+	'multi_language',
+	'send_api',
+];
 const RESEND = { provider: 'resend', secret: 're_secret_1234', from: 'Shop <shop@shop.example.com>' };
 const TWILIO = { provider: 'twilio', accountSid: `AC${'a'.repeat(32)}`, secret: 'twilio-token-9876', from: '+15550001111' };
 const META = {
@@ -21,11 +35,11 @@ const META = {
 const WEBHOOK_SECRET = 'whsec-0123456789abcdefghijklmnop';
 
 /**
- * Whether a webhook call carries a right `SS-Signature` (checked as a receiver does, within 5 minutes).
+ * Whether a webhook call carries a right `Shelfway-Signature` (checked as a receiver does, within 5 minutes).
  * @param {import('./helpers.js').ProviderCall} call
  */
 const signedRight = (call) =>
-	verifyWebhook({ body: call.body, header: call.headers['ss-signature'], secret: WEBHOOK_SECRET, now: env.now });
+	verifyWebhook({ body: call.body, header: call.headers['shelfway-signature'], secret: WEBHOOK_SECRET, now: env.now });
 
 /**
  * Decrypt an aes128gcm push body with the browser's keys (what the browser does).
@@ -347,7 +361,7 @@ describe('the send API', () => {
 		await env.send('email', { template: 'promo', to: { email: 'nl@example.com' } });
 		const html = await (await env.call('GET', unsubscribeLink())).text();
 		expect(html).toContain('<title>Afmelden</title>');
-		expect(html).toContain('--ss-radius: 12px;');
+		expect(html).toContain('--shelfway-radius: 12px;');
 		expect(html).not.toContain('{color:red}</style>');
 	});
 
@@ -798,18 +812,18 @@ describe('the delivery log and the admin widgets (tickets)', () => {
 		const html = await (await env.call('GET', '/docs')).text();
 		for (const part of [
 			'/v1/messages/whatsapp',
-			'SS_SERVER_TOKEN',
+			'SHELFWAY_SERVER_TOKEN',
 			'curl -X POST',
-			'SS-Signature',
+			'Shelfway-Signature',
 			'gateway.example.com',
-			'/ss-notifications-sw.js',
-			'data-ss-notifications',
+			'/shelfway-notifications-sw.js',
+			'data-shelfway-notifications',
 			'log.read',
 			'/v1/tickets',
-			'managed_by_portal',
+			'managed_by_platform',
 			// the API reference: what each call takes and answers, from schemas/api.json
 			'<a href="#op-post-v1-messages-email"><code>POST /v1/messages/email</code></a> Send an email from a template',
-			'<section class="ss-api-op" id="op-post-v1-messages-email">',
+			'<section class="shelfway-api-op" id="op-post-v1-messages-email">',
 			'<td><code>to</code></td><td><a href="#schema-EmailRecipient">EmailRecipient</a></td><td>yes</td>',
 			'<h4>Answer 201 (JSON)</h4><p><a href="#schema-Message">Message</a></p>',
 			'<td><code>status</code></td><td>query</td><td><a href="#schema-MessageStatus">MessageStatus</a></td>',
@@ -824,7 +838,7 @@ describe('the delivery log and the admin widgets (tickets)', () => {
 });
 
 describe('the merchant’s server and the widget config (PLAN 0.8.10)', () => {
-	it('takes visitor calls from the merchant’s server, by the visitor’s SS-Visitor-IP', async () => {
+	it('takes visitor calls from the merchant’s server, by the visitor’s Shelfway-Visitor-IP', async () => {
 		const browser = browserSubscription(`${PUSH_ORIGIN}/push/server-call`);
 		/** @param {Record<string, string>} headers */
 		const subscribe = (headers) =>
@@ -832,19 +846,19 @@ describe('the merchant’s server and the widget config (PLAN 0.8.10)', () => {
 		const missing = await subscribe({});
 		expect(missing.status).toBe(400);
 		expect((await missing.json()).type).toMatch(/visitor_ip_required$/);
-		const first = await subscribe({ 'ss-visitor-ip': '203.0.113.7' });
+		const first = await subscribe({ 'shelfway-visitor-ip': '203.0.113.7' });
 		expect(first.status).toBe(201);
 		expect(first.headers.get('access-control-allow-origin')).toBeNull();
 		const { subscriberId } = await first.json();
 		expect(subscriberId).toMatch(/^sub_/);
 		// the per-visitor limit (20 a minute) counts that visitor's address, not the server's
-		for (let i = 1; i < 20; i += 1) expect((await subscribe({ 'ss-visitor-ip': '203.0.113.7' })).status).toBe(201);
-		expect((await subscribe({ 'ss-visitor-ip': '203.0.113.7' })).status).toBe(429);
-		expect((await subscribe({ 'ss-visitor-ip': '203.0.113.8' })).status).toBe(201);
+		for (let i = 1; i < 20; i += 1) expect((await subscribe({ 'shelfway-visitor-ip': '203.0.113.7' })).status).toBe(201);
+		expect((await subscribe({ 'shelfway-visitor-ip': '203.0.113.7' })).status).toBe(429);
+		expect((await subscribe({ 'shelfway-visitor-ip': '203.0.113.8' })).status).toBe(201);
 		const removed = await env.call('POST', '/v1/push/subscriptions/remove', {
 			token: env.server,
 			body: { subscriberId, endpoint: browser.subscription.endpoint },
-			headers: { 'ss-visitor-ip': '203.0.113.9' },
+			headers: { 'shelfway-visitor-ip': '203.0.113.9' },
 		});
 		expect(removed.status).toBe(204);
 		const pushed = await env.send('push', { template: 'alert', to: { subscriberId } });
@@ -856,7 +870,11 @@ describe('the merchant’s server and the widget config (PLAN 0.8.10)', () => {
 		const forged = await env.call('GET', '/v1/messages/count', {
 			token: env.server,
 			bare: true,
-			headers: { 'ss-actor-id': 'usr_42', 'ss-actor-name': encodeURIComponent('Zoë Admin'), 'ss-actor-role': 'Manager' },
+			headers: {
+				'shelfway-actor-id': 'usr_42',
+				'shelfway-actor-name': encodeURIComponent('Zoë Admin'),
+				'shelfway-actor-role': 'Manager',
+			},
 		});
 		expect(forged.status).toBe(403);
 		expect((await forged.json()).type).toMatch(/needs_signed_in_staff$/);
@@ -894,8 +912,8 @@ describe('the merchant’s server and the widget config (PLAN 0.8.10)', () => {
 		const html = await (await env.call('GET', '/docs')).text();
 		for (const part of [
 			'Settings from your server',
-			'SS-Actor-Id',
-			'SS-Visitor-IP',
+			'Shelfway-Actor-Id',
+			'Shelfway-Visitor-IP',
 			'/v1/messages/count',
 			'/v1/messages/counts',
 			'/v1/admin/messages/counts',

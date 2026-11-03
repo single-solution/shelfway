@@ -41,7 +41,7 @@ describe('connect secret', () => {
 				createConnectRequest({
 					secret: 'short',
 					productUrl: BASE,
-					portalUrl: PORTAL,
+					platformUrl: PORTAL,
 					jwks: { keys: [] },
 					priceListVersion: 0,
 				}),
@@ -56,7 +56,7 @@ describe('connect handshake', () => {
 		createConnectRequest({
 			secret: SECRET,
 			productUrl: `${BASE}/`,
-			portalUrl: PORTAL,
+			platformUrl: PORTAL,
 			jwks: createJwks([portal.publicJwk]),
 			priceListVersion,
 			now: clock.now,
@@ -70,7 +70,7 @@ describe('connect handshake', () => {
 		expect(JSON.stringify(request.headers)).not.toContain(SECRET);
 		const verified = verifyConnectRequest({ secret: SECRET, headers: request.headers, body: request.body, now: clock.now });
 		expect(verified).toEqual({
-			portalUrl: PORTAL,
+			platformUrl: PORTAL,
 			jwks: { keys: [portal.publicJwk] },
 			baseUrl: BASE,
 			nonce: request.nonce,
@@ -130,11 +130,11 @@ describe('connect handshake', () => {
 		const resign = (/** @type {Record<string, unknown>} */ members) => {
 			const body = JSON.stringify({ productId: 'notes', nonce, publicJwk: product.publicJwk, manifest, prices, ...members });
 			const timestamp = String(Math.floor(clock.now() / 1000));
-			const signature = createHmac('sha256', SECRET).update(`ss-connected.v1|${timestamp}|${body}`).digest('hex');
+			const signature = createHmac('sha256', SECRET).update(`shelfway-connected.v1|${timestamp}|${body}`).digest('hex');
 			return () =>
 				verifyConnectResponse({
 					secret: SECRET,
-					headers: { 'SS-Connect-Timestamp': timestamp, 'SS-Connect-Signature': signature },
+					headers: { 'Shelfway-Connect-Timestamp': timestamp, 'Shelfway-Connect-Signature': signature },
 					body,
 					nonce,
 					now: clock.now,
@@ -194,7 +194,7 @@ describe('connect handshake', () => {
 		/** @param {Record<string, unknown>} members */
 		const signed = (members) => {
 			const body = JSON.stringify({
-				portalUrl: PORTAL,
+				platformUrl: PORTAL,
 				jwks: createJwks([portal.publicJwk]),
 				baseUrl: BASE,
 				nonce: 'n'.repeat(22),
@@ -202,11 +202,11 @@ describe('connect handshake', () => {
 				...members,
 			});
 			const timestamp = String(Math.floor(clock.now() / 1000));
-			const signature = createHmac('sha256', SECRET).update(`ss-connect.v1|${timestamp}|${body}`).digest('hex');
+			const signature = createHmac('sha256', SECRET).update(`shelfway-connect.v1|${timestamp}|${body}`).digest('hex');
 			return () =>
 				verifyConnectRequest({
 					secret: SECRET,
-					headers: { 'SS-Connect-Timestamp': timestamp, 'SS-Connect-Signature': signature },
+					headers: { 'Shelfway-Connect-Timestamp': timestamp, 'Shelfway-Connect-Signature': signature },
 					body,
 					now: clock.now,
 				});
@@ -215,7 +215,7 @@ describe('connect handshake', () => {
 		expectThrowCode(signed({ priceListVersion: -1 }), 'malformed');
 		expectThrowCode(signed({ priceListVersion: undefined }), 'malformed');
 		expectThrowCode(signed({ jwks: { keys: [] } }), 'malformed');
-		expectThrowCode(signed({ portalUrl: 'ftp://x' }), 'malformed');
+		expectThrowCode(signed({ platformUrl: 'ftp://x' }), 'malformed');
 		expectThrowCode(signed({ nonce: 'short' }), 'malformed');
 	});
 

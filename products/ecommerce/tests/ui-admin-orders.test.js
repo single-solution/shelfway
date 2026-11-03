@@ -218,7 +218,7 @@ const paramsOf = (server, key) => Object.fromEntries(server.last(key)?.url.searc
 describe('orders admin: the list', () => {
 	it('lists orders with counts, filters them and opens the first', async () => {
 		const { host, root, server } = await start();
-		expect(host.getAttribute('data-ss-mounted')).toBe('orders-admin');
+		expect(host.getAttribute('data-shelfway-mounted')).toBe('orders-admin');
 		const panel = panelOf(root, 'orders');
 		const row = rowOf(panel, 'ord_1');
 		expect(textOf(row)).toContain('SO2026-1');

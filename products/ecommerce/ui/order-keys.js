@@ -1,6 +1,6 @@
 /**
  * The order keys of a guest's orders, kept in the browser (E21): a guest order's answer carries its key once, and the
- * widget runtime sends it in `SS-Order-Key` with every call about that order (reading it, paying, canceling, the
+ * widget runtime sends it in `Shelfway-Order-Key` with every call about that order (reading it, paying, canceling, the
  * transfer proof, the invoice, downloads and the reviews of its items). The newest {@link MAX_ORDER_KEYS} are kept; a
  * browser without storage keeps them for the page's life only.
  * @module

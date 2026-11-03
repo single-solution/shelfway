@@ -64,7 +64,7 @@ describe('opening the product dashboard', () => {
 		const res = await session(opened.cookie);
 		expect(res.json).toMatchObject({
 			who: { kind: 'merchant', id: m.merchantId, name: `Shop ${m.email}` },
-			portalUrl: 'https://portal.test',
+			platformUrl: 'https://portal.test',
 			switcher: [{ merchantId: m.merchantId }],
 		});
 		const listed = res.json.switcher[0].websites.map((/** @type {{ websiteId: string }} */ site) => site.websiteId);

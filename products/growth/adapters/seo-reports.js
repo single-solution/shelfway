@@ -1,5 +1,5 @@
 /**
- * The SEO checklist's last full report in the merchant database (`ss_growth_seo_reports`, through the kit's tenant
+ * The SEO checklist's last full report in the merchant database (`shelfway_growth_seo_reports`, through the kit's tenant
  * guard): one document per website, `{ checkedAt, pages, checks }`, replaced by each full run (the checklist's own
  * pages and the sample pages). The widget shows it when it opens, and a full run asked again within a few minutes
  * answers it instead of reading the site again. The texts are not kept: they are the website's widget texts when the
@@ -7,7 +7,7 @@
  * @module
  */
 
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/seo-checks.js').Check} Check */
 /** @typedef {import('../core/seo-checks.js').PageKind} PageKind */
 /** @typedef {import('../core/seo-checks.js').PageHead} PageHead */
@@ -18,7 +18,7 @@
 
 const REPORTS = 'seo_reports';
 
-/** Merchant database index of the kept reports. @type {import('@ss/app-kit').IndexDefinition[]} */
+/** Merchant database index of the kept reports. @type {import('@shelfway/app-kit').IndexDefinition[]} */
 export const SEO_REPORT_INDEXES = [{ collection: REPORTS, keys: { websiteId: 1 }, name: 'by_website', unique: true }];
 
 /**

@@ -7,8 +7,8 @@
  * @module
  */
 import { useId, useState } from 'react';
-import { Button, Callout, FieldGrid, Input, Select } from '@ss/ui';
-import { AI_PROVIDERS, MODEL_SUGGESTIONS, checkAiConnection } from '@ss/app-kit/ai';
+import { Button, Callout, FieldGrid, Input, Select } from '@shelfway/ui';
+import { AI_PROVIDERS, MODEL_SUGGESTIONS, checkAiConnection } from '@shelfway/app-kit/ai';
 import { TEXTS } from './texts.js';
 
 const N = TEXTS.connections.fields;
@@ -23,7 +23,7 @@ export function AiForm({ onSave }) {
 	const [error, setError] = useState(/** @type {string | null} */ (null));
 	/** @param {string} key @param {string} value */
 	const set = (key, value) => setValues({ ...values, [key]: value });
-	const provider = /** @type {import('@ss/app-kit/ai').AiProvider} */ (values.provider);
+	const provider = /** @type {import('@shelfway/app-kit/ai').AiProvider} */ (values.provider);
 	return (
 		<div className="mt-3 space-y-3">
 			<FieldGrid>

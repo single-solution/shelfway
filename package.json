@@ -5,14 +5,14 @@
 	"engines": {
 		"node": "22.x"
 	},
-	"prettier": "@ss/config/prettier.json",
+	"prettier": "@shelfway/config/prettier.json",
 	"scripts": {
 		"check": "prettier --check . && pnpm -r --workspace-concurrency=1 check",
 		"format": "prettier --write . && pnpm -r format",
 		"validate": "pnpm --filter './products/*' validate"
 	},
 	"devDependencies": {
-		"@ss/config": "workspace:^",
+		"@shelfway/config": "workspace:^",
 		"prettier": "^3.9.9"
 	}
 }

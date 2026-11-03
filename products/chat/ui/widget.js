@@ -1,14 +1,14 @@
 /**
  * Starts the Chat widgets on a page (PLAN 0.4.10, 0.8.3). `widget.js` is the same for every website. With `data-token`
  * on its script tag (the website's browser token) it fetches the widget config and, while Visitor chat is on and the
- * page is not hidden by the merchant, mounts the visitor chat into a host element of its own. `window.SSChat` offers
+ * page is not hidden by the merchant, mounts the visitor chat into a host element of its own. `window.ShelfwayChat` offers
  * `identify(token | null)`, `setPage({ kind, productId?, productName? })`, `onUnread(callback)`, `open()`, `close()`,
  * `ready` and `admin({ getTicket })`, which fetches the config with a ticket and mounts the admin widgets `inbox`,
- * `knowledge_editor` and `reports` into the elements the merchant placed (`data-ss-chat="<widget key>"`) while their
+ * `knowledge_editor` and `reports` into the elements the merchant placed (`data-shelfway-chat="<widget key>"`) while their
  * features are on. Nothing renders while the product is stopped.
  * @module
  */
-import { adminCall, createTicketSource, requestJson } from '@ss/app-kit/widget';
+import { adminCall, createTicketSource, requestJson } from '@shelfway/app-kit/widget';
 import { pathMatches } from '../core/text.js';
 import { PAGE_TYPE_KEY } from '../core/pages.js';
 import { WIDGET_ATTRIBUTE, WIDGET_GLOBAL } from '../core/widgets.js';
@@ -121,9 +121,9 @@ export const startWidget = ({
 		chat?.close();
 	};
 
-	/** @param {{ getTicket: import('@ss/app-kit/widget').GetTicket }} options */
+	/** @param {{ getTicket: import('@shelfway/app-kit/widget').GetTicket }} options */
 	const admin = async ({ getTicket }) => {
-		/** @type {import('@ss/app-kit/widget').Ticket} */
+		/** @type {import('@shelfway/app-kit/widget').Ticket} */
 		let first;
 		try {
 			first = await getTicket();

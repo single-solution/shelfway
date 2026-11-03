@@ -4,7 +4,7 @@
  * implements exactly these), the tool schemas the AI sees, the request each tool call makes, and what of each answer the
  * AI, the cards and the context panel get. Chat calls Ecommerce through the Portal's link to Ecommerce; the tools only
  * read. My orders, account and track shipment run only for a visitor whose Accounts sign-in Chat verified on that
- * request: Chat forwards it in the `SS-Sign-In` header and Ecommerce verifies it itself and answers only that user's
+ * request: Chat forwards it in the `Shelfway-Sign-In` header and Ecommerce verifies it itself and answers only that user's
  * data. The AI never chooses the user, the website or the token: those tools take no arguments, and whatever the model
  * passes is ignored. Only whitelisted fields are kept, so no street address or phone number ever reaches the AI.
  * Prices, dates and deal days and times in what the AI and the context panel get follow the website's Format and
@@ -16,8 +16,8 @@
  * warranty, quotes per variant and payment method, order lines and the store context (C1).
  * @module
  */
-import { formatDate, formatMoney, isAmount, isCurrency, normalizeFormat } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
+import { formatDate, formatMoney, isAmount, isCurrency, normalizeFormat } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
 import {
 	CONTEXT_PANEL_ORDERS,
 	SHOP_CONTEXT_MAX_CHARACTERS,
@@ -112,7 +112,7 @@ export const SHOP_ENDPOINTS = Object.freeze([
 		setting: 'enableMyOrders',
 		legacy: 'shop_my_orders',
 		signIn: true,
-		request: 'GET /v1/chat/me/orders?limit=<1–10> (SS-Sign-In)',
+		request: 'GET /v1/chat/me/orders?limit=<1–10> (Shelfway-Sign-In)',
 	},
 	{
 		tool: SHOP_TOOLS.account,
@@ -120,7 +120,7 @@ export const SHOP_ENDPOINTS = Object.freeze([
 		setting: 'enableMyOrders',
 		legacy: 'shop_my_orders',
 		signIn: true,
-		request: 'GET /v1/chat/me/account (SS-Sign-In)',
+		request: 'GET /v1/chat/me/account (Shelfway-Sign-In)',
 	},
 	{
 		tool: SHOP_TOOLS.track,
@@ -128,7 +128,7 @@ export const SHOP_ENDPOINTS = Object.freeze([
 		setting: 'enableTrackShipment',
 		legacy: 'track_shipment',
 		signIn: true,
-		request: 'GET /v1/chat/me/shipments (SS-Sign-In)',
+		request: 'GET /v1/chat/me/shipments (Shelfway-Sign-In)',
 	},
 ]);
 
@@ -136,7 +136,7 @@ export const SHOP_ENDPOINTS = Object.freeze([
 export const STORE_CONTEXT_ENDPOINT = Object.freeze({
 	feature: 'shop_assistant',
 	legacy: 'shop_context',
-	request: 'GET /v1/chat/context?productId=<the product the visitor views> (SS-Sign-In when signed in)',
+	request: 'GET /v1/chat/context?productId=<the product the visitor views> (Shelfway-Sign-In when signed in)',
 });
 
 /** The request of the context panel's shop info (server token; the conversation's signed-in visitor). */
@@ -184,7 +184,7 @@ const DAY_MS = 86_400_000;
 /** Tool names the merchant's webhook tools may not take. */
 export const SHOP_TOOL_NAMES = Object.freeze(Object.values(SHOP_TOOLS));
 
-/** @typedef {import('@ss/app-kit').AiToolSchema} AiToolSchema */
+/** @typedef {import('@shelfway/app-kit').AiToolSchema} AiToolSchema */
 /**
  * The deal in a shown price, with what it takes off one unit (Ecommerce's `deal`).
  * @typedef {{ name: string, savings: number, savingsText: string | null }} ShopDeal
@@ -228,7 +228,7 @@ export const SHOP_TOOL_NAMES = Object.freeze(Object.values(SHOP_TOOLS));
  */
 /**
  * The website's Format and business time zone (from the server's `product.format(websiteId)`).
- * @typedef {{ format?: Partial<import('@ss/contracts/format').Format>, timeZone?: string }} Look
+ * @typedef {{ format?: Partial<import('@shelfway/contracts/format').Format>, timeZone?: string }} Look
  */
 /**
  * The context panel's shop info.
@@ -623,7 +623,7 @@ export const shopRequest = (name, args, { minor = (amount) => Math.round(amount 
 
 /**
  * The store context request (C1): the product the visitor is viewing, when there is one.
- * @param {string | null | undefined} viewing the product id of `SSChat.setPage`
+ * @param {string | null | undefined} viewing the product id of `ShelfwayChat.setPage`
  */
 export const contextPath = (viewing) => {
 	const id = productId(viewing);

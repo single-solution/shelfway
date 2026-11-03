@@ -102,7 +102,11 @@ describe('WhatsApp template buttons (N1)', () => {
 });
 
 describe('templates for the merchant’s server (N4)', () => {
-	const ACTOR = { 'ss-actor-id': 'usr_7', 'ss-actor-name': encodeURIComponent('Alex Morgan'), 'ss-actor-role': 'Manager' };
+	const ACTOR = {
+		'shelfway-actor-id': 'usr_7',
+		'shelfway-actor-name': encodeURIComponent('Alex Morgan'),
+		'shelfway-actor-role': 'Manager',
+	};
 	/** @param {string} method @param {string} path @param {unknown} [body] @param {Record<string, string>} [headers] */
 	const server = async (method, path, body, headers) => {
 		const response = await env.call(method, path, { token: env.server, body, ...(headers ? { headers } : {}) });
@@ -225,7 +229,7 @@ describe('webhook URLs per event (N5)', () => {
 		await env.connect('webhook_secret', SECRET);
 		const saved = await env.call('PUT', '/v1/lists/webhook_urls', {
 			token: env.server,
-			headers: { 'ss-actor-id': 'usr_7', 'ss-actor-name': 'Sam Lee' },
+			headers: { 'shelfway-actor-id': 'usr_7', 'shelfway-actor-name': 'Sam Lee' },
 			body: {
 				value: [
 					{ url: `${HOOKS}/orders`, events: ['ecommerce.order.placed', 'payments.payment.paid'] },

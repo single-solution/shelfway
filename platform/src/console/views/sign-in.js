@@ -7,16 +7,27 @@
  * @module
  */
 import { useEffect, useRef, useState } from 'react';
-import { Button, Callout, Form, FormError, Input, Spinner, describeProblem, fieldErrors, problemCode, TextLink } from '@ss/ui';
-import { supportContactLine } from '@ss/contracts/text';
+import {
+	Button,
+	Callout,
+	Form,
+	FormError,
+	Input,
+	Spinner,
+	describeProblem,
+	fieldErrors,
+	problemCode,
+	TextLink,
+} from '@shelfway/ui';
+import { supportContactLine } from '@shelfway/contracts/text';
 import { AUTH } from '../../texts/console.js';
 import { apiFetch, takeFragmentToken } from '../client.js';
 import { Link } from '../link.js';
 import { routes } from '../paths.js';
 import { BrandMark } from './common.js';
 
-/** @typedef {import('@ss/ui').Problem} Problem */
-/** @typedef {{ name: string, accent: string, logoUrl: string | null, support: { channels: import('@ss/contracts/text').SupportChannel[] } }} Branding */
+/** @typedef {import('@shelfway/ui').Problem} Problem */
+/** @typedef {{ name: string, accent: string, logoUrl: string | null, support: { channels: import('@shelfway/contracts/text').SupportChannel[] } }} Branding */
 
 const PASSWORD_MIN = 12;
 
@@ -86,7 +97,7 @@ function TwoStepStep({ challenge, onDone, onRestart, onProblem }) {
 	const [problem, setProblem] = useState(/** @type {Problem | null} */ (null));
 	const [error, setError] = useState(/** @type {string | null} */ (null));
 	const submit = async () => {
-		const value = code.trim();
+		const value = useRecovery ? code.trim() : code.replace(/\s+/g, '');
 		if (useRecovery ? !/^[a-z2-7]{5}-?[a-z2-7]{5}$/i.test(value) : !/^\d{6}$/.test(value)) {
 			setError(useRecovery ? AUTH.recoveryInvalid : AUTH.codeInvalid);
 			return;
@@ -111,8 +122,17 @@ function TwoStepStep({ challenge, onDone, onRestart, onProblem }) {
 				label={useRecovery ? AUTH.recoveryCode : AUTH.code}
 				name="code"
 				value={code}
+				onPaste={(e) => {
+					if (!useRecovery) {
+						e.preventDefault();
+						const pasted = e.clipboardData.getData('text').replace(/\s+/g, '').slice(0, 6);
+						setCode(pasted);
+						if (error) setError(null);
+					}
+				}}
 				onChange={(e) => {
-					setCode(e.currentTarget.value);
+					const val = useRecovery ? e.currentTarget.value : e.currentTarget.value.replace(/\s+/g, '');
+					setCode(val);
 					if (error) setError(null);
 				}}
 				autoComplete={useRecovery ? 'off' : 'one-time-code'}

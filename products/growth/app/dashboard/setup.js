@@ -6,8 +6,8 @@
  * Web Vitals to Google Analytics without Google tags, G7, and without Visitor analytics, SG-27).
  * @module
  */
-import { Badge, Callout, CodeBlock } from '@ss/ui';
-import { fill } from '@ss/ui/dashboard';
+import { Badge, Callout, CodeBlock } from '@shelfway/ui';
+import { fill } from '@shelfway/ui/dashboard';
 import { tagsOf } from '../../core/config.js';
 import { keyLocationOf, robotsTxtOf, verificationOf } from '../../core/seo.js';
 import { TEXTS } from './texts.js';

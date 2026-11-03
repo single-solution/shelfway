@@ -23,10 +23,10 @@ describe('the one sign-in page (PLAN 0.2, 0.8.2)', () => {
 			console: 'admin',
 			admin: { email: 'owner@portal.test', role: 'owner' },
 		});
-		expect(asAdmin.setCookies[0]).toMatch(/^__Host-ss_admin=/);
+		expect(asAdmin.setCookies[0]).toMatch(/^__Host-shelfway_admin=/);
 		const asMerchant = await h.client().post('/v1/auth/sign-in', { email: 'sam@shop.test', password: PASSWORD });
 		expect(asMerchant.json).toMatchObject({ status: 'ok', console: 'merchant', merchant: { email: 'sam@shop.test' } });
-		expect(asMerchant.setCookies[0]).toMatch(/^__Host-ss_merchant=/);
+		expect(asMerchant.setCookies[0]).toMatch(/^__Host-shelfway_merchant=/);
 		// the merchant's own view has no internal fields
 		expect(asMerchant.json.merchant).not.toHaveProperty('suspension');
 
@@ -188,7 +188,7 @@ describe('two-step sign-in (PLAN 0.2)', () => {
 		const other = await h.signIn('sam@shop.test');
 		const before = m.client.cookie;
 		await h.enableTwoStep(m.client);
-		expect(m.client.cookie).toMatch(/^__Host-ss_merchant=/);
+		expect(m.client.cookie).toMatch(/^__Host-shelfway_merchant=/);
 		expect(m.client.cookie).not.toBe(before);
 		expect((await m.client.get('/v1/me')).status).toBe(200);
 		expect((await h.call('GET', '/v1/me', { cookie: before })).status).toBe(401);

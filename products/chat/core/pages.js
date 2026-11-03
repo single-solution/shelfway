@@ -1,6 +1,6 @@
 /**
  * Page types (pure, C6): the merchant's own kinds of pages, `{ key, name, path, nudge }`, kept as the list
- * `page_types` (seeded with product, category, deals and cart pages). A page gets its type from `SSChat.setPage({ kind
+ * `page_types` (seeded with product, category, deals and cart pages). A page gets its type from `ShelfwayChat.setPage({ kind
  * })` (or `page.kind` on the visitor API) when the key is one of the website's types, else from the first type whose
  * path pattern matches the page's path (`*` = one segment, `**` = any), else `other`. The type picks the idle nudge's
  * text and tells the AI what the visitor is looking at.

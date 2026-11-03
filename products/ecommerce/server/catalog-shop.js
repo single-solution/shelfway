@@ -9,7 +9,7 @@
  * (E13).
  * @module
  */
-import { defineRoute, paginate, problem } from '@ss/app-kit';
+import { defineRoute, paginate, problem } from '@shelfway/app-kit';
 import {
 	NO_KEYS,
 	attributesOf,
@@ -59,7 +59,7 @@ import { VISITOR_LIMITS } from './service.js';
 /** @typedef {import('../core/model.js').BrandRecord} BrandRecord */
 /** @typedef {import('../core/model.js').CategoryRecord} CategoryRecord */
 /** @typedef {import('../core/model.js').SizeChartRecord} SizeChartRecord */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 
 /**
  * Product cards for the grid and search results, at their shown prices (G4: the price after automatic deals, as the

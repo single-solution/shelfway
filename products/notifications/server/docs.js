@@ -8,7 +8,7 @@
  * snippet (Node.js fetch and cURL). Plain HTML; every value is escaped.
  * @module
  */
-import { docsBlock, docsFeatureSections, docsOperations, docsParagraph, renderDocsPage } from '@ss/app-kit';
+import { docsBlock, docsFeatureSections, docsOperations, docsParagraph, renderDocsPage } from '@shelfway/app-kit';
 import guide from '../docs/guide.json' with { type: 'json' };
 import openapi from '../openapi.json' with { type: 'json' };
 import { createSnippets } from '../core/snippets.js';

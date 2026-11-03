@@ -120,7 +120,7 @@
 | `visitor_alerts`               | 2                  | —                        | Notifications        | **DEMOTE** Inbox         |
 | `moderation`                   | 6                  | `redaction_patterns`     | —                    | **KEEP**                 |
 | `reports`                      | ∅                  | —                        | widget + perm        | **KEEP**                 |
-| `import`                       | ∅                  | —                        | ss-import            | **KEEP**                 |
+| `import`                       | ∅                  | —                        | shelfway-import      | **KEEP**                 |
 
 ---
 

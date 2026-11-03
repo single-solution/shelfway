@@ -1,14 +1,14 @@
 /**
  * Addresses (dynamic model §5): the fields of a delivery address with the longest value each takes — one table for
  * checkout, the cart widget, staff edits and imports, its place parts and their order, labels, required parts and
- * postal code shapes per country from the one address-format table (`@ss/contracts/address`, shared with Accounts) —
+ * postal code shapes per country from the one address-format table (`@shelfway/contracts/address`, shared with Accounts) —
  * and how places compare: names without letter case and extra spaces, postcodes upper-cased without spaces (zones and
  * tax rules match their starts), countries by ISO 3166-1 alpha-2 code (an address keeps the code; zones and rules may
  * name a country by code or English name). An address without a country is in the business country.
  * No I/O (the widgets use it too).
  * @module
  */
-import { PLACE_LIMITS, countryCodeOf } from '@ss/contracts/address';
+import { PLACE_LIMITS, countryCodeOf } from '@shelfway/contracts/address';
 
 // the address-format table the widgets use too (they import packages only through core/)
 export {
@@ -21,7 +21,7 @@ export {
 	countryCodeOf,
 	countryName,
 	tidyPostcode,
-} from '@ss/contracts/address';
+} from '@shelfway/contracts/address';
 
 /** The address fields in form order, with the longest value each takes (the country: a code or an English name). */
 export const ADDRESS_LIMITS = Object.freeze({

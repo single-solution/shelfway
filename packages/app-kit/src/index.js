@@ -1,5 +1,5 @@
 /**
- * @ss/app-kit — the kit every product is built on. See README.md and API.md.
+ * @shelfway/app-kit — the kit every product is built on. See README.md and API.md.
  */
 export { configFromEnv } from './config.js';
 export { createProduct, createProductBase } from './product.js';
@@ -8,7 +8,7 @@ export { verifyIdentityToken } from './identity.js';
 export { defineRoute } from './http/routes.js';
 export { ok, created, noContent, problem, paginate } from './http/results.js';
 export { toNextRoute } from './http/next.js';
-export { createLogger } from '@ss/net';
+export { createLogger } from '@shelfway/net';
 export { createMongoStore } from './stores/mongo.js';
 export { createMemoryStore } from './stores/memory.js';
 export { createSealer } from './sealing.js';
@@ -41,7 +41,7 @@ export { createAiClient } from './ai/client.js';
 /** @typedef {import('./data.js').WebsiteData} WebsiteData */
 /** @typedef {import('./data.js').IndexDefinition} IndexDefinition */
 /** @typedef {import('./stores/types.js').Store} Store */
-/** @typedef {import('@ss/net').Logger} Logger */
+/** @typedef {import('@shelfway/net').Logger} Logger */
 /** @typedef {import('./sealing.js').Sealer} Sealer */
 /** @typedef {import('./reseal.js').ResealCounts} ResealCounts */
 /** @typedef {import('./actor.js').ActingUser} ActingUser */
@@ -60,4 +60,4 @@ export { createAiClient } from './ai/client.js';
 /** @typedef {import('./ai/index.js').AiToolCall} AiToolCall */
 /** @typedef {import('./ai/index.js').AiResult} AiResult */
 /** @typedef {import('./ai/client.js').AiClient} AiClient */
-/** @typedef {import('@ss/contracts').Format} Format */
+/** @typedef {import('@shelfway/contracts').Format} Format */

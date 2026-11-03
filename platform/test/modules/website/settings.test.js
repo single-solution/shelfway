@@ -1,9 +1,9 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { validateWebsiteSettings } from '@ss/contracts';
-import { manifest as notesManifest } from '@ss/contracts/testing';
+import { validateWebsiteSettings } from '@shelfway/contracts';
+import { manifest as notesManifest } from '@shelfway/contracts/testing';
 import { closeMongoClients } from '../../../src/testing.js';
 import { startMongo } from '../../helpers.js';
-import { bootPortal, codeOf } from '../catalog/boot.js';
+import { bootPlatform, codeOf } from '../catalog/boot.js';
 
 vi.setConfig({ testTimeout: 60_000, hookTimeout: 180_000 });
 
@@ -58,7 +58,7 @@ const business = (over = {}) => ({
 
 /** @param {string} name */
 const setUp = async (name) => {
-	const h = await bootPortal({ db: mongo.db(name) });
+	const h = await bootPlatform({ db: mongo.db(name) });
 	cleanups.push(h.close);
 	const owner = await h.owner();
 	// Notes asks for a currency and a country; Chat needs nothing
@@ -87,7 +87,12 @@ describe('Website settings: the Portal keeps the facts every product of a websit
 		const { m, url, w1 } = await setUp('ws_empty');
 		const res = await m.client.get(url());
 		expect(res.status).toBe(200);
-		expect(res.json.settings).toMatchObject({ schema: 'ss.website-settings/1', websiteId: w1, version: 0, updatedAt: null });
+		expect(res.json.settings).toMatchObject({
+			schema: 'shelfway.website-settings/1',
+			websiteId: w1,
+			version: 0,
+			updatedAt: null,
+		});
 		expect(validateWebsiteSettings(res.json.settings).ok).toBe(true);
 		expect(res.json.can).toEqual({ write: true });
 		// the readiness line: Notes needs a currency and a country, Chat nothing
@@ -103,7 +108,7 @@ describe('Website settings: the Portal keeps the facts every product of a websit
 	});
 
 	it('the readiness line counts what a feature that is on asks for, and nothing for one that is off', async () => {
-		const h = await bootPortal({ db: mongo.db('ws_feature_requires') });
+		const h = await bootPlatform({ db: mongo.db('ws_feature_requires') });
 		cleanups.push(h.close);
 		const owner = await h.owner();
 		const base = notesManifest();

@@ -1,12 +1,12 @@
 /**
  * The acting user of a request (PLAN 0.8.10 K2). A route that changes configuration or works with business data is
- * called with the server token **and** the Accounts sign-in of the staff member (`SS-Sign-In`, `staff.js`); the kit
+ * called with the server token **and** the Accounts sign-in of the staff member (`Shelfway-Sign-In`, `staff.js`); the kit
  * verifies it for the request's own website and sets `ctx.actor` to the person it names:
  * `{ kind: 'user', id, name, role?, email? }`. The product records that person wherever it records an actor (the
  * activity log, histories, replies and notes, Recent changes), and the kit upserts the staff record as it does for a
  * ticket's user (0.4.5).
  *
- * No header the caller wrote is taken as a person: the old `SS-Actor-*` headers are ignored, whatever they say. Without a
+ * No header the caller wrote is taken as a person: the old `Shelfway-Actor-*` headers are ignored, whatever they say. Without a
  * verified person the actor stays the product's own fallback (`Server`; Chat: `Team`), and only runtime routes (shop
  * reads, sends …) answer such a call.
  * @module

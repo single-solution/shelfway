@@ -13,9 +13,9 @@
  * success page and My orders open it); the Idempotency-Key is
  * kept while the same attempt
  * is retried after a lost answer or while the first press still runs (409 `in_progress`, after the runtime's own retries). Then the shopper pays on Payments' page (`next.kind === 'pay'`), sees the success
- * page (`done`), or can start the payment again (`retry`). Coming back from Payments, the page's `ss_order` shows that
- * order's success page (reading it rechecks its payment). Growth's events (PLAN 0.8.9): `ss:begin_checkout` the first
- * time the shopper presses Place order (once per cart widget, with the quoted lines), and `ss:purchase` as soon as
+ * page (`done`), or can start the payment again (`retry`). Coming back from Payments, the page's `shelfway_order` shows that
+ * order's success page (reading it rechecks its payment). Growth's events (PLAN 0.8.9): `shelfway:begin_checkout` the first
+ * time the shopper presses Place order (once per cart widget, with the quoted lines), and `shelfway:purchase` as soon as
  * `POST /v1/shop/orders` answers that the order is placed (before the payment page or the success page).
  * @module
  */
@@ -132,7 +132,7 @@ export const mountCart = async ({ host, config, shop, win }) => {
 				paymentBox,
 				fields.node,
 				guest?.node ?? null,
-				field(doc, 'ss-cart-note', t('checkout.note'), note),
+				field(doc, 'shelfway-cart-note', t('checkout.note'), note),
 				policies.length > 0
 					? h(
 							doc,
@@ -391,7 +391,7 @@ export const mountCart = async ({ host, config, shop, win }) => {
 					doc,
 					'form',
 					{ class: 'toolbar' },
-					field(doc, 'ss-cart-coupon', t('cart.coupon'), input),
+					field(doc, 'shelfway-cart-coupon', t('cart.coupon'), input),
 					h(doc, 'button', { type: 'submit', class: 'secondary' }, t('cart.couponApply')),
 				);
 				form.addEventListener('submit', (event) => {
@@ -423,7 +423,7 @@ export const mountCart = async ({ host, config, shop, win }) => {
 						doc,
 						'form',
 						{ class: 'toolbar' },
-						field(doc, 'ss-cart-points', t('cart.points.use', { max: found.max }), input),
+						field(doc, 'shelfway-cart-points', t('cart.points.use', { max: found.max }), input),
 						h(doc, 'button', { type: 'submit', class: 'secondary' }, t('cart.points.apply')),
 					);
 					form.addEventListener('submit', (event) => {
@@ -459,7 +459,7 @@ export const mountCart = async ({ host, config, shop, win }) => {
 				const choices = quote.deliveryOptions.map((/** @type {any} */ option, /** @type {number} */ index) => {
 					const pickup = option.method === 'pickup';
 					const radio = /** @type {HTMLInputElement} */ (
-						h(doc, 'input', { type: 'radio', name: 'ss-cart-delivery', 'data-focus': `delivery${index}` })
+						h(doc, 'input', { type: 'radio', name: 'shelfway-cart-delivery', 'data-focus': `delivery${index}` })
 					);
 					radio.checked =
 						quote.delivery.method === option.method &&
@@ -541,7 +541,7 @@ export const mountCart = async ({ host, config, shop, win }) => {
 					const radio = /** @type {HTMLInputElement} */ (
 						h(doc, 'input', {
 							type: 'radio',
-							name: 'ss-cart-payment',
+							name: 'shelfway-cart-payment',
 							value: option.method,
 							'data-focus': `pay-${option.method}`,
 						})
@@ -785,7 +785,7 @@ export const mountCart = async ({ host, config, shop, win }) => {
 				showSuccess(answer.data);
 			};
 
-			const returning = shop.location().searchParams.get('ss_order') ?? '';
+			const returning = shop.location().searchParams.get('shelfway_order') ?? '';
 			const pendingOrder = ORDER_ID.test(returning) ? returning : null;
 
 			const stops = [

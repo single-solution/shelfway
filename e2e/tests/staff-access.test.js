@@ -39,7 +39,7 @@ describe('the Portal-issued server token alone', () => {
 		const note = await sys.call('POST', '/v1/notes', {
 			token: tokens.server,
 			bare: true,
-			headers: { 'ss-visitor-ip': '203.0.113.7' },
+			headers: { 'shelfway-visitor-ip': '203.0.113.7' },
 			body: { text: 'From the server' },
 		});
 		expect(note.status).toBe(201);
@@ -86,7 +86,7 @@ describe('the Portal-issued server token alone', () => {
 			const answer = await sys.call('PUT', '/v1/theme', {
 				token: tokens.server,
 				bare: true,
-				headers: { 'ss-sign-in': signIn },
+				headers: { 'shelfway-sign-in': signIn },
 				body: { radius: 2 },
 			});
 			expect([answer.status, codeOf(answer)]).toEqual([status, code]);
@@ -106,7 +106,7 @@ describe('a signed-in staff member with the permission', () => {
 		});
 		// the theme is the website's, set once in the Portal: a signed-in staff member cannot change it here either
 		const theme = await sys.call('PUT', '/v1/theme', { token: tokens.server, staff, body: { radius: 7 } });
-		expect([theme.status, codeOf(theme)]).toEqual([409, 'managed_by_portal']);
+		expect([theme.status, codeOf(theme)]).toEqual([409, 'managed_by_platform']);
 		// and not the connections, which are their own permission
 		const refused = await sys.call('PUT', '/v1/connections/database', {
 			token: tokens.server,

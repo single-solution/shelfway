@@ -126,7 +126,7 @@ const checkDependencies = (features, out) => {
  * no self-dependency or cycle; every permission and widget names an existing feature (a widget may name several: it works while any is on); `widgetScriptUrl` is null
  * exactly when there are no widgets; `endpoints.base` is an https address (http only on local hosts);
  * `endpoints.dashboard`, `docsUrl` and `widgetScriptUrl` are paths or such addresses; every `recommendFor` rule joins
- * one to four business profile tags (`@ss/contracts/profile`), each once. Settings schemas are checked separately.
+ * one to four business profile tags (`@shelfway/contracts/profile`), each once. Settings schemas are checked separately.
  * @param {Manifest} manifest
  * @returns {ValidationProblem[]}
  */
@@ -295,7 +295,7 @@ export const checkActivityCopy = (copy) =>
 
 /**
  * A product's message defaults (parity P1): keys once each and, with `productId`, starting with `<productId>.`; the
- * default words of each channel pass the template rules of `@ss/contracts/templates` as written (no spaces at their
+ * default words of each channel pass the template rules of `@shelfway/contracts/templates` as written (no spaces at their
  * ends), and use only the message's declared values — plus `{unsubscribeUrl}` in a message that is not required
  * (Notifications fills it in optional messages only). A value is never named after a built-in one. Each long value is
  * one of the message's values, used in no subject or title.

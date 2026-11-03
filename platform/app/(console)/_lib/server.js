@@ -4,15 +4,15 @@
 import { cache } from 'react';
 import { redirect } from 'next/navigation.js';
 import { loadSession } from '../../../src/console/loaders.js';
-import { portalApi, portalBranding } from '../../_lib/server.js';
+import { platformApi, platformBranding } from '../../_lib/server.js';
 
 export { one } from '../../_lib/server.js';
 
 /** The request's console API client (one per request). */
-export const consoleApi = portalApi;
+export const consoleApi = platformApi;
 
 /** The Branding and support contact (public). */
-export const consoleBranding = portalBranding;
+export const consoleBranding = platformBranding;
 
 /** The signed-in session (one `/v1/me` call per request). */
 export const consoleSession = cache(async () => loadSession(await consoleApi()));

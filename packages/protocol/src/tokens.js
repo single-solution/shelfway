@@ -1,7 +1,7 @@
 /**
  * Browser, server and link tokens (PLAN 0.4.4; settings-ownership design 8.3) plus the domain and origin rules they rely on.
  *
- * Each product on a website has exactly two tokens, both Portal-signed compact JWS (`typ: ss-token+jws`, EdDSA). The
+ * Each product on a website has exactly two tokens, both Portal-signed compact JWS (`typ: shelfway-token+jws`, EdDSA). The
  * claims are exactly `{ iss, jti, websiteId, domain, productId, kind, iat }`: no expiry, no environment, no scopes, no
  * address. A product verifies them offline against the pinned Portal keys and the revocation list, and accepts only
  * tokens that name it. Every failure throws the same `invalid_token` error, so callers cannot tell the cases apart.
@@ -15,7 +15,7 @@
  * (`localhost`, `*.localhost`, `127.0.0.1`, `[::1]`, any port, http or https). Tickets may name any https origin or a
  * local origin.
  */
-import { normalizeDomain as normalizeDomainRule } from '@ss/contracts';
+import { normalizeDomain as normalizeDomainRule } from '@shelfway/contracts';
 import { createProtocolError, isProtocolError } from './errors.js';
 import { defaultRandomBytes, randomId } from './encoding.js';
 import { nowSeconds, requireString, signCompact, verifyCompact } from './jws.js';
@@ -23,7 +23,7 @@ import { nowSeconds, requireString, signCompact, verifyCompact } from './jws.js'
 /** @import { KeyResolver, Signer } from './keys.js' */
 
 /** JOSE `typ` of browser and server tokens. */
-const TOKEN_TYP = 'ss-token+jws';
+const TOKEN_TYP = 'shelfway-token+jws';
 
 /** Token kinds. */
 export const TOKEN_KINDS = Object.freeze(/** @type {const} */ (['browser', 'server', 'link']));
@@ -63,7 +63,7 @@ export const isProductId = (value) => typeof value === 'string' && PRODUCT_ID_PA
 
 /**
  * Normalize a website domain to lower-case ASCII (punycode) without a trailing dot, by the one domain rule of
- * `@ss/contracts` (`normalizeDomain`), and only from a bare host name: a token names exactly the domain the Portal
+ * `@shelfway/contracts` (`normalizeDomain`), and only from a bare host name: a token names exactly the domain the Portal
  * stored, so nothing is stripped here. Throws `invalid_argument` on anything that is not a plain public host name:
  * scheme, port, path, userinfo, wildcard, whitespace, IP literals, `localhost` / `*.localhost` and single-label names.
  * @param {unknown} domain
@@ -157,7 +157,7 @@ const isClaimString = (value) => typeof value === 'string' && value.length > 0 &
  * @param {{
  *   signer: Signer, issuer: string, websiteId: string, domain: string, productId: string, kind: TokenKind, caller?: string,
  *   jti?: string, now?: () => number, randomBytes?: (length: number) => Uint8Array,
- * }} params `issuer` is the Portal's `PORTAL_URL`; `caller` is required for a link token (the calling product, never the
+ * }} params `issuer` is the Portal's `PLATFORM_URL`; `caller` is required for a link token (the calling product, never the
  *   callee itself) and refused for any other kind.
  * @returns {Promise<{ token: string, claims: TokenClaims }>}
  */

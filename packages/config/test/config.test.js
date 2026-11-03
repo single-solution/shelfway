@@ -65,11 +65,11 @@ describe('vitest preset', () => {
 		expect(include[1]?.test(path.join(DIR, 'src/other.js'))).toBe(false);
 	});
 
-	it('matches @ss/ui sources from the workspace and from node_modules', () => {
+	it('matches @shelfway/ui sources from the workspace and from node_modules', () => {
 		const config = defineUnitConfig({ dir: DIR, jsx: ['a.b'] });
 		const [ui, folders] = /** @type {RegExp[]} */ (config.esbuild && config.esbuild.include);
 		expect(ui?.test('/repo/packages/ui/src/index.js')).toBe(true);
-		expect(ui?.test('/app/node_modules/.pnpm/x/node_modules/@ss/ui/src/schema.js')).toBe(true);
+		expect(ui?.test('/app/node_modules/.pnpm/x/node_modules/@shelfway/ui/src/schema.js')).toBe(true);
 		expect(ui?.test('/repo/packages/web/src/index.js')).toBe(false);
 		// a folder name is matched as written (a dot is not any character)
 		expect(folders?.test(path.join(DIR, 'a.b/x.js'))).toBe(true);

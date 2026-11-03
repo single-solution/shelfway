@@ -5,9 +5,9 @@
  * no picture slot and no save.
  */
 import { act } from 'react';
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, render } from '@ss/ui/testing';
+import { cleanup, render } from '@shelfway/ui/testing';
 import { StoreDetailsView, factsOf } from '../app/dashboard/store-details.js';
 import { inDashboard } from './dashboard-provider.js';
 

@@ -16,11 +16,11 @@
  *   product uses the built-in defaults (the Overview says "Needs setup: set your website settings in the Portal").
  * @module
  */
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
-import { deepFreeze } from '@ss/contracts/util';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
+import { deepFreeze } from '@shelfway/contracts/util';
 import { WAITED_FETCH_MS } from './status.js';
 
-/** @typedef {import('@ss/contracts').WebsiteSettings} WebsiteSettings */
+/** @typedef {import('@shelfway/contracts').WebsiteSettings} WebsiteSettings */
 /** @typedef {import('./stores/types.js').Store} Store */
 /** Runs work right after the response (a request's `after`). @typedef {(task: () => Promise<unknown>) => void} After */
 /**
@@ -36,8 +36,8 @@ const REFRESH_EVERY_MS = 30_000;
 const MEMORY_LIMIT = 200;
 
 /**
- * @param {{ store: Store, client: () => import('./portal-client.js').PortalClient, now: () => number,
- *   logger: import('@ss/net').Logger }} options
+ * @param {{ store: Store, client: () => import('./platform-client.js').PortalClient, now: () => number,
+ *   logger: import('@shelfway/net').Logger }} options
  */
 export const createWebsiteSettings = ({ store, client, now, logger }) => {
 	/**

@@ -35,7 +35,7 @@ const derive = (encryptionKey, info, length) =>
  * The id a sealed value records for the key that sealed it (8 base64url characters).
  * @param {string} encryptionKey
  */
-export const sealKeyId = (encryptionKey) => derive(encryptionKey, 'ss.seal.key-id.v2', 6).toString('base64url');
+export const sealKeyId = (encryptionKey) => derive(encryptionKey, 'shelfway.seal.key-id.v2', 6).toString('base64url');
 
 /**
  * @param {Buffer} key
@@ -79,7 +79,7 @@ export const createSealer = ({ key, previousKey = null, label, randomBytes = (n)
 	if (typeof label !== 'string' || !LABEL.test(label)) throw createProtocolError('invalid_argument', 'invalid sealer label');
 	const keyring = [key, ...(previousKey && previousKey !== key ? [previousKey] : [])].map((secret) => ({
 		id: sealKeyId(secret),
-		aes: derive(secret, `ss.seal.v2|${label}`, 32),
+		aes: derive(secret, `shelfway.seal.v2|${label}`, 32),
 	}));
 	const current = /** @type {(typeof keyring)[number]} */ (keyring[0]);
 	const prefix = `${SEAL_FORMAT}.${current.id}.`;

@@ -90,12 +90,79 @@
 			}
 		},
 		{
+			"key": "browser_push",
+			"name": "Browser push",
+			"description": "Visitors who allow it get push notifications in their browser, with the merchant's own push keys.",
+			"dependsOn": [],
+			"recommendFor": ["messages.push"],
+			"settings": {
+				"$ref": "schemas/browser_push.settings.json"
+			}
+		},
+		{
+			"key": "staff_push",
+			"name": "Staff push",
+			"description": "The merchant's staff get push notifications in their browsers, with the merchant's own push keys.",
+			"dependsOn": [],
+			"recommendFor": ["messages.push"],
+			"settings": {
+				"$ref": "schemas/staff_push.settings.json"
+			}
+		},
+		{
 			"key": "webhooks",
 			"name": "Outgoing webhooks",
 			"description": "Sends signed events (message sent, message failed, recipient unsubscribed) to the merchant's own URLs, retried on failure.",
 			"dependsOn": [],
 			"settings": {
 				"$ref": "schemas/webhooks.settings.json"
+			}
+		},
+		{
+			"key": "fallback",
+			"name": "Fallback channel",
+			"description": "When a message fails on its channel after its retries, it moves to the next of its fallback channels, in order (for example WhatsApp, then SMS, then email; browser push too). A template can have its own order.",
+			"dependsOn": [],
+			"recommendFor": ["messages.whatsapp+messages.sms", "messages.whatsapp+messages.email", "messages.sms+messages.email"],
+			"settings": {
+				"$ref": "schemas/fallback.settings.json"
+			}
+		},
+		{
+			"key": "quiet_hours",
+			"name": "Quiet hours",
+			"description": "Messages that are not urgent wait for the end of the quiet hours in the recipient's time zone: windows per weekday, with minutes, for the channels each one names.",
+			"dependsOn": [],
+			"settings": {
+				"$ref": "schemas/quiet_hours.settings.json"
+			}
+		},
+		{
+			"key": "send_limits",
+			"name": "Send limits",
+			"description": "Caps the messages one recipient gets per hour and per day: optional messages only, or all of them.",
+			"dependsOn": [],
+			"settings": {
+				"$ref": "schemas/send_limits.settings.json"
+			}
+		},
+		{
+			"key": "delayed_send",
+			"name": "Delayed send",
+			"description": "A send can name a later time; the message goes out on the first use of the website after it, so it can be late on a quiet site.",
+			"dependsOn": [],
+			"settings": {
+				"$ref": "schemas/delayed_send.settings.json"
+			}
+		},
+		{
+			"key": "multi_language",
+			"name": "Multi-language templates",
+			"description": "Each template can have a version per language; recipients get their language, else the default version.",
+			"dependsOn": [],
+			"recommendFor": ["languages.many+messages.*"],
+			"settings": {
+				"$ref": "schemas/multi_language.settings.json"
 			}
 		},
 		{
@@ -133,22 +200,22 @@
 	"widgets": [
 		{
 			"key": "push_permission",
-			"feature": "push",
+			"feature": ["browser_push", "push"],
 			"kind": "visitor"
 		},
 		{
 			"key": "staff_push_permission",
-			"feature": "push",
+			"feature": ["staff_push", "push"],
 			"kind": "admin"
 		},
 		{
 			"key": "delivery_log",
-			"feature": ["send_api", "email", "sms", "whatsapp", "push"],
+			"feature": ["send_api", "email", "sms", "whatsapp", "push", "browser_push", "staff_push"],
 			"kind": "admin"
 		},
 		{
 			"key": "template_editor",
-			"feature": ["send_api", "email", "sms", "whatsapp", "push"],
+			"feature": ["send_api", "email", "sms", "whatsapp", "push", "browser_push", "staff_push"],
 			"kind": "admin"
 		},
 		{

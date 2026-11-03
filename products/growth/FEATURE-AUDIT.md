@@ -64,7 +64,7 @@
 | `seo_checklist`       | paths                                                  | seo_ignored                                     | seo_checklist widget; seo.check                      | **KEEP**                             |
 | `redirects`           | ∅ (rules in product data)                              | —                                               | redirects widget; redirects.edit; **~11** route hits | **KEEP**                             |
 | `notice_bar`          | enabled                                                | announcements                                   | notice_bar widget                                    | **KEEP**                             |
-| `import`              | ∅                                                      | —                                               | ss-import                                            | **KEEP**                             |
+| `import`              | ∅                                                      | —                                               | shelfway-import                                      | **KEEP**                             |
 
 **Lists detail**
 

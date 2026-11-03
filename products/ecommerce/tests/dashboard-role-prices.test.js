@@ -7,7 +7,7 @@
  */
 import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { byLabel, byText, cleanup, click, render, type } from '@ss/ui/testing';
+import { byLabel, byText, cleanup, click, render, type } from '@shelfway/ui/testing';
 import { RolePricesEditor } from '../app/dashboard/lists.js';
 import { TABS } from '../app/dashboard/tabs.js';
 import { checkRolePrices } from '../core/role-pricing.js';
@@ -237,7 +237,7 @@ describe('Settings → Role pricing', () => {
 		stub(true);
 		const on = render(inDashboard(<Settings {...props} />));
 		await settle();
-		click(/** @type {HTMLElement} */ (on.container.querySelector('[role="option"][data-ss-id="role_pricing"]')));
+		click(/** @type {HTMLElement} */ (on.container.querySelector('[role="option"][data-shelfway-id="role_pricing"]')));
 		await settle();
 		expect(on.container.textContent).toContain('Role prices');
 		expect(rowNames(editorCard(on.container))).toEqual(['wholesale']);
@@ -246,7 +246,7 @@ describe('Settings → Role pricing', () => {
 		const off = render(inDashboard(<Settings {...props} />));
 		await settle();
 		// the feature has its row; its page has no editor, only how to switch it on
-		click(/** @type {HTMLElement} */ (off.container.querySelector('[role="option"][data-ss-id="role_pricing"]')));
+		click(/** @type {HTMLElement} */ (off.container.querySelector('[role="option"][data-shelfway-id="role_pricing"]')));
 		await settle();
 		expect(off.container.textContent).toContain('Switch on role_pricing to set it up.');
 		expect(off.container.textContent).not.toContain('Role prices');

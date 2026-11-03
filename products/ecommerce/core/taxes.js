@@ -9,7 +9,7 @@
  * `pricesIncludeTax`) the tax is the part of the price it already holds; otherwise it is added on top. No I/O.
  * @module
  */
-import { isObject } from '@ss/contracts/util';
+import { isObject } from '@shelfway/contracts/util';
 import { ADDRESS_LIMITS, countryKey, placeKey, postcodeKey } from './address.js';
 
 /** @typedef {{ country: string, region: string, city: string, postcode: string }} TaxRegion */

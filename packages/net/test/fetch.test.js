@@ -104,9 +104,9 @@ describe('safeFetch', () => {
 			policy,
 		);
 		expect(res.status).toBe(201);
-		expect(textOf(res)).toBe('POST héllo 6 ss-net/1');
+		expect(textOf(res)).toBe('POST héllo 6 shelfway-net/1');
 		const bytes = await safeFetch(`http://app.test:${port}/echo`, { method: 'PUT', body: new Uint8Array([104, 105]) }, policy);
-		expect(textOf(bytes)).toBe('PUT hi 2 ss-net/1');
+		expect(textOf(bytes)).toBe('PUT hi 2 shelfway-net/1');
 		const empty = await safeFetch(`http://app.test:${port}/empty`, { method: 'HEAD' }, policy);
 		expect(empty.status).toBe(204);
 		expect(jsonOf(empty)).toBeNull();

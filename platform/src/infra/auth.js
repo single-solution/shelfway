@@ -18,7 +18,7 @@
 import { createHmac, scrypt as scryptCallback, timingSafeEqual } from 'node:crypto';
 import { promisify } from 'node:util';
 import { platformError } from './errors.js';
-import { constantTimeEqual, hmacSha256Hex, randomToken } from '@ss/protocol';
+import { constantTimeEqual, hmacSha256Hex, randomToken } from '@shelfway/protocol';
 import { defaultRandomBytes } from './util.js';
 
 /** @typedef {import('./db.js').MutableOps} MutableOps */
@@ -237,7 +237,8 @@ export const totpUri = ({ secret, issuer, account, digits = 6, step = 30 }) => {
  * @param {string} code
  * @param {Uint8Array} secret
  */
-const hashRecoveryCode = (code, secret) => hmacSha256Hex(secret, `ss-recovery.v1|${code.toLowerCase().replace(/[\s-]/g, '')}`);
+const hashRecoveryCode = (code, secret) =>
+	hmacSha256Hex(secret, `shelfway-recovery.v1|${code.toLowerCase().replace(/[\s-]/g, '')}`);
 
 /**
  * Recovery codes: `count` codes of 10 base32 characters (50 bits) formatted `xxxxx-xxxxx`; return the plaintext
@@ -316,7 +317,7 @@ const toSession = (doc) =>
 export const createSessions = ({ repo, secret, lifetimeMs, now = Date.now, randomBytes = defaultRandomBytes }) => {
 	if (!secret || secret.length < 32) throw platformError('config_invalid', 'the session secret must be at least 32 bytes');
 	/** @param {string} token */
-	const idOf = (token) => hmacSha256Hex(secret, `ss-session.v1|${token}`);
+	const idOf = (token) => hmacSha256Hex(secret, `shelfway-session.v1|${token}`);
 	/** @param {unknown} token */
 	const validToken = (token) => typeof token === 'string' && /^[A-Za-z0-9_-]{43}$/.test(token);
 
@@ -405,7 +406,7 @@ export const createSessions = ({ repo, secret, lifetimeMs, now = Date.now, rando
  * @param {SessionKind} kind
  * @param {boolean} secure
  */
-export const sessionCookieName = (kind, secure) => `${secure ? '__Host-' : ''}ss_${kind}`;
+export const sessionCookieName = (kind, secure) => `${secure ? '__Host-' : ''}shelfway_${kind}`;
 
 /**
  * Serialize a session cookie: `HttpOnly; SameSite=Lax; Path=/` (+ `Secure`).
@@ -492,12 +493,12 @@ const DEFAULT_THROTTLE = Object.freeze({
 export const createLoginThrottle = ({ repo, secret, policy = {}, now = Date.now }) => {
 	const p = { ...DEFAULT_THROTTLE, ...policy };
 	/** @param {string} account */
-	const accountId = (account) => `a:${hmacSha256Hex(secret, `ss-throttle.v1|${account.trim().toLowerCase()}`)}`;
+	const accountId = (account) => `a:${hmacSha256Hex(secret, `shelfway-throttle.v1|${account.trim().toLowerCase()}`)}`;
 	/**
 	 * @param {string} ip
 	 * @param {number} t
 	 */
-	const ipId = (ip, t) => `i:${hmacSha256Hex(secret, `ss-throttle.v1|${ip}`)}|${Math.floor(t / p.ipWindowMs)}`;
+	const ipId = (ip, t) => `i:${hmacSha256Hex(secret, `shelfway-throttle.v1|${ip}`)}|${Math.floor(t / p.ipWindowMs)}`;
 	const retention = () => new Date(now() + p.maxLockMs + 24 * 60 * 60_000);
 
 	return Object.freeze({

@@ -69,8 +69,8 @@ export const TOOLBAR_TEXTS = Object.freeze({
 });
 
 const CHIP =
-	'ss-motion ss-press inline-flex h-8 shrink-0 items-center gap-1.5 rounded-control border px-3 text-label font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
-const CHIP_ON = 'border-line bg-surface text-fg ss-hard';
+	'shelfway-motion shelfway-press inline-flex h-8 shrink-0 items-center gap-1.5 rounded-control border px-3 text-label font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
+const CHIP_ON = 'border-line bg-surface text-fg shelfway-hard';
 const CHIP_OFF = 'border-line bg-surface text-fg/80 hover:bg-surface-2 hover:text-fg';
 
 /**
@@ -143,14 +143,14 @@ function SearchBox({ search, words }) {
 				onKeyDown={(event) => {
 					if (event.key === 'Enter') send(text);
 				}}
-				className="ss-motion h-8 w-full appearance-none rounded-control border border-line bg-surface pr-8 pl-8 text-label text-fg placeholder:text-subtle focus-visible:border-primary focus-visible:outline-2 focus-visible:outline-focus [&::-webkit-search-cancel-button]:appearance-none"
+				className="shelfway-motion h-8 w-full appearance-none rounded-control border border-line bg-surface pr-8 pl-8 text-label text-fg placeholder:text-subtle focus-visible:border-primary focus-visible:outline-2 focus-visible:outline-focus [&::-webkit-search-cancel-button]:appearance-none"
 			/>
 			{text !== '' ? (
 				<button
 					type="button"
 					aria-label={words.clearSearch}
 					onClick={() => clear('')}
-					className="ss-motion absolute inset-y-0 right-1.5 my-auto flex size-6 items-center justify-center rounded-control text-muted hover:bg-surface-2 hover:text-fg">
+					className="shelfway-motion absolute inset-y-0 right-1.5 my-auto flex size-6 items-center justify-center rounded-control text-muted hover:bg-surface-2 hover:text-fg">
 					<Icon name="close" size={13} />
 				</button>
 			) : null}
@@ -203,9 +203,9 @@ export function Toolbar({
 	if (bulk) {
 		return (
 			<div
-				data-ss-bulk=""
+				data-shelfway-bulk=""
 				{...(label ? { role: 'group', 'aria-label': label } : {})}
-				className={cx(BAR, 'animate-ss-enter border border-line bg-surface text-fg ss-hard', className)}>
+				className={cx(BAR, 'animate-shelfway-enter border border-line bg-surface text-fg shelfway-hard', className)}>
 				<p role="status" className="min-w-0 truncate text-sm font-medium">
 					{bulk.count > 0 ? words.selected(bulk.count) : words.nothing}
 				</p>
@@ -314,7 +314,7 @@ export function Toolbar({
 								title={option.label}
 								onClick={() => view.onChange(option.value)}
 								className={cx(
-									'ss-motion ss-press flex size-7 items-center justify-center rounded-control focus-visible:outline-2 focus-visible:outline-focus',
+									'shelfway-motion shelfway-press flex size-7 items-center justify-center rounded-control focus-visible:outline-2 focus-visible:outline-focus',
 									option.value === view.value ? 'bg-surface text-fg' : 'text-muted hover:text-fg',
 								)}>
 								{option.icon ? <Icon name={option.icon} size={14} /> : <span className="text-label">{option.label}</span>}

@@ -1,6 +1,6 @@
 'use client';
 /**
- * The Setup sheet of a website (`ss.blueprint/1`), in both consoles and on its read-only
+ * The Setup sheet of a website (`shelfway.blueprint/1`), in both consoles and on its read-only
  * shared page: the website's facts, its **business profile** and the advisor's **recommendations** (features the
  * profile calls for that are not on, with why — the admin switches one on with **Switch on**, the features it needs
  * included — and features that are on although the profile does not call for them), then one panel per product —
@@ -12,7 +12,7 @@
  * @module
  */
 import { useEffect, useState } from 'react';
-import { OTHER_MAX, PROFILE_CHOICES, PROFILE_NONE, PROFILE_OTHER } from '@ss/contracts/profile';
+import { OTHER_MAX, PROFILE_CHOICES, PROFILE_NONE, PROFILE_OTHER } from '@shelfway/contracts/profile';
 import {
 	ActionMenu,
 	Badge,
@@ -42,19 +42,19 @@ import {
 	cx,
 	describeProblem,
 	useToast,
-} from '@ss/ui';
+} from '@shelfway/ui';
 import { COUNTRY_NAMES } from '../../modules/identity/core/countries.js';
 import { PROFILE, SETUP } from '../../texts/console.js';
 import { apiFetch, takeFragmentToken } from '../client.js';
 import { Link } from '../link.js';
 import { api } from '../paths.js';
 
-/** @typedef {import('@ss/contracts').Blueprint} Blueprint */
+/** @typedef {import('@shelfway/contracts').Blueprint} Blueprint */
 /** @typedef {Blueprint['products'][number]} SheetProduct */
 /** @typedef {Extract<SheetProduct, { reachable: true }>} ReachableProduct */
-/** @typedef {import('@ss/contracts').BlueprintSetting} BlueprintSetting */
-/** @typedef {import('@ss/contracts/profile').BusinessProfile} BusinessProfile */
-/** @typedef {import('@ss/ui/problems').Problem} Problem */
+/** @typedef {import('@shelfway/contracts').BlueprintSetting} BlueprintSetting */
+/** @typedef {import('@shelfway/contracts/profile').BusinessProfile} BusinessProfile */
+/** @typedef {import('@shelfway/ui/problems').Problem} Problem */
 /**
  * A share link as the Portal lists it.
  * @typedef {{ linkId: string, createdAt: string, createdBy: 'admin' | 'merchant', expiresAt: string,
@@ -669,7 +669,7 @@ function ProfileDialog({ manage, profile, settingsHref, onClose, onSaved }) {
  * product's panel. The console puts them behind an inner sidebar, the public copy stacks them.
  * @param {Blueprint} sheet
  * @param {SheetActions | null} actions `actions`: in the consoles
- * @returns {Array<{ id: string, label: string, icon: import('@ss/ui').IconName, content?: import('react').ReactNode,
+ * @returns {Array<{ id: string, label: string, icon: import('@shelfway/ui').IconName, content?: import('react').ReactNode,
  *   children?: Array<{ id: string, label: string, content: import('react').ReactNode }> }>}
  */
 const sheetSections = (sheet, actions) => {
@@ -1079,7 +1079,7 @@ export function SharedSetupView({ brand }) {
 }
 
 /** Where the shared page keeps its key for this tab only, so a reload still opens the copy. */
-const SHARED_KEY_STORE = 'ss-shared-setup-key';
+const SHARED_KEY_STORE = 'shelfway-shared-setup-key';
 
 /**
  * The share key: from the address fragment (then removed from the address bar), else the one this tab kept; a link

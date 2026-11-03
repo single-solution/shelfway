@@ -2,11 +2,11 @@ import { randomBytes } from 'node:crypto';
 import { afterEach, expect } from 'vitest';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { MongoClient } from 'mongodb';
-import { generateSigningKey } from '@ss/protocol';
+import { generateSigningKey } from '@shelfway/protocol';
 import { loadConfig } from '../src/infra/config.js';
 
 export const T0 = Date.parse('2026-10-01T10:00:00Z');
-export const PORTAL_URL = 'https://portal.test';
+export const PLATFORM_URL = 'https://portal.test';
 export const MERCHANT = 'mer_0123456789abcdefghjkmnpq';
 export const MERCHANT_2 = 'mer_1123456789abcdefghjkmnpq';
 export const WEBSITE = 'web_0123456789abcdefghjkmnpq';
@@ -21,7 +21,7 @@ afterEach(async () => {
 
 /**
  * Databases of one test file on the run's shared replica set (`TEST_MONGODB_URI`, started once by
- * the `@ss/config` Mongo global setup; a private one is started when the variable is absent, e.g. a run without the global setup).
+ * the `@shelfway/config` Mongo global setup; a private one is started when the variable is absent, e.g. a run without the global setup).
  *
  * Every name maps to a database of this file (`t_<random>_<n>`), so test files never share data, and `stop()`
  * drops them. Creating collections and indexes dominates test time, so a database first opened inside a test is
@@ -31,7 +31,7 @@ afterEach(async () => {
  */
 export const startMongo = async () => {
 	const shared = process.env.TEST_MONGODB_URI;
-	// TTL monitor off, as in the @ss/config Mongo setup: expiry follows the injected clock, never the wall clock
+	// TTL monitor off, as in the @shelfway/config Mongo setup: expiry follows the injected clock, never the wall clock
 	const replSet = shared
 		? null
 		: await MongoMemoryReplSet.create({
@@ -145,14 +145,14 @@ export const ENCRYPTION_KEY = 'test-encryption-key-0123456789abcdef-portal';
  */
 export const testEnv = async (overrides = {}) => ({
 	NODE_ENV: 'test',
-	MONGODB_URI: 'mongodb://127.0.0.1:27017/ss_portal_test',
-	PORTAL_URL,
+	MONGODB_URI: 'mongodb://127.0.0.1:27017/shelfway_platform_test',
+	PLATFORM_URL,
 	ENCRYPTION_KEY,
 	...overrides,
 });
 
 /** The environment of a production Portal. */
-export const PRODUCTION_ENV = Object.freeze({ NODE_ENV: 'production', PORTAL_URL, ENCRYPTION_KEY });
+export const PRODUCTION_ENV = Object.freeze({ NODE_ENV: 'production', PLATFORM_URL, ENCRYPTION_KEY });
 
 /**
  * A complete system state (generated secrets and settings, as `infra/system.js` keeps them in the database), with

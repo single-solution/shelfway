@@ -20,13 +20,13 @@ Three variables, and one optional while the encryption key is changed (`.env.exa
 Each deployable has its own port, so all run at once: the Portal 3000, Accounts 3001, Notifications 3002, Chat 3003,
 Payments 3004, Ecommerce 3005, Growth 3006. This product runs on **3002**.
 
-1. One local MongoDB for everything (keep it running): `pnpm --filter @ss/platform db:local` (kept in
+1. One local MongoDB for everything (keep it running): `pnpm --filter @shelfway/platform db:local` (kept in
    `platform/.mongo-data`) or `db:memory` (lost on stop). Start the Portal as its README says.
 2. `products/notifications/.env.local` (git-ignored), each secret random and different (make one with
    `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`):
 
    ```bash
-   MONGODB_URI=mongodb://127.0.0.1:27999/ss_notifications?replicaSet=testset
+   MONGODB_URI=mongodb://127.0.0.1:27999/shelfway_notifications?replicaSet=testset
    CONNECT_SECRET=<random>
    ENCRYPTION_KEY=<random>
    ```
@@ -47,4 +47,4 @@ does: only public https addresses and TLS databases.
 ## Scripts
 
 `pnpm dev` and `pnpm build` regenerate `openapi.json` and `server/widget-script.js` first; `pnpm check` runs format, lint,
-typecheck and tests with coverage; `pnpm validate` runs `ss app validate`.
+typecheck and tests with coverage; `pnpm validate` runs `shelfway app validate`.

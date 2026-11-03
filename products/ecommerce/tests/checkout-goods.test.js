@@ -25,7 +25,7 @@ const visit = (method, path, { body, signIn, key } = {}) => {
 		body,
 		headers: {
 			'x-forwarded-for': `10.1.${(ip >> 8) & 255}.${ip & 255}`,
-			...(signIn ? { 'ss-sign-in': signIn } : {}),
+			...(signIn ? { 'shelfway-sign-in': signIn } : {}),
 			...(key ? { 'idempotency-key': key } : {}),
 		},
 	});

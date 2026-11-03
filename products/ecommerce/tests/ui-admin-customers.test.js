@@ -112,7 +112,7 @@ const start = (routes = {}, features = ['checkout', 'reviews', 'reports', 'csv',
 describe('customers admin: customers', () => {
 	it('lists customers with counts and filters them', async () => {
 		const { host, root, server } = await start();
-		expect(host.getAttribute('data-ss-mounted')).toBe('customers-admin');
+		expect(host.getAttribute('data-shelfway-mounted')).toBe('customers-admin');
 		const panel = panelOf(root, 'customers');
 		expect(textOf(rowOf(panel, 'u1'))).toContain('ana@example.com · +12025550143 · 3 orders · 2 packages returned');
 		expect(textOf(rowOf(panel, 'u1'))).toContain('USD 5,000.00');

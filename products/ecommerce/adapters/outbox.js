@@ -6,10 +6,10 @@
  * data-rights deletion removes a person's rows at once (E63).
  * @module
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { COLLECTIONS, ID_PREFIX, NO_ID } from '../core/model.js';
 
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 
 /**
  * One message to send; `fallbackTemplate`: the key Notifications uses when the website has no template of its own for
@@ -28,7 +28,7 @@ export const KEEP_MS = 24 * 3_600_000;
 /** A try holds its message this long, so two instances never send it at once. */
 const LEASE_MS = 5 * 60_000;
 
-/** Merchant database indexes of the outbox. @type {import('@ss/app-kit').IndexDefinition[]} */
+/** Merchant database indexes of the outbox. @type {import('@shelfway/app-kit').IndexDefinition[]} */
 export const INDEXES = [
 	{ collection: COLLECTIONS.outbox, keys: { websiteId: 1, id: 1 }, name: 'by_id', unique: true },
 	{ collection: COLLECTIONS.outbox, keys: { websiteId: 1, nextAt: 1 }, name: 'by_next' },

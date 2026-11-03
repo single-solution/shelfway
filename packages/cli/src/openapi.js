@@ -2,27 +2,27 @@
  * `openapi.json` generated from the routes (PLAN 0.4.13): every browser-token, server-token and ticket route of the
  * product, plus the API routes the kit serves for every product (widget config, tickets, data rights, the permission
  * list, the settings API and the activity log, PLAN 0.8.10 K1, K9, each with its auth) and, for a manifest with the
- * feature `import`, the kit's import routes (K10). Each operation names its auth (`x-ss-auth`), its feature
- * (`x-ss-feature`: one key, or a list when any of them is enough) and, for ticket routes, its permission
- * (`x-ss-permission`: a ticket route's permission, and a server route's: the staff member's role must grant it). A
- * server-token operation is the website's runtime (`x-ss-access: runtime`: the token alone) or a staff member's
- * (`x-ss-access: staff`: the token and the verified Accounts sign-in of a signed-in staff member in `SS-Sign-In`; a bare
+ * feature `import`, the kit's import routes (K10). Each operation names its auth (`x-shelfway-auth`), its feature
+ * (`x-shelfway-feature`: one key, or a list when any of them is enough) and, for ticket routes, its permission
+ * (`x-shelfway-permission`: a ticket route's permission, and a server route's: the staff member's role must grant it). A
+ * server-token operation is the website's runtime (`x-shelfway-access: runtime`: the token alone) or a staff member's
+ * (`x-shelfway-access: staff`: the token and the verified Accounts sign-in of a signed-in staff member in `Shelfway-Sign-In`; a bare
  * token is 403 `needs_signed_in_staff`). Visitor (browser-token) operations also take the server token with
- * `SS-Visitor-IP` (K3). Errors are RFC 9457 problems whose `type` ends with
+ * `Shelfway-Visitor-IP` (K3). Errors are RFC 9457 problems whose `type` ends with
  * a stable code.
  *
  * What each call takes and answers comes from the API descriptions: the product's `schemas/api.json` and the kit's own
- * (`@ss/app-kit/api`): summary and description, query parameters, the JSON request body, the success status with its
+ * (`@shelfway/app-kit/api`): summary and description, query parameters, the JSON request body, the success status with its
  * JSON answer, and the shared schemas (`components.schemas`). A route without a description answers "2XX Success".
  * @module
  */
-import { PRODUCT_UNAVAILABLE_REASONS } from '@ss/contracts';
+import { PRODUCT_UNAVAILABLE_REASONS } from '@shelfway/contracts';
 import { isObject } from './fsutil.js';
 import { KIT_API, KIT_ROUTES, kitImportRoutesOf } from './api.js';
 
 /** @typedef {import('./routes.js').ScannedRoute} ScannedRoute */
-/** @typedef {import('@ss/app-kit/api').ApiDescription} ApiDescription */
-/** @typedef {import('@ss/app-kit/api').ApiEntry} ApiEntry */
+/** @typedef {import('@shelfway/app-kit/api').ApiDescription} ApiDescription */
+/** @typedef {import('@shelfway/app-kit/api').ApiEntry} ApiEntry */
 
 /** What a repeated `Idempotency-Key` does. */
 const IDEMPOTENCY_TEXT =
@@ -177,10 +177,10 @@ export const renderOpenapi = ({ manifest, routes, api = {} }) => {
 		const operation = {
 			...(entry?.summary ? { summary: entry.summary } : {}),
 			...(entry?.description ? { description: entry.description } : {}),
-			'x-ss-auth': route.auth,
-			...(feature ? { 'x-ss-feature': feature } : {}),
-			...(scanned.permission ? { 'x-ss-permission': scanned.permission } : {}),
-			...(route.auth === 'server' ? { 'x-ss-access': scanned.access ?? 'staff' } : {}),
+			'x-shelfway-auth': route.auth,
+			...(feature ? { 'x-shelfway-feature': feature } : {}),
+			...(scanned.permission ? { 'x-shelfway-permission': scanned.permission } : {}),
+			...(route.auth === 'server' ? { 'x-shelfway-access': scanned.access ?? 'staff' } : {}),
 			security: [{ [SCHEMES[/** @type {keyof typeof SCHEMES} */ (route.auth)]]: [] }],
 			...(route.auth === 'browser' ? { security: [{ browserToken: [] }, { serverToken: [] }] } : {}),
 			parameters: [
@@ -198,12 +198,12 @@ export const renderOpenapi = ({ manifest, routes, api = {} }) => {
 							},
 						]
 					: []),
-				...(route.auth === 'browser' ? [{ $ref: '#/components/parameters/SSVisitorIp' }] : []),
+				...(route.auth === 'browser' ? [{ $ref: '#/components/parameters/ShelfwayVisitorIp' }] : []),
 				...(route.auth === 'browser' || (route.auth === 'server' && (scanned.access ?? 'staff') === 'runtime')
-					? [{ $ref: '#/components/parameters/SSSignIn' }]
+					? [{ $ref: '#/components/parameters/ShelfwaySignIn' }]
 					: []),
 				...(route.auth === 'server' && (scanned.access ?? 'staff') === 'staff'
-					? [{ $ref: '#/components/parameters/SSSignInStaff' }]
+					? [{ $ref: '#/components/parameters/ShelfwaySignInStaff' }]
 					: []),
 			],
 			...requestBody(entry?.body),
@@ -245,7 +245,7 @@ export const renderOpenapi = ({ manifest, routes, api = {} }) => {
 					type: 'http',
 					scheme: 'bearer',
 					description:
-						"The website's server token: the merchant's server only, never with an Origin header. On its own it runs the shop (x-ss-access: runtime): it also reaches every visitor route, acting for the visitor named by SS-Visitor-IP and, for a signed-in shopper, SS-Sign-In (their Accounts sign-in, checked for this website; a wrong, expired or foreign one is 401 invalid_sign_in). Every change of configuration and every piece of staff work (x-ss-access: staff) also needs the verified Accounts sign-in of a signed-in staff member in SS-Sign-In, whose role has the permission: a stolen server token changes nothing by itself.",
+						"The website's server token: the merchant's server only, never with an Origin header. On its own it runs the shop (x-shelfway-access: runtime): it also reaches every visitor route, acting for the visitor named by Shelfway-Visitor-IP and, for a signed-in shopper, Shelfway-Sign-In (their Accounts sign-in, checked for this website; a wrong, expired or foreign one is 401 invalid_sign_in). Every change of configuration and every piece of staff work (x-shelfway-access: staff) also needs the verified Accounts sign-in of a signed-in staff member in Shelfway-Sign-In, whose role has the permission: a stolen server token changes nothing by itself.",
 				},
 				ticket: {
 					type: 'http',
@@ -254,24 +254,24 @@ export const renderOpenapi = ({ manifest, routes, api = {} }) => {
 				},
 			},
 			parameters: {
-				SSVisitorIp: {
-					name: 'SS-Visitor-IP',
+				ShelfwayVisitorIp: {
+					name: 'Shelfway-Visitor-IP',
 					in: 'header',
 					required: false,
 					description:
 						"With the server token: the visitor's IP address (required on writes, else 400 visitor_ip_required). These calls count in their own window of 3,000 requests per minute per route per website, plus the per-visitor limits.",
 					schema: { type: 'string', maxLength: 45 },
 				},
-				SSSignIn: {
-					name: 'SS-Sign-In',
+				ShelfwaySignIn: {
+					name: 'Shelfway-Sign-In',
 					in: 'header',
 					required: false,
 					description:
 						"The signed-in shopper's Accounts sign-in, checked for this website (a wrong, expired or foreign one is 401 invalid_sign_in). Only a verified sign-in names the shopper: a user id alone is never taken.",
 					schema: { type: 'string', maxLength: 8192 },
 				},
-				SSSignInStaff: {
-					name: 'SS-Sign-In',
+				ShelfwaySignInStaff: {
+					name: 'Shelfway-Sign-In',
 					in: 'header',
 					required: true,
 					description:

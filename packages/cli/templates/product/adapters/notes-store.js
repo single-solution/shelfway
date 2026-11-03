@@ -1,14 +1,14 @@
 /**
- * Notes in the merchant database (collection `ss_<product id>_notes`, through the kit's tenant guard: every query
+ * Notes in the merchant database (collection `shelfway_<product id>_notes`, through the kit's tenant guard: every query
  * carries the website id, inserts are stamped with `websiteId`, `merchantId` and `createdAt`).
  * @module
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 
 /** Unprefixed collection name. */
 export const NOTES = 'notes';
 
-/** Merchant database indexes (created on a website's first use). @type {import('@ss/app-kit').IndexDefinition[]} */
+/** Merchant database indexes (created on a website's first use). @type {import('@shelfway/app-kit').IndexDefinition[]} */
 export const NOTE_INDEXES = [
 	{ collection: NOTES, keys: { websiteId: 1, createdAt: -1, id: -1 }, name: 'newest' },
 	{ collection: NOTES, keys: { websiteId: 1, email: 1 }, name: 'by_email' },
@@ -23,7 +23,7 @@ export const NOTE_INDEXES = [
 export const notesFilter = (websiteId) => ({ websiteId });
 
 /**
- * @param {import('@ss/app-kit').WebsiteData} data the website's guarded merchant database (`ctx.data()`)
+ * @param {import('@shelfway/app-kit').WebsiteData} data the website's guarded merchant database (`ctx.data()`)
  */
 export const createNotesStore = (data) => {
 	const notes = data.collection(NOTES);

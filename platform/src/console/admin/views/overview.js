@@ -26,7 +26,7 @@ import {
 	StatGrid,
 	formatCredits,
 	TextLink,
-} from '@ss/ui';
+} from '@shelfway/ui';
 import { ADMIN, BILLING, MORE, PRODUCTS } from '../../../texts/console.js';
 import { Link } from '../../link.js';
 import { useNavigation } from '../../navigation.js';
@@ -79,11 +79,11 @@ export function OverviewView(props) {
 	const linked = adminCan(props.admin, 'products.manage');
 	const canAdd = adminCan(props.admin, 'credits.add');
 	const canAddMerchant = adminCan(props.admin, 'merchants.write');
-	const canSettings = adminCan(props.admin, 'portal_settings.write');
+	const canSettings = adminCan(props.admin, 'platform_settings.write');
 	const earned = products.reduce((n, p) => n + (p.earnedThisMonth ?? 0), 0);
 	const inactive = products.filter((p) => p.status !== 'active').length;
 
-	/** @type {import('@ss/ui').Need[]} */
+	/** @type {import('@shelfway/ui').Need[]} */
 	const needs = [];
 	if (o.mailConfigured === false)
 		needs.push({

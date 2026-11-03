@@ -46,7 +46,7 @@ export const DRAWER = Object.freeze({
 	layer: 'justify-end p-0 sm:p-3',
 	panel: 'flex h-full w-full flex-col border-line bg-surface/95 backdrop-blur-md text-fg sm:rounded-panel sm:border',
 	header: `relative z-10 flex ${METRICS.drawerHeader} shrink-0 items-center gap-3 border-b border-line bg-surface/90 backdrop-blur-md px-3 sm:px-4`,
-	body: 'ss-scroll min-h-0 flex-1 space-y-4 px-3 py-4 sm:px-4 sm:py-5',
+	body: 'shelfway-scroll min-h-0 flex-1 space-y-4 px-3 py-4 sm:px-4 sm:py-5',
 	footer: `flex ${METRICS.drawerFooter} shrink-0 items-center justify-end gap-2 border-t border-line bg-surface/90 backdrop-blur-md px-3 sm:px-4`,
 });
 
@@ -65,7 +65,7 @@ export const BAR = `flex min-w-0 shrink-0 items-center gap-2 ${METRICS.toolbar} 
 /** The parts of a figures table, shared by the real table and its skeleton. */
 export const FIGURES_TABLE = Object.freeze({
 	/** the one box that scrolls (both ways); a container for width-based column hiding */
-	scroller: 'ss-scroll @container min-h-0 flex-1 overflow-auto',
+	scroller: 'shelfway-scroll @container min-h-0 flex-1 overflow-auto',
 	/** separate borders, so the hairlines stay with the sticky header row; no forced min-width so phones don't scroll horizontally */
 	table: 'w-full border-separate border-spacing-0 text-sm',
 	/** a header cell: sticky, opaque */
@@ -107,7 +107,7 @@ export const PAGE = Object.freeze({
 	// (z-20) and under the sidebar (z-30) now that the container is a stacking context of its own
 	header: `@container z-[25] flex ${METRICS.header} min-w-0 shrink-0 items-center gap-2 rounded-panel border border-line bg-surface/90 backdrop-blur-md px-2 sm:gap-3 sm:px-3`,
 	area: 'flex min-h-0 min-w-0 flex-1 flex-col gap-2 lg:flex-row lg:gap-3',
-	main: 'relative flex min-h-0 min-w-0 flex-1 flex-col rounded-panel border border-line bg-surface/90 backdrop-blur-md ss-grid-wash',
+	main: 'relative flex min-h-0 min-w-0 flex-1 flex-col rounded-panel border border-line bg-surface/90 backdrop-blur-md shelfway-grid-wash',
 	// above the body, so the menus of its filters open over the list
 	toolbar: 'relative z-20 shrink-0 rounded-t-panel border-b border-line bg-surface/90 backdrop-blur-md',
 	footer: `relative z-10 flex shrink-0 items-center rounded-b-panel border-t border-line bg-surface/90 backdrop-blur-md ${METRICS.footer} ${METRICS.gutter}`,
@@ -130,17 +130,17 @@ export const LIST = Object.freeze({
 		'flex min-h-0 w-full min-w-0 shrink-0 flex-col overflow-hidden rounded-panel border border-line bg-surface/90 backdrop-blur-md sm:w-80',
 	/** the search box and the filter chips above the rows (they stay put) */
 	head: 'flex shrink-0 flex-col gap-2 p-2 pb-0',
-	/** the box of the rows that scrolls; `group/list` and `data-ss-slide` tell a row that the highlight is drawn for it */
-	scroller: 'ss-scroll group/list min-h-0 flex-1 p-2',
+	/** the box of the rows that scrolls; `group/list` and `data-shelfway-slide` tell a row that the highlight is drawn for it */
+	scroller: 'shelfway-scroll group/list min-h-0 flex-1 p-2',
 	/** one row (the outer box); the intrinsic size is the row's height */
 	row: 'h-14 [content-visibility:auto] [contain-intrinsic-size:auto_3.5rem]',
 	/** the highlight under the picked row: one element that moves with `transform` (`slideMove` after its first place) */
-	slide: 'pointer-events-none absolute inset-x-0 top-0 -z-10 rounded-control border border-line bg-surface ss-hard opacity-0',
-	slideMove: 'transition-[transform,height,opacity] duration-(--ss-motion) ease-ss',
+	slide: 'pointer-events-none absolute inset-x-0 top-0 -z-10 rounded-control border border-line bg-surface shelfway-hard opacity-0',
+	slideMove: 'transition-[transform,height,opacity] duration-(--shelfway-motion) ease-shelfway',
 	/** a filter chip, off and on — hard corners (not pills) */
-	chip: 'ss-motion ss-press inline-flex h-7 shrink-0 items-center gap-1.5 rounded-control border border-line px-2.5 text-micro font-medium focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus',
+	chip: 'shelfway-motion shelfway-press inline-flex h-7 shrink-0 items-center gap-1.5 rounded-control border border-line px-2.5 text-micro font-medium focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus',
 	chipOff: 'bg-canvas text-muted hover:bg-surface hover:text-fg',
-	chipOn: 'border-line bg-surface text-fg ss-hard',
+	chipOn: 'border-line bg-surface text-fg shelfway-hard',
 });
 
 /** The color of the one line under a row's title (and of its warning), by meaning. */
@@ -157,7 +157,7 @@ export const LIST_TONE = Object.freeze({
  * @param {{ toolbar?: boolean, footer?: boolean }} has
  */
 export const pageBody = ({ toolbar = false, footer = false }) =>
-	cx('ss-scroll flex min-h-0 flex-1 flex-col', !toolbar && 'rounded-t-panel', !footer && 'rounded-b-panel');
+	cx('shelfway-scroll flex min-h-0 flex-1 flex-col', !toolbar && 'rounded-t-panel', !footer && 'rounded-b-panel');
 
 /** The card and the summary tile, shared by the real ones (`Card`, `Stat`) and their skeletons. */
 export const CARD = Object.freeze({
@@ -165,15 +165,15 @@ export const CARD = Object.freeze({
 	header: 'flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 pt-3.5',
 	body: 'p-4',
 	bodyWithHeader: 'px-4 pt-2.5 pb-4',
-	tile: '@container min-w-0 rounded-card border border-line bg-surface/90 backdrop-blur-sm px-4 py-3.5 ss-lift',
+	tile: '@container min-w-0 rounded-card border border-line bg-surface/90 backdrop-blur-sm px-4 py-3.5 shelfway-lift',
 });
 
 /**
  * The floating save bar: a strip across the page area (the space right of the sidebar, set by `AppShell` as
- * `--ss-pane-left` / `--ss-pane-right`; the whole window without a shell) that lets clicks through, with the bar
+ * `--shelfway-pane-left` / `--shelfway-pane-right`; the whole window without a shell) that lets clicks through, with the bar
  * centred at the bottom.
  */
 export const SAVE_BAR = {
-	strip: 'pointer-events-none fixed bottom-3 left-[var(--ss-pane-left,0px)] right-[var(--ss-pane-right,0px)] z-40 flex justify-center px-3 transition-[left,right] duration-(--ss-motion) ease-ss',
-	bar: 'pointer-events-auto flex max-w-full flex-wrap items-center gap-x-6 gap-y-2 rounded-panel border border-line bg-surface py-2 pr-2 pl-4 ss-hard',
+	strip: 'pointer-events-none fixed bottom-3 left-[var(--shelfway-pane-left,0px)] right-[var(--shelfway-pane-right,0px)] z-40 flex justify-center px-3 transition-[left,right] duration-(--shelfway-motion) ease-shelfway',
+	bar: 'pointer-events-auto flex max-w-full flex-wrap items-center gap-x-6 gap-y-2 rounded-panel border border-line bg-surface py-2 pr-2 pl-4 shelfway-hard',
 };

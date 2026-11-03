@@ -2,7 +2,7 @@
 
 Modules call each other only through `ctx.service(name)`. These are the public service functions each module exposes.
 All functions are async, take plain objects, return plain objects, and throw `http.js` problems (RFC 9457 codes from
-`@ss/contracts` plus the modules' own) on failure. Ids use `@ss/contracts` `createId` prefixes; products are keyed by
+`@shelfway/contracts` plus the modules' own) on failure. Ids use `@shelfway/contracts` `createId` prefixes; products are keyed by
 their manifest `id` (`productId`). Times on the wire are ISO-8601 UTC; money is integer millicredits.
 
 ## identity (`modules/identity`)
@@ -20,7 +20,7 @@ tokens of products on websites (PLAN 0.2, 0.4.4). Implements the `sessionActor` 
   for anyone else, 403 `forbidden` for Finance (feature reports).
 - Tokens (`identity_product_tokens`, `_id` = `<websiteId>:<productId>`): `ensureTokens({ merchantId, websiteId,
 productId })` creates both tokens on the first add and keeps them afterwards (a re-add restores them). Signed with
-  `@ss/protocol` `issueToken` by `ctx.keys.tokenSigner`; the browser token is stored in full, the server token sealed
+  `@shelfway/protocol` `issueToken` by `ctx.keys.tokenSigner`; the browser token is stored in full, the server token sealed
   with `ctx.secretBox` (AAD website, product, jti). `tokens.reveal`, `tokens.regenerate` (revokes the old `jti` in
   `identity_revocations`, Activity, `token.revoked` notice), `installOf({ merchantId, websiteId })`; the revocations
   route answers `{ tokenIds, cursor }` (one product's revoked ids, by `revokedAt`).
@@ -50,15 +50,15 @@ widgetScriptUrl, widgetScriptLoading, docsUrl, websiteSettingsRequires, connecte
   against the base URL; `widgetScriptLoading` `async` unless the manifest says `blocking`), `listProducts({ status? })`, `productDetail(productId)` (+ `priceListVersion`, `features` of the last accepted
   list, `numbers`), `isActive(productId)`, `directory(productId)` → `{ baseUrl }`.
 - `merchantLaunch({ merchantId, websiteId, productId, session, actor })` and `adminLaunch({ productId, websiteId |
-null, session, actor })` → `{ url: <baseUrl>/sso?launch=<token>, expiresAt }`: `@ss/protocol` `issueLaunch` with the
+null, session, actor })` → `{ url: <baseUrl>/sso?launch=<token>, expiresAt }`: `@shelfway/protocol` `issueLaunch` with the
   claims of PLAN 0.4.3 (`sessionExpiresAt` = the launching session's expiry; branding and support contact from
   Settings). Merchant launches: the website must have the product (not removed); refused for suspended merchants
   (`merchant_suspended`). Admin launches: Owner or Support only; a website that has the product, or (Owner, checked by
   the route) no website. Activity `product.dashboard_opened`. `consumeLaunch({ productId, jti })` → `{ consumed }`.
-- Setup sheets (`setup`, owner request 2026-10-14, `ss.blueprint/1`): `setup.sheet({ merchantId, websiteId, fresh?,
+- Setup sheets (`setup`, owner request 2026-10-14, `shelfway.blueprint/1`): `setup.sheet({ merchantId, websiteId, fresh?,
 download?, actor })` → `{ sheet, domain }`: every product on the website asked at once for its part
-  (`GET <baseUrl>/v1/blueprint?websiteId=`, signed with `@ss/protocol` `signPortalCall` by `ctx.keys.signer`, 5 s
-  each); a product that times out, answers 5xx or 4xx, or answers no product blueprint (`@ss/contracts`
+  (`GET <baseUrl>/v1/blueprint?websiteId=`, signed with `@shelfway/protocol` `signPlatformCall` by `ctx.keys.signer`, 5 s
+  each); a product that times out, answers 5xx or 4xx, or answers no product blueprint (`@shelfway/contracts`
   `validateProductBlueprint`) is `{ reachable: false, reason: timeout | unreachable | refused | invalid }`; the Portal
   adds the domain, the status the website's products have (`website.status`, `commerce.productsStatus`), `https://<domain>`
   as the allowed origin, the testing hosts, each product's address (`apiBase`), browser token and script tag and
@@ -69,7 +69,7 @@ download?, actor })` → `{ sheet, domain }`: every product on the website asked
   product answers. Every sheet carries the website's business profile (`website.profile`: the advisor's own answers
   in `catalog_setup_profiles`, plus the countries (`region.countriesServed`) and languages (the codes of
   `region.languages`) of the website's settings, the one place for them; null when there is nothing) and, per reachable product, the advisor's view (`core/advisor.js` over
-  `@ss/contracts` `adviseFeatures`): `recommended` `[{ feature, on, because, why }]` and `notRecommended`
+  `@shelfway/contracts` `adviseFeatures`): `recommended` `[{ feature, on, because, why }]` and `notRecommended`
   `[{ feature, missing, why }]`. `setup.saveProfile({ merchantId, websiteId, profile | null, actor })` → the sheet
   (null removes it; Activity `website.setup_profile_saved`; `countries` and `languages` are refused with 422: they are the
   website's settings). `setup.switchOn({ merchantId, websiteId, productId,
@@ -86,7 +86,7 @@ websiteId, days, values, install, actor })` → `{ link, url }` (the key only in
   `website.setup_share_opened` at most once an hour per link, by the system).
 - Notices: `notify(productId, { type, websiteId?, subject? })`, `notifyAll(body)`; each is queued in `catalog_notices`
   (an identical waiting one is not queued twice) and sent right after the request (at once outside one), signed with
-  `signNotice` by `ctx.keys.signer`, to `<baseUrl>/.well-known/ss-events`. 2xx drops it; anything else keeps it for
+  `signNotice` by `ctx.keys.signer`, to `<baseUrl>/.well-known/shelfway-events`. 2xx drops it; anything else keeps it for
   `deliverNotices(productId)` (the `productCalled` port: oldest first, stops at the first refusal).
 
 ## commerce (`modules/commerce`)
@@ -141,7 +141,7 @@ counted per part; the answer's `unreadableIn` names the parts with values neithe
 
 ## website (`modules/website`)
 
-The website settings: the facts every product of one website shares (`@ss/contracts` `ss.website-settings/1`: business,
+The website settings: the facts every product of one website shares (`@shelfway/contracts` `shelfway.website-settings/1`: business,
 brand and theme, region and Format, pages and legal texts, team), kept once here and delivered to every product on the
 website (settings-ownership design, steps 2–4).
 
@@ -182,7 +182,7 @@ links: [{ caller, callee, state: on|idle|off, scopes: [{ scope, name, descriptio
   with `ctx.secretBox` (AAD website, name and the value's own counter) and kept; the version rises by one; Activity
   `website.connection_saved` / `website.connection_removed` (never a value); every product on the website that needs it
   gets a `website.settings_changed` notice (`what: 'connections'`) and the merchant an e-mail (`connection_changed`). `names`
-  (`{ productId: databaseName }`) is the Owner's override of a product's database name (default `ss_<productId>`).
+  (`{ productId: databaseName }`) is the Owner's override of a product's database name (default `shelfway_<productId>`).
   The routes (`PUT …/connections/:name`, `POST …/connections/:name/remove`) need a fresh password confirmation.
 - `connectionsForProduct({ productId, websiteId })` → `{ version, database?, storage?, links: { out, in } }`:
   `GET /v1/product/websites/:websiteId/connections`, signed by the product; only what its manifest `needs`, with its
@@ -197,7 +197,7 @@ version, ok, message? })` is the product's report of its own test (`PUT …/conn
   union of the scopes offered by the callee that the caller needs while the needing features are on (no features listed:
   always). A link with nothing to grant is `idle` (its key stays, with no scopes). `regenerateLink`, `switchLink`
   (`POST …/links/:callee/:caller/regenerate|switch`, password confirmation) revoke the old key; removing a product or the
-  website revokes and deletes its links. The key is a signed `link` token (`@ss/protocol`: `kind: link`, `caller`, the
+  website revokes and deletes its links. The key is a signed `link` token (`@shelfway/protocol`: `kind: link`, `caller`, the
   callee as `productId`, the website; no scopes inside): the callee asks the Portal's grant, kept in its own database.
 - `forgetWebsite({ merchantId, websiteId })` and `resealSecrets()` (Settings → Encryption key → Re-seal now counts the
   website connections and the link tokens too).

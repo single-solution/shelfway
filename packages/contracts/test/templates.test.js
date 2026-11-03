@@ -66,7 +66,7 @@ const declaration = () => ({
 	],
 });
 
-describe('template rules (@ss/contracts/templates)', () => {
+describe('template rules (@shelfway/contracts/templates)', () => {
 	it('names the channels, keys, value names and limits Notifications uses', () => {
 		expect(TEMPLATE_CHANNELS).toEqual(['email', 'sms', 'whatsapp', 'push', 'staff_push']);
 		expect(TEMPLATE_KEY.test('accounts.password_reset')).toBe(true);

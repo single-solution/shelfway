@@ -20,8 +20,8 @@ import { checkTeams } from '../core/routing.js';
 import { PAGE_TYPE_SEED, checkPageTypes } from '../core/pages.js';
 import { UPLOAD_TYPE_SEED, checkUploadTypes } from '../core/uploads.js';
 import { checkTools } from '../core/tools.js';
-import { resealEach } from '@ss/app-kit';
-import { randomToken } from '@ss/protocol';
+import { resealEach } from '@shelfway/app-kit';
+import { randomToken } from '@shelfway/protocol';
 
 /**
  * Each list: the feature it belongs to, its name on screens, its check and its seed (what a website that never saved
@@ -54,7 +54,7 @@ export const LISTS = Object.freeze({
 /** @typedef {keyof typeof LISTS} ListName */
 
 /**
- * @param {{ store: import('@ss/app-kit').Store, sealer: import('./crypto.js').Sealer, now: () => number }} options
+ * @param {{ store: import('@shelfway/app-kit').Store, sealer: import('./crypto.js').Sealer, now: () => number }} options
  */
 export const createLists = ({ store, sealer, now }) => {
 	/** @param {string} websiteId @param {string} key */
@@ -116,7 +116,7 @@ export const createLists = ({ store, sealer, now }) => {
 		},
 		/**
 		 * The Owner's Re-seal (RT-14): every website's tool signing secret sealed again with the current key.
-		 * @returns {Promise<import('@ss/app-kit').ResealCounts>}
+		 * @returns {Promise<import('@shelfway/app-kit').ResealCounts>}
 		 */
 		resealToolSecrets: async () =>
 			resealEach(

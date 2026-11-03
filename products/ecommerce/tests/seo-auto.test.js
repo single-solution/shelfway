@@ -6,7 +6,7 @@
  * copy); formula copy is never stored, the patterns fill the answers on every read (G6). With AI copy one automatic
  * landing page is written as a record.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { comboKey, comboStock, isAutomatic, stockOf } from '../core/landings.js';
 import { COLLECTIONS } from '../core/model.js';

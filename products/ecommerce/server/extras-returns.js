@@ -5,7 +5,7 @@
  * recorded), restock each line exactly once (the ledger's `restockClaimLines`) and close. Loyalty points earned on the
  * returned part are taken back on the first refund. The shopper gets a message (`ecommerce.return_status`) at each
  * step. Each step's history entry names who did it (a ticket's user, the staff member a server-token call names in its
- * verified `SS-Sign-In`, else `Server`), and its activity entry the claim (order number and reference) and the move.
+ * verified `Shelfway-Sign-In`, else `Server`), and its activity entry the claim (order number and reference) and the move.
  *
  * E33: staff choose per line when receiving whether it goes back in stock (those lines are restocked at once, each
  * exactly once); a refund names its method and reference and is also written on the order's `refunds` (with the
@@ -20,8 +20,8 @@
  * @module
  */
 import { randomBytes } from 'node:crypto';
-import { createId } from '@ss/contracts';
-import { allows as staffAllows, countHandlers, created, defineRoute, paginate, problem } from '@ss/app-kit';
+import { createId } from '@shelfway/contracts';
+import { allows as staffAllows, countHandlers, created, defineRoute, paginate, problem } from '@shelfway/app-kit';
 import { categoriesOf } from '../adapters/catalog-store.js';
 import { applyTransition, isPointsChanged, restockClaimLines } from '../adapters/ledger.js';
 import { userIdsOf } from '../adapters/extras-store.js';
@@ -78,7 +78,7 @@ export const RETURN_MESSAGE_VALUES = Object.freeze(
 /** @typedef {import('../adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/model.js').ReturnRecord} ReturnRecord */
 /** @typedef {import('../core/durations.js').Duration} Duration */
 /** @typedef {import('../core/model.js').OrderRecord} OrderRecord */

@@ -6,15 +6,15 @@
  * website reads the same facts at `GET /v1/shop/store` and `GET /v1/shop/store/business-json`.
  * @module
  */
-import { Card, KeyValueList, ManagedNote, SettingsCardSkeleton } from '@ss/ui';
-import { Loaded, fill, useLoad, websiteSettingsUrl } from '@ss/ui/dashboard';
+import { Card, KeyValueList, ManagedNote, SettingsCardSkeleton } from '@shelfway/ui';
+import { Loaded, fill, useLoad, websiteSettingsUrl } from '@shelfway/ui/dashboard';
 import { TEXTS } from './texts.js';
 
 const S = TEXTS.lists.storeDetails;
 
 /**
  * The store's facts as the Portal holds them, for the list of what the view shows.
- * @param {import('@ss/contracts').WebsiteSettings} website
+ * @param {import('@shelfway/contracts').WebsiteSettings} website
  */
 export const factsOf = ({ business, region }) => {
 	const address = [business.address.line1, business.address.city, business.address.country].filter(Boolean).join(', ');

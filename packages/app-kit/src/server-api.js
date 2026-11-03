@@ -6,7 +6,7 @@
  *
  * **The server token alone changes no configuration.** Reads of settings, texts, theme, Format, lists and features are
  * runtime (the website's server renders pages from them). Every write, and the connections and the activity log,
- * needs the verified Accounts sign-in of a staff member (`SS-Sign-In` next to the server token, `staff.js`) whose role
+ * needs the verified Accounts sign-in of a staff member (`Shelfway-Sign-In` next to the server token, `staff.js`) whose role
  * grants `settings.manage`, `connections.manage` or `audit.read`; a bare server token is 403 `needs_signed_in_staff`.
  * The change is recorded with that person. The dashboard twin takes the human's session instead.
  *
@@ -15,7 +15,7 @@
  *   only of switched-on features, null for the others. `PUT /v1/settings/<feature>.<key>` with `{ value }` answers
  *   `{ key, value, source }`, 422 `validation_failed` with `errors`, or 403 `feature_off`; `DELETE` resets it.
  * - `GET /v1/texts`, `PUT|DELETE /v1/texts/:key`; `GET /v1/theme`; `GET /v1/format` (K7). The theme and the Format are the
- *   Portal's (Website settings): `PUT /v1/theme` and `PUT /v1/format` answer 409 `managed_by_portal`, naming the Portal.
+ *   Portal's (Website settings): `PUT /v1/theme` and `PUT /v1/format` answer 409 `managed_by_platform`, naming the Portal.
  * - `GET|PUT /v1/lists/:list` with `{ value }`: the whole list, checked by the product's own list check (422), only
  *   while one of its features is on (403 `feature_off`). Its dashboard twin, `GET|PUT
  *   /v1/dashboard/websites/:websiteId/lists/:list` (dashboard session), follows the same rules, except that Owner and
@@ -32,7 +32,7 @@
  * on the merchant's server reads its settings on every page).
  * @module
  */
-import { isObject } from '@ss/contracts/util';
+import { isObject } from '@shelfway/contracts/util';
 import { currentFeatures } from './connection.js';
 import { activityFilter, activityPage, activityView } from './activity.js';
 import { countHandlers } from './counts.js';
@@ -304,7 +304,7 @@ export const createServerApi = (kit, lists) => {
 	 * @param {RequestContext} ctx
 	 */
 	const activitySource = async (ctx) => {
-		const status = /** @type {import('@ss/contracts').StatusResponse} */ (ctx.status);
+		const status = /** @type {import('@shelfway/contracts').StatusResponse} */ (ctx.status);
 		const { business } = await kit.business.get(website(ctx), status.domain);
 		const built = activityFilter(ctx.query, business.timeZone ?? 'UTC');
 		if (!built.ok)
@@ -389,7 +389,7 @@ export const createServerApi = (kit, lists) => {
 			permission: 'settings.manage',
 			rateLimit: writes,
 			handler: async (ctx) => {
-				// the theme is the Portal's (Website settings › Brand and look): always 409 `managed_by_portal`
+				// the theme is the Portal's (Website settings › Brand and look): always 409 `managed_by_platform`
 				await saved(ctx, { what: 'theme' }, kit.settings.refuseTheme());
 				return kit.settings.themeOf(website(ctx));
 			},
@@ -401,7 +401,7 @@ export const createServerApi = (kit, lists) => {
 			permission: 'settings.manage',
 			rateLimit: writes,
 			handler: async (ctx) => {
-				// the Format is the Portal's (Website settings › Region and format): always 409 `managed_by_portal`
+				// the Format is the Portal's (Website settings › Region and format): always 409 `managed_by_platform`
 				await saved(ctx, { what: 'format' }, kit.settings.refuseFormat());
 				return kit.settings.formatOf(website(ctx));
 			},

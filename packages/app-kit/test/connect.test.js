@@ -1,4 +1,4 @@
-import { createConnectRequest } from '@ss/protocol';
+import { createConnectRequest } from '@shelfway/protocol';
 import { describe, expect, it } from 'vitest';
 import { configFromEnv, createProduct } from '../src/index.js';
 import { createFakePortal, createMemoryStore } from '../src/testing.js';
@@ -90,7 +90,7 @@ describe('connect handshake', () => {
 		const request = createConnectRequest({
 			secret: SECRET,
 			productUrl: BASE,
-			portalUrl: portal.url,
+			platformUrl: portal.url,
 			jwks: portal.jwks,
 			priceListVersion: 0,
 			now: clock.now,
@@ -105,7 +105,7 @@ describe('connect handshake', () => {
 		const response = await call('GET', '/v1/server/open', { token: server.token, bare: true });
 		expect(response.status).toBe(503);
 		expect((await call('GET', '/docs')).status).toBe(200);
-		const notice = await call('POST', '/.well-known/ss-events', { body: '{}' });
+		const notice = await call('POST', '/.well-known/shelfway-events', { body: '{}' });
 		expect(notice.status).toBe(503);
 		expect((await call('GET', '/sso?launch=x')).status).toBe(503);
 	});

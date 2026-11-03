@@ -3,8 +3,8 @@
  * JSON-pointer paths, so routes can answer `validation_failed` with field errors.
  * @module
  */
-import { isId } from '@ss/contracts';
-import { isObject } from '@ss/contracts/util';
+import { isId } from '@shelfway/contracts';
+import { isObject } from '@shelfway/contracts/util';
 import { utcDayStart } from '../../../infra/util.js';
 
 /** @typedef {{ path: string, message: string }} FieldError */

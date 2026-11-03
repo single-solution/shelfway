@@ -5,7 +5,7 @@
  * attributes, price, brand, grade, rating and image.
  * @module
  */
-import { defineRoute, problem } from '@ss/app-kit';
+import { defineRoute, problem } from '@shelfway/app-kit';
 import { categoriesOf } from '../adapters/catalog-store.js';
 import { userIdsOf } from '../adapters/extras-store.js';
 import { compareRows, gradeLabels, parseCompareIds } from '../core/compare.js';
@@ -16,7 +16,7 @@ import { VISITOR_LIMITS, VISITOR_WRITE_LIMITS } from './service.js';
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./extras-cards.js').Cards} Cards */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/model.js').WishlistRecord} WishlistRecord */
 /** @typedef {import('../core/model.js').AttributeRecord} AttributeRecord */
 
@@ -194,7 +194,7 @@ export const createShopperLists = (_product, service, cards) => {
 			method: 'GET',
 			path: '/v1/shop/wishlist',
 			auth: 'browser',
-			feature: 'catalog',
+			feature: 'wishlist',
 			rateLimit: VISITOR_LIMITS,
 			handler: readWishlist,
 		}),
@@ -202,7 +202,7 @@ export const createShopperLists = (_product, service, cards) => {
 			method: 'POST',
 			path: '/v1/shop/wishlist/items/:productId',
 			auth: 'browser',
-			feature: 'catalog',
+			feature: 'wishlist',
 			rateLimit: VISITOR_WRITE_LIMITS,
 			handler: add,
 		}),
@@ -210,7 +210,7 @@ export const createShopperLists = (_product, service, cards) => {
 			method: 'POST',
 			path: '/v1/shop/wishlist/merge',
 			auth: 'browser',
-			feature: 'catalog',
+			feature: 'wishlist',
 			rateLimit: VISITOR_WRITE_LIMITS,
 			handler: merge,
 		}),
@@ -218,7 +218,7 @@ export const createShopperLists = (_product, service, cards) => {
 			method: 'DELETE',
 			path: '/v1/shop/wishlist/items/:productId',
 			auth: 'browser',
-			feature: 'catalog',
+			feature: 'wishlist',
 			rateLimit: VISITOR_WRITE_LIMITS,
 			handler: remove,
 		}),
@@ -226,7 +226,7 @@ export const createShopperLists = (_product, service, cards) => {
 			method: 'GET',
 			path: '/v1/shop/compare',
 			auth: 'browser',
-			feature: 'catalog',
+			feature: 'compare',
 			rateLimit: VISITOR_LIMITS,
 			handler: compare,
 		}),

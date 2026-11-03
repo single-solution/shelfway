@@ -1,11 +1,11 @@
 /**
  * The merchant database (PLAN 0.4.8, 0.10): the `database` connection of each website (a MongoDB connection string,
  * stored encrypted in Connections), opened with a small pooled `MongoClient` whose every DNS answer goes through the
- * `@ss/net` guarded lookup.
+ * `@shelfway/net` guarded lookup.
  *
  * - Pools are keyed by a hash of the URI and kept on `globalThis` so warm serverless invocations reuse them; they are
  *   small ({@link CLIENT_DB_POOL_SIZE}) and closed when unused for `idleMs` (checked when the next website is served).
- * - Collections are `ss_<product id>_<name>`.
+ * - Collections are `shelfway_<product id>_<name>`.
  * - The tenant guard refuses any read, update, delete or aggregate whose filter (or first `$match`) does not pin
  *   `websiteId` to this website by equality (no `$in`), refuses cross-collection aggregation stages, forbids changing
  *   `websiteId`, and stamps `websiteId`, `merchantId`, `createdAt` and `updatedAt` on inserts. An Atlas Search pipeline
@@ -17,14 +17,14 @@
  *   or options (same name), is dropped, and a declared one missing is created — two collections at a time; concurrent
  *   requests wait for the same work. No record is changed (a query for `field: null` also matches a missing field, so
  *   a new field needs no backfill).
- * - Every database call has deadlines (`@ss/net` `DATABASE_DEADLINES`): a database that cannot be reached or does not
+ * - Every database call has deadlines (`@shelfway/net` `DATABASE_DEADLINES`): a database that cannot be reached or does not
  *   answer in time fails fast with an error `isDatabaseUnavailable` recognizes, which requests answer 503
  *   `database_unavailable` (K-16).
  * @module
  */
-import { isObject } from '@ss/contracts/util';
-import { databaseClientOptions, guardedLookup, isDatabaseUnavailable as isUnreachable, isSafeMongoUri } from '@ss/net';
-import { sha256Hex } from '@ss/protocol';
+import { isObject } from '@shelfway/contracts/util';
+import { databaseClientOptions, guardedLookup, isDatabaseUnavailable as isUnreachable, isSafeMongoUri } from '@shelfway/net';
+import { sha256Hex } from '@shelfway/protocol';
 import { MongoClient } from 'mongodb';
 import { collectionPrefix, isKitError, kitError } from './util.js';
 
@@ -62,14 +62,14 @@ export const sameIndex = (found, declared) => {
 };
 
 /**
- * Options of the product database client (`new MongoClient(uri, PRODUCT_DATABASE_OPTIONS)`): `@ss/net`'s serverless
+ * Options of the product database client (`new MongoClient(uri, PRODUCT_DATABASE_OPTIONS)`): `@shelfway/net`'s serverless
  * client rules (a pool of 5 kept per instance, PLAN 0.10, and `DATABASE_DEADLINES`). `createProductBase` uses them.
  */
 export const PRODUCT_DATABASE_OPTIONS = Object.freeze(databaseClientOptions());
 
 /**
  * True when an error means a database cannot be reached or did not answer in time: a merchant database that cannot be
- * reached (`database_unreachable`), or what `@ss/net` `isDatabaseUnavailable` knows (a driver network error or
+ * reached (`database_unreachable`), or what `@shelfway/net` `isDatabaseUnavailable` knows (a driver network error or
  * deadline, a failed DNS lookup of its address, an operation over its `maxTimeMS`). Requests answer 503
  * `database_unavailable`.
  * @param {unknown} error
@@ -77,11 +77,11 @@ export const PRODUCT_DATABASE_OPTIONS = Object.freeze(databaseClientOptions());
  */
 export const isDatabaseUnavailable = (error) => isKitError(error, 'database_unreachable') || isUnreachable(error);
 
-/** @typedef {import('@ss/net').Logger} Logger */
+/** @typedef {import('@shelfway/net').Logger} Logger */
 /** @typedef {import('mongodb').Document} Document */
 
 const NAME = /^[a-z][a-z0-9_]{0,62}$/;
-const POOLS = Symbol.for('ss.app-kit.mongo-pools');
+const POOLS = Symbol.for('shelfway.app-kit.mongo-pools');
 const DENIED_STAGES = new Set([
 	'$out',
 	'$merge',
@@ -409,12 +409,12 @@ const poolRegistry = () => {
  *   dbNameOf?: (websiteId: string) => Promise<string | null>,
  *   now?: () => number,
  *   logger: Logger,
- *   policy: import('@ss/net').OutboundPolicy,
+ *   policy: import('@shelfway/net').OutboundPolicy,
  *   createClient?: (uri: string, options: import('mongodb').MongoClientOptions) => MongoClient,
  *   idleMs?: number,
  *   indexes?: IndexDefinition[],
- * }} options `uriOf` reads the website's `database` connection and `dbNameOf` this product's own database on it (the Portal
- *   names it `ss_<productId>`; none: the one the connection string names); `indexes` are created on a website's first use per
+ * }} options `uriOf` reads the website's `database` connection and `dbNameOf` this product's own database on it (the Platform
+ *   names it `shelfway_<productId>`; none: the one the connection string names); `indexes` are created on a website's first use per
  *   instance
  */
 export const createData = ({
@@ -461,7 +461,7 @@ export const createData = ({
 				throw kitError('database_unreachable', 'the merchant database address is not allowed');
 			}
 			const options = {
-				...databaseClientOptions({ maxPoolSize: CLIENT_DB_POOL_SIZE, appName: `ss-${productId}` }),
+				...databaseClientOptions({ maxPoolSize: CLIENT_DB_POOL_SIZE, appName: `shelfway-${productId}` }),
 				lookup: /** @type {any} */ (lookup),
 			};
 			const connecting = Promise.resolve()

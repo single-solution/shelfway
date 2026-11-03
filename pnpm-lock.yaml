@@ -11,7 +11,7 @@ importers:
 
   .:
     devDependencies:
-      '@ss/config':
+      '@shelfway/config':
         specifier: workspace:^
         version: link:packages/config
       prettier:
@@ -20,46 +20,46 @@ importers:
 
   e2e:
     devDependencies:
-      '@ss/app-kit':
+      '@shelfway/app-kit':
         specifier: workspace:^
         version: link:../packages/app-kit
-      '@ss/cli':
+      '@shelfway/cli':
         specifier: workspace:^
         version: link:../packages/cli
-      '@ss/config':
+      '@shelfway/config':
         specifier: workspace:^
         version: link:../packages/config
-      '@ss/contracts':
+      '@shelfway/contracts':
         specifier: workspace:^
         version: link:../packages/contracts
-      '@ss/importer':
+      '@shelfway/importer':
         specifier: workspace:^
         version: link:../packages/importer
-      '@ss/platform':
+      '@shelfway/platform':
         specifier: workspace:^
         version: link:../platform
-      '@ss/product-accounts':
+      '@shelfway/product-accounts':
         specifier: workspace:^
         version: link:../products/accounts
-      '@ss/product-chat':
+      '@shelfway/product-chat':
         specifier: workspace:^
         version: link:../products/chat
-      '@ss/product-ecommerce':
+      '@shelfway/product-ecommerce':
         specifier: workspace:^
         version: link:../products/ecommerce
-      '@ss/product-growth':
+      '@shelfway/product-growth':
         specifier: workspace:^
         version: link:../products/growth
-      '@ss/product-notifications':
+      '@shelfway/product-notifications':
         specifier: workspace:^
         version: link:../products/notifications
-      '@ss/product-payments':
+      '@shelfway/product-payments':
         specifier: workspace:^
         version: link:../products/payments
-      '@ss/protocol':
+      '@shelfway/protocol':
         specifier: workspace:^
         version: link:../packages/protocol
-      '@ss/ui':
+      '@shelfway/ui':
         specifier: workspace:^
         version: link:../packages/ui
       '@types/jsdom':
@@ -107,20 +107,20 @@ importers:
 
   packages/app-kit:
     dependencies:
-      '@ss/contracts':
+      '@shelfway/contracts':
         specifier: workspace:^
         version: link:../contracts
-      '@ss/net':
+      '@shelfway/net':
         specifier: workspace:^
         version: link:../net
-      '@ss/protocol':
+      '@shelfway/protocol':
         specifier: workspace:^
         version: link:../protocol
       mongodb:
         specifier: ^6.20.0
         version: 6.21.0
     devDependencies:
-      '@ss/config':
+      '@shelfway/config':
         specifier: workspace:^
         version: link:../config
       '@types/node':
@@ -150,20 +150,20 @@ importers:
 
   packages/cli:
     dependencies:
-      '@ss/app-kit':
+      '@shelfway/app-kit':
         specifier: workspace:^
         version: link:../app-kit
-      '@ss/contracts':
+      '@shelfway/contracts':
         specifier: workspace:^
         version: link:../contracts
       esbuild:
         specifier: ^0.28.2
         version: 0.28.2
     devDependencies:
-      '@ss/config':
+      '@shelfway/config':
         specifier: workspace:^
         version: link:../config
-      '@ss/ui':
+      '@shelfway/ui':
         specifier: workspace:^
         version: link:../ui
       '@types/node':
@@ -243,7 +243,7 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1(ajv@8.20.0)
     devDependencies:
-      '@ss/config':
+      '@shelfway/config':
         specifier: workspace:^
         version: link:../config
       '@types/node':
@@ -267,14 +267,14 @@ importers:
 
   packages/importer:
     dependencies:
-      '@ss/contracts':
+      '@shelfway/contracts':
         specifier: workspace:^
         version: link:../contracts
       mongodb:
         specifier: ^6.21.0
         version: 6.21.0
     devDependencies:
-      '@ss/config':
+      '@shelfway/config':
         specifier: workspace:^
         version: link:../config
       '@types/node':
@@ -301,7 +301,7 @@ importers:
 
   packages/net:
     devDependencies:
-      '@ss/config':
+      '@shelfway/config':
         specifier: workspace:^
         version: link:../config
       '@types/node':
@@ -325,14 +325,14 @@ importers:
 
   packages/protocol:
     dependencies:
-      '@ss/contracts':
+      '@shelfway/contracts':
         specifier: workspace:^
         version: link:../contracts
       jose:
         specifier: ^6.1.0
         version: 6.2.12
     devDependencies:
-      '@ss/config':
+      '@shelfway/config':
         specifier: workspace:^
         version: link:../config
       '@types/node':
@@ -356,7 +356,7 @@ importers:
 
   packages/ui:
     devDependencies:
-      '@ss/config':
+      '@shelfway/config':
         specifier: workspace:^
         version: link:../config
       '@types/node':
@@ -395,16 +395,16 @@ importers:
 
   platform:
     dependencies:
-      '@ss/contracts':
+      '@shelfway/contracts':
         specifier: workspace:^
         version: link:../packages/contracts
-      '@ss/net':
+      '@shelfway/net':
         specifier: workspace:^
         version: link:../packages/net
-      '@ss/protocol':
+      '@shelfway/protocol':
         specifier: workspace:^
         version: link:../packages/protocol
-      '@ss/ui':
+      '@shelfway/ui':
         specifier: workspace:^
         version: link:../packages/ui
       mongodb:
@@ -426,7 +426,7 @@ importers:
         specifier: ^19.3.0
         version: 19.3.0(react@19.3.0)
     devDependencies:
-      '@ss/config':
+      '@shelfway/config':
         specifier: workspace:^
         version: link:../packages/config
       '@tailwindcss/postcss':
@@ -471,19 +471,19 @@ importers:
 
   products/accounts:
     dependencies:
-      '@ss/app-kit':
+      '@shelfway/app-kit':
         specifier: workspace:^
         version: link:../../packages/app-kit
-      '@ss/contracts':
+      '@shelfway/contracts':
         specifier: workspace:^
         version: link:../../packages/contracts
-      '@ss/net':
+      '@shelfway/net':
         specifier: workspace:^
         version: link:../../packages/net
-      '@ss/protocol':
+      '@shelfway/protocol':
         specifier: workspace:^
         version: link:../../packages/protocol
-      '@ss/ui':
+      '@shelfway/ui':
         specifier: workspace:^
         version: link:../../packages/ui
       bcryptjs:
@@ -502,10 +502,10 @@ importers:
         specifier: ^19.3.0
         version: 19.3.0(react@19.3.0)
     devDependencies:
-      '@ss/cli':
+      '@shelfway/cli':
         specifier: workspace:^
         version: link:../../packages/cli
-      '@ss/config':
+      '@shelfway/config':
         specifier: workspace:^
         version: link:../../packages/config
       '@tailwindcss/postcss':
@@ -547,19 +547,19 @@ importers:
 
   products/chat:
     dependencies:
-      '@ss/app-kit':
+      '@shelfway/app-kit':
         specifier: workspace:^
         version: link:../../packages/app-kit
-      '@ss/contracts':
+      '@shelfway/contracts':
         specifier: workspace:^
         version: link:../../packages/contracts
-      '@ss/net':
+      '@shelfway/net':
         specifier: workspace:^
         version: link:../../packages/net
-      '@ss/protocol':
+      '@shelfway/protocol':
         specifier: workspace:^
         version: link:../../packages/protocol
-      '@ss/ui':
+      '@shelfway/ui':
         specifier: workspace:^
         version: link:../../packages/ui
       mongodb:
@@ -575,10 +575,10 @@ importers:
         specifier: ^19.3.0
         version: 19.3.0(react@19.3.0)
     devDependencies:
-      '@ss/cli':
+      '@shelfway/cli':
         specifier: workspace:^
         version: link:../../packages/cli
-      '@ss/config':
+      '@shelfway/config':
         specifier: workspace:^
         version: link:../../packages/config
       '@tailwindcss/postcss':
@@ -620,19 +620,19 @@ importers:
 
   products/ecommerce:
     dependencies:
-      '@ss/app-kit':
+      '@shelfway/app-kit':
         specifier: workspace:^
         version: link:../../packages/app-kit
-      '@ss/contracts':
+      '@shelfway/contracts':
         specifier: workspace:^
         version: link:../../packages/contracts
-      '@ss/net':
+      '@shelfway/net':
         specifier: workspace:^
         version: link:../../packages/net
-      '@ss/protocol':
+      '@shelfway/protocol':
         specifier: workspace:^
         version: link:../../packages/protocol
-      '@ss/ui':
+      '@shelfway/ui':
         specifier: workspace:^
         version: link:../../packages/ui
       mongodb:
@@ -648,10 +648,10 @@ importers:
         specifier: ^19.3.0
         version: 19.3.0(react@19.3.0)
     devDependencies:
-      '@ss/cli':
+      '@shelfway/cli':
         specifier: workspace:^
         version: link:../../packages/cli
-      '@ss/config':
+      '@shelfway/config':
         specifier: workspace:^
         version: link:../../packages/config
       '@tailwindcss/postcss':
@@ -693,16 +693,16 @@ importers:
 
   products/growth:
     dependencies:
-      '@ss/app-kit':
+      '@shelfway/app-kit':
         specifier: workspace:^
         version: link:../../packages/app-kit
-      '@ss/contracts':
+      '@shelfway/contracts':
         specifier: workspace:^
         version: link:../../packages/contracts
-      '@ss/net':
+      '@shelfway/net':
         specifier: workspace:^
         version: link:../../packages/net
-      '@ss/ui':
+      '@shelfway/ui':
         specifier: workspace:^
         version: link:../../packages/ui
       mongodb:
@@ -718,10 +718,10 @@ importers:
         specifier: ^19.3.0
         version: 19.3.0(react@19.3.0)
     devDependencies:
-      '@ss/cli':
+      '@shelfway/cli':
         specifier: workspace:^
         version: link:../../packages/cli
-      '@ss/config':
+      '@shelfway/config':
         specifier: workspace:^
         version: link:../../packages/config
       '@tailwindcss/postcss':
@@ -763,19 +763,19 @@ importers:
 
   products/notifications:
     dependencies:
-      '@ss/app-kit':
+      '@shelfway/app-kit':
         specifier: workspace:^
         version: link:../../packages/app-kit
-      '@ss/contracts':
+      '@shelfway/contracts':
         specifier: workspace:^
         version: link:../../packages/contracts
-      '@ss/net':
+      '@shelfway/net':
         specifier: workspace:^
         version: link:../../packages/net
-      '@ss/protocol':
+      '@shelfway/protocol':
         specifier: workspace:^
         version: link:../../packages/protocol
-      '@ss/ui':
+      '@shelfway/ui':
         specifier: workspace:^
         version: link:../../packages/ui
       mongodb:
@@ -794,10 +794,10 @@ importers:
         specifier: ^19.3.0
         version: 19.3.0(react@19.3.0)
     devDependencies:
-      '@ss/cli':
+      '@shelfway/cli':
         specifier: workspace:^
         version: link:../../packages/cli
-      '@ss/config':
+      '@shelfway/config':
         specifier: workspace:^
         version: link:../../packages/config
       '@tailwindcss/postcss':
@@ -839,19 +839,19 @@ importers:
 
   products/payments:
     dependencies:
-      '@ss/app-kit':
+      '@shelfway/app-kit':
         specifier: workspace:^
         version: link:../../packages/app-kit
-      '@ss/contracts':
+      '@shelfway/contracts':
         specifier: workspace:^
         version: link:../../packages/contracts
-      '@ss/net':
+      '@shelfway/net':
         specifier: workspace:^
         version: link:../../packages/net
-      '@ss/protocol':
+      '@shelfway/protocol':
         specifier: workspace:^
         version: link:../../packages/protocol
-      '@ss/ui':
+      '@shelfway/ui':
         specifier: workspace:^
         version: link:../../packages/ui
       mongodb:
@@ -867,10 +867,10 @@ importers:
         specifier: ^19.3.0
         version: 19.3.0(react@19.3.0)
     devDependencies:
-      '@ss/cli':
+      '@shelfway/cli':
         specifier: workspace:^
         version: link:../../packages/cli
-      '@ss/config':
+      '@shelfway/config':
         specifier: workspace:^
         version: link:../../packages/config
       '@tailwindcss/postcss':

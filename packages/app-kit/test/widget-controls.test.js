@@ -279,8 +279,8 @@ describe('the CSS', () => {
 		expect(CONTROLS_CSS).toContain('appearance: none');
 		expect(CONTROLS_CSS).toContain("input[role='switch']");
 		expect(CONTROLS_CSS).toContain('prefers-reduced-motion');
-		expect(CONTROLS_CSS).toContain(":host([data-ss-mode='dark'])");
-		expect(CONTROLS_CSS).toContain('var(--ss-color-accent');
+		expect(CONTROLS_CSS).toContain(":host([data-shelfway-mode='dark'])");
+		expect(CONTROLS_CSS).toContain('var(--shelfway-color-accent');
 		expect(CONTROLS_CSS).toContain('margin-inline-start');
 		expect(CONTROLS_CSS).not.toMatch(/margin-left|padding-left|text-align: left/);
 		// no brand color is written outside a var() fallback
@@ -289,7 +289,7 @@ describe('the CSS', () => {
 	});
 
 	it('keeps the admin kit free of the tokens that the controls own', () => {
-		expect(ADMIN_KIT_CSS).not.toContain('--ss-kit-focus:');
+		expect(ADMIN_KIT_CSS).not.toContain('--shelfway-kit-focus:');
 		expect(ADMIN_KIT_CSS).toContain('.split > .pane');
 	});
 });

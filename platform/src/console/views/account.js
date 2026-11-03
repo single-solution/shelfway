@@ -7,7 +7,7 @@
  * @module
  */
 import { useEffect, useState } from 'react';
-import { Button, Form, FormError, Input, Page, Select, SettingsCard, fieldErrors, useToast } from '@ss/ui';
+import { Button, Form, FormError, Input, Page, Select, SettingsCard, fieldErrors, useToast } from '@shelfway/ui';
 import { COUNTRY_CHOICES } from '../../modules/identity/core/countries.js';
 import { LOGIN, MERCHANT, MERCHANT_FIELDS, MORE, TWO_STEP } from '../../texts/console.js';
 import { apiFetch, useResource } from '../client.js';
@@ -22,10 +22,10 @@ export const ACTIVITY_PART = 'activity';
 
 /**
  * @param {{ title: string, info: string, part?: string,
- *   parts: Array<{ id: string, label: string, icon: import('@ss/ui').IconName, href?: string, body?: import('react').ReactNode,
+ *   parts: Array<{ id: string, label: string, icon: import('@shelfway/ui').IconName, href?: string, body?: import('react').ReactNode,
  *     dot?: 'success' | 'warning' | 'danger' | 'neutral', dotLabel?: string }>,
  *   activity: { path: string, href?: string, initial?: { items: any[], nextCursor?: string | null } },
- *   facts?: import('@ss/ui').PageFact[], status?: import('@ss/ui').PageStatus[], before?: import('react').ReactNode }} props
+ *   facts?: import('@shelfway/ui').PageFact[], status?: import('@shelfway/ui').PageStatus[], before?: import('react').ReactNode }} props
  *   `parts` lists the settings parts; the activity part (`ACTIVITY_PART`) is added at its end; `before` is drawn above
  *   the page (the frame's billing banner)
  */
@@ -81,7 +81,7 @@ export function AccountPage({ title, info, part, parts, activity, facts, status,
 	);
 }
 
-/** @typedef {import('@ss/ui').Problem} Problem */
+/** @typedef {import('@shelfway/ui').Problem} Problem */
 
 /**
  * Country options with a first "none" choice (stored as the ISO 3166-1 alpha-2 code).

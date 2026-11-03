@@ -7,7 +7,7 @@
  * guard). Its finish steps run before the orders' part: they derive every category's path from the parents
  * (categories come in any order) and the products' price, price range, stock state and grades again, a page at a time,
  * writing only what changed, so a second run changes nothing. Everything is written straight to the database: no event, message, alert,
- * IndexNow call or activity copy. Its sums are what `ss-import verify` compares.
+ * IndexNow call or activity copy. Its sums are what `shelfway-import verify` compares.
  * @module
  */
 import { summarize } from '../core/catalog.js';
@@ -30,8 +30,8 @@ import { COLLECTIONS } from '../core/model.js';
 import { checkUnit } from '../core/fields.js';
 import { loadRules, unitRulesOf } from './catalog-store.js';
 
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
-/** @typedef {import('@ss/app-kit').ImportCollection} ImportCollection */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').ImportCollection} ImportCollection */
 /** @typedef {Parameters<ImportCollection['check']>[1]} CheckContext */
 /** @typedef {Parameters<NonNullable<ImportCollection['prepare']>>[0]} PrepareContext */
 /** @typedef {import('../core/imports-catalog.js').ImportContext} ImportContext */

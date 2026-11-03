@@ -1,5 +1,5 @@
 /**
- * @ss/importer — `ss-import` (PLAN 0.8.10 Migration): `read` a store database read only into NDJSON files, an id map
+ * @shelfway/importer — `shelfway-import` (PLAN 0.8.10 Migration): `read` a store database read only into NDJSON files, an id map
  * and the website's settings, `send` them to the products' settings API and import routes (dry run first; prune on the
  * final pass), `verify` the counts and sums. Never deployed.
  * @module

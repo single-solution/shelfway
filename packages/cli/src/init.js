@@ -1,15 +1,15 @@
 /**
- * `ss app init <dir> --id <id> --name <name>` — generates a product in the PLAN 0.4.13 layout from
+ * `shelfway app init <dir> --id <id> --name <name>` — generates a product in the PLAN 0.4.13 layout from
  * `templates/product`: `core/ server/ adapters/ ui/ app/ strings/ schemas/ tests/ docs/`, the manifest, the Next.js
- * wiring (one API route and the dashboard page), the tooling config from `@ss/config` and a sample feature `notes`
+ * wiring (one API route and the dashboard page), the tooling config from `@shelfway/config` and a sample feature `notes`
  * (a visitor widget, an admin widget with a ticket permission, one setting, widget texts and public docs).
  *
  * Template files and paths may contain `{{id}}`, `{{name}}`, `{{global}}` (the widget's browser global,
- * `SS<Product>`), `{{baseUrl}}`, `{{port}}` (the local development port, {@link devPortOf}) and `{{sdkVersion}}`. `_gitignore` is written as `.gitignore`. Outside a pnpm workspace
+ * `Shelfway<Product>`), `{{baseUrl}}`, `{{port}}` (the local development port, {@link devPortOf}) and `{{sdkVersion}}`. `_gitignore` is written as `.gitignore`. Outside a pnpm workspace
  * `templates/standalone` (the pnpm settings and `.nvmrc` a repository of its own needs) is added; inside one (e.g.
- * `products/` of the monorepo) the workspace's apply, and `@ss/*` dependencies are linked with `workspace:^` (outside,
+ * `products/` of the monorepo) the workspace's apply, and `@shelfway/*` dependencies are linked with `workspace:^` (outside,
  * they take the published range of this CLI's version). `openapi.json` and `server/widget-script.js` are then generated
- * (`ss app assets`), and `.env.local` (git-ignored) gets fresh development secrets.
+ * (`shelfway app assets`), and `.env.local` (git-ignored) gets fresh development secrets.
  * @module
  */
 import { randomBytes } from 'node:crypto';
@@ -48,7 +48,7 @@ export const devPortOf = (baseUrl) => {
 	}
 };
 
-/** The `@ss/*` range of a product in a repository of its own: all `@ss/*` packages share one version, this CLI's. */
+/** The `@shelfway/*` range of a product in a repository of its own: all `@shelfway/*` packages share one version, this CLI's. */
 export const SDK_RANGE = `^${pkg.version}`;
 
 /**
@@ -57,8 +57,8 @@ export const SDK_RANGE = `^${pkg.version}`;
  * @property {string} id product id (manifest `id`)
  * @property {string} name display name (1–80 chars)
  * @property {string} [baseUrl] the product's address for `manifest.endpoints.base` (default {@link DEFAULT_BASE_URL})
- * @property {string} [sdkVersion] version range for `@ss/*` dependencies (default: `workspace:^` inside a pnpm
- *   workspace, else {@link SDK_RANGE}: every `@ss/*` package shares the CLI's version)
+ * @property {string} [sdkVersion] version range for `@shelfway/*` dependencies (default: `workspace:^` inside a pnpm
+ *   workspace, else {@link SDK_RANGE}: every `@shelfway/*` package shares the CLI's version)
  * @property {boolean} [standalone] add the files of a repository of its own (default: when `dir` is not inside a pnpm
  *   workspace)
  */
@@ -75,12 +75,12 @@ export const fill = (text, values) =>
 	);
 
 /**
- * The browser global of a product's widgets (PLAN 0.4.10: `window.SS<Product>`), e.g. `order-notes` → `SSOrderNotes`.
+ * The browser global of a product's widgets (PLAN 0.4.10: `window.Shelfway<Product>`), e.g. `order-notes` → `ShelfwayOrderNotes`.
  * @param {string} id
  * @returns {string}
  */
 export const globalNameOf = (id) =>
-	`SS${id
+	`Shelfway${id
 		.split('-')
 		.filter((part) => part.length > 0)
 		.map((part) => `${part[0]?.toUpperCase() ?? ''}${part.slice(1)}`)

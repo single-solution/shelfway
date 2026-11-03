@@ -7,7 +7,7 @@
  * @module
  */
 import { useState } from 'react';
-import { Button, CodeBlock, FieldGrid, Input, TextArea } from '@ss/ui';
+import { Button, CodeBlock, FieldGrid, Input, TextArea } from '@shelfway/ui';
 import { TEXTS } from './texts.js';
 
 /** @typedef {{ name: keyof typeof TEXTS.connections.fields, type?: 'text' | 'password' | 'textarea' }} Field */

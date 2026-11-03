@@ -34,7 +34,7 @@ describe('GET /v1/dashboard/websites/:websiteId/search-index', () => {
 	it('answers basic search with the default index and no state before any Atlas search', async () => {
 		const found = await read(cookie);
 		expect(found.status).toBe(200);
-		expect(found.json).toEqual({ search: 'basic', index: 'ss_ecommerce_products_search', state: null });
+		expect(found.json).toEqual({ search: 'basic', index: 'shelfway_ecommerce_products_search', state: null });
 	});
 
 	it('follows the catalog settings and the last Atlas search', async () => {

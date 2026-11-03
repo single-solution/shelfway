@@ -9,11 +9,11 @@ import { closeMongoClients } from '../../../src/testing.js';
 import { createIdentityModule } from '../../../src/modules/identity/index.js';
 import { systemModule } from '../../../src/modules/system/index.js';
 import { createSystemStore } from '../../../src/infra/system.js';
-import { createPortal } from '../../../src/portal.js';
-import { ENCRYPTION_KEY, PORTAL_URL, createClock, createTestLogger, startMongo, testConfig } from '../../helpers.js';
+import { createPlatform } from '../../../src/platform.js';
+import { ENCRYPTION_KEY, PLATFORM_URL, createClock, createTestLogger, startMongo, testConfig } from '../../helpers.js';
 import { fakeCatalog, fakeCommerce, memoryMailer, whoamiModule } from './fakes/modules.js';
 
-export { PORTAL_URL };
+export { PLATFORM_URL };
 
 export const PASSWORD = 'correct horse battery';
 
@@ -50,7 +50,7 @@ export const boot = async (options = {}) => {
 	const db = mongo.db(`identity_${process.pid}_${dbCounter}`);
 	/** @type {Promise<unknown>[]} */
 	const pending = [];
-	const portal = createPortal({
+	const portal = createPlatform({
 		config,
 		db,
 		modules,
@@ -71,10 +71,10 @@ export const boot = async (options = {}) => {
 	 */
 	const call = async (method, path, { body, headers = {}, cookie, ip = '203.0.113.7' } = {}) => {
 		const response = await portal.handle(
-			new Request(`${PORTAL_URL}${path}`, {
+			new Request(`${PLATFORM_URL}${path}`, {
 				method,
 				headers: {
-					origin: PORTAL_URL,
+					origin: PLATFORM_URL,
 					'sec-fetch-site': 'same-origin',
 					'x-forwarded-for': ip,
 					...(body === undefined ? {} : { 'content-type': 'application/json' }),

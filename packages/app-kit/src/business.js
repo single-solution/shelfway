@@ -6,9 +6,9 @@
  * which the Overview shows as "Needs setup: set your website settings in the Portal".
  * @module
  */
-import { businessInfoOf } from '@ss/contracts/website-settings';
+import { businessInfoOf } from '@shelfway/contracts/website-settings';
 
-/** @typedef {import('@ss/contracts').BusinessInfo} BusinessInfo */
+/** @typedef {import('@shelfway/contracts').BusinessInfo} BusinessInfo */
 
 /**
  * The defaults for what is not set: name = the domain, time zone UTC, no currencies, other fields empty.

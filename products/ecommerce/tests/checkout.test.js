@@ -3,7 +3,7 @@
  * confirmation through the fake Payments, the shopper's orders, canceling, the end of waiting windows on use, pickup,
  * loyalty points and the widget settings.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { givePoints } from '../adapters/ledger.js';
 import { COLLECTIONS } from '../core/model.js';
@@ -36,7 +36,7 @@ const visit = (method, path, { body, signIn, key } = {}) => {
 		body,
 		headers: {
 			'x-forwarded-for': `10.${(ip >> 16) & 255}.${(ip >> 8) & 255}.${ip & 255}`,
-			...(signIn ? { 'ss-sign-in': signIn } : {}),
+			...(signIn ? { 'shelfway-sign-in': signIn } : {}),
 			...(key ? { 'idempotency-key': key } : {}),
 		},
 	});
@@ -480,7 +480,7 @@ describe('paying online and by bank transfer', () => {
 			reference: placed.json.order.number,
 			metadata: { orderId: id },
 		});
-		expect(create.returnUrl).toBe(`${ORIGIN}/checkout/done?step=3&ss_order=${id}`);
+		expect(create.returnUrl).toBe(`${ORIGIN}/checkout/done?step=3&shelfway_order=${id}`);
 
 		const paymentId = (await orderRecord(id)).payment.paymentId;
 		const first = await visit('GET', `/v1/shop/orders/${id}`, { signIn: shopper.token });
@@ -585,7 +585,7 @@ describe('paying online and by bank transfer', () => {
 		expect(create).toMatchObject({
 			gateway: 'bank_transfer',
 			amount: 1300,
-			returnUrl: `http://localhost:3000/done?ss_order=${id}`,
+			returnUrl: `http://localhost:3000/done?shelfway_order=${id}`,
 		});
 		const again = await visit('POST', `/v1/shop/orders/${id}/pay`, { signIn: shopper.token });
 		expect(again.json.next.url).toBe(retried.json.next.url);

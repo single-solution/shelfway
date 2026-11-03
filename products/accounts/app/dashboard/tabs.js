@@ -1,14 +1,14 @@
 'use client';
 /**
- * Accounts' own parts of the shared dashboard tabs (`@ss/ui/dashboard`, PLAN 0.4.3): the custom fields in the Overview
+ * Accounts' own parts of the shared dashboard tabs (`@shelfway/ui/dashboard`, PLAN 0.4.3): the custom fields in the Overview
  * (how many there are while Custom fields is on, and a field to add while there is none) and, with the consent list
  * (A2), on top of Settings; the
  * developer sections (offline sign-in verification, widget and ticket snippets, social sign-in return addresses and the
  * message templates), which also hold the connections: the social sign-in key forms and the help line of each one.
  * @module
  */
-import { Button, Card, CodeBlock, Row, Section, Stat } from '@ss/ui';
-import { DevelopersTab, OverviewTab, SettingsTab, useLoad, useSetupSteps } from '@ss/ui/dashboard';
+import { Button, Card, CodeBlock, Row, Section, Stat } from '@shelfway/ui';
+import { DevelopersTab, OverviewTab, SettingsTab, useLoad, useSetupSteps } from '@shelfway/ui/dashboard';
 import manifest from '../../manifest.json' with { type: 'json' };
 import messages from '../../schemas/messages.json' with { type: 'json' };
 import { createSnippets } from '../../core/snippets.js';
@@ -17,7 +17,7 @@ import { FieldsSection } from './fields.js';
 import { KEY_FORMS, KeyForm } from './forms.js';
 import { TEXTS } from './texts.js';
 
-/** @type {ReadonlyArray<import('@ss/ui/dashboard').SetupRequirement>} */
+/** @type {ReadonlyArray<import('@shelfway/ui/dashboard').SetupRequirement>} */
 const SETUP = Object.freeze([
 	{
 		key: 'sign-in',
@@ -47,12 +47,12 @@ const SETUP = Object.freeze([
 	},
 ]);
 
-/** @typedef {import('@ss/ui/dashboard').TabProps} TabProps */
+/** @typedef {import('@shelfway/ui/dashboard').TabProps} TabProps */
 
 /**
  * The Overview's own part: the settings the features need set (`setup-steps.js`), and the custom fields while the feature
  * is on: the fields counted (the list is read only then), and a field to add while there is none.
- * @type {import('@ss/ui/dashboard').UseOverviewMore}
+ * @type {import('@shelfway/ui/dashboard').UseOverviewMore}
  */
 const useFieldsOverview = (overview, { websiteId, open }) => {
 	const setup = useSetupSteps({ overview, websiteId, open }, SETUP);
@@ -133,7 +133,7 @@ const connectionHint = (name) => (name === 'imported_password_pepper' ? TEXTS.co
 
 /**
  * Google, Apple and Facebook take their keys as one structured value (null: the one value field).
- * @param {import('@ss/ui/dashboard').Connection} item
+ * @param {import('@shelfway/ui/dashboard').Connection} item
  * @param {(value: unknown) => Promise<void>} save
  */
 const keyForm = (item, save) => (item.name in KEY_FORMS ? <KeyForm name={item.name} onSave={save} /> : null);

@@ -1,8 +1,8 @@
 /**
  * The Redirects feature's records in the merchant database (through the kit's tenant guard):
  *
- * - `ss_growth_redirects`: the rules, one per `from` (unique index), `{ id, from, match, to, code, note }`.
- * - `ss_growth_redirect_versions`: one document per website, `{ version }`, a new random id on every change of the
+ * - `shelfway_growth_redirects`: the rules, one per `from` (unique index), `{ id, from, match, to, code, note }`.
+ * - `shelfway_growth_redirect_versions`: one document per website, `{ version }`, a new random id on every change of the
  *   rules. It is the rule list's ETag: the website's server asks with `If-None-Match` and a 304 costs one read of this
  *   document, never of the rules.
  *
@@ -11,10 +11,10 @@
  * what the first wrote (no rule set is ever checked against a stale copy).
  * @module
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { MAX_RULES, MAX_WILDCARDS } from '../core/redirects.js';
 
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/redirects.js').Rule} Rule */
 /**
  * @typedef {{ create?: Rule[], update?: Rule[], remove?: string[] }} Writes rules to add, to replace (by id) and to
@@ -24,7 +24,7 @@ import { MAX_RULES, MAX_WILDCARDS } from '../core/redirects.js';
 const RULES = 'redirects';
 const VERSIONS = 'redirect_versions';
 
-/** Merchant database indexes of the rules and their version. @type {import('@ss/app-kit').IndexDefinition[]} */
+/** Merchant database indexes of the rules and their version. @type {import('@shelfway/app-kit').IndexDefinition[]} */
 export const REDIRECT_INDEXES = [
 	{ collection: RULES, keys: { websiteId: 1, from: 1 }, name: 'by_from', unique: true },
 	{ collection: RULES, keys: { websiteId: 1, createdAt: -1, id: -1 }, name: 'newest' },

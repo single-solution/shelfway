@@ -39,10 +39,10 @@ const crumbs = [{ label: 'Settings' }];
 const parts = (ids, body = (id) => <p>Body of {id}</p>) => ids.map((id) => ({ id, label: id.toUpperCase(), body: body(id) }));
 
 /** @param {HTMLElement} root */
-const scroller = (root) => /** @type {HTMLElement} */ (root.querySelector('[data-ss-part="body"]'));
+const scroller = (root) => /** @type {HTMLElement} */ (root.querySelector('[data-shelfway-part="body"]'));
 
 /** The jump list on wide screens. @param {HTMLElement} root */
-const jumps = (root) => [...root.querySelectorAll('nav[aria-label="Sections"] [data-ss-nav-item]')];
+const jumps = (root) => [...root.querySelectorAll('nav[aria-label="Sections"] [data-shelfway-nav-item]')];
 
 /** The bars the page draws (the body is a region too). @param {HTMLElement} root */
 const bars = (root) => [...root.querySelectorAll('[role="region"][aria-label="Save changes"]')];
@@ -54,7 +54,7 @@ const button = (root, name) =>
 describe('Page sections', () => {
 	it('draws every section at once, each a named section, with no inner navigation under four', () => {
 		const { container } = render(<Page crumbs={crumbs} sections={parts(['a', 'b', 'c'])} />);
-		const found = [...scroller(container).querySelectorAll('section[data-ss-section]')];
+		const found = [...scroller(container).querySelectorAll('section[data-shelfway-section]')];
 		expect(found.map((el) => el.id)).toEqual(['a', 'b', 'c']);
 		expect(found.map((el) => el.getAttribute('aria-label'))).toEqual(['A', 'B', 'C']);
 		expect(found.map((el) => el.textContent)).toEqual(['Body of a', 'Body of b', 'Body of c']);
@@ -117,7 +117,9 @@ describe('Page sections', () => {
 		const menu = /** @type {HTMLElement} */ (container.querySelector('button[aria-haspopup="true"]'));
 		expect(menu.textContent).toContain('A');
 		click(menu);
-		click(/** @type {HTMLElement} */ ([...container.querySelectorAll('[data-ss-inner-menu] [data-ss-nav-item]')][2]));
+		click(
+			/** @type {HTMLElement} */ ([...container.querySelectorAll('[data-shelfway-inner-menu] [data-shelfway-nav-item]')][2]),
+		);
 		expect(window.location.hash).toBe('#c');
 		expect(/** @type {HTMLElement} */ (container.querySelector('button[aria-haspopup="true"]')).textContent).toContain('C');
 	});
@@ -199,11 +201,11 @@ describe('Page sections', () => {
 
 	it('gives the loading and the error page no sections, and keeps the jump list in the skeleton', () => {
 		const loading = render(<Page crumbs={crumbs} loading sections={parts(['a', 'b', 'c', 'd'])} />);
-		expect(loading.container.querySelector('section[data-ss-section]')).toBeNull();
+		expect(loading.container.querySelector('section[data-shelfway-section]')).toBeNull();
 		expect(loading.container.querySelector('[aria-busy="true"]')).not.toBeNull();
 		cleanup();
 		const failed = render(<Page crumbs={crumbs} error="It broke" sections={parts(['a', 'b'])} />);
-		expect(failed.container.querySelector('section[data-ss-section]')).toBeNull();
+		expect(failed.container.querySelector('section[data-shelfway-section]')).toBeNull();
 		expect(failed.container.textContent).toContain('It broke');
 	});
 

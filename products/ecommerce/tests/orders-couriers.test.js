@@ -3,8 +3,8 @@
  * address, headers, body template), booking a shipment when an order ships, and the tracking status read again on
  * view at most every 30 minutes.
  */
-import { createId } from '@ss/contracts';
-import { netError } from '@ss/net';
+import { createId } from '@shelfway/contracts';
+import { netError } from '@shelfway/net';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { bookingValues, courierViolation, createCouriers } from '../adapters/couriers.js';
 import { placeOrder } from '../adapters/ledger.js';
@@ -17,7 +17,7 @@ const KIND_OF = { cod: 'on_delivery', online: 'gateway', bank_transfer: 'pay_fir
 
 /** @type {Awaited<ReturnType<typeof readyShop>>} */
 let shop;
-/** @type {import('@ss/app-kit').WebsiteData} */
+/** @type {import('@shelfway/app-kit').WebsiteData} */
 let data;
 /** @type {string} */
 let ticket;
@@ -265,7 +265,7 @@ describe('the generic courier API adapter', () => {
 		expect(
 			courierViolation(
 				{ ...KEYS, bodyTemplate: '' },
-				/** @type {any} */ ({ ...(await import('@ss/net')).createOutboundPolicy() }),
+				/** @type {any} */ ({ ...(await import('@shelfway/net')).createOutboundPolicy() }),
 			),
 		).toBeNull();
 	});

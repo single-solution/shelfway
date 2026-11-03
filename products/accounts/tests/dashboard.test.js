@@ -8,8 +8,8 @@
 import { act } from 'react';
 import { renderToString } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { DashboardProvider } from '@ss/ui/dashboard';
-import { byLabel, byText, cleanup, click, render, type } from '@ss/ui/testing';
+import { DashboardProvider } from '@shelfway/ui/dashboard';
+import { byLabel, byText, cleanup, click, render, type } from '@shelfway/ui/testing';
 import manifest from '../manifest.json' with { type: 'json' };
 import { TABS } from '../app/dashboard/tabs.js';
 import { TEXTS } from '../app/dashboard/texts.js';

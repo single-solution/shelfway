@@ -1,17 +1,17 @@
 /**
- * The website Setup sheet (`ss.blueprint/1`; PLAN.md, website setup sheet and setup advisor), pure parts: the sheet from
+ * The website Setup sheet (`shelfway.blueprint/1`; PLAN.md, website setup sheet and setup advisor), pure parts: the sheet from
  * the website's facts, its business profile and each product's answer (with the advisor's view, `advisor.js`), the
  * copy a share link shows, and the input of a new share link.
  * @module
  */
-import { BLUEPRINT_SCHEMA, PATTERNS, emptyWebsiteSettings } from '@ss/contracts';
+import { BLUEPRINT_SCHEMA, PATTERNS, emptyWebsiteSettings } from '@shelfway/contracts';
 import { adviceOf } from './advisor.js';
-import { widgetScriptTag } from '@ss/contracts/text';
+import { widgetScriptTag } from '@shelfway/contracts/text';
 
-/** @typedef {import('@ss/contracts').Blueprint} Blueprint */
-/** @typedef {import('@ss/contracts').ProductBlueprint} ProductBlueprint */
-/** @typedef {import('@ss/contracts').BusinessProfile} BusinessProfile */
-/** @typedef {import('@ss/contracts').WebsiteSettings} WebsiteSettings */
+/** @typedef {import('@shelfway/contracts').Blueprint} Blueprint */
+/** @typedef {import('@shelfway/contracts').ProductBlueprint} ProductBlueprint */
+/** @typedef {import('@shelfway/contracts').BusinessProfile} BusinessProfile */
+/** @typedef {import('@shelfway/contracts').WebsiteSettings} WebsiteSettings */
 /** @typedef {Blueprint['products'][number]} SheetProduct */
 /** @typedef {Extract<SheetProduct, { reachable: true }>} ReachableProduct */
 /** @typedef {'timeout' | 'unreachable' | 'refused' | 'invalid'} Unreachable */
@@ -133,7 +133,7 @@ export const sharedCopy = (sheet, { values, install, expiresAt }) => ({
 	...sheet,
 	products: sheet.products.map((product) => {
 		if (!product.reachable) return product;
-		/** @param {import('@ss/contracts').BlueprintSetting[]} settings */
+		/** @param {import('@shelfway/contracts').BlueprintSetting[]} settings */
 		const strip = (settings) =>
 			values ? settings : settings.map(({ key, title, default: isDefault }) => ({ key, title, default: isDefault }));
 		const { scriptUrl, scriptLoading, installed, lastSeenAt } = product.install;
@@ -187,7 +187,7 @@ export const reasonOfStatus = (status) => {
 };
 
 /**
- * The body of Switch on: `{ productId, feature }` (a product id and a feature key, `@ss/contracts` patterns).
+ * The body of Switch on: `{ productId, feature }` (a product id and a feature key, `@shelfway/contracts` patterns).
  * @param {unknown} body
  * @returns {{ ok: true, value: { productId: string, feature: string } } |
  *   { ok: false, errors: Array<{ path: string, message: string }> }}

@@ -6,7 +6,7 @@
  * @module
  */
 
-import { formatText } from '@ss/app-kit/widget';
+import { formatText } from '@shelfway/app-kit/widget';
 import { SKIP_REASONS } from '../core/gateway.js';
 
 /**

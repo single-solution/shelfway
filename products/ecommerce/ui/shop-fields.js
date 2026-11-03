@@ -106,7 +106,7 @@ export const checkoutFieldsForm = ({ doc, t }) => {
 			const kept = new Map(controls.map((item) => [item.entry.id, item]));
 			controls = list.map((entry, index) => {
 				const known = kept.get(entry.id);
-				return known ? { ...known, entry } : { entry, ...control(doc, t, entry, `ss-cart-field-${index}`) };
+				return known ? { ...known, entry } : { entry, ...control(doc, t, entry, `shelfway-cart-field-${index}`) };
 			});
 			box.replaceChildren(...controls.map((item) => item.node));
 		},

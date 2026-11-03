@@ -7,7 +7,7 @@
  * @module
  */
 import { valueLabel, variantInStock } from './catalog.js';
-import { toDecimal, zonedDay } from '@ss/contracts/format';
+import { toDecimal, zonedDay } from '@shelfway/contracts/format';
 
 /** @typedef {import('./model.js').ProductRecord} ProductRecord */
 /** @typedef {import('./model.js').VariantRecord} VariantRecord */

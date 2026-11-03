@@ -17,8 +17,16 @@
  * Ecommerce's own sections. Plain HTML; every value is escaped.
  * @module
  */
-import { apiAnchor, docsBlock, docsFeatureSections, docsList, docsOperations, docsParagraph, renderDocsPage } from '@ss/app-kit';
-import { escapeHtml } from '@ss/contracts/text';
+import {
+	apiAnchor,
+	docsBlock,
+	docsFeatureSections,
+	docsList,
+	docsOperations,
+	docsParagraph,
+	renderDocsPage,
+} from '@shelfway/app-kit';
+import { escapeHtml } from '@shelfway/contracts/text';
 import guide from '../docs/guide.json' with { type: 'json' };
 import openapi from '../openapi.json' with { type: 'json' };
 import { DEFAULT_FLOW } from '../core/flow.js';
@@ -37,7 +45,7 @@ const KNOWN = docsOperations(openapi);
  * The operation of `openapi.json` a guide route names (`POST /v1/orders/:id/move`, `GET /v1/reports/sales?by=grade` …):
  * its `[method, path]`, the one with the most fixed parts when several match, else null.
  * @param {string} route
- * @param {ReadonlyArray<import('@ss/app-kit').DocsRow>} rows
+ * @param {ReadonlyArray<import('@shelfway/app-kit').DocsRow>} rows
  * @returns {readonly [string, string] | null}
  */
 export const operationOf = (route, rows) => {

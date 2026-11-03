@@ -1,6 +1,6 @@
 /**
- * Names the widgets and the docs share (PLAN 0.4.10): the browser global of `widget.js` (`window.SS<Product>`) and
- * the attribute of the elements the merchant places for widgets (`<div data-ss-<id>="note_form"></div>`).
+ * Names the widgets and the docs share (PLAN 0.4.10): the browser global of `widget.js` (`window.Shelfway<Product>`) and
+ * the attribute of the elements the merchant places for widgets (`<div data-shelfway-<id>="note_form"></div>`).
  * @module
  */
 
@@ -8,4 +8,4 @@
 export const WIDGET_GLOBAL = '{{global}}';
 
 /** Widgets mount only into elements with this attribute; its value is the widget key from manifest.json. */
-export const WIDGET_ATTRIBUTE = 'data-ss-{{id}}';
+export const WIDGET_ATTRIBUTE = 'data-shelfway-{{id}}';

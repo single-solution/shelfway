@@ -7,10 +7,10 @@
  * refunds, subscriptions, one section per feature (`docsFeatureSections`), and the widget and ticket snippets.
  * @module
  */
-import { docsBlock, docsFeatureSections, docsOperations, docsParagraph, renderDocsPage } from '@ss/app-kit';
+import { docsBlock, docsFeatureSections, docsOperations, docsParagraph, renderDocsPage } from '@shelfway/app-kit';
 import guide from '../docs/guide.json' with { type: 'json' };
 import openapi from '../openapi.json' with { type: 'json' };
-import { escapeHtml } from '@ss/contracts/text';
+import { escapeHtml } from '@shelfway/contracts/text';
 import { GATEWAYS, GATEWAY_CURRENCIES, GATEWAY_FEATURES } from '../core/gateways.js';
 import { createSnippets, gatewayAddresses } from '../core/snippets.js';
 import { manifest } from '../adapters/product.js';

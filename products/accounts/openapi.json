@@ -13,9 +13,9 @@
 		"/v1/activity": {
 			"get": {
 				"summary": "The activity log, newest first",
-				"x-ss-auth": "server",
-				"x-ss-permission": "audit.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "audit.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -106,7 +106,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -160,10 +160,10 @@
 			"get": {
 				"summary": "Every product’s activity-log copies, newest first",
 				"description": "422 validation_failed for a filter that does not fit.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "activity_copies",
-				"x-ss-permission": "activity.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "activity_copies",
+				"x-shelfway-permission": "activity.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -265,7 +265,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -294,9 +294,9 @@
 			"post": {
 				"summary": "Send one activity-log entry (other products)",
 				"description": "Another product sends each logged staff action with this website’s Accounts server token: never message contents, secrets or addresses. 422 validation_failed when the entry does not fit or is for another website.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "activity_copies",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "activity_copies",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -304,7 +304,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -435,10 +435,10 @@
 		"/v1/activity-copies/count": {
 			"get": {
 				"summary": "Count the activity-log copies (the list’s filters)",
-				"x-ss-auth": "server",
-				"x-ss-feature": "activity_copies",
-				"x-ss-permission": "activity.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "activity_copies",
+				"x-shelfway-permission": "activity.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -519,7 +519,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -550,10 +550,10 @@
 			"get": {
 				"summary": "Count the activity-log copies by product, action or actor",
 				"description": "by=actor groups by the actor’s id.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "activity_copies",
-				"x-ss-permission": "activity.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "activity_copies",
+				"x-shelfway-permission": "activity.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -647,7 +647,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -677,9 +677,9 @@
 		"/v1/activity/count": {
 			"get": {
 				"summary": "Count the activity log",
-				"x-ss-auth": "server",
-				"x-ss-permission": "audit.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "audit.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -737,7 +737,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -767,9 +767,9 @@
 		"/v1/activity/counts": {
 			"get": {
 				"summary": "Count the activity log by action, actor or kind",
-				"x-ss-auth": "server",
-				"x-ss-permission": "audit.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "audit.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -840,7 +840,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -871,9 +871,9 @@
 			"get": {
 				"summary": "Every product’s activity-log copies, newest first (Activity admin widget)",
 				"description": "422 validation_failed for a filter that does not fit.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "activity_copies",
-				"x-ss-permission": "activity.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "activity_copies",
+				"x-shelfway-permission": "activity.read",
 				"security": [
 					{
 						"ticket": []
@@ -1002,9 +1002,9 @@
 		"/v1/admin/activity-copies/count": {
 			"get": {
 				"summary": "Count the activity-log copies (the list’s filters) (Activity admin widget)",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "activity_copies",
-				"x-ss-permission": "activity.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "activity_copies",
+				"x-shelfway-permission": "activity.read",
 				"security": [
 					{
 						"ticket": []
@@ -1113,9 +1113,9 @@
 			"get": {
 				"summary": "Count the activity-log copies by product, action or actor (Activity admin widget)",
 				"description": "by=actor groups by the actor’s id.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "activity_copies",
-				"x-ss-permission": "activity.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "activity_copies",
+				"x-shelfway-permission": "activity.read",
 				"security": [
 					{
 						"ticket": []
@@ -1237,9 +1237,9 @@
 			"get": {
 				"summary": "The custom fields",
 				"description": "Every custom field in your order, staff-only ones too, for the Users admin widget.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "custom_fields",
+				"x-shelfway-permission": "users.read",
 				"security": [
 					{
 						"ticket": []
@@ -1286,9 +1286,9 @@
 		"/v1/admin/role-requests": {
 			"get": {
 				"summary": "The role requests, newest first (Users admin widget)",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "role_requests",
-				"x-ss-permission": "users.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "role_requests",
+				"x-shelfway-permission": "users.read",
 				"security": [
 					{
 						"ticket": []
@@ -1371,9 +1371,9 @@
 		"/v1/admin/role-requests/count": {
 			"get": {
 				"summary": "Count the role requests (the list’s filters) (Users admin widget)",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "role_requests",
-				"x-ss-permission": "users.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "role_requests",
+				"x-shelfway-permission": "users.read",
 				"security": [
 					{
 						"ticket": []
@@ -1436,9 +1436,9 @@
 			"get": {
 				"summary": "Count the role requests by status or role (Users admin widget)",
 				"description": "by=status groups the stored status: an expired request counts as invited.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "role_requests",
-				"x-ss-permission": "users.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "role_requests",
+				"x-shelfway-permission": "users.read",
 				"security": [
 					{
 						"ticket": []
@@ -1513,9 +1513,9 @@
 			"get": {
 				"summary": "One role request (Users admin widget)",
 				"description": "The row the list gives, its status judged now (expired once an invite's setup link ran out). Read with the permission of the list (users.read). 404 not_found for an unknown id.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "role_requests",
-				"x-ss-permission": "users.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "role_requests",
+				"x-shelfway-permission": "users.read",
 				"security": [
 					{
 						"ticket": []
@@ -1558,10 +1558,10 @@
 		"/v1/admin/role-requests/{id}/decline": {
 			"post": {
 				"summary": "Decline a pending or invited role request (Users admin widget)",
-				"description": "A pending request, or an invited one whose setup link still works or ran out. An invited request’s link stops working (its lookup says canceled), and what the invite did is undone: a user the invite created who was never signed in to and has no password is removed from Accounts (the request’s userId becomes null); otherwise, when the invite gave the role and the user still holds it, they get their role from before back. 409 conflict when it is completed or declined; 404 not_found. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "role_requests",
-				"x-ss-permission": "users.manage",
+				"description": "A pending request, or an invited one whose setup link still works or ran out. An invited request’s link stops working (its lookup says canceled), and what the invite did is undone: a user the invite created who was never signed in to and has no password is removed from Accounts (the request’s userId becomes null); otherwise, when the invite gave the role and the user still holds it, they get their role from before back. 409 conflict when it is completed or declined; 404 not_found. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "role_requests",
+				"x-shelfway-permission": "users.manage",
 				"security": [
 					{
 						"ticket": []
@@ -1604,10 +1604,10 @@
 		"/v1/admin/role-requests/{id}/invite": {
 			"post": {
 				"summary": "Invite the person of a pending request (Users admin widget)",
-				"description": "Creates their user, or finds the user with that phone number (else email address), and answers a setup link for your staff to send, unless the user already has a password (the request is then completed). The role is given at the invite, or with Role requests → giveRoleAt set to completion when the request is completed (a new user has the default role until then, an existing user keeps theirs). 409 contact_unverified when that user never proved the phone or email and someone signed in to it (check with the person, confirm it on their user or remove that account, then invite again); 409 conflict when the request is not pending, its role is gone, another user has the contact, or the user's role ranks above the request's (a user has one role and a request never lowers it: change the role on their user if that is what you want); 404 not_found. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "role_requests",
-				"x-ss-permission": "users.manage",
+				"description": "Creates their user, or finds the user with that phone number (else email address), and answers a setup link for your staff to send, unless the user already has a password (the request is then completed). The role is given at the invite, or with Role requests → giveRoleAt set to completion when the request is completed (a new user has the default role until then, an existing user keeps theirs). 409 contact_unverified when that user never proved the phone or email and someone signed in to it (check with the person, confirm it on their user or remove that account, then invite again); 409 conflict when the request is not pending, its role is gone, another user has the contact, or the user's role ranks above the request's (a user has one role and a request never lowers it: change the role on their user if that is what you want); 404 not_found. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "role_requests",
+				"x-shelfway-permission": "users.manage",
 				"security": [
 					{
 						"ticket": []
@@ -1676,9 +1676,9 @@
 			"post": {
 				"summary": "Open a declined or expired role request again (Users admin widget)",
 				"description": "It becomes pending. 409 conflict otherwise; 404 not_found.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "role_requests",
-				"x-ss-permission": "users.manage",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "role_requests",
+				"x-shelfway-permission": "users.manage",
 				"security": [
 					{
 						"ticket": []
@@ -1721,10 +1721,10 @@
 		"/v1/admin/role-requests/{id}/setup-link": {
 			"post": {
 				"summary": "A new setup link for an invited role request (Users admin widget)",
-				"description": "For a request whose setup link still works or ran out (status invited or expired): the old link stops working (its lookup says canceled) and the request ends with the new one. A user who has a password by now completes the request at once (setupLink null; the role is given then with giveRoleAt completion). 409 conflict when the request is not invited, its role is gone or its user no longer exists (decline it, open it again and invite); 403 blocked; 404 not_found; 422 validation_failed when setupPageUrl is not a page of your website. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "role_requests",
-				"x-ss-permission": "users.manage",
+				"description": "For a request whose setup link still works or ran out (status invited or expired): the old link stops working (its lookup says canceled) and the request ends with the new one. A user who has a password by now completes the request at once (setupLink null; the role is given then with giveRoleAt completion). 409 conflict when the request is not invited, its role is gone or its user no longer exists (decline it, open it again and invite); 403 blocked; 404 not_found; 422 validation_failed when setupPageUrl is not a page of your website. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "role_requests",
+				"x-shelfway-permission": "users.manage",
 				"security": [
 					{
 						"ticket": []
@@ -1793,9 +1793,9 @@
 			"get": {
 				"summary": "The roles (Users and Roles admin widgets)",
 				"description": "Highest rank first, with the role for new sign-ups. The ready-made templates are made on first use; then they are your roles to change or delete.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.read",
 				"security": [
 					{
 						"ticket": []
@@ -1849,9 +1849,9 @@
 			"get": {
 				"summary": "The permissions roles can grant (Roles admin widget)",
 				"description": "Accounts’ own, each product’s on the same website (its GET /v1/permissions, kept 5 minutes) and your own names (source site).",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "roles.manage",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "roles.manage",
 				"security": [
 					{
 						"ticket": []
@@ -1905,9 +1905,9 @@
 			"put": {
 				"summary": "Replace your own permission names (Roles admin widget)",
 				"description": "422 validation_failed for permissions.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "roles.manage",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "roles.manage",
 				"security": [
 					{
 						"ticket": []
@@ -1976,9 +1976,9 @@
 			"delete": {
 				"summary": "Delete a role",
 				"description": "Any role but Owner and the role for new sign-ups (409 conflict: choose another role for new sign-ups first); the ready-made templates too, for good. Its users get the role for new sign-ups. 404 not_found for an unknown key.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "roles.manage",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "roles.manage",
 				"security": [
 					{
 						"ticket": []
@@ -2013,9 +2013,9 @@
 			"put": {
 				"summary": "Save a role (Roles admin widget)",
 				"description": "Creates the role or replaces it; the key is the path’s (2–40 lower-case letters, digits or _). Owner keeps every permission and rank 100. 422 validation_failed for the field, or for a role past the website’s limit of 100 roles.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "roles.manage",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "roles.manage",
 				"security": [
 					{
 						"ticket": []
@@ -2069,9 +2069,9 @@
 			"get": {
 				"summary": "The users, newest first (Users admin widget)",
 				"description": "Customers and staff in one list; filters combine.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.read",
 				"security": [
 					{
 						"ticket": []
@@ -2267,10 +2267,10 @@
 			},
 			"post": {
 				"summary": "Add a user (Users admin widget)",
-				"description": "An active user with a name and an email address or a phone number (both marked verified); nothing is sent. 422 validation_failed for the field, weak_password; 409 already_exists when another user has the address or number. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.manage",
+				"description": "An active user with a name and an email address or a phone number (both marked verified); nothing is sent. 422 validation_failed for the field, weak_password; 409 already_exists when another user has the address or number. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.manage",
 				"security": [
 					{
 						"ticket": []
@@ -2374,9 +2374,9 @@
 		"/v1/admin/users/count": {
 			"get": {
 				"summary": "Count the users (the list’s filters) (Users admin widget)",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.read",
 				"security": [
 					{
 						"ticket": []
@@ -2554,9 +2554,9 @@
 			"get": {
 				"summary": "Count the users by status or role (Users admin widget)",
 				"description": "by=status groups the stored status (active, pending, invited); count blocked users with status=blocked.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.read",
 				"security": [
 					{
 						"ticket": []
@@ -2745,10 +2745,10 @@
 		"/v1/admin/users/invite": {
 			"post": {
 				"summary": "Invite someone with a role (Users admin widget)",
-				"description": "Makes an invited user and sends the invite link (inviteDays, default 7) by email when there is an address, else by SMS or WhatsApp (template accounts.invite); with deliver: return nothing is sent and the link comes back. 422 validation_failed for the field, or when invitePageUrl is not a page of your website; 409 already_exists; 503 notifications_not_connected and 502 not_sent (the invited user is removed again). 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "approval",
-				"x-ss-permission": "users.manage",
+				"description": "Makes an invited user and sends the invite link (inviteDays, default 7) by email when there is an address, else by SMS or WhatsApp (template accounts.invite); with deliver: return nothing is sent and the link comes back. 422 validation_failed for the field, or when invitePageUrl is not a page of your website; 409 already_exists; 503 notifications_not_connected and 502 not_sent (the invited user is removed again). 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "approval",
+				"x-shelfway-permission": "users.manage",
 				"security": [
 					{
 						"ticket": []
@@ -2830,9 +2830,9 @@
 			"get": {
 				"summary": "The tags",
 				"description": "Your tags with how many users have each, by name.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.read",
 				"security": [
 					{
 						"ticket": []
@@ -2894,9 +2894,9 @@
 			"get": {
 				"summary": "The saved views",
 				"description": "The users list's saved views, in your order.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.read",
 				"security": [
 					{
 						"ticket": []
@@ -2942,9 +2942,9 @@
 			"put": {
 				"summary": "Order the saved views",
 				"description": "422 validation_failed for order unless it holds every view key once.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.manage",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.manage",
 				"security": [
 					{
 						"ticket": []
@@ -3016,9 +3016,9 @@
 			"delete": {
 				"summary": "Delete a saved view",
 				"description": "404 not_found for an unknown key.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.manage",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.manage",
 				"security": [
 					{
 						"ticket": []
@@ -3053,9 +3053,9 @@
 			"put": {
 				"summary": "Save a view",
 				"description": "Creates the view or replaces it; the key is the path’s (1–40 lower-case letters, digits or _). 422 validation_failed for the field, or for the 51st view.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.manage",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.manage",
 				"security": [
 					{
 						"ticket": []
@@ -3127,10 +3127,10 @@
 		"/v1/admin/users/{id}": {
 			"delete": {
 				"summary": "Delete a user (Users admin widget)",
-				"description": "scope=all (default) erases the user at once here and in every connected product, as an approved deletion request does; scope=accounts removes them from Accounts only (the user, their sessions and codes) and every other product keeps its data: use it to remove someone from your team. 404 not_found; 422 validation_failed for scope. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.manage",
+				"description": "scope=all (default) erases the user at once here and in every connected product, as an approved deletion request does; scope=accounts removes them from Accounts only (the user, their sessions and codes) and every other product keeps its data: use it to remove someone from your team. 404 not_found; 422 validation_failed for scope. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.manage",
 				"security": [
 					{
 						"ticket": []
@@ -3201,9 +3201,9 @@
 			"get": {
 				"summary": "Read a user (Users admin widget)",
 				"description": "404 not_found.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.read",
 				"security": [
 					{
 						"ticket": []
@@ -3244,10 +3244,10 @@
 			},
 			"patch": {
 				"summary": "Change a user (Users admin widget)",
-				"description": "Only the members sent change. Blocking, and a new password, sign the user out everywhere. 404 not_found; 422 validation_failed for the field, weak_password; 409 already_exists when another user has the address or number. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.manage",
+				"description": "Only the members sent change. Blocking, and a new password, sign the user out everywhere. 404 not_found; 422 validation_failed for the field, weak_password; 409 already_exists when another user has the address or number. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.manage",
 				"security": [
 					{
 						"ticket": []
@@ -3366,9 +3366,9 @@
 			"post": {
 				"summary": "Approve a sign-up that waits for approval (Users admin widget)",
 				"description": "409 conflict when the user is not waiting; 404 not_found.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "approval",
-				"x-ss-permission": "users.manage",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "approval",
+				"x-shelfway-permission": "users.manage",
 				"security": [
 					{
 						"ticket": []
@@ -3411,10 +3411,10 @@
 		"/v1/admin/users/{id}/decline": {
 			"post": {
 				"summary": "Decline a sign-up that waits for approval (Users admin widget)",
-				"description": "The account is removed. 409 conflict when the user is not waiting; 404 not_found. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "approval",
-				"x-ss-permission": "users.manage",
+				"description": "The account is removed. 409 conflict when the user is not waiting; 404 not_found. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "approval",
+				"x-shelfway-permission": "users.manage",
 				"security": [
 					{
 						"ticket": []
@@ -3450,10 +3450,10 @@
 		"/v1/admin/users/{id}/deletion/approve": {
 			"post": {
 				"summary": "Approve a user’s deletion request (Users admin widget)",
-				"description": "Erases the user here and in every connected product. 409 conflict when the user did not ask; 404 not_found. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "data_rights",
-				"x-ss-permission": "users.manage",
+				"description": "Erases the user here and in every connected product. 409 conflict when the user did not ask; 404 not_found. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "data_rights",
+				"x-shelfway-permission": "users.manage",
 				"security": [
 					{
 						"ticket": []
@@ -3497,9 +3497,9 @@
 			"post": {
 				"summary": "Keep the account: drop a user’s deletion request (Users admin widget)",
 				"description": "409 conflict when the user did not ask; 404 not_found.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "data_rights",
-				"x-ss-permission": "users.manage",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "data_rights",
+				"x-shelfway-permission": "users.manage",
 				"security": [
 					{
 						"ticket": []
@@ -3542,10 +3542,10 @@
 		"/v1/admin/users/{id}/setup-link": {
 			"post": {
 				"summary": "A setup link for a user (Users admin widget)",
-				"description": "The user chooses a password with it (POST /v1/setup-links/accept), also without an email address; valid setupDays (default 7). The link is your setupPageUrl with {code} replaced, else that page (or your website’s home page) with ?ss_setup=<code>. A new one cancels the old. 403 blocked; 404 not_found; 422 validation_failed when setupPageUrl is not a page of your website. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.manage",
+				"description": "The user chooses a password with it (POST /v1/setup-links/accept), also without an email address; valid setupDays (default 7). The link is your setupPageUrl with {code} replaced, else that page (or your website’s home page) with ?shelfway_setup=<code>. A new one cancels the old. 403 blocked; 404 not_found; 422 validation_failed when setupPageUrl is not a page of your website. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "staff_links",
+				"x-shelfway-permission": "users.manage",
 				"security": [
 					{
 						"ticket": []
@@ -3588,10 +3588,10 @@
 		"/v1/admin/users/{id}/sign-in-code": {
 			"post": {
 				"summary": "A one-time sign-in code for a user (Users admin widget)",
-				"description": "6 digits for your staff to give the user (never sent), valid 15 minutes, single use; typed into the phone code, email code or phone + password screen. A new one cancels the old. 403 blocked; 404 not_found. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.manage",
+				"description": "6 digits for your staff to give the user (never sent), valid 15 minutes, single use; typed into the phone code, email code or phone + password screen. A new one cancels the old. 403 blocked; 404 not_found. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "staff_links",
+				"x-shelfway-permission": "users.manage",
 				"security": [
 					{
 						"ticket": []
@@ -3650,9 +3650,9 @@
 			"post": {
 				"summary": "Sign a user out of every device (Users admin widget)",
 				"description": "Sign-ins already given end within 15 minutes. 404 not_found.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.manage",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.manage",
 				"security": [
 					{
 						"ticket": []
@@ -3688,9 +3688,9 @@
 		"/v1/connections": {
 			"get": {
 				"summary": "Connections (whether set, and how the last test went; never a value)",
-				"x-ss-auth": "server",
-				"x-ss-permission": "connections.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "connections.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3698,7 +3698,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -3739,10 +3739,10 @@
 		},
 		"/v1/connections/{name}": {
 			"delete": {
-				"summary": "Remove a provider key. The database, the storage and the links are the Portal's: 409 managed_by_portal",
-				"x-ss-auth": "server",
-				"x-ss-permission": "connections.manage",
-				"x-ss-access": "staff",
+				"summary": "Remove a provider key. The database, the storage and the links are the Portal's: 409 managed_by_platform",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "connections.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3758,7 +3758,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -3778,10 +3778,10 @@
 				}
 			},
 			"put": {
-				"summary": "Save a provider key ({ value }), tested live. The database, the storage and the links are the Portal's: 409 managed_by_portal",
-				"x-ss-auth": "server",
-				"x-ss-permission": "connections.manage",
-				"x-ss-access": "staff",
+				"summary": "Save a provider key ({ value }), tested live. The database, the storage and the links are the Portal's: 409 managed_by_platform",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "connections.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3797,7 +3797,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -3849,9 +3849,9 @@
 		"/v1/connections/{name}/test": {
 			"post": {
 				"summary": "Test a connection again",
-				"x-ss-auth": "server",
-				"x-ss-permission": "connections.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "connections.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3867,7 +3867,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -3898,10 +3898,10 @@
 			"get": {
 				"summary": "The consent list",
 				"description": "Your consents in your order (the terms consent is made on first use).",
-				"x-ss-auth": "server",
-				"x-ss-feature": "consents",
-				"x-ss-permission": "users.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "consents",
+				"x-shelfway-permission": "users.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3909,7 +3909,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -3952,8 +3952,8 @@
 		"/v1/data-rights/delete": {
 			"post": {
 				"summary": "Delete one user's records",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -3961,7 +3961,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -4044,8 +4044,8 @@
 		"/v1/data-rights/export": {
 			"post": {
 				"summary": "Export one user's records",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -4053,7 +4053,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -4133,8 +4133,8 @@
 		"/v1/features": {
 			"get": {
 				"summary": "Features with on/off and hourly price",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -4142,7 +4142,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -4211,10 +4211,10 @@
 			"get": {
 				"summary": "The custom fields",
 				"description": "Every custom field in your order, staff-only ones too (the visitor widgets get only the fields the user sees).",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "custom_fields",
+				"x-shelfway-permission": "users.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -4222,7 +4222,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -4266,8 +4266,8 @@
 			"get": {
 				"summary": "The custom fields a user sees",
 				"description": "The definitions sign-up and My account show, in your order: label, type, choices, help and whether the user edits the field (edit) or only sees it (view). Staff-only fields are not in it. Open to the browser and to your server, with no sign-in, like the widgets. The full list is `GET /v1/fields`, a staff route.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "roles",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": "custom_fields",
 				"security": [
 					{
 						"browserToken": []
@@ -4278,10 +4278,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -4325,8 +4325,8 @@
 			"get": {
 				"summary": "The Format of money and dates",
 				"description": "The website's Format from the Portal (sources `portal`: Website settings › Region and format); the built-in Format (sources `built-in`) while the Portal holds no settings yet.",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -4334,7 +4334,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -4362,10 +4362,10 @@
 			},
 			"put": {
 				"summary": "The Format is set in the Portal",
-				"description": "Always answers 409 managed_by_portal: the Format is set once for every product, in the Portal (Website settings › Region and format).",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"description": "Always answers 409 managed_by_platform: the Format is set once for every product, in the Portal (Website settings › Region and format).",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -4373,7 +4373,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -4467,9 +4467,9 @@
 			"post": {
 				"summary": "Finish an import",
 				"description": "Accounts derives nothing: it reports users whose role does not exist (they act as customer until it is imported) and role requests whose user is gone.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "import",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "import",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -4477,7 +4477,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -4525,10 +4525,10 @@
 		},
 		"/v1/import/status": {
 			"get": {
-				"summary": "What the import holds now (ss-import verify)",
-				"x-ss-auth": "server",
-				"x-ss-feature": "import",
-				"x-ss-access": "runtime",
+				"summary": "What the import holds now (shelfway-import verify)",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "import",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -4536,7 +4536,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -4657,9 +4657,9 @@
 			"post": {
 				"summary": "Import records (NDJSON)",
 				"description": "collection: roles and fields (found by key), users (usr_…), requests (rrq_…) or copies, in that order (a user’s role must exist); 404 not_found for another. Send application/x-ndjson, one record of Accounts’ own shape per line, at most 1,000 records or 4 MB (413 payload_too_large; 415 unsupported_media_type). Each record replaces the stored one with its key; an unknown field (websiteId too) refuses the record by name. A user's roleSince defaults to its createdAt; a user or request without createdAt keeps the one stored, else gets the time of the import. Users keep their password hashes (bcrypt, pbkdf2$… with the imported_password_pepper connection, scrypt$…) and two-step secrets (sealed at once); an email address or phone number another user holds is refused. Nothing is sent.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "import",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "import",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -4689,7 +4689,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -4787,9 +4787,9 @@
 			"post": {
 				"summary": "Remove imported records the source no longer has",
 				"description": "Removes the records an import wrote whose key lies after after and up to through (open ends when left out) and is not in keep, at most 1,000 per call (more: true: call again). Send the source’s keys sorted (byte order of their UTF-8), cut into calls. Only records an import wrote are removed: records made in Accounts itself stay, and a removed ready-made role comes back with its defaults. 422 validation_failed for keep; 413 payload_too_large over 1,000 keys.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "import",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "import",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -4819,7 +4819,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -4917,9 +4917,9 @@
 		"/v1/invites/accept": {
 			"post": {
 				"summary": "Accept an invite and sign in",
-				"description": "The invite’s token comes from the link (#ss_accounts_invite=<token>). The account becomes active, its email address (else phone number) proven; a password is set when the method is on (Email + password for a user with an email address, Phone + password for one with a phone number). 422 code_invalid (not valid, used or expired), weak_password, validation_failed (name). 403 blocked, pending_approval, sign_in_paused (the detail is your paused text) or method_refused (the user’s role); 403 consent_required (with the consents still asked) until they are given in consents.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "approval",
+				"description": "The invite’s token comes from the link (#shelfway_accounts_invite=<token>). The account becomes active, its email address (else phone number) proven; a password is set when the method is on (Email + password for a user with an email address, Phone + password for one with a phone number). 422 code_invalid (not valid, used or expired), weak_password, validation_failed (name). 403 blocked, pending_approval, sign_in_paused (the detail is your paused text) or method_refused (the user’s role); 403 consent_required (with the consents still asked) until they are given in consents.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": "approval",
 				"security": [
 					{
 						"browserToken": []
@@ -4930,10 +4930,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -5010,8 +5010,8 @@
 		"/v1/lists/{list}": {
 			"get": {
 				"summary": "A list setting ({ value })",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -5027,7 +5027,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -5064,9 +5064,9 @@
 			},
 			"put": {
 				"summary": "Save a whole list setting ({ value })",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -5082,7 +5082,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -5137,10 +5137,19 @@
 		"/v1/lookup/me": {
 			"get": {
 				"summary": "The signed-in user, for another product",
-				"description": "The same answer as GET /v1/me, for another product of the website that holds the signed-in person's Accounts sign-in (Ecommerce asks for the shopper's name and city). Called with the server token or with a link key that holds the scope me.read, and the sign-in in SS-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked).",
-				"x-ss-auth": "server",
-				"x-ss-feature": "sign_in",
-				"x-ss-access": "runtime",
+				"description": "The same answer as GET /v1/me, for another product of the website that holds the signed-in person's Accounts sign-in (Ecommerce asks for the shopper's name and city). Called with the server token or with a link key that holds the scope me.read, and the sign-in in Shelfway-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked).",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": [
+					"phone_code",
+					"phone_password",
+					"email_password",
+					"email_code",
+					"google",
+					"apple",
+					"facebook",
+					"sign_in"
+				],
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -5148,7 +5157,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -5178,9 +5187,18 @@
 		"/v1/me": {
 			"get": {
 				"summary": "The signed-in user",
-				"description": "Send the sign-in in SS-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked).",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"description": "Send the sign-in in Shelfway-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked).",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"phone_code",
+					"phone_password",
+					"email_password",
+					"email_code",
+					"google",
+					"apple",
+					"facebook",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -5191,10 +5209,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -5222,9 +5240,18 @@
 			},
 			"patch": {
 				"summary": "Change the signed-in user’s name, custom fields or addresses",
-				"description": "Send the sign-in in SS-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). The email address and phone number change only by signing in with them. 422 validation_failed for the field; 403 feature_off for custom while Custom fields is off.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"description": "Send the sign-in in Shelfway-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). The email address and phone number change only by signing in with them. 422 validation_failed for the field; 403 feature_off for custom while Custom fields is off.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"phone_code",
+					"phone_password",
+					"email_password",
+					"email_code",
+					"google",
+					"apple",
+					"facebook",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -5235,10 +5262,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -5296,11 +5323,13 @@
 		"/v1/me/confirm-code": {
 			"post": {
 				"summary": "Send a fresh code to prove the person (users without a password)",
-				"description": "Send the sign-in in SS-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). For a user without a password: a 6-digit code goes to the proven email address (else the proven phone number), and the password and two-step changes take it as confirmCode. The usual code limits apply (429 code_cooldown with retryAt, or code_limit). 409 conflict when the user has a password (type it instead) or neither address nor number was proven.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": [
-					"sign_in",
-					"two_step"
+				"description": "Send the sign-in in Shelfway-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). For a user without a password: a 6-digit code goes to the proven email address (else the proven phone number), and the password and two-step changes take it as confirmCode. The usual code limits apply (429 code_cooldown with retryAt, or code_limit). 409 conflict when the user has a password (type it instead) or neither address nor number was proven.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"email_password",
+					"phone_password",
+					"two_step",
+					"sign_in"
 				],
 				"security": [
 					{
@@ -5312,10 +5341,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -5365,8 +5394,8 @@
 			"post": {
 				"summary": "Give or withdraw consents",
 				"description": "{ consents: { key: true | false } }: each answer is recorded in the consent’s current version with the time; a required agreement cannot be withdrawn (422 validation_failed for consents/<key>). Answers the user as GET /v1/me does.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "consents",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": "consents",
 				"security": [
 					{
 						"browserToken": []
@@ -5377,10 +5406,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -5436,9 +5465,9 @@
 		"/v1/me/delete": {
 			"post": {
 				"summary": "Delete my account",
-				"description": "Send the sign-in in SS-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). Waits for your approval (Users admin widget, POST /v1/users/:id/deletion/approve), or until dueAt when Data rights deleteAfterDays is set; then the user is erased here and in every connected product. Asking again keeps the first request.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "data_rights",
+				"description": "Send the sign-in in Shelfway-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). Waits for your approval (Users admin widget, POST /v1/users/:id/deletion/approve), or until dueAt when Data rights deleteAfterDays is set; then the user is erased here and in every connected product. Asking again keeps the first request.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": "data_rights",
 				"security": [
 					{
 						"browserToken": []
@@ -5449,10 +5478,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -5502,9 +5531,9 @@
 		"/v1/me/export": {
 			"post": {
 				"summary": "Download my data",
-				"description": "Send the sign-in in SS-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). One single-use link of 15 minutes (GET, no token) to a JSON file of everything Accounts and each product on the same website keep about the user; a product that cannot be reached is marked unavailable.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "data_rights",
+				"description": "Send the sign-in in Shelfway-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). One single-use link of 15 minutes (GET, no token) to a JSON file of everything Accounts and each product on the same website keep about the user; a product that cannot be reached is marked unavailable.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": "data_rights",
 				"security": [
 					{
 						"browserToken": []
@@ -5515,10 +5544,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -5548,9 +5577,9 @@
 		"/v1/me/orders": {
 			"get": {
 				"summary": "The signed-in user’s last 20 orders (Orders tab)",
-				"description": "Send the sign-in in SS-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). From Ecommerce through the Portal's link to it, newest first, as Ecommerce answers them. 503 product_not_connected without Ecommerce or when it cannot answer.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "roles",
+				"description": "Send the sign-in in Shelfway-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). From Ecommerce through the Portal's link to it, newest first, as Ecommerce answers them. 503 product_not_connected without Ecommerce or when it cannot answer.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": "orders_tab",
 				"security": [
 					{
 						"browserToken": []
@@ -5561,10 +5590,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -5639,9 +5668,13 @@
 		"/v1/me/password": {
 			"put": {
 				"summary": "Set or change the signed-in user’s password",
-				"description": "Send the sign-in in SS-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). Users with an email address while Email + password is on, else users with a phone number while Phone + password is on (422 validation_failed otherwise), with that method’s rules (422 weak_password). Every other device signs in again. 401 sign_in_failed when current is wrong. Without a password, the change needs a fresh code (confirmCode); 422 code_invalid for a missing, wrong or used code. 423 locked while wrong passwords hold the account.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"description": "Send the sign-in in Shelfway-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). Users with an email address while Email + password is on, else users with a phone number while Phone + password is on (422 validation_failed otherwise), with that method’s rules (422 weak_password). Every other device signs in again. 401 sign_in_failed when current is wrong. Without a password, the change needs a fresh code (confirmCode); 422 code_invalid for a missing, wrong or used code. 423 locked while wrong passwords hold the account.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"email_password",
+					"phone_password",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -5652,10 +5685,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -5704,9 +5737,18 @@
 		"/v1/me/sessions": {
 			"get": {
 				"summary": "The signed-in user’s devices",
-				"description": "Send the sign-in in SS-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). Open sessions, most recently used first.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"description": "Send the sign-in in Shelfway-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). Open sessions, most recently used first.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"phone_code",
+					"phone_password",
+					"email_password",
+					"email_code",
+					"google",
+					"apple",
+					"facebook",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -5717,10 +5759,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -5763,9 +5805,18 @@
 		"/v1/me/sessions/{id}": {
 			"delete": {
 				"summary": "Sign one device out",
-				"description": "Send the sign-in in SS-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). 404 not_found when the session is not the user’s or already ended.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"description": "Send the sign-in in Shelfway-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). 404 not_found when the session is not the user’s or already ended.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"phone_code",
+					"phone_password",
+					"email_password",
+					"email_code",
+					"google",
+					"apple",
+					"facebook",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -5784,10 +5835,10 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -5810,9 +5861,18 @@
 		"/v1/me/sign-out-everywhere": {
 			"post": {
 				"summary": "Sign out of every device, this one too",
-				"description": "Send the sign-in in SS-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). Sign-ins already given end within 15 minutes.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"description": "Send the sign-in in Shelfway-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). Sign-ins already given end within 15 minutes.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"phone_code",
+					"phone_password",
+					"email_password",
+					"email_code",
+					"google",
+					"apple",
+					"facebook",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -5823,10 +5883,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -5849,9 +5909,9 @@
 		"/v1/me/two-step/disable": {
 			"post": {
 				"summary": "Turn two-step sign-in off",
-				"description": "Send the sign-in in SS-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). Answers 204 when it is off already. 403 two_step_required when the user’s role requires it; 422 code_invalid. Needs the current password or a fresh code (confirmCode) as well as the code from the app (401 sign_in_failed, 422 code_invalid).",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "two_step",
+				"description": "Send the sign-in in Shelfway-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). Answers 204 when it is off already. 403 two_step_required when the user’s role requires it; 422 code_invalid. Needs the current password or a fresh code (confirmCode) as well as the code from the app (401 sign_in_failed, 422 code_invalid).",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": "two_step",
 				"security": [
 					{
 						"browserToken": []
@@ -5862,10 +5922,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -5915,9 +5975,9 @@
 		"/v1/me/two-step/enable": {
 			"post": {
 				"summary": "Turn two-step sign-in on with the first code",
-				"description": "Send the sign-in in SS-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). 422 code_invalid for a wrong code (5 wrong codes end the setup) or a setup that is not this user’s or has expired.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "two_step",
+				"description": "Send the sign-in in Shelfway-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). 422 code_invalid for a wrong code (5 wrong codes end the setup) or a setup that is not this user’s or has expired.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": "two_step",
 				"security": [
 					{
 						"browserToken": []
@@ -5928,10 +5988,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -6001,9 +6061,9 @@
 		"/v1/me/two-step/recovery-codes": {
 			"post": {
 				"summary": "New recovery codes",
-				"description": "Send the sign-in in SS-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). A code from the app or one recovery code proves the step; the old codes stop working. Wrong codes count toward the lock (422 code_invalid); 423 locked (with lockedUntil); 409 conflict while two-step sign-in is off.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "two_step",
+				"description": "Send the sign-in in Shelfway-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). A code from the app or one recovery code proves the step; the old codes stop working. Wrong codes count toward the lock (422 code_invalid); 423 locked (with lockedUntil); 409 conflict while two-step sign-in is off.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": "two_step",
 				"security": [
 					{
 						"browserToken": []
@@ -6014,10 +6074,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -6083,9 +6143,9 @@
 		"/v1/me/two-step/setup": {
 			"post": {
 				"summary": "Start setting up two-step sign-in",
-				"description": "Send the sign-in in SS-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). The secret waits 10 minutes for POST /v1/me/two-step/enable. 409 conflict while two-step sign-in is on (and its secret still opens). Needs the current password, or for a user without one a fresh code (confirmCode), as the password change does (401 sign_in_failed, 422 code_invalid). The challenge is for POST /v1/me/two-step/enable only: POST /v1/sign-in/two-step refuses it.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "two_step",
+				"description": "Send the sign-in in Shelfway-Sign-In (401 signed_out when it is not valid, its session ended or the user is blocked). The secret waits 10 minutes for POST /v1/me/two-step/enable. 409 conflict while two-step sign-in is on (and its secret still opens). Needs the current password, or for a user without one a fresh code (confirmCode), as the password change does (401 sign_in_failed, 422 code_invalid). The challenge is for POST /v1/me/two-step/enable only: POST /v1/sign-in/two-step refuses it.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": "two_step",
 				"security": [
 					{
 						"browserToken": []
@@ -6096,10 +6156,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -6170,9 +6230,12 @@
 		"/v1/password/forgot": {
 			"post": {
 				"summary": "Send a password reset link by email",
-				"description": "Answers 202 at once, the same for every address. The link (valid 60 minutes) opens returnTo with #ss_accounts_reset=<token>, and goes only to an account with a password whose address was proven or is the one it was made with; a link Notifications cannot send now is sent again on later requests while it is valid. 422 validation_failed for email or returnTo; 429 rate_limited after 3 requests for the address in 15 minutes.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"description": "Answers 202 at once, the same for every address. The link (valid 60 minutes) opens returnTo with #shelfway_accounts_reset=<token>, and goes only to an account with a password whose address was proven or is the one it was made with; a link Notifications cannot send now is sent again on later requests while it is valid. 422 validation_failed for email or returnTo; 429 rate_limited after 3 requests for the address in 15 minutes.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"email_password",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -6183,10 +6246,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -6235,8 +6298,11 @@
 			"post": {
 				"summary": "Send a password reset code by SMS or WhatsApp",
 				"description": "Answers 202 at once, the same for every number; a code goes only to an account with a password whose number was proven (a number only typed counts as unknown), on the phone channel (template accounts.phone_code), within the phone code limits (Settings → Phone numbers and codes; a cooldown or cap sends nothing). 403 self_reset_off while Forgot password is off; 422 validation_failed for phone.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"phone_password",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -6247,10 +6313,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -6292,8 +6358,11 @@
 			"post": {
 				"summary": "Choose a new password with a reset code",
 				"description": "Proves the phone number, ends the lock and signs every device out. 422 code_invalid (5 wrong codes use the code up), weak_password; 403 self_reset_off.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"phone_password",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -6304,10 +6373,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -6358,8 +6427,11 @@
 			"post": {
 				"summary": "Choose a new password with a reset link",
 				"description": "The new password follows Email + password’s rules (422 weak_password). Proves the email address, ends the lock and signs every device out. 422 code_invalid when the link is not valid, used or expired.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"email_password",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -6370,10 +6442,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -6390,7 +6462,7 @@
 									"token": {
 										"type": "string",
 										"pattern": "^[a-z]{3}_[0-9a-z]{26}\\.[A-Za-z0-9_-]{32,}$",
-										"description": "The ss_accounts_reset value of the link."
+										"description": "The shelfway_accounts_reset value of the link."
 									},
 									"password": {
 										"type": "string"
@@ -6420,8 +6492,8 @@
 		"/v1/permissions": {
 			"get": {
 				"summary": "This product's permissions and the kit's own (for Accounts roles)",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -6429,7 +6501,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -6488,10 +6560,10 @@
 		"/v1/role-requests": {
 			"get": {
 				"summary": "The role requests, newest first",
-				"x-ss-auth": "server",
-				"x-ss-feature": "role_requests",
-				"x-ss-permission": "users.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "role_requests",
+				"x-shelfway-permission": "users.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -6547,7 +6619,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -6576,8 +6648,8 @@
 			"post": {
 				"summary": "Ask for a role (no account needed)",
 				"description": "Only the roles listed in Role requests → requestableRoles. 422 validation_failed for role, name, phone, email or note (requireNote). A repeat ask changes nothing. Every ask answers the same { outcome: requested }, with the same work and so about the same time, whether the request is new, already there or the person is already a member: nobody who types a phone number or email address learns anything about it. The answer is 201 either way.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "role_requests",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": "role_requests",
 				"security": [
 					{
 						"browserToken": []
@@ -6588,10 +6660,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -6667,10 +6739,10 @@
 		"/v1/role-requests/count": {
 			"get": {
 				"summary": "Count the role requests (the list’s filters)",
-				"x-ss-auth": "server",
-				"x-ss-feature": "role_requests",
-				"x-ss-permission": "users.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "role_requests",
+				"x-shelfway-permission": "users.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -6705,7 +6777,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -6736,10 +6808,10 @@
 			"get": {
 				"summary": "Count the role requests by status or role",
 				"description": "by=status groups the stored status: an expired request counts as invited.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "role_requests",
-				"x-ss-permission": "users.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "role_requests",
+				"x-shelfway-permission": "users.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -6786,7 +6858,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -6817,10 +6889,10 @@
 			"get": {
 				"summary": "One role request",
 				"description": "The row the list gives, its status judged now (expired once an invite's setup link ran out). Read with the same access as the list. 404 not_found for an unknown id.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "role_requests",
-				"x-ss-permission": "users.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "role_requests",
+				"x-shelfway-permission": "users.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -6836,7 +6908,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -6866,11 +6938,11 @@
 		"/v1/role-requests/{id}/decline": {
 			"post": {
 				"summary": "Decline a pending or invited role request",
-				"description": "A pending request, or an invited one whose setup link still works or ran out. An invited request’s link stops working (its lookup says canceled), and what the invite did is undone: a user the invite created who was never signed in to and has no password is removed from Accounts (the request’s userId becomes null); otherwise, when the invite gave the role and the user still holds it, they get their role from before back. 409 conflict when it is completed or declined; 404 not_found. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "role_requests",
-				"x-ss-permission": "users.manage",
-				"x-ss-access": "staff",
+				"description": "A pending request, or an invited one whose setup link still works or ran out. An invited request’s link stops working (its lookup says canceled), and what the invite did is undone: a user the invite created who was never signed in to and has no password is removed from Accounts (the request’s userId becomes null); otherwise, when the invite gave the role and the user still holds it, they get their role from before back. 409 conflict when it is completed or declined; 404 not_found. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "role_requests",
+				"x-shelfway-permission": "users.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -6886,7 +6958,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -6916,11 +6988,11 @@
 		"/v1/role-requests/{id}/invite": {
 			"post": {
 				"summary": "Invite the person of a pending request",
-				"description": "Creates their user, or finds the user with that phone number (else email address), and answers a setup link for your staff to send, unless the user already has a password (the request is then completed). The role is given at the invite, or with Role requests → giveRoleAt set to completion when the request is completed (a new user has the default role until then, an existing user keeps theirs). 409 contact_unverified when that user never proved the phone or email and someone signed in to it (check with the person, confirm it on their user or remove that account, then invite again); 409 conflict when the request is not pending, its role is gone, another user has the contact, or the user's role ranks above the request's (a user has one role and a request never lowers it: change the role on their user if that is what you want); 404 not_found. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "role_requests",
-				"x-ss-permission": "users.manage",
-				"x-ss-access": "staff",
+				"description": "Creates their user, or finds the user with that phone number (else email address), and answers a setup link for your staff to send, unless the user already has a password (the request is then completed). The role is given at the invite, or with Role requests → giveRoleAt set to completion when the request is completed (a new user has the default role until then, an existing user keeps theirs). 409 contact_unverified when that user never proved the phone or email and someone signed in to it (check with the person, confirm it on their user or remove that account, then invite again); 409 conflict when the request is not pending, its role is gone, another user has the contact, or the user's role ranks above the request's (a user has one role and a request never lowers it: change the role on their user if that is what you want); 404 not_found. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "role_requests",
+				"x-shelfway-permission": "users.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -6936,7 +7008,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -6992,10 +7064,10 @@
 			"post": {
 				"summary": "Open a declined or expired role request again",
 				"description": "It becomes pending. 409 conflict otherwise; 404 not_found.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "role_requests",
-				"x-ss-permission": "users.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "role_requests",
+				"x-shelfway-permission": "users.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -7011,7 +7083,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -7041,11 +7113,11 @@
 		"/v1/role-requests/{id}/setup-link": {
 			"post": {
 				"summary": "A new setup link for an invited role request",
-				"description": "For a request whose setup link still works or ran out (status invited or expired): the old link stops working (its lookup says canceled) and the request ends with the new one. A user who has a password by now completes the request at once (setupLink null; the role is given then with giveRoleAt completion). 409 conflict when the request is not invited, its role is gone or its user no longer exists (decline it, open it again and invite); 403 blocked; 404 not_found; 422 validation_failed when setupPageUrl is not a page of your website. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "role_requests",
-				"x-ss-permission": "users.manage",
-				"x-ss-access": "staff",
+				"description": "For a request whose setup link still works or ran out (status invited or expired): the old link stops working (its lookup says canceled) and the request ends with the new one. A user who has a password by now completes the request at once (setupLink null; the role is given then with giveRoleAt completion). 409 conflict when the request is not invited, its role is gone or its user no longer exists (decline it, open it again and invite); 403 blocked; 404 not_found; 422 validation_failed when setupPageUrl is not a page of your website. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "role_requests",
+				"x-shelfway-permission": "users.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -7061,7 +7133,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -7117,9 +7189,9 @@
 			"get": {
 				"summary": "The roles",
 				"description": "Highest rank first, with the role for new sign-ups. The ready-made templates are made on first use; then they are your roles to change or delete.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -7127,7 +7199,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -7177,10 +7249,10 @@
 			"get": {
 				"summary": "The permissions roles can grant",
 				"description": "Accounts’ own, each product’s on the same website (its GET /v1/permissions, kept 5 minutes) and your own names (source site).",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "roles.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "roles.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -7188,7 +7260,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -7238,10 +7310,10 @@
 			"put": {
 				"summary": "Replace your own permission names",
 				"description": "422 validation_failed for permissions.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "roles.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "roles.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -7249,7 +7321,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -7314,10 +7386,10 @@
 			"delete": {
 				"summary": "Delete a role",
 				"description": "Any role but Owner and the role for new sign-ups (409 conflict: choose another role for new sign-ups first); the ready-made templates too, for good. Its users get the role for new sign-ups. 404 not_found for an unknown key.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "roles.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "roles.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -7333,7 +7405,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -7355,10 +7427,10 @@
 			"put": {
 				"summary": "Save a role",
 				"description": "Creates the role or replaces it; the key is the path’s (2–40 lower-case letters, digits or _). Owner keeps every permission and rank 100. 422 validation_failed for the field, or for a role past the website’s limit of 100 roles.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "roles.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "roles.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -7374,7 +7446,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -7415,8 +7487,17 @@
 			"post": {
 				"summary": "Renew the sign-in",
 				"description": "Answers a new sign-in and a new refresh token. The token renewed less than 30 seconds ago gets the same new pair (parallel renewals, a retry); presented later, it ends the session. With the role’s sessionRolling, the session’s end moves to its length from now. 401 signed_out when the session ended or the user is blocked or not active.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"phone_code",
+					"phone_password",
+					"email_password",
+					"email_code",
+					"google",
+					"apple",
+					"facebook",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -7427,10 +7508,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -7480,8 +7561,17 @@
 			"post": {
 				"summary": "Sign out (end the session)",
 				"description": "Answers 204 whatever the token: an unknown or ended session changes nothing.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"phone_code",
+					"phone_password",
+					"email_password",
+					"email_code",
+					"google",
+					"apple",
+					"facebook",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -7492,10 +7582,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -7536,8 +7626,8 @@
 		"/v1/settings": {
 			"get": {
 				"summary": "Settings schemas, and values of switched-on features",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -7545,7 +7635,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -7635,9 +7725,9 @@
 		"/v1/settings/{key}": {
 			"delete": {
 				"summary": "Reset one setting to the default",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -7653,7 +7743,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -7700,9 +7790,9 @@
 			"put": {
 				"summary": "Save one setting (<feature>.<setting>, { value })",
 				"description": "The feature must be on (else 403 feature_off); an invalid value answers 422 validation_failed with errors.",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -7718,7 +7808,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -7784,10 +7874,10 @@
 		"/v1/setup-links/accept": {
 			"post": {
 				"summary": "Choose a password with a setup link and sign in",
-				"description": "The link’s code comes from POST /v1/users/:id/setup-link or a role-request invite (?ss_setup=<code>). Proves the user’s phone number, activates an invited user, completes their invited role request (and gives its role now when Role requests → giveRoleAt is completion) and signs their other devices out; the link’s lookup says used from then on. 422 code_invalid (not valid, used or expired), weak_password; 403 blocked. 403 blocked, pending_approval, sign_in_paused (the detail is your paused text) or method_refused (the user’s role); 403 consent_required (with the consents still asked) until they are given in consents.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": [
-					"roles",
+				"description": "The link’s code comes from POST /v1/users/:id/setup-link or a role-request invite (?shelfway_setup=<code>). Proves the user’s phone number, activates an invited user, completes their invited role request (and gives its role now when Role requests → giveRoleAt is completion) and signs their other devices out; the link’s lookup says used from then on. 422 code_invalid (not valid, used or expired), weak_password; 403 blocked. 403 blocked, pending_approval, sign_in_paused (the detail is your paused text) or method_refused (the user’s role); 403 consent_required (with the consents still asked) until they are given in consents.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"staff_links",
 					"role_requests"
 				],
 				"security": [
@@ -7800,10 +7890,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -7877,9 +7967,9 @@
 			"post": {
 				"summary": "What a setup page shows before the password",
 				"description": "For your setup page (and the sign-in widget’s): whether the link works, and while it does, whom to greet. The link’s code goes in the body, never in an address, so its secret stays out of request logs. Answers valid with the person’s display name, the last 4 digits of their phone number (null without one; never the whole number or the email address) and when the link ends; else expired (past its end), used (the password was set with it), canceled (a newer link replaced it, or staff declined its request) or invalid. Only a code whose secret matches learns anything: an unknown or wrong code always answers invalid, so the lookup tells nothing about other links or people. A link is known 30 days past its end; later it is invalid. Rate-limited per visitor like the accept route.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": [
-					"roles",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"staff_links",
 					"role_requests"
 				],
 				"security": [
@@ -7892,10 +7982,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -7910,7 +8000,7 @@
 								"properties": {
 									"code": {
 										"type": "string",
-										"description": "The link’s code as the setup page got it ({code} in your setupPageUrl, or ?ss_setup=)."
+										"description": "The link’s code as the setup page got it ({code} in your setupPageUrl, or ?shelfway_setup=)."
 									}
 								}
 							}
@@ -7978,9 +8068,12 @@
 		"/v1/sign-in/apple/start": {
 			"post": {
 				"summary": "Start an Apple sign-in",
-				"description": "Open url in the browser. Apple sends the person back to Accounts, which returns them to returnTo with #ss_accounts_code=<code> (or #ss_accounts_error=<code>); exchange the code with POST /v1/sign-in/exchange within 5 minutes. 502 provider_failed while the Apple keys are not connected; 422 validation_failed for returnTo or binding.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"description": "Open url in the browser. Apple sends the person back to Accounts, which returns them to returnTo with #shelfway_accounts_code=<code> (or #shelfway_accounts_error=<code>); exchange the code with POST /v1/sign-in/exchange within 5 minutes. 502 provider_failed while the Apple keys are not connected; 422 validation_failed for returnTo or binding.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"apple",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -7991,10 +8084,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -8071,8 +8164,11 @@
 			"post": {
 				"summary": "Sign in (or up) with the email code or the magic link",
 				"description": "Send { email, code } or { link }. Proves the address; opens only an account whose address was proven before (an address only typed on another account counts as unknown, and its sign-up answers 409 already_exists). A sign-in code your staff made opens its user but proves nothing. 422 code_invalid. 403 blocked, pending_approval, sign_in_paused (the detail is your paused text) or method_refused (the user’s role); 403 consent_required (with the consents still asked) until they are given in consents. A sign-up: 422 validation_failed (for the field), weak_password (with rule: too_short and minLength, too_long and maxLength, letter_and_digit, personal or breached); 403 sign_up_closed (invite only), consent_required (with the consents still asked), risk_refused, sign_in_paused or method_refused (the role for new sign-ups); 409 already_exists.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"email_code",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -8083,10 +8179,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -8106,7 +8202,7 @@
 									"link": {
 										"type": "string",
 										"pattern": "^[a-z]{3}_[0-9a-z]{26}\\.[A-Za-z0-9_-]{32,}$",
-										"description": "The ss_accounts_link value of the magic link (instead of email and code)."
+										"description": "The shelfway_accounts_link value of the magic link (instead of email and code)."
 									},
 									"phone": {
 										"type": "string",
@@ -8171,9 +8267,12 @@
 		"/v1/sign-in/email/code": {
 			"post": {
 				"summary": "Send a sign-in code (and magic link) by email",
-				"description": "Through Notifications (template accounts.email_code); with returnTo the message also holds a link to returnTo#ss_accounts_link=<link>. Within the code limits: 30 seconds between codes (429 code_cooldown with retryAt), 6 per address per hour and Email code’s websitePerHour for the website (429 code_limit); a code takes 5 wrong tries. 403 sign_in_paused or method_refused; 422 validation_failed; 503 notifications_not_connected; 502 not_sent.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"description": "Through Notifications (template accounts.email_code); with returnTo the message also holds a link to returnTo#shelfway_accounts_link=<link>. Within the code limits: 30 seconds between codes (429 code_cooldown with retryAt), 6 per address per hour and Email code’s websitePerHour for the website (429 code_limit); a code takes 5 wrong tries. 403 sign_in_paused or method_refused; 422 validation_failed; 503 notifications_not_connected; 502 not_sent.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"email_code",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -8184,10 +8283,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -8253,8 +8352,13 @@
 			"post": {
 				"summary": "Exchange a Google, Apple or Facebook hand-over code for the sign-in",
 				"description": "The provider proved the address: a known provider account, or an account whose address was proven before, is opened; else an account is made. 422 code_invalid when the code is not valid, used or older than 5 minutes. 403 blocked, pending_approval, sign_in_paused (the detail is your paused text) or method_refused (the user’s role); 403 consent_required (with the consents still asked) until they are given in consents.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"google",
+					"apple",
+					"facebook",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -8265,10 +8369,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -8285,7 +8389,7 @@
 									"code": {
 										"type": "string",
 										"pattern": "^[a-z]{3}_[0-9a-z]{26}\\.[A-Za-z0-9_-]{32,}$",
-										"description": "The ss_accounts_code value of the address fragment."
+										"description": "The shelfway_accounts_code value of the address fragment."
 									},
 									"binding": {
 										"type": "string",
@@ -8335,9 +8439,12 @@
 		"/v1/sign-in/facebook/start": {
 			"post": {
 				"summary": "Start a Facebook sign-in",
-				"description": "Open url in the browser. Facebook sends the person back to Accounts, which returns them to returnTo with #ss_accounts_code=<code> (or #ss_accounts_error=<code>); exchange the code with POST /v1/sign-in/exchange within 5 minutes. 502 provider_failed while the Facebook keys are not connected; 422 validation_failed for returnTo or binding.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"description": "Open url in the browser. Facebook sends the person back to Accounts, which returns them to returnTo with #shelfway_accounts_code=<code> (or #shelfway_accounts_error=<code>); exchange the code with POST /v1/sign-in/exchange within 5 minutes. 502 provider_failed while the Facebook keys are not connected; 422 validation_failed for returnTo or binding.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"facebook",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -8348,10 +8455,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -8427,9 +8534,12 @@
 		"/v1/sign-in/google/start": {
 			"post": {
 				"summary": "Start a Google sign-in",
-				"description": "Open url in the browser. Google sends the person back to Accounts, which returns them to returnTo with #ss_accounts_code=<code> (or #ss_accounts_error=<code>); exchange the code with POST /v1/sign-in/exchange within 5 minutes. 502 provider_failed while the Google keys are not connected; 422 validation_failed for returnTo or binding.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"description": "Open url in the browser. Google sends the person back to Accounts, which returns them to returnTo with #shelfway_accounts_code=<code> (or #shelfway_accounts_error=<code>); exchange the code with POST /v1/sign-in/exchange within 5 minutes. 502 provider_failed while the Google keys are not connected; 422 validation_failed for returnTo or binding.",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"google",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -8440,10 +8550,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -8520,8 +8630,11 @@
 			"post": {
 				"summary": "Sign in with an email address and a password",
 				"description": "401 sign_in_failed for a wrong address or password (the same answer for both); 423 locked (with lockedUntil) after too many wrong passwords; 403 blocked, pending_approval, sign_in_paused (the detail is your paused text) or method_refused (the user’s role); 403 consent_required (with the consents still asked) until they are given in consents.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"email_password",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -8532,10 +8645,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -8609,8 +8722,11 @@
 			"post": {
 				"summary": "Sign in (or up) with the phone code",
 				"description": "Proves the number. It opens only an account whose number was proven (an account that holds the number unproven loses it to this proof, and the sign-in goes on as for a number without an account; a sign-in code from staff still opens its own user). A number without an account signs up with the sign-up members (a new user without a name gets your newUserName). 422 code_invalid (5 wrong codes use the code up). The right code is used up once the sign-in passed, so a consent or profile step can be retried with it. 403 blocked, pending_approval, sign_in_paused (the detail is your paused text) or method_refused (the user’s role); 403 consent_required (with the consents still asked) until they are given in consents. A sign-up: 422 validation_failed (for the field), weak_password (with rule: too_short and minLength, too_long and maxLength, letter_and_digit, personal or breached); 403 sign_up_closed (invite only), consent_required (with the consents still asked), risk_refused, sign_in_paused or method_refused (the role for new sign-ups); 409 already_exists.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"phone_code",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -8621,10 +8737,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -8709,8 +8825,11 @@
 			"post": {
 				"summary": "Sign in with a phone number and a password",
 				"description": "password also takes a sign-in code your staff made (Staff sign-in codes and setup links). 401 sign_in_failed for a wrong number or password; 423 locked (with lockedUntil). 403 blocked, pending_approval, sign_in_paused (the detail is your paused text) or method_refused (the user’s role); 403 consent_required (with the consents still asked) until they are given in consents.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"phone_password",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -8721,10 +8840,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -8798,8 +8917,12 @@
 			"post": {
 				"summary": "Send a sign-in code by SMS or WhatsApp",
 				"description": "Works while Phone code or Phone + password is on. The code (6 digits) lasts 10 minutes and goes through Notifications (template accounts.phone_code). 429 code_cooldown (with retryAt) or code_limit; 422 country_not_allowed or validation_failed; 403 sign_in_paused or method_refused (the number’s role); 503 notifications_not_connected; 502 not_sent.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"phone_code",
+					"phone_password",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -8810,10 +8933,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -8873,8 +8996,8 @@
 			"post": {
 				"summary": "The two-step code, or a recovery code, of a sign-in",
 				"description": "For status two_step: a code from the authenticator app or one recovery code (each works once). For status two_step_setup: the first code from the app; the answer then carries 10 recovery codes. Wrong codes count toward the user’s lock like wrong passwords (except while setting up) and 5 wrong codes end the step: 422 code_invalid; 423 locked (with lockedUntil).",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "two_step",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": "two_step",
 				"security": [
 					{
 						"browserToken": []
@@ -8885,10 +9008,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -8947,8 +9070,11 @@
 			"post": {
 				"summary": "Sign up with an email address and a password",
 				"description": "Makes the account (with the role for new sign-ups) and signs it in, or answers status pending while sign-ups wait for approval. The address is not proven by this. 422 validation_failed (for the field), weak_password (with rule: too_short and minLength, too_long and maxLength, letter_and_digit, personal or breached); 403 sign_up_closed (invite only), consent_required (with the consents still asked), risk_refused, sign_in_paused or method_refused (the role for new sign-ups); 409 already_exists.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"email_password",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -8959,10 +9085,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -9049,8 +9175,11 @@
 			"post": {
 				"summary": "Sign up with a phone number and a password",
 				"description": "Only while the Phone + password signUp setting is on (else 403 sign_up_closed). Proves the number first: ask the code with POST /v1/sign-in/phone/code { phone } (it works while only Phone + password is on), then send it as code; it is used up once the account is made, the account holds the number proven, and an account that held the number unproven loses it. 422 code_invalid for a missing, wrong or used code (a sign-in code from staff proves nothing here). Makes the account (with the role for new sign-ups) and signs it in, or answers status pending while sign-ups wait for approval. 422 validation_failed (for the field), weak_password (with rule: too_short and minLength, too_long and maxLength, letter_and_digit, personal or breached); 403 sign_up_closed (invite only), consent_required (with the consents still asked), risk_refused, sign_in_paused or method_refused (the role for new sign-ups); 409 already_exists.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "sign_in",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"phone_password",
+					"sign_in"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -9061,10 +9190,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -9154,8 +9283,8 @@
 		"/v1/texts": {
 			"get": {
 				"summary": "Widget texts",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -9163,7 +9292,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -9205,9 +9334,9 @@
 		"/v1/texts/{key}": {
 			"delete": {
 				"summary": "Reset one widget text to English",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -9223,7 +9352,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -9252,9 +9381,9 @@
 			"put": {
 				"summary": "Save one widget text ({ value })",
 				"description": "1–2000 characters with the same {placeholders} as the English text.",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -9270,7 +9399,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -9321,8 +9450,8 @@
 			"get": {
 				"summary": "The widgets' theme",
 				"description": "The website's theme from the Portal (sources `portal`: Website settings › Brand and look); the built-in look (sources `built-in`) while the Portal holds no settings yet.",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -9330,7 +9459,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -9358,10 +9487,10 @@
 			},
 			"put": {
 				"summary": "The theme is set in the Portal",
-				"description": "Always answers 409 managed_by_portal: the theme is set once for every product, in the Portal (Website settings › Brand and look).",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"description": "Always answers 409 managed_by_platform: the theme is set once for every product, in the Portal (Website settings › Brand and look).",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -9369,7 +9498,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -9451,9 +9580,9 @@
 		"/v1/tickets": {
 			"post": {
 				"summary": "Ticket for an admin widget (15 minutes)",
-				"description": "Your server asks for a ticket for the signed-in member of your staff who opens an admin widget: send their Accounts sign-in in SS-Sign-In next to the server token. The ticket is for that person and carries only the permissions of their role out of those asked for (and of switched-on features); the server token alone gets 403 needs_signed_in_staff.",
-				"x-ss-auth": "server",
-				"x-ss-access": "staff",
+				"description": "Your server asks for a ticket for the signed-in member of your staff who opens an admin widget: send their Accounts sign-in in Shelfway-Sign-In next to the server token. The ticket is for that person and carries only the permissions of their role out of those asked for (and of switched-on features); the server token alone gets 403 needs_signed_in_staff.",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -9461,7 +9590,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -9534,9 +9663,9 @@
 			"get": {
 				"summary": "The users, newest first",
 				"description": "Customers and staff in one list; filters combine. A call with the server token alone (another product) may only ask a narrow question (permission, email, phone, or a search of 6 or more characters with limit 10 or less) and gets the small view of at most 10 users and no cursor; who holds a permission pages as before. The whole view is the signed-in staff member’s (users.read).",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -9707,7 +9836,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -9742,11 +9871,11 @@
 			},
 			"post": {
 				"summary": "Add a user",
-				"description": "An active user with a name and an email address or a phone number (both marked verified); nothing is sent. 422 validation_failed for the field, weak_password; 409 already_exists when another user has the address or number. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.manage",
-				"x-ss-access": "staff",
+				"description": "An active user with a name and an email address or a phone number (both marked verified); nothing is sent. 422 validation_failed for the field, weak_password; 409 already_exists when another user has the address or number. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -9764,7 +9893,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -9853,10 +9982,10 @@
 		"/v1/users/count": {
 			"get": {
 				"summary": "Count the users (the list’s filters)",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -10006,7 +10135,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -10037,10 +10166,10 @@
 			"get": {
 				"summary": "Count the users by status or role",
 				"description": "by=status groups the stored status (active, pending, invited); count blocked users with status=blocked.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -10202,7 +10331,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -10232,11 +10361,11 @@
 		"/v1/users/invite": {
 			"post": {
 				"summary": "Invite someone with a role",
-				"description": "Makes an invited user and sends the invite link (inviteDays, default 7) by email when there is an address, else by SMS or WhatsApp (template accounts.invite); with deliver: return nothing is sent and the link comes back. 422 validation_failed for the field, or when invitePageUrl is not a page of your website; 409 already_exists; 503 notifications_not_connected and 502 not_sent (the invited user is removed again). 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "approval",
-				"x-ss-permission": "users.manage",
-				"x-ss-access": "staff",
+				"description": "Makes an invited user and sends the invite link (inviteDays, default 7) by email when there is an address, else by SMS or WhatsApp (template accounts.invite); with deliver: return nothing is sent and the link comes back. 422 validation_failed for the field, or when invitePageUrl is not a page of your website; 409 already_exists; 503 notifications_not_connected and 502 not_sent (the invited user is removed again). 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "approval",
+				"x-shelfway-permission": "users.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -10254,7 +10383,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -10321,10 +10450,10 @@
 			"get": {
 				"summary": "The tags",
 				"description": "Your tags with how many users have each, by name.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -10332,7 +10461,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -10390,10 +10519,10 @@
 			"get": {
 				"summary": "The saved views",
 				"description": "The users list's saved views, in your order.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -10401,7 +10530,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -10443,10 +10572,10 @@
 			"put": {
 				"summary": "Order the saved views",
 				"description": "422 validation_failed for order unless it holds every view key once.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -10454,7 +10583,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -10522,10 +10651,10 @@
 			"delete": {
 				"summary": "Delete a saved view",
 				"description": "404 not_found for an unknown key.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -10541,7 +10670,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -10563,10 +10692,10 @@
 			"put": {
 				"summary": "Save a view",
 				"description": "Creates the view or replaces it; the key is the path’s (1–40 lower-case letters, digits or _). 422 validation_failed for the field, or for the 51st view.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -10582,7 +10711,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -10641,11 +10770,11 @@
 		"/v1/users/{id}": {
 			"delete": {
 				"summary": "Delete a user",
-				"description": "scope=all (default) erases the user at once here and in every connected product, as an approved deletion request does; scope=accounts removes them from Accounts only (the user, their sessions and codes) and every other product keeps its data: use it to remove someone from your team. 404 not_found; 422 validation_failed for scope. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.manage",
-				"x-ss-access": "staff",
+				"description": "scope=all (default) erases the user at once here and in every connected product, as an approved deletion request does; scope=accounts removes them from Accounts only (the user, their sessions and codes) and every other product keeps its data: use it to remove someone from your team. 404 not_found; 422 validation_failed for scope. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -10674,7 +10803,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -10719,9 +10848,9 @@
 			"get": {
 				"summary": "Read a user",
 				"description": "404 not_found. With the server token alone (another product) the small view; the signed-in staff member (users.read) gets the whole view.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -10737,7 +10866,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -10772,11 +10901,11 @@
 			},
 			"patch": {
 				"summary": "Change a user",
-				"description": "Only the members sent change. Blocking, and a new password, sign the user out everywhere. 404 not_found; 422 validation_failed for the field, weak_password; 409 already_exists when another user has the address or number. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.manage",
-				"x-ss-access": "staff",
+				"description": "Only the members sent change. Blocking, and a new password, sign the user out everywhere. 404 not_found; 422 validation_failed for the field, weak_password; 409 already_exists when another user has the address or number. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -10792,7 +10921,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -10898,10 +11027,10 @@
 			"post": {
 				"summary": "Approve a sign-up that waits for approval",
 				"description": "409 conflict when the user is not waiting; 404 not_found.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "approval",
-				"x-ss-permission": "users.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "approval",
+				"x-shelfway-permission": "users.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -10917,7 +11046,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -10947,11 +11076,11 @@
 		"/v1/users/{id}/decline": {
 			"post": {
 				"summary": "Decline a sign-up that waits for approval",
-				"description": "The account is removed. 409 conflict when the user is not waiting; 404 not_found. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "approval",
-				"x-ss-permission": "users.manage",
-				"x-ss-access": "staff",
+				"description": "The account is removed. 409 conflict when the user is not waiting; 404 not_found. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "approval",
+				"x-shelfway-permission": "users.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -10967,7 +11096,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -10990,11 +11119,11 @@
 		"/v1/users/{id}/deletion/approve": {
 			"post": {
 				"summary": "Approve a user’s deletion request",
-				"description": "Erases the user here and in every connected product. 409 conflict when the user did not ask; 404 not_found. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "data_rights",
-				"x-ss-permission": "users.manage",
-				"x-ss-access": "staff",
+				"description": "Erases the user here and in every connected product. 409 conflict when the user did not ask; 404 not_found. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "data_rights",
+				"x-shelfway-permission": "users.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -11010,7 +11139,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -11041,10 +11170,10 @@
 			"post": {
 				"summary": "Keep the account: drop a user’s deletion request",
 				"description": "409 conflict when the user did not ask; 404 not_found.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "data_rights",
-				"x-ss-permission": "users.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "data_rights",
+				"x-shelfway-permission": "users.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -11060,7 +11189,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -11090,11 +11219,11 @@
 		"/v1/users/{id}/setup-link": {
 			"post": {
 				"summary": "A setup link for a user",
-				"description": "The user chooses a password with it (POST /v1/setup-links/accept), also without an email address; valid setupDays (default 7). The link is your setupPageUrl with {code} replaced, else that page (or your website’s home page) with ?ss_setup=<code>. A new one cancels the old. 403 blocked; 404 not_found; 422 validation_failed when setupPageUrl is not a page of your website. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.manage",
-				"x-ss-access": "staff",
+				"description": "The user chooses a password with it (POST /v1/setup-links/accept), also without an email address; valid setupDays (default 7). The link is your setupPageUrl with {code} replaced, else that page (or your website’s home page) with ?shelfway_setup=<code>. A new one cancels the old. 403 blocked; 404 not_found; 422 validation_failed when setupPageUrl is not a page of your website. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "staff_links",
+				"x-shelfway-permission": "users.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -11110,7 +11239,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -11140,11 +11269,11 @@
 		"/v1/users/{id}/sign-in-code": {
 			"post": {
 				"summary": "A one-time sign-in code for a user",
-				"description": "6 digits for your staff to give the user (never sent), valid 15 minutes, single use; typed into the phone code, email code or phone + password screen. A new one cancels the old. 403 blocked; 404 not_found. 403 forbidden by the guards when the call names its acting user (SS-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.manage",
-				"x-ss-access": "staff",
+				"description": "6 digits for your staff to give the user (never sent), valid 15 minutes, single use; typed into the phone code, email code or phone + password screen. A new one cancels the old. 403 blocked; 404 not_found. 403 forbidden by the guards when the call names its acting user (Shelfway-Actor-Id) or comes with a ticket: nobody changes their own role, blocks or deletes themselves, touches a user whose role ranks above theirs or gives a role ranking above theirs, and the last unblocked Owner stays.",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "staff_links",
+				"x-shelfway-permission": "users.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -11160,7 +11289,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -11206,10 +11335,10 @@
 			"post": {
 				"summary": "Sign a user out of every device",
 				"description": "Sign-ins already given end within 15 minutes. 404 not_found.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "roles",
-				"x-ss-permission": "users.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "roles",
+				"x-shelfway-permission": "users.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -11225,7 +11354,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -11249,7 +11378,7 @@
 			"get": {
 				"summary": "Widget config (admin widgets)",
 				"description": "The same for the admin widgets, with a ticket from POST /v1/tickets, from the origin it names.",
-				"x-ss-auth": "ticket",
+				"x-shelfway-auth": "ticket",
 				"security": [
 					{
 						"ticket": []
@@ -11284,7 +11413,7 @@
 			"get": {
 				"summary": "Widget config (visitor widgets)",
 				"description": "With the browser token from the website (an Origin is required; the server token is refused): what the visitor widgets need. No feature of its own: it answers while the product serves the website and its merchant database is connected.",
-				"x-ss-auth": "browser",
+				"x-shelfway-auth": "browser",
 				"security": [
 					{
 						"browserToken": []
@@ -11295,10 +11424,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -11336,7 +11465,7 @@
 			"serverToken": {
 				"type": "http",
 				"scheme": "bearer",
-				"description": "The website's server token: the merchant's server only, never with an Origin header. On its own it runs the shop (x-ss-access: runtime): it also reaches every visitor route, acting for the visitor named by SS-Visitor-IP and, for a signed-in shopper, SS-Sign-In (their Accounts sign-in, checked for this website; a wrong, expired or foreign one is 401 invalid_sign_in). Every change of configuration and every piece of staff work (x-ss-access: staff) also needs the verified Accounts sign-in of a signed-in staff member in SS-Sign-In, whose role has the permission: a stolen server token changes nothing by itself."
+				"description": "The website's server token: the merchant's server only, never with an Origin header. On its own it runs the shop (x-shelfway-access: runtime): it also reaches every visitor route, acting for the visitor named by Shelfway-Visitor-IP and, for a signed-in shopper, Shelfway-Sign-In (their Accounts sign-in, checked for this website; a wrong, expired or foreign one is 401 invalid_sign_in). Every change of configuration and every piece of staff work (x-shelfway-access: staff) also needs the verified Accounts sign-in of a signed-in staff member in Shelfway-Sign-In, whose role has the permission: a stolen server token changes nothing by itself."
 			},
 			"ticket": {
 				"type": "http",
@@ -11345,8 +11474,8 @@
 			}
 		},
 		"parameters": {
-			"SSVisitorIp": {
-				"name": "SS-Visitor-IP",
+			"ShelfwayVisitorIp": {
+				"name": "Shelfway-Visitor-IP",
 				"in": "header",
 				"required": false,
 				"description": "With the server token: the visitor's IP address (required on writes, else 400 visitor_ip_required). These calls count in their own window of 3,000 requests per minute per route per website, plus the per-visitor limits.",
@@ -11355,8 +11484,8 @@
 					"maxLength": 45
 				}
 			},
-			"SSSignIn": {
-				"name": "SS-Sign-In",
+			"ShelfwaySignIn": {
+				"name": "Shelfway-Sign-In",
 				"in": "header",
 				"required": false,
 				"description": "The signed-in shopper's Accounts sign-in, checked for this website (a wrong, expired or foreign one is 401 invalid_sign_in). Only a verified sign-in names the shopper: a user id alone is never taken.",
@@ -11365,8 +11494,8 @@
 					"maxLength": 8192
 				}
 			},
-			"SSSignInStaff": {
-				"name": "SS-Sign-In",
+			"ShelfwaySignInStaff": {
+				"name": "Shelfway-Sign-In",
 				"in": "header",
 				"required": true,
 				"description": "The Accounts sign-in of the signed-in staff member whose role has the permission this call needs, checked for this website. The server token alone changes nothing: without it the call is 403 needs_signed_in_staff, with a role that lacks the permission 403 forbidden, with a sign-in of another website or an expired or forged one 401 invalid_sign_in. The person it names is who the activity log and the histories record.",
@@ -12471,7 +12600,7 @@
 					"built-in",
 					"portal"
 				],
-				"description": "Where a theme or Format value comes from: the website's settings in the Portal, or built in while the Portal holds none yet. It cannot be saved in a product (409 managed_by_portal)."
+				"description": "Where a theme or Format value comes from: the website's settings in the Portal, or built in while the Portal holds none yet. It cannot be saved in a product (409 managed_by_platform)."
 			},
 			"Me": {
 				"type": "object",

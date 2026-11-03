@@ -1,5 +1,5 @@
 /**
- * The shopper's cart, kept in the browser (localStorage `ss-ecommerce-cart`, PLAN 0.8.4): lines of product, variant,
+ * The shopper's cart, kept in the browser (localStorage `shelfway-ecommerce-cart`, PLAN 0.8.4): lines of product, variant,
  * quantity and (bookings) the slot start, plus the coupon code entered. A line of an item sold by length, weight or
  * volume (`measured`) keeps its quantity in thousandths of the unit and counts as one item. The server prices the cart every time it is
  * shown and again when the order is placed, so nothing kept here is trusted. Listeners hear every change (the cart

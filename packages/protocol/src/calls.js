@@ -3,12 +3,12 @@
  * `GET /v1/blueprint`), signed with the Portal key the product pinned at connect, like notices.
  *
  * Headers:
- *   SS-Timestamp: <unix seconds>
- *   SS-Nonce:     <base64url of 16 random bytes>
- *   SS-Signature: v1;kid=<kid>;sig=<base64url Ed25519 signature>[, v1;kid=<kid2>;sig=<...>]
- *   SS-Key-Id:    <kid of the first signature>   (a hint only; never trusted for verification)
+ *   Shelfway-Timestamp: <unix seconds>
+ *   Shelfway-Nonce:     <base64url of 16 random bytes>
+ *   Shelfway-Signature: v1;kid=<kid>;sig=<base64url Ed25519 signature>[, v1;kid=<kid2>;sig=<...>]
+ *   Shelfway-Key-Id:    <kid of the first signature>   (a hint only; never trusted for verification)
  *
- * Signed message (UTF-8, lines joined by `\n`): `ss-call.v1`, the timestamp, the nonce, the product id the call is for
+ * Signed message (UTF-8, lines joined by `\n`): `shelfway-call.v1`, the timestamp, the nonce, the product id the call is for
  * (its audience), the method in upper case, the target (path and query exactly as sent) and the hex SHA-256 of the raw
  * body (the empty body for a GET). The prefix separates call signatures from notice signatures and JWS signing inputs
  * made with the same Portal key; the audience keeps a call to one product from being replayed to another; a newline
@@ -26,7 +26,7 @@ import { isProductId } from './tokens.js';
 /** @import { KeyResolver, Signer } from './keys.js' */
 /** @typedef {import('./assertion.js').ReplayStore} ReplayStore */
 /** @typedef {import('./detached.js').HeaderBag} HeaderBag */
-/** @typedef {{ 'SS-Timestamp': string, 'SS-Nonce': string, 'SS-Signature': string, 'SS-Key-Id': string }} CallHeaders */
+/** @typedef {{ 'Shelfway-Timestamp': string, 'Shelfway-Nonce': string, 'Shelfway-Signature': string, 'Shelfway-Key-Id': string }} CallHeaders */
 
 /** Default accepted clock difference, seconds. */
 const CALL_TOLERANCE_SECONDS = 300;
@@ -41,7 +41,7 @@ const MAX_TARGET_LENGTH = 4096;
  * @returns {Uint8Array}
  */
 const signedMessage = ({ timestamp, nonce, audience, method, target, body }) =>
-	utf8(['ss-call.v1', String(timestamp), nonce, audience, method, target, sha256Hex(body)].join('\n'));
+	utf8(['shelfway-call.v1', String(timestamp), nonce, audience, method, target, sha256Hex(body)].join('\n'));
 
 /**
  * Check the parts both sides sign.
@@ -65,7 +65,7 @@ const checkCall = ({ audience, method, target }) => {
  *   Pass `signers` to dual-sign while rotating keys.
  * @returns {Promise<CallHeaders>}
  */
-export const signPortalCall = async ({
+export const signPlatformCall = async ({
 	signer,
 	signers,
 	audience,
@@ -81,10 +81,10 @@ export const signPortalCall = async ({
 	const nonce = randomId(randomBytes);
 	const headers = await signDetached(all, timestamp, signedMessage({ ...call, timestamp, nonce, body }));
 	return {
-		'SS-Timestamp': headers['SS-Timestamp'],
-		'SS-Nonce': nonce,
-		'SS-Signature': headers['SS-Signature'],
-		'SS-Key-Id': headers['SS-Key-Id'],
+		'Shelfway-Timestamp': headers['Shelfway-Timestamp'],
+		'Shelfway-Nonce': nonce,
+		'Shelfway-Signature': headers['Shelfway-Signature'],
+		'Shelfway-Key-Id': headers['Shelfway-Key-Id'],
 	};
 };
 
@@ -96,7 +96,7 @@ export const signPortalCall = async ({
  *   this product's id; `target`: the request's path and query as received; `keyResolver` over the pinned Portal keys
  * @returns {Promise<{ kid: string, timestamp: number }>}
  */
-export const verifyPortalCall = async ({
+export const verifyPlatformCall = async ({
 	headers,
 	audience,
 	method,
@@ -112,8 +112,8 @@ export const verifyPortalCall = async ({
 	assertBody(rawBody);
 	const call = checkCall({ audience, method, target });
 	const timestamp = readTimestamp(headers, now, toleranceSec);
-	const nonce = getHeader(headers, 'SS-Nonce');
-	if (!nonce || !NONCE.test(nonce)) throw createProtocolError('malformed', 'SS-Nonce is missing or invalid');
+	const nonce = getHeader(headers, 'Shelfway-Nonce');
+	if (!nonce || !NONCE.test(nonce)) throw createProtocolError('malformed', 'Shelfway-Nonce is missing or invalid');
 	const kid = await verifyDetached(headers, signedMessage({ ...call, timestamp, nonce, body: rawBody }), keyResolver);
 	if (await replayStore.seen(`call|${nonce}`, (timestamp + toleranceSec) * 1000))
 		throw createProtocolError('replay', 'call was already made');

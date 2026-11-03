@@ -5,7 +5,7 @@
  * with `{category}`; every active
  * attribute's page in the sitemap once its address is set (SG-20); the import keeps one attribute per category.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { attributeOf } from '../core/catalog-query.js';
 import { lineageOf } from '../core/catalog-taxonomy.js';

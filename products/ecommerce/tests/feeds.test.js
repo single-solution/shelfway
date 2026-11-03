@@ -4,7 +4,7 @@
  * and its switch, {grade} and field placeholders in item titles, an item description pattern, and the Meta CSV's extra
  * photos, apparel attributes and identifier_exists. Rows first as pure functions, then through the feed routes.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { META_HEADER, feedRows, googleItem, metaLine } from '../core/feeds.js';
 import { listShown } from '../core/promotions.js';

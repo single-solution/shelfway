@@ -5,7 +5,7 @@
  * the analytics API. Plain text; no I/O.
  * @module
  */
-import { widgetScriptTag } from '@ss/contracts/text';
+import { widgetScriptTag } from '@shelfway/contracts/text';
 import { PAGE_MARKER, WIDGET_ATTRIBUTE, WIDGET_GLOBAL } from './widgets.js';
 
 /**
@@ -40,7 +40,7 @@ export const createSnippets = ({ base, widgets, permissions, loading = 'async' }
 		`  ${WIDGET_GLOBAL}.notFound(); // or call it from your code`,
 		'  // a site search your page runs itself (search result pages with ?q= are found by themselves)',
 		`  ${WIDGET_GLOBAL}.search('blue shoes', { results: 0 });`,
-		"  // or as a browser event: window.dispatchEvent(new CustomEvent('ss:search', { detail: { term: 'blue shoes', results: 0 } }))",
+		"  // or as a browser event: window.dispatchEvent(new CustomEvent('shelfway:search', { detail: { term: 'blue shoes', results: 0 } }))",
 		'</script>',
 		'<!-- a contact: the pixels get Contact (Meta, TikTok) and generate_lead (Google Analytics) -->',
 		`<a href="https://wa.me/15550000000" onclick="${WIDGET_GLOBAL}.contact({ method: 'whatsapp' })">WhatsApp us</a>`,
@@ -48,13 +48,13 @@ export const createSnippets = ({ base, widgets, permissions, loading = 'async' }
 	const events = [
 		'// Ecommerce’s widgets send these by themselves; your own code may send them too.',
 		'// Money is in minor units (cents, pence …) with an ISO 4217 currency.',
-		"window.dispatchEvent(new CustomEvent('ss:view_item', { detail: {",
+		"window.dispatchEvent(new CustomEvent('shelfway:view_item', { detail: {",
 		"  currency: 'USD', value: 1250, items: [{ id: 'sku-1', name: 'Desk lamp', price: 1250, quantity: 1 }] } }));",
-		"window.dispatchEvent(new CustomEvent('ss:add_to_cart', { detail: {",
+		"window.dispatchEvent(new CustomEvent('shelfway:add_to_cart', { detail: {",
 		"  currency: 'USD', value: 2500, items: [{ id: 'sku-1', price: 1250, quantity: 2 }] } }));",
-		"window.dispatchEvent(new CustomEvent('ss:begin_checkout', { detail: {",
+		"window.dispatchEvent(new CustomEvent('shelfway:begin_checkout', { detail: {",
 		"  currency: 'USD', value: 2500, items: [{ id: 'sku-1', price: 1250, quantity: 2 }] } }));",
-		"window.dispatchEvent(new CustomEvent('ss:purchase', { detail: {",
+		"window.dispatchEvent(new CustomEvent('shelfway:purchase', { detail: {",
 		"  orderId: '1042', currency: 'USD', value: 2500, items: [{ id: 'sku-1', price: 1250, quantity: 2 }] } }));",
 		'',
 		'// your own events: counted when a goal or funnel step names them, sent to the pixels a conversion action names',
@@ -67,7 +67,7 @@ export const createSnippets = ({ base, widgets, permissions, loading = 'async' }
 		'<script>',
 		`  window.${WIDGET_GLOBAL}.admin({`,
 		'    // your own server route (below): it checks the signed-in user, then asks for a ticket',
-		"    getTicket: () => fetch('/api/ss-ticket', { method: 'POST' }).then((response) => response.json()),",
+		"    getTicket: () => fetch('/api/shelfway-ticket', { method: 'POST' }).then((response) => response.json()),",
 		'  });',
 		'</script>',
 	].join('\n');
@@ -75,7 +75,7 @@ export const createSnippets = ({ base, widgets, permissions, loading = 'async' }
 		"// your server, after checking the user's sign-in and role (Node.js 18+, also inside a Next.js route handler)",
 		`const response = await fetch('${base}/v1/tickets', {`,
 		"  method: 'POST',",
-		"  headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}`, 'content-type': 'application/json' },",
+		"  headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}`, 'content-type': 'application/json' },",
 		'  body: JSON.stringify({',
 		'    user: { id: user.id, name: user.name, email: user.email },',
 		`    permissions: ${JSON.stringify(permissions)},`,
@@ -86,7 +86,7 @@ export const createSnippets = ({ base, widgets, permissions, loading = 'async' }
 	].join('\n');
 	const ticketCurl = [
 		`curl -X POST '${base}/v1/tickets' \\`,
-		'  -H "Authorization: Bearer $SS_SERVER_TOKEN" \\',
+		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN" \\',
 		"  -H 'Content-Type: application/json' \\",
 		`  -d '${JSON.stringify({ user: { id: 'u_1', name: 'Sam Staff', email: 'sam@example.com' }, permissions, origin: 'https://admin.example.com' })}'`,
 	].join('\n');
@@ -95,14 +95,14 @@ export const createSnippets = ({ base, widgets, permissions, loading = 'async' }
 		'export const revalidate = 3600;',
 		'export async function GET() {',
 		`  const response = await fetch('${base}/v1/robots.txt', {`,
-		'    headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}` },',
+		'    headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}` },',
 		'  });',
 		"  return new Response(await response.text(), { headers: { 'content-type': 'text/plain' } });",
 		'}',
 		'',
 		'// your page head: the verification tags ({ tags: [{ name, content }], html })',
 		`const { tags } = await fetch('${base}/v1/verification', {`,
-		'  headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}` },',
+		'  headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}` },',
 		'}).then((response) => response.json());',
 		'// render <meta name={tag.name} content={tag.content} /> for each tag',
 	].join('\n');
@@ -110,7 +110,7 @@ export const createSnippets = ({ base, widgets, permissions, loading = 'async' }
 		'# your site serves the key at https://<your domain>/<key>.txt, or at your key file address',
 		'# (Settings, for example /indexnow-key.txt); GET /v1/indexnow/key.txt gives it',
 		`curl -X POST '${base}/v1/indexnow' \\`,
-		'  -H "Authorization: Bearer $SS_SERVER_TOKEN" \\',
+		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN" \\',
 		"  -H 'Content-Type: application/json' \\",
 		`  -d '${JSON.stringify({ urls: ['https://shop.example.com/products/desk-lamp'] })}'`,
 	].join('\n');
@@ -123,30 +123,30 @@ export const createSnippets = ({ base, widgets, permissions, loading = 'async' }
 	const seo = [
 		'# a full run: the pages of the checklist settings and sample pages from your sitemap (kept as the last report)',
 		`curl -X POST '${base}/v1/seo/checks' \\`,
-		'  -H "Authorization: Bearer $SS_SERVER_TOKEN" \\',
+		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN" \\',
 		"  -H 'Content-Type: application/json' -d '{}'",
 		'',
 		'# the last full run, without reading your site',
 		`curl '${base}/v1/seo/report' \\`,
-		'  -H "Authorization: Bearer $SS_SERVER_TOKEN"',
+		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN"',
 		'',
 		'# some pages only (and the home page)',
 		`curl -X POST '${base}/v1/seo/checks' \\`,
-		'  -H "Authorization: Bearer $SS_SERVER_TOKEN" \\',
+		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN" \\',
 		"  -H 'Content-Type: application/json' \\",
 		`  -d '${JSON.stringify({ paths: ['/shop', '/about'] })}'`,
 	].join('\n');
 	const analytics = [
 		`curl '${base}/v1/analytics?from=2026-10-01&to=2026-10-31&top=25' \\`,
-		'  -H "Authorization: Bearer $SS_SERVER_TOKEN"',
+		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN"',
 		'',
 		'# raw events, newest first (kept for the retention you set); one session with ?session=<id> (sessions detail)',
 		`curl '${base}/v1/events?type=purchase&limit=50' \\`,
-		'  -H "Authorization: Bearer $SS_SERVER_TOKEN"',
+		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN"',
 		'',
 		'# how many raw events, in all and per type ({ count, capped }; { total, groups })',
-		`curl '${base}/v1/events/count?type=purchase' -H "Authorization: Bearer $SS_SERVER_TOKEN"`,
-		`curl '${base}/v1/events/counts?by=type' -H "Authorization: Bearer $SS_SERVER_TOKEN"`,
+		`curl '${base}/v1/events/count?type=purchase' -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN"`,
+		`curl '${base}/v1/events/counts?by=type' -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN"`,
 	].join('\n');
 	const redirects = [
 		'// Redirects in edge middleware or a server hook (any framework): the list is kept in memory and read again at',
@@ -157,7 +157,7 @@ export const createSnippets = ({ base, widgets, permissions, loading = 'async' }
 		'  kept.readAt = Date.now(); // on a failure the last list stays in use',
 		'  try {',
 		`    const response = await fetch('${base}/v1/redirects/all', {`,
-		"      headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}`, ...(kept.etag ? { 'if-none-match': kept.etag } : {}) },",
+		"      headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}`, ...(kept.etag ? { 'if-none-match': kept.etag } : {}) },",
 		'    });',
 		"    if (response.status === 200) kept = { etag: response.headers.get('etag') ?? '', rules: (await response.json()).rules, readAt: Date.now() };",
 		'  } catch {}',

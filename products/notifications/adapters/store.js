@@ -1,5 +1,5 @@
 /**
- * Notifications' records in the merchant database (collections `ss_notifications_<name>`, through the kit's tenant
+ * Notifications' records in the merchant database (collections `shelfway_notifications_<name>`, through the kit's tenant
  * guard: every query carries the website id, inserts are stamped with `websiteId`, `merchantId` and `createdAt`).
  * The delivery log is kept forever by default (PLAN 0.8.5); with the setting "keep the delivery log for N days" (PLAN
  * 0.8.10 D11) a finished message or webhook event gets `expireAt`, and the database's expiry index removes it then.
@@ -15,12 +15,12 @@
  * - `webhook_events`: outgoing webhook events and their attempts
  * @module
  */
-import { createId } from '@ss/contracts';
-import { randomToken } from '@ss/protocol';
+import { createId } from '@shelfway/contracts';
+import { randomToken } from '@shelfway/protocol';
 import { MAX_TEMPLATES, MAX_VISITOR_SUBSCRIPTIONS, VISITOR_SUBSCRIPTION_DAYS } from '../core/limits.js';
 import { LEASE_MS } from '../core/timing.js';
 
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/templates.js').Template} Template */
 /** @typedef {import('../core/channels.js').Channel} Channel */
 /** @typedef {import('../core/channels.js').Recipient} Recipient */
@@ -100,7 +100,7 @@ const RECIPIENTS = 'recipients';
 const SUBSCRIPTIONS = 'subscriptions';
 const WEBHOOK_EVENTS = 'webhook_events';
 
-/** Merchant database indexes (created on a website's first use). @type {import('@ss/app-kit').IndexDefinition[]} */
+/** Merchant database indexes (created on a website's first use). @type {import('@shelfway/app-kit').IndexDefinition[]} */
 export const INDEXES = [
 	{ collection: TEMPLATES, keys: { websiteId: 1, key: 1, channel: 1, language: 1 }, name: 'template', unique: true },
 	{ collection: OFF_MESSAGES, keys: { websiteId: 1, key: 1, channel: 1 }, name: 'by_message', unique: true },

@@ -16,8 +16,8 @@ describe('the names of connections and links', () => {
 		expect(AI_PROVIDERS).toEqual(['openai', 'anthropic', 'google', 'compatible']);
 	});
 	it('gives each product its own database and folder', () => {
-		expect(databaseNameFor('ecommerce')).toBe('ss_ecommerce');
-		expect(databaseNameFor('my-product')).toBe('ss_my_product');
+		expect(databaseNameFor('ecommerce')).toBe('shelfway_ecommerce');
+		expect(databaseNameFor('my-product')).toBe('shelfway_my_product');
 		expect(isDatabaseName(databaseNameFor('my-product'))).toBe(true);
 		expect(storageFolderFor({ productId: 'chat', websiteId: 'web_1' })).toBe('chat/web_1/');
 		expect(storageFolderFor({ prefix: 'shop/', productId: 'chat', websiteId: 'web_1' })).toBe('shop/chat/web_1/');
@@ -28,8 +28,8 @@ describe('the names of connections and links', () => {
 		for (const scope of ['', 'Messages.send', 'a..b', '.a', 'a.', 'a b', 'a/b', 'a.b.c.d.e', 5, null])
 			expect(isLinkScope(scope), String(scope)).toBe(false);
 	});
-	it('refuses database names that MongoDB or the Portal would not take', () => {
-		for (const name of ['', 'ss.chat', 'ss chat', '1abc', 'a$b', 'a'.repeat(64), 'ss/chat', null])
+	it('refuses database names that MongoDB or the Platform would not take', () => {
+		for (const name of ['', 'shelfway.chat', 'shelfway chat', '1abc', 'a$b', 'a'.repeat(64), 'shelfway/chat', null])
 			expect(isDatabaseName(name), String(name)).toBe(false);
 	});
 });

@@ -6186,7 +6186,7 @@
 		},
 		"ImportStatus": {
 			"type": "object",
-			"description": "What is stored, for ss-import verify.",
+			"description": "What is stored, for shelfway-import verify.",
 			"required": ["collections", "imported", "totals"],
 			"additionalProperties": false,
 			"properties": {
@@ -6200,7 +6200,7 @@
 				},
 				"totals": {
 					"type": "object",
-					"description": "The sums ss-import verify compares; besides these, orders.<status>.count and orders.<status>.total (minor units) for each order status in use.",
+					"description": "The sums shelfway-import verify compares; besides these, orders.<status>.count and orders.<status>.total (minor units) for each order status in use.",
 					"required": [
 						"products",
 						"products.active",
@@ -7970,7 +7970,7 @@
 				"byKind": {
 					"type": "string",
 					"enum": ["staff", "user", "server"],
-					"description": "The kind of actor by names, on entries a member of the staff or the server made: staff (a ticket's user), user (named by a server call's SS-Actor-* headers) or server (the server token, by Server); missing for shopper, guest and system, and on imported entries."
+					"description": "The kind of actor by names, on entries a member of the staff or the server made: staff (a ticket's user), user (named by a server call's Shelfway-Actor-* headers) or server (the server token, by Server); missing for shopper, guest and system, and on imported entries."
 				},
 				"note": {
 					"type": "string",
@@ -11225,12 +11225,12 @@
 				},
 				"by": {
 					"type": "string",
-					"description": "shopper, the staff member (a ticket’s user or the SS-Actor-Name of a server call), or Server."
+					"description": "shopper, the staff member (a ticket’s user or the Shelfway-Actor-Name of a server call), or Server."
 				},
 				"byKind": {
 					"type": "string",
 					"enum": ["staff", "user", "server"],
-					"description": "The kind of actor by names, on entries a member of the staff or the server made: staff (a ticket's user), user (named by a server call's SS-Actor-* headers) or server (the server token, by Server); missing for shopper and on imported entries."
+					"description": "The kind of actor by names, on entries a member of the staff or the server made: staff (a ticket's user), user (named by a server call's Shelfway-Actor-* headers) or server (the server token, by Server); missing for shopper and on imported entries."
 				},
 				"note": {
 					"type": "string",
@@ -14370,7 +14370,7 @@
 				"orderKey": {
 					"type": "string",
 					"pattern": "^[A-HJ-NP-Za-km-z2-9]{32}$",
-					"description": "Guest orders only, given once: send it as SS-Order-Key to read, pay, cancel and send proof for the order."
+					"description": "Guest orders only, given once: send it as Shelfway-Order-Key to read, pay, cancel and send proof for the order."
 				}
 			}
 		},
@@ -23374,7 +23374,7 @@
 	},
 	"POST /v1/shop/cart/quote": {
 		"summary": "Price a cart",
-		"description": "The cart lives in the browser; the server prices it on each quote and again when the order is placed: active products and variants, stock shortfalls per line (never the exact stock), deals, bundles and the coupon, delivery zones or pickup (delivery_zones), taxes (taxes) and the payment methods in the merchant’s order with their fees (cod), each while its feature is on. The shopper is the Accounts user of the sign-in sent in SS-Sign-In (verified here; a wrong or expired one counts as none). A signed-in shopper also gets their role price (role_pricing) and loyalty points (loyalty). A line that cannot be ordered is not refused: it lists its problems and ready is false. 422 validation_failed at /lines (1 to 50 lines), /lines/<n>/productId, /variantId, /quantity (1 to 99, or the item type's most), /slot, /dealId, /lock, /coupon, /points, /delivery or /payment.",
+		"description": "The cart lives in the browser; the server prices it on each quote and again when the order is placed: active products and variants, stock shortfalls per line (never the exact stock), deals, bundles and the coupon, delivery zones or pickup (delivery_zones), taxes (taxes) and the payment methods in the merchant’s order with their fees (cod), each while its feature is on. The shopper is the Accounts user of the sign-in sent in Shelfway-Sign-In (verified here; a wrong or expired one counts as none). A signed-in shopper also gets their role price (role_pricing) and loyalty points (loyalty). A line that cannot be ordered is not refused: it lists its problems and ready is false. 422 validation_failed at /lines (1 to 50 lines), /lines/<n>/productId, /variantId, /quantity (1 to 99, or the item type's most), /slot, /dealId, /lock, /coupon, /points, /delivery or /payment.",
 		"body": {
 			"type": "object",
 			"required": ["lines"],
@@ -23489,7 +23489,7 @@
 		"headers": {
 			"type": "object",
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none)."
 				}
@@ -23498,7 +23498,7 @@
 	},
 	"POST /v1/shop/orders": {
 		"summary": "Place an order",
-		"description": "Send an Idempotency-Key (428 idempotency_key_required without one) so a retried request places one order: the same key with the same body answers the first answer again (Idempotent-Replayed: true), with another body 409 duplicate_request. The shopper is the Accounts user of the sign-in sent in SS-Sign-In (verified here; a wrong or expired one counts as none). Without a sign-in a guest orders with customer { name, phone?, email? } (what checkout.guestIdentity and checkout.phoneRequired ask for) while checkout.guests is on or unless_password (off: 403 sign_in_required; unless_password and the phone or email address belongs to an Accounts user with a password: 403 sign_in_required with signIn: member_phone or member_email); a phone or email address a member’s record has links the order to that member’s record (it enters their account when they sign in with it verified). The cart is priced again here. How the order starts (order.role / order.payment.state / next.kind): a method paid online, one paid first through Payments and an advance through Payments: awaiting_payment / pending / pay (retry when Payments could not be reached); a method paid first by hand or an advance staff record (via or advanceVia manual): awaiting_payment / unpaid / proof; a method paid on delivery: the order flow's starts.on_delivery status (awaiting_confirmation by default) / unpaid / done; one paid at pickup: starts.at_pickup (awaiting_confirmation by default) / unpaid / done; a free order (total 0): paid, starts.free (awaiting_confirmation by default; a status of the awaiting_payment role waits without a time limit) — starts is set in the order_flow list. Unpaid orders awaiting payment are canceled after checkout.paymentWindowMinutes, unconfirmed ones after checkout.confirmationHours (0 = never), giving back what they held. A guest gets orderKey once. 422 validation_failed (the cart’s fields, /payment, /address/<field>, /customer/<field>, /returnUrl, /note, /expectedTotal, /delivery/locationId, /lines/<n> for a line that cannot be ordered); 422 payment_not_allowed (reason needs_delivery, needs_pickup, digital_items, over_max, advance_unavailable or not_ready); 403 customer_blocked; 409 too_many_open_orders (checkout.openOrderCap); 429 too_many_orders (checkout.placeLimit: orders a customer placed in the last placeWindowMinutes); 409 price_changed when expectedTotal differs (quote: the new CartQuote); 409 out_of_stock (lines), slot_taken, offer_unavailable or points_changed. Order numbers come from a counter of their form; should the counter ever be behind the numbers already used (set back, or orders imported before it moved on), the placement moves it past the highest one and is placed again, never stopping checkout. fields gives the order fields the quote names (422 at /fields/<id> for a value its field refuses or a required one missing).",
+		"description": "Send an Idempotency-Key (428 idempotency_key_required without one) so a retried request places one order: the same key with the same body answers the first answer again (Idempotent-Replayed: true), with another body 409 duplicate_request. The shopper is the Accounts user of the sign-in sent in Shelfway-Sign-In (verified here; a wrong or expired one counts as none). Without a sign-in a guest orders with customer { name, phone?, email? } (what checkout.guestIdentity and checkout.phoneRequired ask for) while checkout.guests is on or unless_password (off: 403 sign_in_required; unless_password and the phone or email address belongs to an Accounts user with a password: 403 sign_in_required with signIn: member_phone or member_email); a phone or email address a member’s record has links the order to that member’s record (it enters their account when they sign in with it verified). The cart is priced again here. How the order starts (order.role / order.payment.state / next.kind): a method paid online, one paid first through Payments and an advance through Payments: awaiting_payment / pending / pay (retry when Payments could not be reached); a method paid first by hand or an advance staff record (via or advanceVia manual): awaiting_payment / unpaid / proof; a method paid on delivery: the order flow's starts.on_delivery status (awaiting_confirmation by default) / unpaid / done; one paid at pickup: starts.at_pickup (awaiting_confirmation by default) / unpaid / done; a free order (total 0): paid, starts.free (awaiting_confirmation by default; a status of the awaiting_payment role waits without a time limit) — starts is set in the order_flow list. Unpaid orders awaiting payment are canceled after checkout.paymentWindowMinutes, unconfirmed ones after checkout.confirmationHours (0 = never), giving back what they held. A guest gets orderKey once. 422 validation_failed (the cart’s fields, /payment, /address/<field>, /customer/<field>, /returnUrl, /note, /expectedTotal, /delivery/locationId, /lines/<n> for a line that cannot be ordered); 422 payment_not_allowed (reason needs_delivery, needs_pickup, digital_items, over_max, advance_unavailable or not_ready); 403 customer_blocked; 409 too_many_open_orders (checkout.openOrderCap); 429 too_many_orders (checkout.placeLimit: orders a customer placed in the last placeWindowMinutes); 409 price_changed when expectedTotal differs (quote: the new CartQuote); 409 out_of_stock (lines), slot_taken, offer_unavailable or points_changed. Order numbers come from a counter of their form; should the counter ever be behind the numbers already used (set back, or orders imported before it moved on), the placement moves it past the highest one and is placed again, never stopping checkout. fields gives the order fields the quote names (422 at /fields/<id> for a value its field refuses or a required one missing).",
 		"body": {
 			"type": "object",
 			"required": ["lines", "payment"],
@@ -23684,7 +23684,7 @@
 				"returnUrl": {
 					"type": ["string", "null"],
 					"maxLength": 2000,
-					"description": "Where Payments sends the shopper back (with ss_order=<id>): an address on https://<the website’s domain> (a local address while testing). Default: checkout.successUrl / cancelUrl, else the website’s home."
+					"description": "Where Payments sends the shopper back (with shelfway_order=<id>): an address on https://<the website’s domain> (a local address while testing). Default: checkout.successUrl / cancelUrl, else the website’s home."
 				},
 				"expectedTotal": {
 					"type": ["integer", "null"],
@@ -23711,7 +23711,7 @@
 		"headers": {
 			"type": "object",
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none)."
 				}
@@ -23720,7 +23720,7 @@
 	},
 	"GET /v1/shop/orders": {
 		"summary": "The signed-in shopper’s orders, newest first",
-		"description": "The shopper is the Accounts user of the sign-in sent in SS-Sign-In (verified here; a wrong or expired one counts as none). 403 sign_in_required without one. Guest orders of the sign-in’s verified phone become the shopper’s first. A waiting payment is asked of Payments again. 400 bad_request for another limit or a wrong cursor.",
+		"description": "The shopper is the Accounts user of the sign-in sent in Shelfway-Sign-In (verified here; a wrong or expired one counts as none). 403 sign_in_required without one. Guest orders of the sign-in’s verified phone become the shopper’s first. A waiting payment is asked of Payments again. 400 bad_request for another limit or a wrong cursor.",
 		"query": {
 			"type": "object",
 			"properties": {
@@ -23741,9 +23741,9 @@
 		},
 		"headers": {
 			"type": "object",
-			"required": ["SS-Sign-In"],
+			"required": ["Shelfway-Sign-In"],
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none)."
 				}
@@ -23752,51 +23752,51 @@
 	},
 	"GET /v1/shop/orders/:id": {
 		"summary": "Read one of the shopper’s orders",
-		"description": "Send the shopper’s Accounts sign-in in SS-Sign-In (their own orders), or a guest order’s key in SS-Order-Key (the orderKey answered once when it was placed). 403 sign_in_required with neither; 404 not_found when the order is not the shopper’s and the key does not open it. A verified phone in the sign-in makes the guest orders of that phone the shopper’s first. A waiting payment is asked of Payments again (at most every 30 seconds). Downloads and license keys are listed once the order is paid (digital_goods).",
+		"description": "Send the shopper’s Accounts sign-in in Shelfway-Sign-In (their own orders), or a guest order’s key in Shelfway-Order-Key (the orderKey answered once when it was placed). 403 sign_in_required with neither; 404 not_found when the order is not the shopper’s and the key does not open it. A verified phone in the sign-in makes the guest orders of that phone the shopper’s first. A waiting payment is asked of Payments again (at most every 30 seconds). Downloads and license keys are listed once the order is paid (digital_goods).",
 		"response": {
 			"$ref": "#/components/schemas/ShopOrder"
 		},
 		"headers": {
 			"type": "object",
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
-					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none). One of SS-Sign-In or SS-Order-Key."
+					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none). One of Shelfway-Sign-In or Shelfway-Order-Key."
 				},
-				"SS-Order-Key": {
+				"Shelfway-Order-Key": {
 					"type": "string",
 					"minLength": 32,
 					"maxLength": 32,
-					"description": "A guest order’s key (orderKey, answered once when the order was placed). One of SS-Sign-In or SS-Order-Key."
+					"description": "A guest order’s key (orderKey, answered once when the order was placed). One of Shelfway-Sign-In or Shelfway-Order-Key."
 				}
 			}
 		}
 	},
 	"GET /v1/shop/orders/by-number/:number": {
 		"summary": "Read one of the shopper’s orders by its number",
-		"description": "For an order page by number. Send the shopper’s Accounts sign-in in SS-Sign-In (their own orders), or a guest order’s key in SS-Order-Key (the orderKey answered once when it was placed). 403 sign_in_required with neither; 404 not_found when the order is not the shopper’s and the key does not open it. A verified phone in the sign-in makes the guest orders of that phone the shopper’s first. A number of other characters than letters, digits, _ and - (or over 40) answers 404.",
+		"description": "For an order page by number. Send the shopper’s Accounts sign-in in Shelfway-Sign-In (their own orders), or a guest order’s key in Shelfway-Order-Key (the orderKey answered once when it was placed). 403 sign_in_required with neither; 404 not_found when the order is not the shopper’s and the key does not open it. A verified phone in the sign-in makes the guest orders of that phone the shopper’s first. A number of other characters than letters, digits, _ and - (or over 40) answers 404.",
 		"response": {
 			"$ref": "#/components/schemas/ShopOrder"
 		},
 		"headers": {
 			"type": "object",
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
-					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none). One of SS-Sign-In or SS-Order-Key."
+					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none). One of Shelfway-Sign-In or Shelfway-Order-Key."
 				},
-				"SS-Order-Key": {
+				"Shelfway-Order-Key": {
 					"type": "string",
 					"minLength": 32,
 					"maxLength": 32,
-					"description": "A guest order’s key (orderKey, answered once when the order was placed). One of SS-Sign-In or SS-Order-Key."
+					"description": "A guest order’s key (orderKey, answered once when the order was placed). One of Shelfway-Sign-In or Shelfway-Order-Key."
 				}
 			}
 		}
 	},
 	"POST /v1/shop/orders/:id/proof/upload": {
 		"summary": "A signed upload for a bank-transfer proof",
-		"description": "Only while the order waits for a payment staff record (canSendProof; else 409 nothing_to_pay). PUT the file to upload.url with upload.headers before expiresAt (15 minutes), then send key to POST /v1/shop/orders/{id}/proof. Send the shopper’s Accounts sign-in in SS-Sign-In (their own orders), or a guest order’s key in SS-Order-Key (the orderKey answered once when it was placed). 403 sign_in_required with neither; 404 not_found when the order is not the shopper’s and the key does not open it. A verified phone in the sign-in makes the guest orders of that phone the shopper’s first. 422 validation_failed at /type or /size; 503 storage_not_connected.",
+		"description": "Only while the order waits for a payment staff record (canSendProof; else 409 nothing_to_pay). PUT the file to upload.url with upload.headers before expiresAt (15 minutes), then send key to POST /v1/shop/orders/{id}/proof. Send the shopper’s Accounts sign-in in Shelfway-Sign-In (their own orders), or a guest order’s key in Shelfway-Order-Key (the orderKey answered once when it was placed). 403 sign_in_required with neither; 404 not_found when the order is not the shopper’s and the key does not open it. A verified phone in the sign-in makes the guest orders of that phone the shopper’s first. 422 validation_failed at /type or /size; 503 storage_not_connected.",
 		"body": {
 			"type": "object",
 			"required": ["type", "size"],
@@ -23853,22 +23853,22 @@
 		"headers": {
 			"type": "object",
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
-					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none). One of SS-Sign-In or SS-Order-Key."
+					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none). One of Shelfway-Sign-In or Shelfway-Order-Key."
 				},
-				"SS-Order-Key": {
+				"Shelfway-Order-Key": {
 					"type": "string",
 					"minLength": 32,
 					"maxLength": 32,
-					"description": "A guest order’s key (orderKey, answered once when the order was placed). One of SS-Sign-In or SS-Order-Key."
+					"description": "A guest order’s key (orderKey, answered once when the order was placed). One of Shelfway-Sign-In or Shelfway-Order-Key."
 				}
 			}
 		}
 	},
 	"POST /v1/shop/orders/:id/proof": {
 		"summary": "Send the bank-transfer proof",
-		"description": "After uploading it (POST /v1/shop/orders/{id}/proof/upload); staff are told and record the payment. From then on the order no longer ends with the payment window (its payBy is null): it waits for staff to confirm or cancel it. Send the shopper’s Accounts sign-in in SS-Sign-In (their own orders), or a guest order’s key in SS-Order-Key (the orderKey answered once when it was placed). 403 sign_in_required with neither; 404 not_found when the order is not the shopper’s and the key does not open it. A verified phone in the sign-in makes the guest orders of that phone the shopper’s first. 409 nothing_to_pay when the order does not wait for a proof; 422 validation_failed at /key (not this order’s upload, or not uploaded) or /reference; 409 conflict when the order changed meanwhile.",
+		"description": "After uploading it (POST /v1/shop/orders/{id}/proof/upload); staff are told and record the payment. From then on the order no longer ends with the payment window (its payBy is null): it waits for staff to confirm or cancel it. Send the shopper’s Accounts sign-in in Shelfway-Sign-In (their own orders), or a guest order’s key in Shelfway-Order-Key (the orderKey answered once when it was placed). 403 sign_in_required with neither; 404 not_found when the order is not the shopper’s and the key does not open it. A verified phone in the sign-in makes the guest orders of that phone the shopper’s first. 409 nothing_to_pay when the order does not wait for a proof; 422 validation_failed at /key (not this order’s upload, or not uploaded) or /reference; 409 conflict when the order changed meanwhile.",
 		"body": {
 			"type": "object",
 			"required": ["key"],
@@ -23897,22 +23897,22 @@
 		"headers": {
 			"type": "object",
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
-					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none). One of SS-Sign-In or SS-Order-Key."
+					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none). One of Shelfway-Sign-In or Shelfway-Order-Key."
 				},
-				"SS-Order-Key": {
+				"Shelfway-Order-Key": {
 					"type": "string",
 					"minLength": 32,
 					"maxLength": 32,
-					"description": "A guest order’s key (orderKey, answered once when the order was placed). One of SS-Sign-In or SS-Order-Key."
+					"description": "A guest order’s key (orderKey, answered once when the order was placed). One of Shelfway-Sign-In or Shelfway-Order-Key."
 				}
 			}
 		}
 	},
 	"POST /v1/shop/orders/:id/cancel": {
 		"summary": "Cancel an order as its shopper",
-		"description": "Only along a move of the order flow the shopper may make (lists/order_flow: a move from its status into a canceled one with shopper in who; by default from awaiting_payment and awaiting_confirmation; canCancel says it), else 409 move_not_allowed. A paid order as that move's shopperPaid says: refuse (409 move_not_allowed: staff cancel and refund it; the default out of open or packed), flag (canceled, the money shown as due to refund; the default out of waiting) or refund (canceled and what Payments took refunded right after). An order paid at Payments meanwhile is not canceled (409). Stock, booked slots, offer uses and points go back, and its Payments payment is canceled. Send the shopper’s Accounts sign-in in SS-Sign-In (their own orders), or a guest order’s key in SS-Order-Key (the orderKey answered once when it was placed). 403 sign_in_required with neither; 404 not_found when the order is not the shopper’s and the key does not open it. A verified phone in the sign-in makes the guest orders of that phone the shopper’s first.",
+		"description": "Only along a move of the order flow the shopper may make (lists/order_flow: a move from its status into a canceled one with shopper in who; by default from awaiting_payment and awaiting_confirmation; canCancel says it), else 409 move_not_allowed. A paid order as that move's shopperPaid says: refuse (409 move_not_allowed: staff cancel and refund it; the default out of open or packed), flag (canceled, the money shown as due to refund; the default out of waiting) or refund (canceled and what Payments took refunded right after). An order paid at Payments meanwhile is not canceled (409). Stock, booked slots, offer uses and points go back, and its Payments payment is canceled. Send the shopper’s Accounts sign-in in Shelfway-Sign-In (their own orders), or a guest order’s key in Shelfway-Order-Key (the orderKey answered once when it was placed). 403 sign_in_required with neither; 404 not_found when the order is not the shopper’s and the key does not open it. A verified phone in the sign-in makes the guest orders of that phone the shopper’s first.",
 		"response": {
 			"type": "object",
 			"required": ["order"],
@@ -23926,29 +23926,29 @@
 		"headers": {
 			"type": "object",
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
-					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none). One of SS-Sign-In or SS-Order-Key."
+					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none). One of Shelfway-Sign-In or Shelfway-Order-Key."
 				},
-				"SS-Order-Key": {
+				"Shelfway-Order-Key": {
 					"type": "string",
 					"minLength": 32,
 					"maxLength": 32,
-					"description": "A guest order’s key (orderKey, answered once when the order was placed). One of SS-Sign-In or SS-Order-Key."
+					"description": "A guest order’s key (orderKey, answered once when the order was placed). One of Shelfway-Sign-In or Shelfway-Order-Key."
 				}
 			}
 		}
 	},
 	"POST /v1/shop/orders/:id/pay": {
 		"summary": "Pay an order awaiting payment (again)",
-		"description": "Only an order awaiting payment with a payment through Payments (else 409 nothing_to_pay; a payment staff record takes a proof instead). Answers next.kind pay with Payments’ page; starts a new Payments payment when the order has none (503 payments_unavailable when Payments cannot be reached). Send an Idempotency-Key so a retried request starts one payment. Send the shopper’s Accounts sign-in in SS-Sign-In (their own orders), or a guest order’s key in SS-Order-Key (the orderKey answered once when it was placed). 403 sign_in_required with neither; 404 not_found when the order is not the shopper’s and the key does not open it. A verified phone in the sign-in makes the guest orders of that phone the shopper’s first. 422 validation_failed at /returnUrl.",
+		"description": "Only an order awaiting payment with a payment through Payments (else 409 nothing_to_pay; a payment staff record takes a proof instead). Answers next.kind pay with Payments’ page; starts a new Payments payment when the order has none (503 payments_unavailable when Payments cannot be reached). Send an Idempotency-Key so a retried request starts one payment. Send the shopper’s Accounts sign-in in Shelfway-Sign-In (their own orders), or a guest order’s key in Shelfway-Order-Key (the orderKey answered once when it was placed). 403 sign_in_required with neither; 404 not_found when the order is not the shopper’s and the key does not open it. A verified phone in the sign-in makes the guest orders of that phone the shopper’s first. 422 validation_failed at /returnUrl.",
 		"body": {
 			"type": "object",
 			"properties": {
 				"returnUrl": {
 					"type": ["string", "null"],
 					"maxLength": 2000,
-					"description": "Where Payments sends the shopper back (with ss_order=<id>): on https://<the website’s domain>."
+					"description": "Where Payments sends the shopper back (with shelfway_order=<id>): on https://<the website’s domain>."
 				}
 			}
 		},
@@ -23968,22 +23968,22 @@
 		"headers": {
 			"type": "object",
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
-					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none). One of SS-Sign-In or SS-Order-Key."
+					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none). One of Shelfway-Sign-In or Shelfway-Order-Key."
 				},
-				"SS-Order-Key": {
+				"Shelfway-Order-Key": {
 					"type": "string",
 					"minLength": 32,
 					"maxLength": 32,
-					"description": "A guest order’s key (orderKey, answered once when the order was placed). One of SS-Sign-In or SS-Order-Key."
+					"description": "A guest order’s key (orderKey, answered once when the order was placed). One of Shelfway-Sign-In or Shelfway-Order-Key."
 				}
 			}
 		}
 	},
 	"GET /v1/shop/orders/:id/downloads/:lineId/:file": {
 		"summary": "A download link for a file of a paid order",
-		"description": "Answers JSON { url, expiresAt }, not the file and not a redirect: send the browser to url (a signed link of the merchant’s storage, 5 minutes). :file is a downloads[].file of the order line. Each call counts one download of the line, up to the product’s download limit (else digital_goods.downloadLimit; 0 = no limit). 403 download_not_allowed until the order is paid (paid or partially_refunded) and once the limit is reached; 404 not_found for another line or file; 503 storage_not_connected. Send the shopper’s Accounts sign-in in SS-Sign-In (their own orders), or a guest order’s key in SS-Order-Key (the orderKey answered once when it was placed). 403 sign_in_required with neither; 404 not_found when the order is not the shopper’s and the key does not open it. A verified phone in the sign-in makes the guest orders of that phone the shopper’s first.",
+		"description": "Answers JSON { url, expiresAt }, not the file and not a redirect: send the browser to url (a signed link of the merchant’s storage, 5 minutes). :file is a downloads[].file of the order line. Each call counts one download of the line, up to the product’s download limit (else digital_goods.downloadLimit; 0 = no limit). 403 download_not_allowed until the order is paid (paid or partially_refunded) and once the limit is reached; 404 not_found for another line or file; 503 storage_not_connected. Send the shopper’s Accounts sign-in in Shelfway-Sign-In (their own orders), or a guest order’s key in Shelfway-Order-Key (the orderKey answered once when it was placed). 403 sign_in_required with neither; 404 not_found when the order is not the shopper’s and the key does not open it. A verified phone in the sign-in makes the guest orders of that phone the shopper’s first.",
 		"response": {
 			"type": "object",
 			"description": "A 5-minute download link.",
@@ -24003,15 +24003,15 @@
 		"headers": {
 			"type": "object",
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
-					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none). One of SS-Sign-In or SS-Order-Key."
+					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none). One of Shelfway-Sign-In or Shelfway-Order-Key."
 				},
-				"SS-Order-Key": {
+				"Shelfway-Order-Key": {
 					"type": "string",
 					"minLength": 32,
 					"maxLength": 32,
-					"description": "A guest order’s key (orderKey, answered once when the order was placed). One of SS-Sign-In or SS-Order-Key."
+					"description": "A guest order’s key (orderKey, answered once when the order was placed). One of Shelfway-Sign-In or Shelfway-Order-Key."
 				}
 			}
 		}
@@ -24176,7 +24176,7 @@
 	},
 	"GET /v1/chat/products/:id/quote": {
 		"summary": "Price a product for Chat",
-		"description": "One variant (variantId, else the card variant) times quantity (an item sold in a unit of its own: a decimal number of its units such as 2.5, its least when left out; the answer's quantity counts thousandths, measure gives the unit and the amount, and price, savings and priceAfterDeals are per unit), priced exactly as the cart prices it for the payment method asked: deals, the payment method’s fee, delivery to city with its free-delivery threshold, taxes. A forwarded Accounts sign-in in SS-Sign-In adds the shopper’s role price. Needs the deals feature. 404 not_found (product or variant); 422 validation_failed at /variantId, /quantity, /paymentMethod or /city.",
+		"description": "One variant (variantId, else the card variant) times quantity (an item sold in a unit of its own: a decimal number of its units such as 2.5, its least when left out; the answer's quantity counts thousandths, measure gives the unit and the amount, and price, savings and priceAfterDeals are per unit), priced exactly as the cart prices it for the payment method asked: deals, the payment method’s fee, delivery to city with its free-delivery threshold, taxes. A forwarded Accounts sign-in in Shelfway-Sign-In adds the shopper’s role price. Needs the deals feature. 404 not_found (product or variant); 422 validation_failed at /variantId, /quantity, /paymentMethod or /city.",
 		"query": {
 			"type": "object",
 			"properties": {
@@ -24223,7 +24223,7 @@
 		"headers": {
 			"type": "object",
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The visitor’s Accounts sign-in, forwarded by the caller (verified here)."
 				}
@@ -24261,7 +24261,7 @@
 	},
 	"GET /v1/chat/me/orders": {
 		"summary": "The signed-in visitor’s latest orders for Chat",
-		"description": "Forward the visitor’s Accounts sign-in in SS-Sign-In (verified here): only that user’s data is answered; 403 sign_in_required without a valid one. Never the address or phone.",
+		"description": "Forward the visitor’s Accounts sign-in in Shelfway-Sign-In (verified here): only that user’s data is answered; 403 sign_in_required without a valid one. Never the address or phone.",
 		"query": {
 			"type": "object",
 			"properties": {
@@ -24300,9 +24300,9 @@
 		},
 		"headers": {
 			"type": "object",
-			"required": ["SS-Sign-In"],
+			"required": ["Shelfway-Sign-In"],
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The visitor’s Accounts sign-in, forwarded by the caller (verified here)."
 				}
@@ -24311,15 +24311,15 @@
 	},
 	"GET /v1/chat/me/account": {
 		"summary": "The signed-in visitor’s account for Chat",
-		"description": "Forward the visitor’s Accounts sign-in in SS-Sign-In (verified here): only that user’s data is answered; 403 sign_in_required without a valid one.",
+		"description": "Forward the visitor’s Accounts sign-in in Shelfway-Sign-In (verified here): only that user’s data is answered; 403 sign_in_required without a valid one.",
 		"response": {
 			"$ref": "#/components/schemas/ChatAccount"
 		},
 		"headers": {
 			"type": "object",
-			"required": ["SS-Sign-In"],
+			"required": ["Shelfway-Sign-In"],
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The visitor’s Accounts sign-in, forwarded by the caller (verified here)."
 				}
@@ -24328,7 +24328,7 @@
 	},
 	"GET /v1/chat/me/shipments": {
 		"summary": "The signed-in visitor’s latest shipments for Chat",
-		"description": "Forward the visitor’s Accounts sign-in in SS-Sign-In (verified here): only that user’s data is answered; 403 sign_in_required without a valid one. Only orders with a shipment, newest first.",
+		"description": "Forward the visitor’s Accounts sign-in in Shelfway-Sign-In (verified here): only that user’s data is answered; 403 sign_in_required without a valid one. Only orders with a shipment, newest first.",
 		"query": {
 			"type": "object",
 			"properties": {
@@ -24356,9 +24356,9 @@
 		},
 		"headers": {
 			"type": "object",
-			"required": ["SS-Sign-In"],
+			"required": ["Shelfway-Sign-In"],
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The visitor’s Accounts sign-in, forwarded by the caller (verified here)."
 				}
@@ -24367,7 +24367,7 @@
 	},
 	"GET /v1/chat/context": {
 		"summary": "Chat’s live store context",
-		"description": "What Chat’s AI replies add to their instructions: the shop basics (payment methods and notes, delivery fees and free-delivery amounts, pickup points, the cash handling fee, the loyalty earn rate, top categories, the return window and warranty), the policies (checkout), the 10 newest products with their price per grade, the deals (deals), the product asked for and, with a forwarded Accounts sign-in in SS-Sign-In, the visitor’s first name, city and points. The text's headings and labels are your texts chat.context.* (Settings → Texts), in your words and language; a deal without a discount label of its own reads chat.context.dealFree or chat.context.dealOff. 422 validation_failed at /productId.",
+		"description": "What Chat’s AI replies add to their instructions: the shop basics (payment methods and notes, delivery fees and free-delivery amounts, pickup points, the cash handling fee, the loyalty earn rate, top categories, the return window and warranty), the policies (checkout), the 10 newest products with their price per grade, the deals (deals), the product asked for and, with a forwarded Accounts sign-in in Shelfway-Sign-In, the visitor’s first name, city and points. The text's headings and labels are your texts chat.context.* (Settings → Texts), in your words and language; a deal without a discount label of its own reads chat.context.dealFree or chat.context.dealOff. 422 validation_failed at /productId.",
 		"query": {
 			"type": "object",
 			"properties": {
@@ -24384,7 +24384,7 @@
 		"headers": {
 			"type": "object",
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The visitor’s Accounts sign-in, forwarded by the caller (verified here)."
 				}
@@ -24523,7 +24523,7 @@
 	},
 	"GET /v1/orders": {
 		"summary": "The orders, newest first",
-		"description": "unseen is about the acting staff member: the ticket's user, or the one a server call names in its SS-Actor-* headers. 422 validation_failed for an unknown status, role, payment state or method, delivery method or customer, more than 30 tags, a date that is not ISO 8601, or a search longer than 120 characters; 400 bad_request for a bad cursor or limit.",
+		"description": "unseen is about the acting staff member: the ticket's user, or the one a server call names in its Shelfway-Actor-* headers. 422 validation_failed for an unknown status, role, payment state or method, delivery method or customer, more than 30 tags, a date that is not ISO 8601, or a search longer than 120 characters; 400 bad_request for a bad cursor or limit.",
 		"query": {
 			"type": "object",
 			"properties": {
@@ -24625,7 +24625,7 @@
 	},
 	"GET /v1/admin/orders": {
 		"summary": "The orders, newest first (Orders admin widget)",
-		"description": "unseen is about the acting staff member: the ticket's user, or the one a server call names in its SS-Actor-* headers. 422 validation_failed for an unknown status, role, payment state or method, delivery method or customer, more than 30 tags, a date that is not ISO 8601, or a search longer than 120 characters; 400 bad_request for a bad cursor or limit.",
+		"description": "unseen is about the acting staff member: the ticket's user, or the one a server call names in its Shelfway-Actor-* headers. 422 validation_failed for an unknown status, role, payment state or method, delivery method or customer, more than 30 tags, a date that is not ISO 8601, or a search longer than 120 characters; 400 bad_request for a bad cursor or limit.",
 		"query": {
 			"type": "object",
 			"properties": {
@@ -25631,7 +25631,7 @@
 	},
 	"POST /v1/orders/:id/move": {
 		"summary": "Move an order to another status of the flow",
-		"description": "What entering a status does depends on its role and the move's options (lists/order_flow, nextStatuses on the order): packed, shipped and delivered take serial numbers (serials, grades_serials) for the lines whose item type numbers their units: picked from units in stock (unitCapture stock) when packing, or typed (unitCapture packing) with this move or later, and every unit of a line is needed by the step its type names (unitsRequiredBefore: packed, or shipped, which also covers delivered); any move takes attachments, and one into a status that a kind of your attachment_kinds list names in requiredAt needs that kind (E20); shipped needs a shipment (its tracking number unless the move's tracking is optional); delivered makes cash on delivery and pickup paid (cod.paidOnDelivery), counts units sold and credits loyalty points; canceled gives stock, slots, offer uses and points back, cancels the open Payments payment and refunds what Payments took right after when the move's refund is auto (when Payments cannot be reached the refund stays pending in effects and is tried again; a warning says so); returned_to_origin and returned put stock back as the move's restock says (ask: send restock); refunded refunds what is left (before dispatch it acts as a cancel; with nothing paid it cancels with no money unless the move's unpaid is refuse: 409 nothing_paid); a dispatched order is never canceled or refunded as a cancel: it comes back as returned_to_origin first (money paid can be refunded meanwhile with POST /v1/orders/:id/refunds); after delivery a cancel or a refund puts the items back in stock only as the move's restock says and takes earned points back unless its points is keep. A waiting order staff move on (into an open, packed or delivered status) lets go of its open Payments payment: it is canceled at Payments first, so the shopper can no longer pay it (money that still arrives Payments flags to give back), and the order waits for a new one if it waits again; paid just before, the move is refused (409 move_not_allowed) and the payment recorded; 503 payments_unavailable when Payments cannot be reached. A waiting order whose method is listed in the move's paidOnConfirm is recorded as paid when moved on. 409 move_not_allowed when the flow does not list the move for staff (or the shopper paid meanwhile); 409 flow_changed when the order's role is no longer the flow's role of its status; 409 conflict when the order changed meanwhile or a refund runs at Payments for it; 422 validation_failed for a missing shipment, tracking number, serial numbers, video, note, shopperNote or restock; 503 payments_unavailable when Payments cannot be reached for a cancel; 404 not_found. A widget ticket needs the move's permission (into a refunded status orders.refund), and any move that gives money back (a cancel that refunds what was paid, before or after delivery) needs orders.refund too, whatever permission the move names; refused with 403 forbidden before anything is called. The move is written to the history with the staff member's name (a ticket's user, or the SS-Actor-* headers of a server call, else Server), the activity log, the shopper's message and the events. Each move is one transaction: the order, its facts and everything it gives back or takes are written together, so of two moves at once one wins and the other gets 409 conflict. A move refused after it called out leaves nothing behind: a Payments payment it canceled is dropped from the order (the shopper's next pay starts a new one), and a courier booking is kept as the order's shipment and used when the move is made again (never booked twice). Send an Idempotency-Key so a retried request is done once. A move into a packed, shipped or delivered status needs the order fields required by that stage (requiredAt) first: 422 validation_failed at /fields/<id>.",
+		"description": "What entering a status does depends on its role and the move's options (lists/order_flow, nextStatuses on the order): packed, shipped and delivered take serial numbers (serials, grades_serials) for the lines whose item type numbers their units: picked from units in stock (unitCapture stock) when packing, or typed (unitCapture packing) with this move or later, and every unit of a line is needed by the step its type names (unitsRequiredBefore: packed, or shipped, which also covers delivered); any move takes attachments, and one into a status that a kind of your attachment_kinds list names in requiredAt needs that kind (E20); shipped needs a shipment (its tracking number unless the move's tracking is optional); delivered makes cash on delivery and pickup paid (cod.paidOnDelivery), counts units sold and credits loyalty points; canceled gives stock, slots, offer uses and points back, cancels the open Payments payment and refunds what Payments took right after when the move's refund is auto (when Payments cannot be reached the refund stays pending in effects and is tried again; a warning says so); returned_to_origin and returned put stock back as the move's restock says (ask: send restock); refunded refunds what is left (before dispatch it acts as a cancel; with nothing paid it cancels with no money unless the move's unpaid is refuse: 409 nothing_paid); a dispatched order is never canceled or refunded as a cancel: it comes back as returned_to_origin first (money paid can be refunded meanwhile with POST /v1/orders/:id/refunds); after delivery a cancel or a refund puts the items back in stock only as the move's restock says and takes earned points back unless its points is keep. A waiting order staff move on (into an open, packed or delivered status) lets go of its open Payments payment: it is canceled at Payments first, so the shopper can no longer pay it (money that still arrives Payments flags to give back), and the order waits for a new one if it waits again; paid just before, the move is refused (409 move_not_allowed) and the payment recorded; 503 payments_unavailable when Payments cannot be reached. A waiting order whose method is listed in the move's paidOnConfirm is recorded as paid when moved on. 409 move_not_allowed when the flow does not list the move for staff (or the shopper paid meanwhile); 409 flow_changed when the order's role is no longer the flow's role of its status; 409 conflict when the order changed meanwhile or a refund runs at Payments for it; 422 validation_failed for a missing shipment, tracking number, serial numbers, video, note, shopperNote or restock; 503 payments_unavailable when Payments cannot be reached for a cancel; 404 not_found. A widget ticket needs the move's permission (into a refunded status orders.refund), and any move that gives money back (a cancel that refunds what was paid, before or after delivery) needs orders.refund too, whatever permission the move names; refused with 403 forbidden before anything is called. The move is written to the history with the staff member's name (a ticket's user, or the Shelfway-Actor-* headers of a server call, else Server), the activity log, the shopper's message and the events. Each move is one transaction: the order, its facts and everything it gives back or takes are written together, so of two moves at once one wins and the other gets 409 conflict. A move refused after it called out leaves nothing behind: a Payments payment it canceled is dropped from the order (the shopper's next pay starts a new one), and a courier booking is kept as the order's shipment and used when the move is made again (never booked twice). Send an Idempotency-Key so a retried request is done once. A move into a packed, shipped or delivered status needs the order fields required by that stage (requiredAt) first: 422 validation_failed at /fields/<id>.",
 		"body": {
 			"type": "object",
 			"required": ["to"],
@@ -25769,7 +25769,7 @@
 	},
 	"POST /v1/admin/orders/:id/move": {
 		"summary": "Move an order to another status of the flow (Orders admin widget)",
-		"description": "What entering a status does depends on its role and the move's options (lists/order_flow, nextStatuses on the order): packed, shipped and delivered take serial numbers (serials, grades_serials) for the lines whose item type numbers their units: picked from units in stock (unitCapture stock) when packing, or typed (unitCapture packing) with this move or later, and every unit of a line is needed by the step its type names (unitsRequiredBefore: packed, or shipped, which also covers delivered); any move takes attachments, and one into a status that a kind of your attachment_kinds list names in requiredAt needs that kind (E20); shipped needs a shipment (its tracking number unless the move's tracking is optional); delivered makes cash on delivery and pickup paid (cod.paidOnDelivery), counts units sold and credits loyalty points; canceled gives stock, slots, offer uses and points back, cancels the open Payments payment and refunds what Payments took right after when the move's refund is auto (when Payments cannot be reached the refund stays pending in effects and is tried again; a warning says so); returned_to_origin and returned put stock back as the move's restock says (ask: send restock); refunded refunds what is left (before dispatch it acts as a cancel; with nothing paid it cancels with no money unless the move's unpaid is refuse: 409 nothing_paid); a dispatched order is never canceled or refunded as a cancel: it comes back as returned_to_origin first (money paid can be refunded meanwhile with POST /v1/orders/:id/refunds); after delivery a cancel or a refund puts the items back in stock only as the move's restock says and takes earned points back unless its points is keep. A waiting order staff move on (into an open, packed or delivered status) lets go of its open Payments payment: it is canceled at Payments first, so the shopper can no longer pay it (money that still arrives Payments flags to give back), and the order waits for a new one if it waits again; paid just before, the move is refused (409 move_not_allowed) and the payment recorded; 503 payments_unavailable when Payments cannot be reached. A waiting order whose method is listed in the move's paidOnConfirm is recorded as paid when moved on. 409 move_not_allowed when the flow does not list the move for staff (or the shopper paid meanwhile); 409 flow_changed when the order's role is no longer the flow's role of its status; 409 conflict when the order changed meanwhile or a refund runs at Payments for it; 422 validation_failed for a missing shipment, tracking number, serial numbers, video, note, shopperNote or restock; 503 payments_unavailable when Payments cannot be reached for a cancel; 404 not_found. A widget ticket needs the move's permission (into a refunded status orders.refund), and any move that gives money back (a cancel that refunds what was paid, before or after delivery) needs orders.refund too, whatever permission the move names; refused with 403 forbidden before anything is called. The move is written to the history with the staff member's name (a ticket's user, or the SS-Actor-* headers of a server call, else Server), the activity log, the shopper's message and the events. Each move is one transaction: the order, its facts and everything it gives back or takes are written together, so of two moves at once one wins and the other gets 409 conflict. A move refused after it called out leaves nothing behind: a Payments payment it canceled is dropped from the order (the shopper's next pay starts a new one), and a courier booking is kept as the order's shipment and used when the move is made again (never booked twice). Send an Idempotency-Key so a retried request is done once. A move into a packed, shipped or delivered status needs the order fields required by that stage (requiredAt) first: 422 validation_failed at /fields/<id>.",
+		"description": "What entering a status does depends on its role and the move's options (lists/order_flow, nextStatuses on the order): packed, shipped and delivered take serial numbers (serials, grades_serials) for the lines whose item type numbers their units: picked from units in stock (unitCapture stock) when packing, or typed (unitCapture packing) with this move or later, and every unit of a line is needed by the step its type names (unitsRequiredBefore: packed, or shipped, which also covers delivered); any move takes attachments, and one into a status that a kind of your attachment_kinds list names in requiredAt needs that kind (E20); shipped needs a shipment (its tracking number unless the move's tracking is optional); delivered makes cash on delivery and pickup paid (cod.paidOnDelivery), counts units sold and credits loyalty points; canceled gives stock, slots, offer uses and points back, cancels the open Payments payment and refunds what Payments took right after when the move's refund is auto (when Payments cannot be reached the refund stays pending in effects and is tried again; a warning says so); returned_to_origin and returned put stock back as the move's restock says (ask: send restock); refunded refunds what is left (before dispatch it acts as a cancel; with nothing paid it cancels with no money unless the move's unpaid is refuse: 409 nothing_paid); a dispatched order is never canceled or refunded as a cancel: it comes back as returned_to_origin first (money paid can be refunded meanwhile with POST /v1/orders/:id/refunds); after delivery a cancel or a refund puts the items back in stock only as the move's restock says and takes earned points back unless its points is keep. A waiting order staff move on (into an open, packed or delivered status) lets go of its open Payments payment: it is canceled at Payments first, so the shopper can no longer pay it (money that still arrives Payments flags to give back), and the order waits for a new one if it waits again; paid just before, the move is refused (409 move_not_allowed) and the payment recorded; 503 payments_unavailable when Payments cannot be reached. A waiting order whose method is listed in the move's paidOnConfirm is recorded as paid when moved on. 409 move_not_allowed when the flow does not list the move for staff (or the shopper paid meanwhile); 409 flow_changed when the order's role is no longer the flow's role of its status; 409 conflict when the order changed meanwhile or a refund runs at Payments for it; 422 validation_failed for a missing shipment, tracking number, serial numbers, video, note, shopperNote or restock; 503 payments_unavailable when Payments cannot be reached for a cancel; 404 not_found. A widget ticket needs the move's permission (into a refunded status orders.refund), and any move that gives money back (a cancel that refunds what was paid, before or after delivery) needs orders.refund too, whatever permission the move names; refused with 403 forbidden before anything is called. The move is written to the history with the staff member's name (a ticket's user, or the Shelfway-Actor-* headers of a server call, else Server), the activity log, the shopper's message and the events. Each move is one transaction: the order, its facts and everything it gives back or takes are written together, so of two moves at once one wins and the other gets 409 conflict. A move refused after it called out leaves nothing behind: a Payments payment it canceled is dropped from the order (the shopper's next pay starts a new one), and a courier booking is kept as the order's shipment and used when the move is made again (never booked twice). Send an Idempotency-Key so a retried request is done once. A move into a packed, shipped or delivered status needs the order fields required by that stage (requiredAt) first: 422 validation_failed at /fields/<id>.",
 		"body": {
 			"type": "object",
 			"required": ["to"],
@@ -25907,14 +25907,14 @@
 	},
 	"POST /v1/orders/:id/seen": {
 		"summary": "Mark an order opened by the acting staff member",
-		"description": "Its id goes last in seenBy (the latest 50 are kept), so the unseen filter leaves the order out for them. A server call names the staff member in the SS-Actor-* headers (else Server). 404 not_found.",
+		"description": "Its id goes last in seenBy (the latest 50 are kept), so the unseen filter leaves the order out for them. A server call names the staff member in the Shelfway-Actor-* headers (else Server). 404 not_found.",
 		"response": {
 			"$ref": "#/components/schemas/OrderSeen"
 		}
 	},
 	"POST /v1/admin/orders/:id/seen": {
 		"summary": "Mark an order opened by the acting staff member (Orders admin widget)",
-		"description": "Its id goes last in seenBy (the latest 50 are kept), so the unseen filter leaves the order out for them. A server call names the staff member in the SS-Actor-* headers (else Server). 404 not_found.",
+		"description": "Its id goes last in seenBy (the latest 50 are kept), so the unseen filter leaves the order out for them. A server call names the staff member in the Shelfway-Actor-* headers (else Server). 404 not_found.",
 		"response": {
 			"$ref": "#/components/schemas/OrderSeen"
 		}
@@ -26097,19 +26097,19 @@
 	},
 	"GET /v1/shop/orders/:id/invoice": {
 		"summary": "The shopper's invoice of their order",
-		"description": "Needs the invoices feature. Answers text/html (charset utf-8, no-store, a strict Content-Security-Policy), not JSON: a printable document in the invoices settings' titles, your texts' labels and the website's Format. The shopper's copy has no staff names. Opened as the order page is: the shopper’s Accounts sign-in in SS-Sign-In (their own orders), or a guest order’s key in SS-Order-Key (the orderKey answered once when it was placed). 403 sign_in_required with neither; 404 not_found when the order is not the shopper’s and the key does not open it, and with the invoices setting shopperFrom confirmed, while the order waits or once it is canceled (the order’s invoice field says whether it can be read).",
+		"description": "Needs the invoices feature. Answers text/html (charset utf-8, no-store, a strict Content-Security-Policy), not JSON: a printable document in the invoices settings' titles, your texts' labels and the website's Format. The shopper's copy has no staff names. Opened as the order page is: the shopper’s Accounts sign-in in Shelfway-Sign-In (their own orders), or a guest order’s key in Shelfway-Order-Key (the orderKey answered once when it was placed). 403 sign_in_required with neither; 404 not_found when the order is not the shopper’s and the key does not open it, and with the invoices setting shopperFrom confirmed, while the order waits or once it is canceled (the order’s invoice field says whether it can be read).",
 		"headers": {
 			"type": "object",
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
-					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none). One of SS-Sign-In or SS-Order-Key."
+					"description": "The shopper’s Accounts sign-in (verified here; a wrong or expired one counts as none). One of Shelfway-Sign-In or Shelfway-Order-Key."
 				},
-				"SS-Order-Key": {
+				"Shelfway-Order-Key": {
 					"type": "string",
 					"minLength": 32,
 					"maxLength": 32,
-					"description": "A guest order’s key (orderKey, answered once when the order was placed). One of SS-Sign-In or SS-Order-Key."
+					"description": "A guest order’s key (orderKey, answered once when the order was placed). One of Shelfway-Sign-In or Shelfway-Order-Key."
 				}
 			}
 		},
@@ -27771,7 +27771,7 @@
 	},
 	"GET /v1/shop/loyalty": {
 		"summary": "The signed-in shopper’s points",
-		"description": "403 sign_in_required without a valid SS-Sign-In. With the loyalty setting expiryRule current, earned points expire by today’s expiry setting. 422 validation_failed at /limit; 403 feature_off while the loyalty feature is off.",
+		"description": "403 sign_in_required without a valid Shelfway-Sign-In. With the loyalty setting expiryRule current, earned points expire by today’s expiry setting. 422 validation_failed at /limit; 403 feature_off while the loyalty feature is off.",
 		"query": {
 			"type": "object",
 			"properties": {
@@ -27786,9 +27786,9 @@
 		},
 		"headers": {
 			"type": "object",
-			"required": ["SS-Sign-In"],
+			"required": ["Shelfway-Sign-In"],
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The shopper's Accounts sign-in (as the Accounts widgets give it)."
 				}
@@ -27800,12 +27800,12 @@
 	},
 	"GET /v1/shop/orders/:id/returnable": {
 		"summary": "What the shopper can still claim on an order",
-		"description": "Send the shopper's Accounts sign-in in the SS-Sign-In header (403 sign_in_required without a valid one). Only the shopper's own order (404 not_found). Lists the physical lines of a delivered order (none before delivery) with the units not held by other claims and each line's return and warranty windows from delivery: the product's own time, else its condition grade's, else the returns settings returnTime and warrantyTime with their units (months and years on the calendar) (the warranty kept on the line when it was ordered wins). A rejected claim, a repaired one and a warranty claim closed without a refund hold no units.",
+		"description": "Send the shopper's Accounts sign-in in the Shelfway-Sign-In header (403 sign_in_required without a valid one). Only the shopper's own order (404 not_found). Lists the physical lines of a delivered order (none before delivery) with the units not held by other claims and each line's return and warranty windows from delivery: the product's own time, else its condition grade's, else the returns settings returnTime and warrantyTime with their units (months and years on the calendar) (the warranty kept on the line when it was ordered wins). A rejected claim, a repaired one and a warranty claim closed without a refund hold no units.",
 		"headers": {
 			"type": "object",
-			"required": ["SS-Sign-In"],
+			"required": ["Shelfway-Sign-In"],
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The shopper's Accounts sign-in (as the Accounts widgets give it)."
 				}
@@ -27817,12 +27817,12 @@
 	},
 	"POST /v1/shop/returns/photos": {
 		"summary": "Get an upload address for a claim photo",
-		"description": "Send the shopper's Accounts sign-in in the SS-Sign-In header (403 sign_in_required without a valid one). PUT the photo to upload.url with exactly upload.headers within 5 minutes, then name key in photos of the claim. 422 validation_failed at /type (JPEG, PNG or WebP; also when the returns setting maxPhotos is 0) or /size (bytes, at most 5 MB); 503 storage_not_connected.",
+		"description": "Send the shopper's Accounts sign-in in the Shelfway-Sign-In header (403 sign_in_required without a valid one). PUT the photo to upload.url with exactly upload.headers within 5 minutes, then name key in photos of the claim. 422 validation_failed at /type (JPEG, PNG or WebP; also when the returns setting maxPhotos is 0) or /size (bytes, at most 5 MB); 503 storage_not_connected.",
 		"headers": {
 			"type": "object",
-			"required": ["SS-Sign-In"],
+			"required": ["Shelfway-Sign-In"],
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The shopper's Accounts sign-in (as the Accounts widgets give it)."
 				}
@@ -27850,12 +27850,12 @@
 	},
 	"POST /v1/shop/returns": {
 		"summary": "Make a return, exchange or warranty claim",
-		"description": "Send the shopper's Accounts sign-in in the SS-Sign-In header (403 sign_in_required without a valid one). Only on the shopper's own delivered order (404 not_found; 422 not_returnable before delivery). Each line must be in its window (an exchange uses the return window) with enough units left, else 422 not_returnable with errors[0].code unknown, window_closed, quantity or step (a line sold in a unit of its own is claimed in thousandths of its unit, a multiple of its step, or all that is left of it) (also when another claim took the units at the same moment). kind is one of the returns setting kinds (default return and warranty); with the reasons setting, reason is one of those texts. photos are keys from POST /v1/shop/returns/photos, uploaded already (422 validation_failed at /photos otherwise), at most the maxPhotos setting (503 storage_not_connected). 422 validation_failed names the field (/orderId, /kind, /lines/<i>/lineId, /lines/<i>/quantity, /reason, /photos). The claim starts requested: the shopper gets the ecommerce.return_status message and the return.requested hook runs. Send an Idempotency-Key so a retried request makes one claim.",
+		"description": "Send the shopper's Accounts sign-in in the Shelfway-Sign-In header (403 sign_in_required without a valid one). Only on the shopper's own delivered order (404 not_found; 422 not_returnable before delivery). Each line must be in its window (an exchange uses the return window) with enough units left, else 422 not_returnable with errors[0].code unknown, window_closed, quantity or step (a line sold in a unit of its own is claimed in thousandths of its unit, a multiple of its step, or all that is left of it) (also when another claim took the units at the same moment). kind is one of the returns setting kinds (default return and warranty); with the reasons setting, reason is one of those texts. photos are keys from POST /v1/shop/returns/photos, uploaded already (422 validation_failed at /photos otherwise), at most the maxPhotos setting (503 storage_not_connected). 422 validation_failed names the field (/orderId, /kind, /lines/<i>/lineId, /lines/<i>/quantity, /reason, /photos). The claim starts requested: the shopper gets the ecommerce.return_status message and the return.requested hook runs. Send an Idempotency-Key so a retried request makes one claim.",
 		"headers": {
 			"type": "object",
-			"required": ["SS-Sign-In"],
+			"required": ["Shelfway-Sign-In"],
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The shopper's Accounts sign-in (as the Accounts widgets give it)."
 				}
@@ -27915,7 +27915,7 @@
 	},
 	"GET /v1/shop/returns": {
 		"summary": "The shopper's claims, newest first",
-		"description": "Send the shopper's Accounts sign-in in the SS-Sign-In header (403 sign_in_required without a valid one).",
+		"description": "Send the shopper's Accounts sign-in in the Shelfway-Sign-In header (403 sign_in_required without a valid one).",
 		"query": {
 			"type": "object",
 			"properties": {
@@ -27934,9 +27934,9 @@
 		},
 		"headers": {
 			"type": "object",
-			"required": ["SS-Sign-In"],
+			"required": ["Shelfway-Sign-In"],
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The shopper's Accounts sign-in (as the Accounts widgets give it)."
 				}
@@ -28106,7 +28106,7 @@
 	},
 	"POST /v1/returns/:id/approve": {
 		"summary": "Approve a claim",
-		"description": "Only while the claim's status has the role requested (409 move_not_allowed otherwise, also when the claim changed meanwhile). 404 not_found; 422 validation_failed at /note. The shopper gets the ecommerce.return_status message and the return.status_changed hook runs. A server call may name the staff member in the SS-Actor-Id and SS-Actor-Name headers: the history and notes then show their name (else Server).",
+		"description": "Only while the claim's status has the role requested (409 move_not_allowed otherwise, also when the claim changed meanwhile). 404 not_found; 422 validation_failed at /note. The shopper gets the ecommerce.return_status message and the return.status_changed hook runs. A server call may name the staff member in the Shelfway-Actor-Id and Shelfway-Actor-Name headers: the history and notes then show their name (else Server).",
 		"body": {
 			"type": "object",
 			"required": [],
@@ -28128,7 +28128,7 @@
 	},
 	"POST /v1/returns/:id/reject": {
 		"summary": "Reject a claim",
-		"description": "Only while the claim's status has the role requested, approved or received (409 move_not_allowed otherwise, also when the claim changed meanwhile). The note is required: it tells the shopper why (422 validation_failed at /note). Its units can be claimed again. 404 not_found. The shopper gets the ecommerce.return_status message and the return.status_changed hook runs. A server call may name the staff member in the SS-Actor-Id and SS-Actor-Name headers: the history and notes then show their name (else Server).",
+		"description": "Only while the claim's status has the role requested, approved or received (409 move_not_allowed otherwise, also when the claim changed meanwhile). The note is required: it tells the shopper why (422 validation_failed at /note). Its units can be claimed again. 404 not_found. The shopper gets the ecommerce.return_status message and the return.status_changed hook runs. A server call may name the staff member in the Shelfway-Actor-Id and Shelfway-Actor-Name headers: the history and notes then show their name (else Server).",
 		"body": {
 			"type": "object",
 			"required": ["note"],
@@ -28150,7 +28150,7 @@
 	},
 	"POST /v1/returns/:id/receive": {
 		"summary": "Mark the package received",
-		"description": "Only while the claim's status has the role approved (409 move_not_allowed otherwise, also when the claim changed meanwhile). lines says per claimed line whether it goes back in stock: those with restock true are put back at once (each exactly once, with the products.changed hook for back-in-stock alerts), false keeps a line out of later restocks, lines not named wait for POST …/restock. 422 validation_failed at /lines (not a list), /lines/<i>/lineId (not a claimed line, or named twice), /lines/<i>/restock or /note; 404 not_found. The shopper gets the ecommerce.return_status message and the return.status_changed hook runs. A server call may name the staff member in the SS-Actor-Id and SS-Actor-Name headers: the history and notes then show their name (else Server).",
+		"description": "Only while the claim's status has the role approved (409 move_not_allowed otherwise, also when the claim changed meanwhile). lines says per claimed line whether it goes back in stock: those with restock true are put back at once (each exactly once, with the products.changed hook for back-in-stock alerts), false keeps a line out of later restocks, lines not named wait for POST …/restock. 422 validation_failed at /lines (not a list), /lines/<i>/lineId (not a claimed line, or named twice), /lines/<i>/restock or /note; 404 not_found. The shopper gets the ecommerce.return_status message and the return.status_changed hook runs. A server call may name the staff member in the Shelfway-Actor-Id and Shelfway-Actor-Name headers: the history and notes then show their name (else Server).",
 		"body": {
 			"type": "object",
 			"required": [],
@@ -28189,7 +28189,7 @@
 	},
 	"POST /v1/returns/:id/refund": {
 		"summary": "Refund a claim (again for a top-up)",
-		"description": "Only when the claim's kind has the refund outcome. Only while the claim's status has the role approved, received or refunded (409 move_not_allowed otherwise, also when the claim changed meanwhile); the claim becomes refunded. The refund is an order refund, written on the order's refunds with the claim's id: method online (or no method on an order paid through Payments) refunds through Payments for what Payments took, the rest recorded as other; bank_transfer, cash and other are only recorded (give the money back yourself). At most refundable (see the claim). On the first refund the units count as returned on the order and, with loyalty on, points are taken back as the returns setting pointsBack says. With the flow's trigger refundsCover, an order whose refunds reach what was paid moves to that refunded status when the flow lists the move: a ticket needs that move's permission for such a refund (403 forbidden before any money moves), and once the money is recorded the move never undoes it (an order the move cannot take is left to staff, logged). A refund through Payments that finishes later moves the order the same way; one Payments then refuses, or that is not sent (staff refunded the order by hand meanwhile), gives the claim back what it reserved (refund, method, reference, status), so a claim never says it refunded money that did not go back. The order's refund lock applies (see POST /v1/orders/:id/refunds): when Payments does not answer, the refund is kept pending and sent again on use. 422 validation_failed at /amount (1 to refundable; nothing paid left on the order; with method online, more than Payments took), /method (not one of the methods, or online on an order not paid through Payments), /reference or /note; 404 not_found (the claim or its order); 409 conflict when the order changed meanwhile; 502 payments_refused and 503 payments_unavailable (nothing is refunded). Send an Idempotency-Key so a retried request refunds once. The shopper gets the ecommerce.return_status message and the return.status_changed hook runs. A server call may name the staff member in the SS-Actor-Id and SS-Actor-Name headers: the history and notes then show their name (else Server). Gives money back, so it needs the orders.refund permission as well as returns.manage (403 forbidden).",
+		"description": "Only when the claim's kind has the refund outcome. Only while the claim's status has the role approved, received or refunded (409 move_not_allowed otherwise, also when the claim changed meanwhile); the claim becomes refunded. The refund is an order refund, written on the order's refunds with the claim's id: method online (or no method on an order paid through Payments) refunds through Payments for what Payments took, the rest recorded as other; bank_transfer, cash and other are only recorded (give the money back yourself). At most refundable (see the claim). On the first refund the units count as returned on the order and, with loyalty on, points are taken back as the returns setting pointsBack says. With the flow's trigger refundsCover, an order whose refunds reach what was paid moves to that refunded status when the flow lists the move: a ticket needs that move's permission for such a refund (403 forbidden before any money moves), and once the money is recorded the move never undoes it (an order the move cannot take is left to staff, logged). A refund through Payments that finishes later moves the order the same way; one Payments then refuses, or that is not sent (staff refunded the order by hand meanwhile), gives the claim back what it reserved (refund, method, reference, status), so a claim never says it refunded money that did not go back. The order's refund lock applies (see POST /v1/orders/:id/refunds): when Payments does not answer, the refund is kept pending and sent again on use. 422 validation_failed at /amount (1 to refundable; nothing paid left on the order; with method online, more than Payments took), /method (not one of the methods, or online on an order not paid through Payments), /reference or /note; 404 not_found (the claim or its order); 409 conflict when the order changed meanwhile; 502 payments_refused and 503 payments_unavailable (nothing is refunded). Send an Idempotency-Key so a retried request refunds once. The shopper gets the ecommerce.return_status message and the return.status_changed hook runs. A server call may name the staff member in the Shelfway-Actor-Id and Shelfway-Actor-Name headers: the history and notes then show their name (else Server). Gives money back, so it needs the orders.refund permission as well as returns.manage (403 forbidden).",
 		"body": {
 			"type": "object",
 			"required": ["amount"],
@@ -28253,14 +28253,14 @@
 	},
 	"POST /v1/returns/:id/restock": {
 		"summary": "Put the claimed items back in stock",
-		"description": "Every claimed line not restocked yet and not kept out when received goes back in stock, each exactly once (a unit its order's return already put back is not counted again); the products.changed hook runs (back-in-stock alerts). Only while the claim is approved, received, refunded, replaced or closed (409 move_not_allowed otherwise); 409 conflict when nothing is left to restock; 404 not_found (the claim or its order). The status does not change. A server call may name the staff member in the SS-Actor-Id and SS-Actor-Name headers: the history and notes then show their name (else Server).",
+		"description": "Every claimed line not restocked yet and not kept out when received goes back in stock, each exactly once (a unit its order's return already put back is not counted again); the products.changed hook runs (back-in-stock alerts). Only while the claim is approved, received, refunded, replaced or closed (409 move_not_allowed otherwise); 409 conflict when nothing is left to restock; 404 not_found (the claim or its order). The status does not change. A server call may name the staff member in the Shelfway-Actor-Id and Shelfway-Actor-Name headers: the history and notes then show their name (else Server).",
 		"response": {
 			"$ref": "#/components/schemas/ReturnDetail"
 		}
 	},
 	"POST /v1/returns/:id/close": {
 		"summary": "Close a claim",
-		"description": "Only while the claim's status has the role approved, received or refunded (409 move_not_allowed otherwise, also when the claim changed meanwhile). A warranty claim closed without a refund gives its units back (they can be claimed again). 404 not_found; 422 validation_failed at /note. The shopper gets the ecommerce.return_status message and the return.status_changed hook runs. A server call may name the staff member in the SS-Actor-Id and SS-Actor-Name headers: the history and notes then show their name (else Server).",
+		"description": "Only while the claim's status has the role approved, received or refunded (409 move_not_allowed otherwise, also when the claim changed meanwhile). A warranty claim closed without a refund gives its units back (they can be claimed again). 404 not_found; 422 validation_failed at /note. The shopper gets the ecommerce.return_status message and the return.status_changed hook runs. A server call may name the staff member in the Shelfway-Actor-Id and Shelfway-Actor-Name headers: the history and notes then show their name (else Server).",
 		"body": {
 			"type": "object",
 			"required": [],
@@ -28282,7 +28282,7 @@
 	},
 	"POST /v1/returns/:id/replace": {
 		"summary": "Mark a claim replaced (final)",
-		"description": "Only when the claim's kind has the replace outcome. Only while the claim's status has the role approved or received, and only for exchange or warranty claims (409 move_not_allowed otherwise, also when the claim changed meanwhile). 404 not_found; 422 validation_failed at /note. The shopper gets the ecommerce.return_status message and the return.status_changed hook runs. A server call may name the staff member in the SS-Actor-Id and SS-Actor-Name headers: the history and notes then show their name (else Server).",
+		"description": "Only when the claim's kind has the replace outcome. Only while the claim's status has the role approved or received, and only for exchange or warranty claims (409 move_not_allowed otherwise, also when the claim changed meanwhile). 404 not_found; 422 validation_failed at /note. The shopper gets the ecommerce.return_status message and the return.status_changed hook runs. A server call may name the staff member in the Shelfway-Actor-Id and Shelfway-Actor-Name headers: the history and notes then show their name (else Server).",
 		"body": {
 			"type": "object",
 			"required": [],
@@ -28304,7 +28304,7 @@
 	},
 	"POST /v1/returns/:id/repair": {
 		"summary": "Mark a warranty claim repaired (final)",
-		"description": "Only when the claim's kind has the repair outcome. Only while the claim's status has the role approved or received, and only for warranty claims (409 move_not_allowed otherwise, also when the claim changed meanwhile). The item went back to the shopper: its units can be claimed again. 404 not_found; 422 validation_failed at /note. The shopper gets the ecommerce.return_status message and the return.status_changed hook runs. A server call may name the staff member in the SS-Actor-Id and SS-Actor-Name headers: the history and notes then show their name (else Server).",
+		"description": "Only when the claim's kind has the repair outcome. Only while the claim's status has the role approved or received, and only for warranty claims (409 move_not_allowed otherwise, also when the claim changed meanwhile). The item went back to the shopper: its units can be claimed again. 404 not_found; 422 validation_failed at /note. The shopper gets the ecommerce.return_status message and the return.status_changed hook runs. A server call may name the staff member in the Shelfway-Actor-Id and Shelfway-Actor-Name headers: the history and notes then show their name (else Server).",
 		"body": {
 			"type": "object",
 			"required": [],
@@ -28348,7 +28348,7 @@
 	},
 	"POST /v1/returns/:id/notes": {
 		"summary": "Add a staff note to a claim",
-		"description": "Never shown to the shopper. 422 validation_failed at /text (empty or over 1000 characters); 404 not_found. A server call may name the staff member in the SS-Actor-Id and SS-Actor-Name headers: the history and notes then show their name (else Server).",
+		"description": "Never shown to the shopper. 422 validation_failed at /text (empty or over 1000 characters); 404 not_found. A server call may name the staff member in the Shelfway-Actor-Id and Shelfway-Actor-Name headers: the history and notes then show their name (else Server).",
 		"body": {
 			"type": "object",
 			"required": ["text"],
@@ -28788,11 +28788,11 @@
 	},
 	"POST /v1/shop/alerts": {
 		"summary": "Set a back-in-stock or price-drop alert",
-		"description": "A signed-in shopper (SS-Sign-In) gets it at the email and phone of their sign-in (422 validation_failed at /kind when they have neither, or only a phone of a country the shop does not serve). Without a sign-in, while the alerts setting guests is on, a guest gives the contact guests are known by — the checkout setting guestIdentity: a phone, an email address, or either (else 403 sign_in_required): 422 validation_failed at /phone (code invalid, or country_not_allowed outside the checkout setting countries) or /email. One waiting alert of a kind per guest contact and product. The message goes out once, through Notifications on the alerts setting channels, when the product (or the variant) is back in stock, or its price falls below the price now (or to targetPrice). Setting the same waiting alert again answers that one. 404 not_found for a product that is missing, not active or hidden from the shopper; 422 validation_failed at /kind (back_in_stock for an item in stock), /productId (at most 100 waiting alerts), /variantId (not an active variant) or /targetPrice. Send an Idempotency-Key so a retried request sets one alert.",
+		"description": "A signed-in shopper (Shelfway-Sign-In) gets it at the email and phone of their sign-in (422 validation_failed at /kind when they have neither, or only a phone of a country the shop does not serve). Without a sign-in, while the alerts setting guests is on, a guest gives the contact guests are known by — the checkout setting guestIdentity: a phone, an email address, or either (else 403 sign_in_required): 422 validation_failed at /phone (code invalid, or country_not_allowed outside the checkout setting countries) or /email. One waiting alert of a kind per guest contact and product. The message goes out once, through Notifications on the alerts setting channels, when the product (or the variant) is back in stock, or its price falls below the price now (or to targetPrice). Setting the same waiting alert again answers that one. 404 not_found for a product that is missing, not active or hidden from the shopper; 422 validation_failed at /kind (back_in_stock for an item in stock), /productId (at most 100 waiting alerts), /variantId (not an active variant) or /targetPrice. Send an Idempotency-Key so a retried request sets one alert.",
 		"headers": {
 			"type": "object",
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The shopper's Accounts sign-in; leave it out for a guest's alert."
 				}
@@ -28838,12 +28838,12 @@
 	},
 	"GET /v1/shop/alerts": {
 		"summary": "The shopper's alerts, newest first",
-		"description": "Send the shopper's Accounts sign-in in the SS-Sign-In header (403 sign_in_required without a valid one). At most 100. A guest's alerts are not listed.",
+		"description": "Send the shopper's Accounts sign-in in the Shelfway-Sign-In header (403 sign_in_required without a valid one). At most 100. A guest's alerts are not listed.",
 		"headers": {
 			"type": "object",
-			"required": ["SS-Sign-In"],
+			"required": ["Shelfway-Sign-In"],
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The shopper's Accounts sign-in (as the Accounts widgets give it)."
 				}
@@ -28871,12 +28871,12 @@
 	},
 	"DELETE /v1/shop/alerts/:id": {
 		"summary": "Remove one of the shopper’s alerts",
-		"description": "Send the shopper's Accounts sign-in in the SS-Sign-In header (403 sign_in_required without a valid one). 404 not_found when it is not theirs.",
+		"description": "Send the shopper's Accounts sign-in in the Shelfway-Sign-In header (403 sign_in_required without a valid one). 404 not_found when it is not theirs.",
 		"headers": {
 			"type": "object",
-			"required": ["SS-Sign-In"],
+			"required": ["Shelfway-Sign-In"],
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The shopper's Accounts sign-in (as the Accounts widgets give it)."
 				}
@@ -28886,7 +28886,7 @@
 	},
 	"POST /v1/shop/reviews": {
 		"summary": "Write a review",
-		"description": "Send an Idempotency-Key so a retried request does not write twice. The reviews setting per decides what is reviewed. per: product (the default): the shopper signed in (SS-Sign-In) reviews productId once an order of theirs holding it was delivered; one review per product and shopper. per: order_line: the order's owner (their sign-in, or a guest's order key in SS-Order-Key) reviews one line (orderId, lineId) of a delivered order; one review per line. The review is pending, or approved at once with the reviews setting moderation: auto (it then counts in the product's rating). Errors: 403 sign_in_required (no valid sign-in; with per: order_line, neither a sign-in nor an order key); 422 validation_failed at /productId, /orderId, /lineId (also when the order has no such line), /rating, /title or /body; 404 not_found when the product is not active, or (per: order_line) the order is not theirs; 403 review_not_allowed before delivery; 409 already_reviewed. With review questions (the review_questions list, E40), answers gives each answer by question key; the widget settings list the questions (reviews.questions).",
+		"description": "Send an Idempotency-Key so a retried request does not write twice. The reviews setting per decides what is reviewed. per: product (the default): the shopper signed in (Shelfway-Sign-In) reviews productId once an order of theirs holding it was delivered; one review per product and shopper. per: order_line: the order's owner (their sign-in, or a guest's order key in Shelfway-Order-Key) reviews one line (orderId, lineId) of a delivered order; one review per line. The review is pending, or approved at once with the reviews setting moderation: auto (it then counts in the product's rating). Errors: 403 sign_in_required (no valid sign-in; with per: order_line, neither a sign-in nor an order key); 422 validation_failed at /productId, /orderId, /lineId (also when the order has no such line), /rating, /title or /body; 404 not_found when the product is not active, or (per: order_line) the order is not theirs; 403 review_not_allowed before delivery; 409 already_reviewed. With review questions (the review_questions list, E40), answers gives each answer by question key; the widget settings list the questions (reviews.questions).",
 		"body": {
 			"type": "object",
 			"required": ["rating"],
@@ -28935,11 +28935,11 @@
 		"headers": {
 			"type": "object",
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The shopper's Accounts sign-in (as the Accounts widgets give it): needed with per: product."
 				},
-				"SS-Order-Key": {
+				"Shelfway-Order-Key": {
 					"type": "string",
 					"description": "A guest's order key (given when the order was placed): with per: order_line, instead of a sign-in."
 				}
@@ -29586,16 +29586,16 @@
 	"GET /v1/shop/wishlist": {
 		"headers": {
 			"type": "object",
-			"required": ["SS-Sign-In"],
+			"required": ["Shelfway-Sign-In"],
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The shopper's Accounts sign-in (as the Accounts widgets give it)."
 				}
 			}
 		},
 		"summary": "The shopper's wishlist",
-		"description": "For a signed-in shopper (SS-Sign-In), else 403 sign_in_required; a guest's wishlist is kept in their browser and joined at sign-in (POST /v1/shop/wishlist/merge). Products no longer active, or in a hidden category or brand, are left out.",
+		"description": "For a signed-in shopper (Shelfway-Sign-In), else 403 sign_in_required; a guest's wishlist is kept in their browser and joined at sign-in (POST /v1/shop/wishlist/merge). Products no longer active, or in a hidden category or brand, are left out.",
 		"response": {
 			"$ref": "#/components/schemas/Wishlist"
 		}
@@ -29603,16 +29603,16 @@
 	"POST /v1/shop/wishlist/items/:productId": {
 		"headers": {
 			"type": "object",
-			"required": ["SS-Sign-In"],
+			"required": ["Shelfway-Sign-In"],
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The shopper's Accounts sign-in (as the Accounts widgets give it)."
 				}
 			}
 		},
 		"summary": "Save a product to the wishlist",
-		"description": "For a signed-in shopper (SS-Sign-In), else 403 sign_in_required; a guest's wishlist is kept in their browser and joined at sign-in (POST /v1/shop/wishlist/merge). Saving a saved product changes nothing. 404 not_found when the product is not active (or in a hidden category or brand); 422 validation_failed at /productId when the wishlist holds 200 products already.",
+		"description": "For a signed-in shopper (Shelfway-Sign-In), else 403 sign_in_required; a guest's wishlist is kept in their browser and joined at sign-in (POST /v1/shop/wishlist/merge). Saving a saved product changes nothing. 404 not_found when the product is not active (or in a hidden category or brand); 422 validation_failed at /productId when the wishlist holds 200 products already.",
 		"response": {
 			"$ref": "#/components/schemas/Wishlist"
 		}
@@ -29620,16 +29620,16 @@
 	"POST /v1/shop/wishlist/merge": {
 		"headers": {
 			"type": "object",
-			"required": ["SS-Sign-In"],
+			"required": ["Shelfway-Sign-In"],
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The shopper's Accounts sign-in (as the Accounts widgets give it)."
 				}
 			}
 		},
 		"summary": "Join a guest's wishlist to the shopper's",
-		"description": "For a signed-in shopper (SS-Sign-In), else 403 sign_in_required; a guest's wishlist is kept in their browser and joined at sign-in (POST /v1/shop/wishlist/merge). Products already saved keep their place; the active ones of the rest are added in the order given while there is room (200); others are skipped. More than 200 ids, or one that is not a product id, answer 422 validation_failed at /productIds.",
+		"description": "For a signed-in shopper (Shelfway-Sign-In), else 403 sign_in_required; a guest's wishlist is kept in their browser and joined at sign-in (POST /v1/shop/wishlist/merge). Products already saved keep their place; the active ones of the rest are added in the order given while there is room (200); others are skipped. More than 200 ids, or one that is not a product id, answer 422 validation_failed at /productIds.",
 		"body": {
 			"type": "object",
 			"required": ["productIds"],
@@ -29652,16 +29652,16 @@
 	"DELETE /v1/shop/wishlist/items/:productId": {
 		"headers": {
 			"type": "object",
-			"required": ["SS-Sign-In"],
+			"required": ["Shelfway-Sign-In"],
 			"properties": {
-				"SS-Sign-In": {
+				"Shelfway-Sign-In": {
 					"type": "string",
 					"description": "The shopper's Accounts sign-in (as the Accounts widgets give it)."
 				}
 			}
 		},
 		"summary": "Remove a product from the wishlist",
-		"description": "For a signed-in shopper (SS-Sign-In), else 403 sign_in_required; a guest's wishlist is kept in their browser and joined at sign-in (POST /v1/shop/wishlist/merge). Removing a product not saved changes nothing. Answers the wishlist.",
+		"description": "For a signed-in shopper (Shelfway-Sign-In), else 403 sign_in_required; a guest's wishlist is kept in their browser and joined at sign-in (POST /v1/shop/wishlist/merge). Removing a product not saved changes nothing. Answers the wishlist.",
 		"response": {
 			"$ref": "#/components/schemas/Wishlist"
 		}
@@ -30157,7 +30157,7 @@
 		}
 	},
 	"POST /v1/import/:collection": {
-		"summary": "Import records (NDJSON, ss-import)",
+		"summary": "Import records (NDJSON, shelfway-import)",
 		"description": "collection is one of size_charts, categories, brands, attributes, landings, products, serials, deals, bundles, customers, orders, loyalty, reviews, returns, alerts, wishlists; import them in that order (records must name records of an earlier step), then call finish. The body is application/x-ndjson (Content-Type), not JSON: one record per line, at most 1,000 records or 4 MB per call. Records are Ecommerce's stored shapes, every one with optional createdAt and updatedAt: size_charts { id (szc_), name, unit, convertTo, columns, rows, advice, notes, active }; categories { id (cat_), slug, name, parentId, description, seo, image, sort, status, icon, content, faqs, sizeChartId, typeKey, previousSlugs }; brands { id (brd_), slug, name, description, logo, status, categoryIds, seo, sizeChartId }; attributes { id (att_), name, type, choices, unit, slug, categoryId (the category it is the definition for: one record per category, not merged by slug), categoryIds, on, multiple, visibility, card, active, seo … }; landings { id (lnd_), categoryId, brandId, facet { field, value } (grade or a field's slug shoppers filter by), h1, title, description, intro, faqs, indexable }; products { id (prd_), slug, name, kind, status, … variants (var_ ids), media, sold, rating, publishedAt, previousSlugs } (a product without a variant is stored as a draft); serials { id (ser_), productId, variantId, serial, status, orderId, lineId, locationId }; deals (deal_) and bundles (bnd_) with their use count used; customers { id (cus_), userId, name, email, phone, city, blocked … }; orders { id (ord_), number, customer, address, delivery, lines, totals, promotions, payment, payments, refunds, status, history, shipment … } (money in minor units, adding up as checkout adds it); loyalty { customerId, userId, lots, history … }; reviews (rev_); returns (ret_); alerts (alr_); wishlists { userId, productIds }. Each record is found by its key: id (<prefix>_<10 to 64 of 0-9a-z>), customerId for loyalty, userId for wishlists. Each record passes Ecommerce's own check in import mode: given ids, numbers, past times and histories are kept; fields the record type does not have and values the shop derives (a category's path, a product's price or stockState …) are refused by name, as is text over a limit (never cut); slugs, SKUs, variant ids, serial numbers and landing combinations another record holds are refused. A checked record replaces the stored one (createdAt kept when it has none), so a re-run changes nothing. Nothing is sent: no message, event, alert, activity copy or IndexNow call, and no stock is held. Server token only. 404 not_found for another collection; 415 unsupported_media_type without NDJSON; 413 payload_too_large.",
 		"query": {
 			"type": "object",
@@ -30231,8 +30231,8 @@
 		}
 	},
 	"GET /v1/import/status": {
-		"summary": "What is stored, for ss-import verify",
-		"description": "Records per collection, those an import wrote, and the sums ss-import verify compares.",
+		"summary": "What is stored, for shelfway-import verify",
+		"description": "Records per collection, those an import wrote, and the sums shelfway-import verify compares.",
 		"response": {
 			"$ref": "#/components/schemas/ImportStatus"
 		}
@@ -31341,14 +31341,14 @@
 	},
 	"GET /v1/shop/store": {
 		"summary": "The store's public details",
-		"description": "For the visitor (browser token, or the server token with SS-Visitor-IP). The store's details as the website's settings in the Portal hold them (Website settings › Business, Brand and look and Region and format; Ecommerce keeps no record of its own): name (the business name while none is set), tagline, the pictures (logo, logoDark, icon, favicon and faviconDark: the https addresses set in Brand and look), contacts (the main phone and the phone list), address in parts and as lines, opening hours, social links, time zone, language and siteUrl (the website's own address). Every field is public.",
+		"description": "For the visitor (browser token, or the server token with Shelfway-Visitor-IP). The store's details as the website's settings in the Portal hold them (Website settings › Business, Brand and look and Region and format; Ecommerce keeps no record of its own): name (the business name while none is set), tagline, the pictures (logo, logoDark, icon, favicon and faviconDark: the https addresses set in Brand and look), contacts (the main phone and the phone list), address in parts and as lines, opening hours, social links, time zone, language and siteUrl (the website's own address). Every field is public.",
 		"response": {
 			"$ref": "#/components/schemas/ShopStore"
 		}
 	},
 	"GET /v1/shop/store/business-json": {
 		"summary": "The business.json made from the website settings",
-		"description": "For the visitor (browser token, or the server token with SS-Visitor-IP). The business.json version 1 your website serves at /.well-known/business.json: name (the Portal's business name), logo, email, phone (the main one, else the first of the phone list), the address as text, country, time zone, the shop currency and currencies, and language; members with no value are left out. 409 conflict when the Portal's Business section gives no name. business.json has one logo and one phone: the dark logo, icon, favicons and other phones are in GET /v1/shop/store only.",
+		"description": "For the visitor (browser token, or the server token with Shelfway-Visitor-IP). The business.json version 1 your website serves at /.well-known/business.json: name (the Portal's business name), logo, email, phone (the main one, else the first of the phone list), the address as text, country, time zone, the shop currency and currencies, and language; members with no value are left out. 409 conflict when the Portal's Business section gives no name. business.json has one logo and one phone: the dark logo, icon, favicons and other phones are in GET /v1/shop/store only.",
 		"response": {
 			"$ref": "#/components/schemas/StoreBusinessJson"
 		}

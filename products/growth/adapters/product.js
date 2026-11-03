@@ -1,5 +1,5 @@
 /**
- * The product on the kit: `createProductInstance(options)` wires `@ss/app-kit` `createProduct` with Growth's manifest
+ * The product on the kit: `createProductInstance(options)` wires `@shelfway/app-kit` `createProduct` with Growth's manifest
  * (each feature's settings schema from `schemas/` inline), its widget texts, its Connections (the merchant database,
  * which the kit always adds, and the Accounts token for activity-log copies), the merchant database indexes (the raw
  * events' expiry index, the redirect rules and the SEO checklist's kept report included), the page script's settings, what the `import` feature takes and its part of the
@@ -9,8 +9,8 @@
  * Public entry `./product` of this package, so a system test can compose the product with `./routes`.
  * @module
  */
-import { createProduct, createProductBase } from '@ss/app-kit';
-import { noopLogger } from '@ss/net';
+import { createProduct, createProductBase } from '@shelfway/app-kit';
+import { noopLogger } from '@shelfway/net';
 import guide from '../docs/guide.json' with { type: 'json' };
 import manifestFile from '../manifest.json' with { type: 'json' };
 import openapi from '../openapi.json' with { type: 'json' };
@@ -74,7 +74,7 @@ export const SHARED_SETTINGS = {
 };
 
 /** The manifest as the kit and the Portal take it: settings schemas inline. */
-export const manifest = /** @type {import('@ss/contracts').Manifest} */ (
+export const manifest = /** @type {import('@shelfway/contracts').Manifest} */ (
 	/** @type {unknown} */ ({
 		...manifestFile,
 		features: manifestFile.features.map((feature) => ({ ...feature, settings: SETTINGS[feature.key] })),
@@ -93,7 +93,7 @@ const PROBLEM_CODES = Object.freeze({
 });
 
 /**
- * @typedef {Omit<import('@ss/app-kit').ProductOptions, 'manifest' | 'strings' | 'hooks' | 'connections' | 'data' | 'problemCodes' | 'imports' | 'sharedSettings' | 'openapi' | 'build'>
+ * @typedef {Omit<import('@shelfway/app-kit').ProductOptions, 'manifest' | 'strings' | 'hooks' | 'connections' | 'data' | 'problemCodes' | 'imports' | 'sharedSettings' | 'openapi' | 'build'>
  *   & { data?: { createClient?: (uri: string, options: import('mongodb').MongoClientOptions) => import('mongodb').MongoClient } }} InstanceOptions
  *   `data.createClient`: the merchant database client factory (tests watch its commands)
  */
@@ -170,7 +170,7 @@ export const createProductInstance = (options) => {
 			? "They load at once, with Google Consent Mode granted, until the visitor chooses: 'Tags wait for the visitor's consent' is off (Settings → Tags and consent)."
 			: on.includes('consent_banner')
 				? 'The consent banner asks visitors first.'
-				: "The consent banner is off, so they wait until your own consent tool passes the visitor's choice on with SSGrowth.consent.set().";
+				: "The consent banner is off, so they wait until your own consent tool passes the visitor's choice on with ShelfwayGrowth.consent.set().";
 		return {
 			summaries: [
 				{
@@ -222,7 +222,7 @@ export const createProductInstance = (options) => {
 			indexes: [...INDEXES, ...REDIRECT_INDEXES, ...SEO_REPORT_INDEXES],
 			...(options.data?.createClient ? { createClient: options.data.createClient } : {}),
 		},
-		// days of daily totals moved in from another system with ss-import (feature `import`, PLAN 0.8.10 K10)
+		// days of daily totals moved in from another system with shelfway-import (feature `import`, PLAN 0.8.10 K10)
 		imports: createImportOptions(),
 		sharedSettings: SHARED_SETTINGS,
 		// the merchant's lists (goals, funnels, consent categories, announcements, conversion actions, verification tags,

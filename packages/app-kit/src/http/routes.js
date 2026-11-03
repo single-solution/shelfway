@@ -4,7 +4,7 @@
  * @module
  */
 
-import { isLinkScope } from '@ss/contracts';
+import { isLinkScope } from '@shelfway/contracts';
 
 /** @typedef {'browser' | 'server' | 'ticket' | 'dashboard' | 'portal' | 'none'} AuthMode */
 /** @typedef {'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'} Method */
@@ -22,12 +22,12 @@ import { isLinkScope } from '@ss/contracts';
  * @property {string} path
  * @property {AuthMode} auth `browser`: browser token + allowed Origin (visitor routes, CORS for that origin);
  *   `server`: server token, refused with an Origin header; `ticket`: ticket + its Origin (CORS for it); `dashboard`:
- *   product dashboard session; `portal`: a call signed by the Portal (`@ss/protocol` `verifyPortalCall`) naming its website
+ *   product dashboard session; `portal`: a call signed by the Portal (`@shelfway/protocol` `verifyPlatformCall`) naming its website
  *   in `?websiteId=`; `none`: public
  * @property {string | string[]} [feature] browser, server and ticket routes: answers 403 `feature_off` while the feature
  *   is off (a list: while all of them are off); ticket routes default to the feature of their `permission`
  * @property {string} [permission] ticket routes: the ticket must carry this permission. Server routes: the call must
- *   carry the verified Accounts sign-in (`SS-Sign-In`) of a staff member whose role grants this permission (the server
+ *   carry the verified Accounts sign-in (`Shelfway-Sign-In`) of a staff member whose role grants this permission (the server
  *   token alone is refused: 403 `needs_signed_in_staff`)
  * @property {boolean} [staff] server routes: the call must carry the verified Accounts sign-in of a signed-in staff member
  *   (any role); the route itself narrows what that person may do (tickets)

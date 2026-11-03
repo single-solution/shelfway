@@ -1,5 +1,5 @@
 /*
- * @ss/ui design tokens. Import after Tailwind: `@import 'tailwindcss'; @import '@ss/ui/theme.css';` and add an
+ * @shelfway/ui design tokens. Import after Tailwind: `@import 'tailwindcss'; @import '@shelfway/ui/theme.css';` and add an
  * `@source` for the package sources. Every color is a CSS variable (light by default, dark with the OS setting or
  * `data-theme="dark"` on <html>, set before paint by `ThemeScript` from the theme choice in the header menu);
  * utilities read them through `@theme inline`, so components never need `dark:`. Text/background pairs keep a contrast
@@ -9,7 +9,7 @@
  * Theme pack: **Unite** — the single Shelfway visual kit.
  * One pack for Portal marketing (`/`), Docs hub, Portal console, and every product dashboard.
  * Do not invent a second palette for marketing or a product. Marketing `site.css` is layout + motion only;
- * it must alias to `--ss-*` / `@theme` tokens from this file.
+ * it must alias to `--shelfway-*` / `@theme` tokens from this file.
  *
  * Visual system (Unite dialect):
  * - 60 % base: cool gray canvas #F0F3F7 (dark: ink #0B1220). 30 % structure: white surfaces, ink #0B1220 text,
@@ -20,60 +20,61 @@
  * - Radii: hard 0.35rem for panels, cards, and controls (pills stay full).
  * - Elevation: prefer the border; light hairline shadow only. Dark: borders carry the edge.
  * - Type: Figtree (UI/body), Space Grotesk (`font-display` titles/figures), JetBrains Mono (`font-mono` ids/paths),
- *   loaded by each app's root layout into `--ss-font-text` / `--ss-font-display` / `--ss-font-mono`.
+ *   loaded by each app's root layout into `--shelfway-font-text` / `--shelfway-font-display` / `--shelfway-font-mono`.
  */
 @theme inline {
-	--color-canvas: var(--ss-canvas);
-	--color-surface: var(--ss-surface);
-	--color-surface-2: var(--ss-surface-2);
-	--color-line: var(--ss-line);
-	--color-line-strong: var(--ss-line-strong);
-	--color-fg: var(--ss-fg);
-	--color-muted: var(--ss-muted);
-	--color-subtle: var(--ss-subtle);
-	--color-primary: var(--ss-primary);
-	--color-primary-hover: var(--ss-primary-hover);
-	--color-on-primary: var(--ss-on-primary);
-	--color-primary-soft: var(--ss-primary-soft);
-	--color-on-primary-soft: var(--ss-on-primary-soft);
-	--color-success: var(--ss-success);
-	--color-success-soft: var(--ss-success-soft);
-	--color-on-success-soft: var(--ss-on-success-soft);
-	--color-warning: var(--ss-warning);
-	--color-warning-soft: var(--ss-warning-soft);
-	--color-on-warning-soft: var(--ss-on-warning-soft);
-	--color-danger: var(--ss-danger);
-	--color-danger-hover: var(--ss-danger-hover);
-	--color-on-danger: var(--ss-on-danger);
-	--color-danger-soft: var(--ss-danger-soft);
-	--color-on-danger-soft: var(--ss-on-danger-soft);
-	--color-info-soft: var(--ss-info-soft);
-	--color-on-info-soft: var(--ss-on-info-soft);
+	--color-canvas: var(--shelfway-canvas);
+	--color-surface: var(--shelfway-surface);
+	--color-surface-2: var(--shelfway-surface-2);
+	--color-line: var(--shelfway-line);
+	--color-line-strong: var(--shelfway-line-strong);
+	--color-fg: var(--shelfway-fg);
+	--color-muted: var(--shelfway-muted);
+	--color-subtle: var(--shelfway-subtle);
+	--color-primary: var(--shelfway-primary);
+	--color-primary-hover: var(--shelfway-primary-hover);
+	--color-on-primary: var(--shelfway-on-primary);
+	--color-primary-soft: var(--shelfway-primary-soft);
+	--color-on-primary-soft: var(--shelfway-on-primary-soft);
+	--color-success: var(--shelfway-success);
+	--color-success-soft: var(--shelfway-success-soft);
+	--color-on-success-soft: var(--shelfway-on-success-soft);
+	--color-warning: var(--shelfway-warning);
+	--color-warning-soft: var(--shelfway-warning-soft);
+	--color-on-warning-soft: var(--shelfway-on-warning-soft);
+	--color-danger: var(--shelfway-danger);
+	--color-danger-hover: var(--shelfway-danger-hover);
+	--color-on-danger: var(--shelfway-on-danger);
+	--color-danger-soft: var(--shelfway-danger-soft);
+	--color-on-danger-soft: var(--shelfway-on-danger-soft);
+	--color-info-soft: var(--shelfway-info-soft);
+	--color-on-info-soft: var(--shelfway-on-info-soft);
 	/* the brand hue of each meaning, for dots, bars and fills (text and icons use the AA shade without -solid) */
-	--color-success-solid: var(--ss-success-solid);
-	--color-warning-solid: var(--ss-warning-solid);
-	--color-on-warning: var(--ss-on-warning);
+	--color-success-solid: var(--shelfway-success-solid);
+	--color-warning-solid: var(--shelfway-warning-solid);
+	--color-on-warning: var(--shelfway-on-warning);
 	/* text and icons on a solid meaning hue (a done step's green, a yellow chip): ink in both themes */
 	--color-on-solid: #0b1220;
-	--color-danger-solid: var(--ss-danger-solid);
-	--color-attention: var(--ss-attention);
-	--color-attention-solid: var(--ss-attention-solid);
-	--color-attention-soft: var(--ss-attention-soft);
-	--color-on-attention-soft: var(--ss-on-attention-soft);
-	--color-info: var(--ss-info);
-	--color-info-solid: var(--ss-info-solid);
-	--color-new: var(--ss-new);
-	--color-new-solid: var(--ss-new-solid);
-	--color-new-soft: var(--ss-new-soft);
-	--color-on-new-soft: var(--ss-on-new-soft);
-	--color-focus: var(--ss-focus);
-	--color-line-soft: var(--ss-line-soft);
-	--color-surface-3: var(--ss-surface-3);
-	--color-overlay: var(--ss-overlay);
-	/* faces: each app's layout loads `--ss-font-text` / `--ss-font-display` / `--ss-font-mono` */
-	--font-sans: var(--ss-font-text, ui-sans-serif), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-	--font-display: var(--ss-font-display, var(--ss-font-text, ui-sans-serif)), ui-sans-serif, system-ui, sans-serif;
-	--font-mono: var(--ss-font-mono, ui-monospace), ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+	--color-danger-solid: var(--shelfway-danger-solid);
+	--color-attention: var(--shelfway-attention);
+	--color-attention-solid: var(--shelfway-attention-solid);
+	--color-attention-soft: var(--shelfway-attention-soft);
+	--color-on-attention-soft: var(--shelfway-on-attention-soft);
+	--color-info: var(--shelfway-info);
+	--color-info-solid: var(--shelfway-info-solid);
+	--color-new: var(--shelfway-new);
+	--color-new-solid: var(--shelfway-new-solid);
+	--color-new-soft: var(--shelfway-new-soft);
+	--color-on-new-soft: var(--shelfway-on-new-soft);
+	--color-focus: var(--shelfway-focus);
+	--color-line-soft: var(--shelfway-line-soft);
+	--color-surface-3: var(--shelfway-surface-3);
+	--color-overlay: var(--shelfway-overlay);
+	/* faces: each app's layout loads `--shelfway-font-text` / `--shelfway-font-display` / `--shelfway-font-mono` */
+	--font-sans: var(--shelfway-font-text, ui-sans-serif), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	--font-display: var(--shelfway-font-display, var(--shelfway-font-text, ui-sans-serif)), ui-sans-serif, system-ui, sans-serif;
+	--font-mono:
+		var(--shelfway-font-mono, ui-monospace), ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
 	/* the type scale: micro 11px (group labels, counters), help 12.5/18 (help text), label 13/18 (labels, buttons,
 	   compact rows), body 14/20 (Tailwind's text-sm), title 15/22 (card and section titles), lead 16 (large buttons),
 	   page 20/28 (page and dialog titles), figure 28 (key figures) */
@@ -98,33 +99,33 @@
 	--radius-card: 0.35rem;
 	--radius-control: 0.35rem;
 	/* level 1–3: hairline first; dark mode drops soft shadows for borders; glow only on filled primary hover */
-	--shadow-glow-primary: var(--ss-glow-primary);
-	--shadow-glow-danger: var(--ss-glow-danger);
+	--shadow-glow-primary: var(--shelfway-glow-primary);
+	--shadow-glow-danger: var(--shelfway-glow-danger);
 	--shadow-knob: 0 1px 2px rgb(15 23 42 / 0.25);
-	--shadow-card: var(--ss-shadow-1);
-	--shadow-panel: var(--ss-shadow-1);
-	--shadow-bar: var(--ss-shadow-2);
-	--shadow-overlay: var(--ss-shadow-3);
-	--shadow-pop: var(--ss-shadow-3), 0 0 0 1px var(--ss-line-soft);
-	/* motion (see "Motion" below): `ease-ss`, `ease-ss-move`, `duration-(--ss-motion)` and the `animate-ss-*` utilities */
-	--ease-ss: var(--ss-ease);
-	--ease-ss-move: var(--ss-ease-move);
-	--animate-ss-fade: ss-fade var(--ss-motion) var(--ss-ease) both;
-	--animate-ss-fade-out: ss-fade-out var(--ss-motion-fast) var(--ss-ease-exit) both;
-	--animate-ss-enter: ss-enter var(--ss-motion-slow) var(--ss-ease) both;
-	--animate-ss-pop: ss-pop var(--ss-motion) var(--ss-ease) both;
-	--animate-ss-pop-out: ss-pop-out var(--ss-motion-fast) var(--ss-ease-exit) both;
-	--animate-ss-sheet: ss-sheet var(--ss-motion-slow) var(--ss-ease) both;
-	--animate-ss-sheet-out: ss-sheet-out var(--ss-motion) var(--ss-ease-exit) both;
-	--animate-ss-drawer: ss-drawer var(--ss-motion-slow) var(--ss-ease) both;
-	--animate-ss-drawer-out: ss-drawer-out var(--ss-motion) var(--ss-ease-exit) both;
+	--shadow-card: var(--shelfway-shadow-1);
+	--shadow-panel: var(--shelfway-shadow-1);
+	--shadow-bar: var(--shelfway-shadow-2);
+	--shadow-overlay: var(--shelfway-shadow-3);
+	--shadow-pop: var(--shelfway-shadow-3), 0 0 0 1px var(--shelfway-line-soft);
+	/* motion (see "Motion" below): `ease-shelfway`, `ease-shelfway-move`, `duration-(--shelfway-motion)` and the `animate-shelfway-*` utilities */
+	--ease-shelfway: var(--shelfway-ease);
+	--ease-shelfway-move: var(--shelfway-ease-move);
+	--animate-shelfway-fade: shelfway-fade var(--shelfway-motion) var(--shelfway-ease) both;
+	--animate-shelfway-fade-out: shelfway-fade-out var(--shelfway-motion-fast) var(--shelfway-ease-exit) both;
+	--animate-shelfway-enter: shelfway-enter var(--shelfway-motion-slow) var(--shelfway-ease) both;
+	--animate-shelfway-pop: shelfway-pop var(--shelfway-motion) var(--shelfway-ease) both;
+	--animate-shelfway-pop-out: shelfway-pop-out var(--shelfway-motion-fast) var(--shelfway-ease-exit) both;
+	--animate-shelfway-sheet: shelfway-sheet var(--shelfway-motion-slow) var(--shelfway-ease) both;
+	--animate-shelfway-sheet-out: shelfway-sheet-out var(--shelfway-motion) var(--shelfway-ease-exit) both;
+	--animate-shelfway-drawer: shelfway-drawer var(--shelfway-motion-slow) var(--shelfway-ease) both;
+	--animate-shelfway-drawer-out: shelfway-drawer-out var(--shelfway-motion) var(--shelfway-ease-exit) both;
 	/* the right drawer that holds an edit (an order, a product, a connection) */
-	--animate-ss-side: ss-side var(--ss-motion-slow) var(--ss-ease) both;
-	--animate-ss-side-out: ss-side-out var(--ss-motion) var(--ss-ease-exit) both;
-	--animate-ss-toast: ss-toast var(--ss-motion-slow) var(--ss-ease) both;
-	--animate-ss-toast-out: ss-toast-out var(--ss-motion) var(--ss-ease-exit) both;
-	--animate-ss-shake: ss-shake var(--ss-motion-slow) var(--ss-ease-move) both;
-	--animate-ss-meter: ss-meter var(--ss-motion-slow) var(--ss-ease) both;
+	--animate-shelfway-side: shelfway-side var(--shelfway-motion-slow) var(--shelfway-ease) both;
+	--animate-shelfway-side-out: shelfway-side-out var(--shelfway-motion) var(--shelfway-ease-exit) both;
+	--animate-shelfway-toast: shelfway-toast var(--shelfway-motion-slow) var(--shelfway-ease) both;
+	--animate-shelfway-toast-out: shelfway-toast-out var(--shelfway-motion) var(--shelfway-ease-exit) both;
+	--animate-shelfway-shake: shelfway-shake var(--shelfway-motion-slow) var(--shelfway-ease-move) both;
+	--animate-shelfway-meter: shelfway-meter var(--shelfway-motion-slow) var(--shelfway-ease) both;
 }
 
 /*
@@ -138,56 +139,56 @@
 	--dur-slow: 220ms;
 	--ease: cubic-bezier(0.22, 1, 0.36, 1);
 	/* the older names stay and follow the tokens above (one curve for entering, moving and leaving) */
-	--ss-motion-fast: var(--dur-fast);
-	--ss-motion: var(--dur);
-	--ss-motion-slow: var(--dur-slow);
-	--ss-ease: var(--ease);
-	--ss-ease-move: var(--ease);
-	--ss-ease-exit: var(--ease);
+	--shelfway-motion-fast: var(--dur-fast);
+	--shelfway-motion: var(--dur);
+	--shelfway-motion-slow: var(--dur-slow);
+	--shelfway-ease: var(--ease);
+	--shelfway-ease-move: var(--ease);
+	--shelfway-ease-exit: var(--ease);
 }
 
-@keyframes ss-fade {
+@keyframes shelfway-fade {
 	from {
 		opacity: 0;
 	}
 }
 
-@keyframes ss-enter {
+@keyframes shelfway-enter {
 	from {
 		opacity: 0;
 		translate: 0 4px;
 	}
 }
 
-@keyframes ss-pop {
+@keyframes shelfway-pop {
 	from {
 		opacity: 0;
 		scale: 0.98;
 	}
 }
 
-@keyframes ss-sheet {
+@keyframes shelfway-sheet {
 	from {
 		opacity: 0;
 		translate: 0 24px;
 	}
 }
 
-@keyframes ss-drawer {
+@keyframes shelfway-drawer {
 	from {
 		opacity: 0;
 		translate: -24px 0;
 	}
 }
 
-@keyframes ss-side {
+@keyframes shelfway-side {
 	from {
 		opacity: 0;
 		translate: 32px 0;
 	}
 }
 
-@keyframes ss-toast {
+@keyframes shelfway-toast {
 	from {
 		opacity: 0;
 		translate: 0 12px;
@@ -197,41 +198,41 @@
 
 /* exits have their own names: an element that animated in keeps its finished enter animation, and only a new
    animation name starts a new animation */
-@keyframes ss-fade-out {
+@keyframes shelfway-fade-out {
 	to {
 		opacity: 0;
 	}
 }
 
-@keyframes ss-pop-out {
+@keyframes shelfway-pop-out {
 	to {
 		opacity: 0;
 		scale: 0.98;
 	}
 }
 
-@keyframes ss-sheet-out {
+@keyframes shelfway-sheet-out {
 	to {
 		opacity: 0;
 		translate: 0 24px;
 	}
 }
 
-@keyframes ss-drawer-out {
+@keyframes shelfway-drawer-out {
 	to {
 		opacity: 0;
 		translate: -24px 0;
 	}
 }
 
-@keyframes ss-side-out {
+@keyframes shelfway-side-out {
 	to {
 		opacity: 0;
 		translate: 32px 0;
 	}
 }
 
-@keyframes ss-toast-out {
+@keyframes shelfway-toast-out {
 	to {
 		opacity: 0;
 		translate: 0 12px;
@@ -239,7 +240,7 @@
 	}
 }
 
-@keyframes ss-shake {
+@keyframes shelfway-shake {
 	0% {
 		opacity: 0;
 		translate: -4px 0;
@@ -259,7 +260,7 @@
 	}
 }
 
-@keyframes ss-shimmer {
+@keyframes shelfway-shimmer {
 	from {
 		translate: -100% 0;
 	}
@@ -268,7 +269,7 @@
 	}
 }
 
-@keyframes ss-progress {
+@keyframes shelfway-progress {
 	from {
 		translate: -100% 0;
 	}
@@ -278,7 +279,7 @@
 }
 
 /* the bar of a card's meter grows from nothing to its width */
-@keyframes ss-meter {
+@keyframes shelfway-meter {
 	from {
 		width: 0;
 	}
@@ -309,167 +310,167 @@
 			transform: none;
 		}
 	}
-	@keyframes ss-meter {
+	@keyframes shelfway-meter {
 		from {
 			opacity: 0;
 		}
 	}
-	@keyframes ss-enter {
+	@keyframes shelfway-enter {
 		from {
 			opacity: 0;
 		}
 	}
-	@keyframes ss-pop {
+	@keyframes shelfway-pop {
 		from {
 			opacity: 0;
 		}
 	}
-	@keyframes ss-sheet {
+	@keyframes shelfway-sheet {
 		from {
 			opacity: 0;
 		}
 	}
-	@keyframes ss-drawer {
+	@keyframes shelfway-drawer {
 		from {
 			opacity: 0;
 		}
 	}
-	@keyframes ss-side {
+	@keyframes shelfway-side {
 		from {
 			opacity: 0;
 		}
 	}
-	@keyframes ss-toast {
+	@keyframes shelfway-toast {
 		from {
 			opacity: 0;
 		}
 	}
-	@keyframes ss-pop-out {
+	@keyframes shelfway-pop-out {
 		to {
 			opacity: 0;
 		}
 	}
-	@keyframes ss-sheet-out {
+	@keyframes shelfway-sheet-out {
 		to {
 			opacity: 0;
 		}
 	}
-	@keyframes ss-drawer-out {
+	@keyframes shelfway-drawer-out {
 		to {
 			opacity: 0;
 		}
 	}
-	@keyframes ss-side-out {
+	@keyframes shelfway-side-out {
 		to {
 			opacity: 0;
 		}
 	}
-	@keyframes ss-toast-out {
+	@keyframes shelfway-toast-out {
 		to {
 			opacity: 0;
 		}
 	}
-	@keyframes ss-shake {
+	@keyframes shelfway-shake {
 		from {
 			opacity: 0;
 		}
 	}
-	.ss-press:active:not(:disabled, [aria-disabled='true']),
-	.ss-lift:hover {
+	.shelfway-press:active:not(:disabled, [aria-disabled='true']),
+	.shelfway-lift:hover {
 		scale: none;
 		translate: none;
 	}
 }
 
 /* interactive elements: colors, opacity and transforms change together, quickly */
-@utility ss-motion {
+@utility shelfway-motion {
 	transition-property: color, background-color, border-color, box-shadow, opacity, transform, translate, scale;
-	transition-duration: var(--ss-motion-fast);
-	transition-timing-function: var(--ss-ease);
+	transition-duration: var(--shelfway-motion-fast);
+	transition-timing-function: var(--shelfway-ease);
 }
 
 /* press feedback — quiet Unite press (not a deep squash) */
-@utility ss-press {
+@utility shelfway-press {
 	&:active:not(:disabled, [aria-disabled='true']) {
 		scale: 0.99;
 	}
 }
 
-/* hard offset chrome (active nav, hot tiles) — light + dark via --ss-hard */
-@utility ss-hard {
-	box-shadow: var(--ss-hard);
+/* hard offset chrome (active nav, hot tiles) — light + dark via --shelfway-hard */
+@utility shelfway-hard {
+	box-shadow: var(--shelfway-hard);
 }
 
 /* Unite signature hard card with offset hover shadow and lift from website */
-@utility ss-hard-card {
+@utility shelfway-hard-card {
 	border-radius: var(--radius-control);
 	box-shadow: 4px 4px 0 transparent;
 	transition:
-		transform 0.25s var(--ss-ease),
-		box-shadow 0.25s var(--ss-ease),
-		border-color 0.25s var(--ss-ease),
-		background 0.25s var(--ss-ease);
+		transform 0.25s var(--shelfway-ease),
+		box-shadow 0.25s var(--shelfway-ease),
+		border-color 0.25s var(--shelfway-ease),
+		background 0.25s var(--shelfway-ease);
 	&:hover {
 		transform: translate(-2px, -2px);
-		box-shadow: 5px 5px 0 color-mix(in srgb, var(--ss-primary) 22%, transparent);
-		border-color: color-mix(in srgb, var(--ss-primary) 40%, transparent);
+		box-shadow: 5px 5px 0 color-mix(in srgb, var(--shelfway-primary) 22%, transparent);
+		border-color: color-mix(in srgb, var(--shelfway-primary) 40%, transparent);
 	}
 }
 
 /* Glass surface from website */
-@utility ss-glass {
-	background: var(--ss-glass);
+@utility shelfway-glass {
+	background: var(--shelfway-glass);
 	backdrop-filter: blur(16px);
 	-webkit-backdrop-filter: blur(16px);
-	border: 1px solid var(--ss-line);
+	border: 1px solid var(--shelfway-line);
 }
 
 /* Ambient wash gradient mesh from website */
-@utility ss-wash {
+@utility shelfway-wash {
 	pointer-events: none;
 	position: fixed;
 	inset: 0;
 	z-index: 0;
 	background:
-		radial-gradient(1000px 520px at 8% -8%, color-mix(in srgb, var(--ss-info-solid) 18%, transparent), transparent 55%),
-		radial-gradient(700px 400px at 100% 5%, color-mix(in srgb, var(--ss-success-solid) 8%, transparent), transparent 45%),
+		radial-gradient(1000px 520px at 8% -8%, color-mix(in srgb, var(--shelfway-info-solid) 18%, transparent), transparent 55%),
+		radial-gradient(700px 400px at 100% 5%, color-mix(in srgb, var(--shelfway-success-solid) 8%, transparent), transparent 45%),
 		linear-gradient(
 			180deg,
-			color-mix(in srgb, var(--ss-surface) 70%, var(--ss-canvas)) 0%,
-			var(--ss-canvas) 45%,
-			var(--ss-surface-2) 100%
+			color-mix(in srgb, var(--shelfway-surface) 70%, var(--shelfway-canvas)) 0%,
+			var(--shelfway-canvas) 45%,
+			var(--shelfway-surface-2) 100%
 		);
 }
 
 /* Technical animated 40px grid drift with radial mask from website */
-@utility ss-grid-hard {
+@utility shelfway-grid-hard {
 	pointer-events: none;
 	position: fixed;
 	inset: 0;
 	z-index: 0;
 	background-image:
-		linear-gradient(color-mix(in srgb, var(--ss-fg) 7%, transparent) 1px, transparent 1px),
-		linear-gradient(90deg, color-mix(in srgb, var(--ss-fg) 7%, transparent) 1px, transparent 1px);
+		linear-gradient(color-mix(in srgb, var(--shelfway-fg) 7%, transparent) 1px, transparent 1px),
+		linear-gradient(90deg, color-mix(in srgb, var(--shelfway-fg) 7%, transparent) 1px, transparent 1px);
 	background-size: 40px 40px;
 	mask-image: radial-gradient(ellipse at 50% 15%, #000 25%, transparent 75%);
 	animation: gridDrift 40s linear infinite;
 }
 
 /* Ambient top sweep progress bar from website */
-@utility ss-signal {
+@utility shelfway-signal {
 	position: fixed;
 	top: 0;
 	left: 0;
 	right: 0;
 	height: 3px;
 	z-index: 70;
-	background: color-mix(in srgb, var(--ss-fg) 6%, transparent);
+	background: color-mix(in srgb, var(--shelfway-fg) 6%, transparent);
 	pointer-events: none;
 	& i {
 		display: block;
 		height: 100%;
 		width: 28%;
-		background: linear-gradient(90deg, transparent, var(--ss-info-solid), var(--ss-success-solid), transparent);
+		background: linear-gradient(90deg, transparent, var(--shelfway-info-solid), var(--shelfway-success-solid), transparent);
 		animation: sweep 2.4s linear infinite;
 	}
 }
@@ -481,13 +482,13 @@
 	inset: 0;
 	z-index: 0;
 	background:
-		radial-gradient(1000px 520px at 8% -8%, color-mix(in srgb, var(--ss-info-solid) 18%, transparent), transparent 55%),
-		radial-gradient(700px 400px at 100% 5%, color-mix(in srgb, var(--ss-success-solid) 8%, transparent), transparent 45%),
+		radial-gradient(1000px 520px at 8% -8%, color-mix(in srgb, var(--shelfway-info-solid) 18%, transparent), transparent 55%),
+		radial-gradient(700px 400px at 100% 5%, color-mix(in srgb, var(--shelfway-success-solid) 8%, transparent), transparent 45%),
 		linear-gradient(
 			180deg,
-			color-mix(in srgb, var(--ss-surface) 70%, var(--ss-canvas)) 0%,
-			var(--ss-canvas) 45%,
-			var(--ss-surface-2) 100%
+			color-mix(in srgb, var(--shelfway-surface) 70%, var(--shelfway-canvas)) 0%,
+			var(--shelfway-canvas) 45%,
+			var(--shelfway-surface-2) 100%
 		);
 }
 
@@ -497,8 +498,8 @@
 	inset: 0;
 	z-index: 0;
 	background-image:
-		linear-gradient(color-mix(in srgb, var(--ss-fg) 7%, transparent) 1px, transparent 1px),
-		linear-gradient(90deg, color-mix(in srgb, var(--ss-fg) 7%, transparent) 1px, transparent 1px);
+		linear-gradient(color-mix(in srgb, var(--shelfway-fg) 7%, transparent) 1px, transparent 1px),
+		linear-gradient(90deg, color-mix(in srgb, var(--shelfway-fg) 7%, transparent) 1px, transparent 1px);
 	background-size: 40px 40px;
 	mask-image: radial-gradient(ellipse at 50% 15%, #000 25%, transparent 75%);
 	animation: gridDrift 40s linear infinite;
@@ -511,47 +512,47 @@
 	right: 0;
 	height: 3px;
 	z-index: 70;
-	background: color-mix(in srgb, var(--ss-fg) 6%, transparent);
+	background: color-mix(in srgb, var(--shelfway-fg) 6%, transparent);
 	pointer-events: none;
 }
 .signal i {
 	display: block;
 	height: 100%;
 	width: 28%;
-	background: linear-gradient(90deg, transparent, var(--ss-info-solid), var(--ss-success-solid), transparent);
+	background: linear-gradient(90deg, transparent, var(--shelfway-info-solid), var(--shelfway-success-solid), transparent);
 	animation: sweep 2.4s linear infinite;
 }
 
 .glass {
-	background: var(--ss-glass);
+	background: var(--shelfway-glass);
 	backdrop-filter: blur(16px);
 	-webkit-backdrop-filter: blur(16px);
-	border: 1px solid var(--ss-line);
+	border: 1px solid var(--shelfway-line);
 }
 
 .hard {
 	border-radius: var(--radius-control);
 	box-shadow: 4px 4px 0 transparent;
 	transition:
-		transform 0.25s var(--ss-ease),
-		box-shadow 0.25s var(--ss-ease),
-		border-color 0.25s var(--ss-ease),
-		background 0.25s var(--ss-ease);
+		transform 0.25s var(--shelfway-ease),
+		box-shadow 0.25s var(--shelfway-ease),
+		border-color 0.25s var(--shelfway-ease),
+		background 0.25s var(--shelfway-ease);
 }
 .hard:hover {
 	transform: translate(-2px, -2px);
-	box-shadow: 5px 5px 0 color-mix(in srgb, var(--ss-primary) 22%, transparent);
-	border-color: color-mix(in srgb, var(--ss-primary) 40%, transparent);
+	box-shadow: 5px 5px 0 color-mix(in srgb, var(--shelfway-primary) 22%, transparent);
+	border-color: color-mix(in srgb, var(--shelfway-primary) 40%, transparent);
 }
 
 /* Typography & accents from website */
-@utility ss-eyebrow {
+@utility shelfway-eyebrow {
 	font-family: var(--font-mono);
 	font-size: 0.6875rem;
 	font-weight: 700;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
-	color: var(--ss-primary);
+	color: var(--shelfway-primary);
 }
 .eyebrow {
 	font-family: var(--font-mono);
@@ -559,57 +560,58 @@
 	font-weight: 700;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
-	color: var(--ss-primary);
+	color: var(--shelfway-primary);
 }
-@utility ss-accent {
-	color: var(--ss-primary);
+@utility shelfway-accent {
+	color: var(--shelfway-primary);
 }
 .accent {
-	color: var(--ss-primary);
+	color: var(--shelfway-primary);
 }
 
 /* a clickable card or row nudges with a hard edge on hover */
-@utility ss-lift {
+@utility shelfway-lift {
 	transition-property: translate, box-shadow, background-color, border-color;
 	transition-duration: var(--dur-fast);
 	transition-timing-function: var(--ease);
 	&:hover {
 		translate: -1px -1px;
-		box-shadow: var(--ss-lift);
+		box-shadow: var(--shelfway-lift);
 	}
 }
 
 /* quiet graph paper behind console main panes (line color flips in dark) */
-@utility ss-grid-wash {
-	background-color: var(--ss-surface);
+@utility shelfway-grid-wash {
+	background-color: var(--shelfway-surface);
 	background-image:
-		linear-gradient(var(--ss-grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--ss-grid-line) 1px, transparent 1px);
+		linear-gradient(var(--shelfway-grid-line) 1px, transparent 1px),
+		linear-gradient(90deg, var(--shelfway-grid-line) 1px, transparent 1px);
 	background-size: 32px 32px;
 }
 
-/* the first load of a table: rows come in one after the other (`--ss-i` is the row number, at most 10 steps of 15ms) */
-@utility ss-stagger {
-	animation: ss-enter var(--dur-slow) var(--ease) both;
-	animation-delay: calc(min(var(--ss-i, 0), 10) * 15ms);
+/* the first load of a table: rows come in one after the other (`--shelfway-i` is the row number, at most 10 steps of 15ms) */
+@utility shelfway-stagger {
+	animation: shelfway-enter var(--dur-slow) var(--ease) both;
+	animation-delay: calc(min(var(--shelfway-i, 0), 10) * 15ms);
 }
 
-/* loading blocks: a soft light sweeps across the placeholder (`--ss-skeleton` sets its color, e.g. on the canvas) */
-@utility ss-shimmer {
+/* loading blocks: a soft light sweeps across the placeholder (`--shelfway-skeleton` sets its color, e.g. on the canvas) */
+@utility shelfway-shimmer {
 	position: relative;
 	overflow: hidden;
-	background-color: var(--ss-skeleton, var(--ss-surface-2));
+	background-color: var(--shelfway-skeleton, var(--shelfway-surface-2));
 	&::after {
 		content: '';
 		position: absolute;
 		inset: 0;
 		translate: -100% 0;
-		background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--ss-surface) 55%, transparent), transparent);
-		animation: ss-shimmer 1.4s var(--ss-ease-move) infinite;
+		background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--shelfway-surface) 55%, transparent), transparent);
+		animation: shelfway-shimmer 1.4s var(--shelfway-ease-move) infinite;
 	}
 }
 
 /* the thin bar on top of the page while a route or a section loads (`NavigationProgress`) */
-@utility ss-progress {
+@utility shelfway-progress {
 	position: fixed;
 	inset: 0 0 auto 0;
 	z-index: 80;
@@ -617,14 +619,14 @@
 	overflow: hidden;
 	pointer-events: none;
 	opacity: 0;
-	background: color-mix(in srgb, var(--ss-fg) 6%, transparent);
-	transition: opacity var(--ss-motion) var(--ss-ease);
+	background: color-mix(in srgb, var(--shelfway-fg) 6%, transparent);
+	transition: opacity var(--shelfway-motion) var(--shelfway-ease);
 	& > span {
 		display: block;
 		width: 35%;
 		height: 100%;
 		border-radius: 9999px;
-		background: linear-gradient(90deg, transparent, var(--ss-info-solid), var(--ss-success-solid), transparent);
+		background: linear-gradient(90deg, transparent, var(--shelfway-info-solid), var(--shelfway-success-solid), transparent);
 		animation: sweep 2s linear infinite paused;
 	}
 	&[data-active] {
@@ -638,9 +640,9 @@
 }
 
 /* the small spinner beside a clicked link while its page is on the way (`PendingHint`) */
-@utility ss-pending-hint {
+@utility shelfway-pending-hint {
 	opacity: 0;
-	transition: opacity var(--ss-motion) var(--ss-ease);
+	transition: opacity var(--shelfway-motion) var(--shelfway-ease);
 	& svg {
 		animation-play-state: paused;
 	}
@@ -665,27 +667,27 @@
 ::view-transition-new(root) {
 	animation: none;
 }
-::view-transition-old(.ss-vt-exit) {
-	animation: ss-fade-out var(--ss-motion-fast) var(--ss-ease-exit) both;
+::view-transition-old(.shelfway-vt-exit) {
+	animation: shelfway-fade-out var(--shelfway-motion-fast) var(--shelfway-ease-exit) both;
 }
-::view-transition-new(.ss-vt-enter) {
-	animation: ss-enter var(--ss-motion-slow) var(--ss-ease) both;
+::view-transition-new(.shelfway-vt-enter) {
+	animation: shelfway-enter var(--shelfway-motion-slow) var(--shelfway-ease) both;
 }
-::view-transition-group(.ss-vt-morph) {
-	animation-duration: var(--ss-motion-slow);
-	animation-timing-function: var(--ss-ease-move);
+::view-transition-group(.shelfway-vt-morph) {
+	animation-duration: var(--shelfway-motion-slow);
+	animation-timing-function: var(--shelfway-ease-move);
 }
-::view-transition-group(ss-topbar),
-::view-transition-group(ss-sidebar) {
+::view-transition-group(shelfway-topbar),
+::view-transition-group(shelfway-sidebar) {
 	z-index: 50;
 	animation: none;
 }
-::view-transition-old(ss-topbar),
-::view-transition-old(ss-sidebar) {
+::view-transition-old(shelfway-topbar),
+::view-transition-old(shelfway-sidebar) {
 	display: none;
 }
-::view-transition-new(ss-topbar),
-::view-transition-new(ss-sidebar) {
+::view-transition-new(shelfway-topbar),
+::view-transition-new(shelfway-sidebar) {
 	animation: none;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -695,82 +697,82 @@
 }
 /* browsers without view transitions: the new content still fades and slides in */
 @supports not (view-transition-name: none) {
-	[data-ss-transition] {
-		animation: ss-enter var(--ss-motion-slow) var(--ss-ease) both;
+	[data-shelfway-transition] {
+		animation: shelfway-enter var(--shelfway-motion-slow) var(--shelfway-ease) both;
 	}
 }
 
 /* light (the default): cool gray canvas, white surfaces, ink text, teal primary */
 :root {
 	color-scheme: light;
-	--ss-canvas: #f0f3f7;
-	--ss-surface: #ffffff;
+	--shelfway-canvas: #f0f3f7;
+	--shelfway-surface: #ffffff;
 	/* cool hover / selected rows */
-	--ss-surface-2: #e6ecf3;
-	--ss-surface-3: #d9e1eb;
-	--ss-line: rgb(11 18 32 / 0.12);
-	--ss-line-soft: rgb(11 18 32 / 0.08);
-	--ss-line-strong: #8790a3;
-	--ss-fg: #0b1220;
-	--ss-muted: #5a6475;
-	--ss-subtle: #8b94a5;
+	--shelfway-surface-2: #e6ecf3;
+	--shelfway-surface-3: #d9e1eb;
+	--shelfway-line: rgb(11 18 32 / 0.12);
+	--shelfway-line-soft: rgb(11 18 32 / 0.08);
+	--shelfway-line-strong: #8790a3;
+	--shelfway-fg: #0b1220;
+	--shelfway-muted: #5a6475;
+	--shelfway-subtle: #8b94a5;
 	/* teal: main buttons, links, the active item, focus */
-	--ss-primary: #0f766e;
-	--ss-primary-hover: #0d5f59;
-	--ss-on-primary: #ffffff;
-	--ss-primary-soft: #e6f5f3;
-	--ss-on-primary-soft: #0d5f59;
+	--shelfway-primary: #0f766e;
+	--shelfway-primary-hover: #0d5f59;
+	--shelfway-on-primary: #ffffff;
+	--shelfway-primary-soft: #e6f5f3;
+	--shelfway-on-primary-soft: #0d5f59;
 	/* lime/ok: success, paid, active, done */
-	--ss-success: #047857;
-	--ss-success-solid: #16a34a;
-	--ss-success-soft: #e8f8ef;
-	--ss-on-success-soft: #046c4e;
+	--shelfway-success: #047857;
+	--shelfway-success-solid: #16a34a;
+	--shelfway-success-soft: #e8f8ef;
+	--shelfway-on-success-soft: #046c4e;
 	/* amber: warnings, always with dark text */
-	--ss-warning: #92400e;
-	--ss-warning-solid: #f59e0b;
-	--ss-on-warning: #0b1220;
-	--ss-warning-soft: #fff7e8;
-	--ss-on-warning-soft: #7c370c;
+	--shelfway-warning: #92400e;
+	--shelfway-warning-solid: #f59e0b;
+	--shelfway-on-warning: #0b1220;
+	--shelfway-warning-soft: #fff7e8;
+	--shelfway-on-warning-soft: #7c370c;
 	/* rose: errors and destructive actions only */
-	--ss-danger: #be123c;
-	--ss-danger-hover: #9f1239;
-	--ss-danger-solid: #e11d48;
-	--ss-on-danger: #ffffff;
-	--ss-danger-soft: #fce8ee;
-	--ss-on-danger-soft: #9f1239;
+	--shelfway-danger: #be123c;
+	--shelfway-danger-hover: #9f1239;
+	--shelfway-danger-solid: #e11d48;
+	--shelfway-on-danger: #ffffff;
+	--shelfway-danger-soft: #fce8ee;
+	--shelfway-on-danger-soft: #9f1239;
 	/* amber-attention: Needs you / setup; never a button fill */
-	--ss-attention: #b45309;
-	--ss-attention-solid: #f59e0b;
-	--ss-attention-soft: #fff4e6;
-	--ss-on-attention-soft: #9a4508;
+	--shelfway-attention: #b45309;
+	--shelfway-attention-solid: #f59e0b;
+	--shelfway-attention-soft: #fff4e6;
+	--shelfway-on-attention-soft: #9a4508;
 	/* bright teal: info and help */
-	--ss-info: #0f766e;
-	--ss-info-solid: #14b8a6;
-	--ss-info-soft: #e6f5f3;
-	--ss-on-info-soft: #0d5f59;
+	--shelfway-info: #0f766e;
+	--shelfway-info-solid: #14b8a6;
+	--shelfway-info-soft: #e6f5f3;
+	--shelfway-on-info-soft: #0d5f59;
 	/* pink: new, featured, promotions */
-	--ss-new: #be185d;
-	--ss-new-solid: #ec4899;
-	--ss-new-soft: #fce7f3;
-	--ss-on-new-soft: #9d174d;
-	--ss-focus: #0f766e;
-	--ss-overlay: rgb(11 18 32 / 0.36);
+	--shelfway-new: #be185d;
+	--shelfway-new-solid: #ec4899;
+	--shelfway-new-soft: #fce7f3;
+	--shelfway-on-new-soft: #9d174d;
+	--shelfway-focus: #0f766e;
+	--shelfway-overlay: rgb(11 18 32 / 0.36);
 	/* Unite: border first; hard offset for “hot” chrome; soft lift only for overlays */
-	--ss-shadow-1: 0 0 #0000;
-	--ss-shadow-2: 2px 2px 0 rgb(15 118 110 / 0.12);
-	--ss-shadow-3: 0 12px 32px -12px rgb(11 18 32 / 0.16);
-	--ss-hard: 2px 2px 0 rgb(15 118 110 / 0.12);
-	--ss-lift: 3px 3px 0 rgb(15 118 110 / 0.14);
-	--ss-grid-line: rgb(11 18 32 / 0.03);
-	--ss-glow-primary: 0 0 #0000;
-	--ss-glow-danger: 0 0 #0000;
-	--ss-scrollbar: rgb(11 18 32 / 0.18);
-	--ss-scrollbar-hover: rgb(11 18 32 / 0.32);
-	--ss-selection: rgb(15 118 110 / 0.16);
+	--shelfway-shadow-1: 0 0 #0000;
+	--shelfway-shadow-2: 2px 2px 0 rgb(15 118 110 / 0.12);
+	--shelfway-shadow-3: 0 12px 32px -12px rgb(11 18 32 / 0.16);
+	--shelfway-hard: 2px 2px 0 rgb(15 118 110 / 0.12);
+	--shelfway-lift: 3px 3px 0 rgb(15 118 110 / 0.14);
+	--shelfway-grid-line: rgb(11 18 32 / 0.03);
+	--shelfway-glow-primary: 0 0 #0000;
+	--shelfway-glow-danger: 0 0 #0000;
+	--shelfway-scrollbar: rgb(11 18 32 / 0.18);
+	--shelfway-scrollbar-hover: rgb(11 18 32 / 0.32);
+	--shelfway-selection: rgb(15 118 110 / 0.16);
 	/* Unite glass: floating navs, translucent cards, sticky chrome */
-	--ss-glass: color-mix(in srgb, var(--ss-surface) 64%, transparent);
-	--ss-glass-strong: color-mix(in srgb, var(--ss-surface) 88%, transparent);
-	--ss-glass-blur: blur(14px);
+	--shelfway-glass: color-mix(in srgb, var(--shelfway-surface) 64%, transparent);
+	--shelfway-glass-strong: color-mix(in srgb, var(--shelfway-surface) 88%, transparent);
+	--shelfway-glass-blur: blur(14px);
 }
 
 /* dark, on the ink canvas: from the OS setting unless light was chosen, or chosen (the two blocks hold the same
@@ -778,127 +780,127 @@
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme='light']) {
 		color-scheme: dark;
-		--ss-canvas: #0b1220;
-		--ss-surface: #141c2c;
-		--ss-surface-2: #1a2436;
-		--ss-surface-3: #243044;
-		--ss-line: #2a3548;
-		--ss-line-soft: #1f2a3c;
-		--ss-line-strong: #6a7a9e;
-		--ss-fg: #eef2f7;
-		--ss-muted: #a3adbd;
-		--ss-subtle: #6f7c90;
-		--ss-primary: #2dd4bf;
-		--ss-primary-hover: #5eead4;
-		--ss-on-primary: #0b1220;
-		--ss-primary-soft: #123038;
-		--ss-on-primary-soft: #5eead4;
-		--ss-success: #4ade80;
-		--ss-success-solid: #22c55e;
-		--ss-success-soft: #143028;
-		--ss-on-success-soft: #86efac;
-		--ss-warning: #fbbf24;
-		--ss-warning-solid: #f59e0b;
-		--ss-on-warning: #0b1220;
-		--ss-warning-soft: #2e2818;
-		--ss-on-warning-soft: #fcd34d;
-		--ss-danger: #fb7185;
-		--ss-danger-hover: #fda4af;
-		--ss-danger-solid: #e11d48;
-		--ss-on-danger: #0b1220;
-		--ss-danger-soft: #2e1a24;
-		--ss-on-danger-soft: #fda4af;
-		--ss-attention: #fbbf24;
-		--ss-attention-solid: #f59e0b;
-		--ss-attention-soft: #2e2818;
-		--ss-on-attention-soft: #fcd34d;
-		--ss-info: #2dd4bf;
-		--ss-info-solid: #14b8a6;
-		--ss-info-soft: #123038;
-		--ss-on-info-soft: #5eead4;
-		--ss-new: #f472b6;
-		--ss-new-solid: #ec4899;
-		--ss-new-soft: #2a1a2e;
-		--ss-on-new-soft: #f9a8d4;
-		--ss-focus: #5eead4;
-		--ss-overlay: rgb(3 8 18 / 0.72);
-		--ss-shadow-1: 0 0 #0000;
-		--ss-shadow-2: 2px 2px 0 rgb(45 212 191 / 0.22);
-		--ss-shadow-3: 0 0 0 1px #2a3548, 0 16px 40px -12px rgb(0 0 0 / 0.5);
-		--ss-hard: 2px 2px 0 rgb(45 212 191 / 0.22);
-		--ss-lift: 3px 3px 0 rgb(45 212 191 / 0.28);
-		--ss-grid-line: rgb(238 242 247 / 0.04);
-		--ss-glow-primary: 0 0 #0000;
-		--ss-glow-danger: 0 0 #0000;
-		--ss-scrollbar: rgb(255 255 255 / 0.16);
-		--ss-scrollbar-hover: rgb(255 255 255 / 0.28);
-		--ss-selection: rgb(45 212 191 / 0.28);
-		--ss-glass: color-mix(in srgb, var(--ss-surface) 72%, transparent);
-		--ss-glass-strong: color-mix(in srgb, var(--ss-surface) 90%, transparent);
-		--ss-glass-blur: blur(14px);
+		--shelfway-canvas: #0b1220;
+		--shelfway-surface: #141c2c;
+		--shelfway-surface-2: #1a2436;
+		--shelfway-surface-3: #243044;
+		--shelfway-line: #2a3548;
+		--shelfway-line-soft: #1f2a3c;
+		--shelfway-line-strong: #6a7a9e;
+		--shelfway-fg: #eef2f7;
+		--shelfway-muted: #a3adbd;
+		--shelfway-subtle: #8e9cb2;
+		--shelfway-primary: #2dd4bf;
+		--shelfway-primary-hover: #5eead4;
+		--shelfway-on-primary: #0b1220;
+		--shelfway-primary-soft: #123038;
+		--shelfway-on-primary-soft: #5eead4;
+		--shelfway-success: #4ade80;
+		--shelfway-success-solid: #22c55e;
+		--shelfway-success-soft: #143028;
+		--shelfway-on-success-soft: #86efac;
+		--shelfway-warning: #fbbf24;
+		--shelfway-warning-solid: #f59e0b;
+		--shelfway-on-warning: #0b1220;
+		--shelfway-warning-soft: #2e2818;
+		--shelfway-on-warning-soft: #fcd34d;
+		--shelfway-danger: #fb7185;
+		--shelfway-danger-hover: #fda4af;
+		--shelfway-danger-solid: #e11d48;
+		--shelfway-on-danger: #0b1220;
+		--shelfway-danger-soft: #2e1a24;
+		--shelfway-on-danger-soft: #fda4af;
+		--shelfway-attention: #fbbf24;
+		--shelfway-attention-solid: #f59e0b;
+		--shelfway-attention-soft: #2e2818;
+		--shelfway-on-attention-soft: #fcd34d;
+		--shelfway-info: #2dd4bf;
+		--shelfway-info-solid: #14b8a6;
+		--shelfway-info-soft: #123038;
+		--shelfway-on-info-soft: #5eead4;
+		--shelfway-new: #f472b6;
+		--shelfway-new-solid: #ec4899;
+		--shelfway-new-soft: #2a1a2e;
+		--shelfway-on-new-soft: #f9a8d4;
+		--shelfway-focus: #5eead4;
+		--shelfway-overlay: rgb(3 8 18 / 0.72);
+		--shelfway-shadow-1: 0 0 #0000;
+		--shelfway-shadow-2: 2px 2px 0 rgb(45 212 191 / 0.22);
+		--shelfway-shadow-3: 0 0 0 1px #2a3548, 0 16px 40px -12px rgb(0 0 0 / 0.5);
+		--shelfway-hard: 2px 2px 0 rgb(45 212 191 / 0.22);
+		--shelfway-lift: 3px 3px 0 rgb(45 212 191 / 0.28);
+		--shelfway-grid-line: rgb(238 242 247 / 0.04);
+		--shelfway-glow-primary: 0 0 #0000;
+		--shelfway-glow-danger: 0 0 #0000;
+		--shelfway-scrollbar: rgb(255 255 255 / 0.16);
+		--shelfway-scrollbar-hover: rgb(255 255 255 / 0.28);
+		--shelfway-selection: rgb(45 212 191 / 0.28);
+		--shelfway-glass: color-mix(in srgb, var(--shelfway-surface) 72%, transparent);
+		--shelfway-glass-strong: color-mix(in srgb, var(--shelfway-surface) 90%, transparent);
+		--shelfway-glass-blur: blur(14px);
 	}
 }
 
 :root[data-theme='dark'] {
 	color-scheme: dark;
-	--ss-canvas: #0b1220;
-	--ss-surface: #141c2c;
-	--ss-surface-2: #1a2436;
-	--ss-surface-3: #243044;
-	--ss-line: #2a3548;
-	--ss-line-soft: #1f2a3c;
-	--ss-line-strong: #6a7a9e;
-	--ss-fg: #eef2f7;
-	--ss-muted: #a3adbd;
-	--ss-subtle: #6f7c90;
-	--ss-primary: #2dd4bf;
-	--ss-primary-hover: #5eead4;
-	--ss-on-primary: #0b1220;
-	--ss-primary-soft: #123038;
-	--ss-on-primary-soft: #5eead4;
-	--ss-success: #4ade80;
-	--ss-success-solid: #22c55e;
-	--ss-success-soft: #143028;
-	--ss-on-success-soft: #86efac;
-	--ss-warning: #fbbf24;
-	--ss-warning-solid: #f59e0b;
-	--ss-on-warning: #0b1220;
-	--ss-warning-soft: #2e2818;
-	--ss-on-warning-soft: #fcd34d;
-	--ss-danger: #fb7185;
-	--ss-danger-hover: #fda4af;
-	--ss-danger-solid: #e11d48;
-	--ss-on-danger: #0b1220;
-	--ss-danger-soft: #2e1a24;
-	--ss-on-danger-soft: #fda4af;
-	--ss-attention: #fbbf24;
-	--ss-attention-solid: #f59e0b;
-	--ss-attention-soft: #2e2818;
-	--ss-on-attention-soft: #fcd34d;
-	--ss-info: #2dd4bf;
-	--ss-info-solid: #14b8a6;
-	--ss-info-soft: #123038;
-	--ss-on-info-soft: #5eead4;
-	--ss-new: #f472b6;
-	--ss-new-solid: #ec4899;
-	--ss-new-soft: #2a1a2e;
-	--ss-on-new-soft: #f9a8d4;
-	--ss-focus: #5eead4;
-	--ss-overlay: rgb(3 8 18 / 0.72);
-	--ss-shadow-1: 0 0 #0000;
-	--ss-shadow-2: 2px 2px 0 rgb(45 212 191 / 0.22);
-	--ss-shadow-3: 0 0 0 1px #2a3548, 0 16px 40px -12px rgb(0 0 0 / 0.5);
-	--ss-hard: 2px 2px 0 rgb(45 212 191 / 0.22);
-	--ss-lift: 3px 3px 0 rgb(45 212 191 / 0.28);
-	--ss-grid-line: rgb(238 242 247 / 0.04);
-	--ss-glow-primary: 0 0 #0000;
-	--ss-glow-danger: 0 0 #0000;
-	--ss-scrollbar: rgb(255 255 255 / 0.16);
-	--ss-scrollbar-hover: rgb(255 255 255 / 0.28);
-	--ss-selection: rgb(45 212 191 / 0.28);
-	--ss-glass: color-mix(in srgb, var(--ss-surface) 72%, transparent);
-	--ss-glass-strong: color-mix(in srgb, var(--ss-surface) 90%, transparent);
-	--ss-glass-blur: blur(14px);
+	--shelfway-canvas: #0b1220;
+	--shelfway-surface: #141c2c;
+	--shelfway-surface-2: #1a2436;
+	--shelfway-surface-3: #243044;
+	--shelfway-line: #2a3548;
+	--shelfway-line-soft: #1f2a3c;
+	--shelfway-line-strong: #6a7a9e;
+	--shelfway-fg: #eef2f7;
+	--shelfway-muted: #a3adbd;
+	--shelfway-subtle: #8e9cb2;
+	--shelfway-primary: #2dd4bf;
+	--shelfway-primary-hover: #5eead4;
+	--shelfway-on-primary: #0b1220;
+	--shelfway-primary-soft: #123038;
+	--shelfway-on-primary-soft: #5eead4;
+	--shelfway-success: #4ade80;
+	--shelfway-success-solid: #22c55e;
+	--shelfway-success-soft: #143028;
+	--shelfway-on-success-soft: #86efac;
+	--shelfway-warning: #fbbf24;
+	--shelfway-warning-solid: #f59e0b;
+	--shelfway-on-warning: #0b1220;
+	--shelfway-warning-soft: #2e2818;
+	--shelfway-on-warning-soft: #fcd34d;
+	--shelfway-danger: #fb7185;
+	--shelfway-danger-hover: #fda4af;
+	--shelfway-danger-solid: #e11d48;
+	--shelfway-on-danger: #0b1220;
+	--shelfway-danger-soft: #2e1a24;
+	--shelfway-on-danger-soft: #fda4af;
+	--shelfway-attention: #fbbf24;
+	--shelfway-attention-solid: #f59e0b;
+	--shelfway-attention-soft: #2e2818;
+	--shelfway-on-attention-soft: #fcd34d;
+	--shelfway-info: #2dd4bf;
+	--shelfway-info-solid: #14b8a6;
+	--shelfway-info-soft: #123038;
+	--shelfway-on-info-soft: #5eead4;
+	--shelfway-new: #f472b6;
+	--shelfway-new-solid: #ec4899;
+	--shelfway-new-soft: #2a1a2e;
+	--shelfway-on-new-soft: #f9a8d4;
+	--shelfway-focus: #5eead4;
+	--shelfway-overlay: rgb(3 8 18 / 0.72);
+	--shelfway-shadow-1: 0 0 #0000;
+	--shelfway-shadow-2: 2px 2px 0 rgb(45 212 191 / 0.22);
+	--shelfway-shadow-3: 0 0 0 1px #2a3548, 0 16px 40px -12px rgb(0 0 0 / 0.5);
+	--shelfway-hard: 2px 2px 0 rgb(45 212 191 / 0.22);
+	--shelfway-lift: 3px 3px 0 rgb(45 212 191 / 0.28);
+	--shelfway-grid-line: rgb(238 242 247 / 0.04);
+	--shelfway-glow-primary: 0 0 #0000;
+	--shelfway-glow-danger: 0 0 #0000;
+	--shelfway-scrollbar: rgb(255 255 255 / 0.16);
+	--shelfway-scrollbar-hover: rgb(255 255 255 / 0.28);
+	--shelfway-selection: rgb(45 212 191 / 0.28);
+	--shelfway-glass: color-mix(in srgb, var(--shelfway-surface) 72%, transparent);
+	--shelfway-glass-strong: color-mix(in srgb, var(--shelfway-surface) 90%, transparent);
+	--shelfway-glass-blur: blur(14px);
 }
 
 /*
@@ -908,11 +910,11 @@
 @layer base {
 	html {
 		-webkit-text-size-adjust: 100%;
-		accent-color: var(--ss-primary);
+		accent-color: var(--shelfway-primary);
 	}
 	body {
-		background-color: var(--ss-canvas);
-		color: var(--ss-fg);
+		background-color: var(--shelfway-canvas);
+		color: var(--shelfway-fg);
 		font-family: var(--font-sans);
 		font-size: 0.875rem;
 		line-height: 1.25rem;
@@ -921,14 +923,14 @@
 		text-rendering: optimizeLegibility;
 	}
 	::selection {
-		background-color: var(--ss-selection);
+		background-color: var(--shelfway-selection);
 	}
 	:focus-visible {
-		outline: 2px solid var(--ss-focus);
+		outline: 2px solid var(--shelfway-focus);
 		outline-offset: 2px;
 	}
 	::placeholder {
-		color: var(--ss-subtle);
+		color: var(--shelfway-subtle);
 		opacity: 1;
 	}
 	/* scrollbars: thin, rounded, in the theme, shown while the pointer is over the scrolling box (or it has focus) */
@@ -939,7 +941,7 @@
 	*:hover,
 	*:focus-within,
 	*:focus-visible {
-		scrollbar-color: var(--ss-scrollbar) transparent;
+		scrollbar-color: var(--shelfway-scrollbar) transparent;
 	}
 	@supports not (scrollbar-color: auto) {
 		::-webkit-scrollbar {
@@ -957,10 +959,10 @@
 			background-color: transparent;
 		}
 		*:hover::-webkit-scrollbar-thumb {
-			background-color: var(--ss-scrollbar);
+			background-color: var(--shelfway-scrollbar);
 		}
 		::-webkit-scrollbar-thumb:hover {
-			background-color: var(--ss-scrollbar-hover);
+			background-color: var(--shelfway-scrollbar-hover);
 		}
 	}
 	/* autofill keeps the field's own colors (the browser's tint would otherwise cover them) */
@@ -969,8 +971,8 @@
 	input:-webkit-autofill:focus,
 	textarea:-webkit-autofill,
 	select:-webkit-autofill {
-		-webkit-text-fill-color: var(--ss-fg);
-		caret-color: var(--ss-fg);
+		-webkit-text-fill-color: var(--shelfway-fg);
+		caret-color: var(--shelfway-fg);
 		transition:
 			background-color 600000s 0s,
 			color 600000s 0s;
@@ -990,7 +992,7 @@
 		cursor: pointer;
 		opacity: 0.55;
 		border-radius: 4px;
-		transition: opacity var(--ss-motion-fast) var(--ss-ease);
+		transition: opacity var(--shelfway-motion-fast) var(--shelfway-ease);
 	}
 	::-webkit-calendar-picker-indicator:hover {
 		opacity: 0.9;
@@ -1003,26 +1005,26 @@
 		margin-right: 0.75rem;
 		height: 1.75rem;
 		padding: 0 0.75rem;
-		border: 1px solid var(--ss-line);
+		border: 1px solid var(--shelfway-line);
 		border-radius: 0.375rem;
-		background-color: var(--ss-surface);
-		color: var(--ss-fg);
+		background-color: var(--shelfway-surface);
+		color: var(--shelfway-fg);
 		font: inherit;
 		font-size: 0.8125rem;
 		font-weight: 600;
 		cursor: pointer;
-		transition: background-color var(--ss-motion-fast) var(--ss-ease);
+		transition: background-color var(--shelfway-motion-fast) var(--shelfway-ease);
 	}
 	::file-selector-button:hover {
-		background-color: var(--ss-surface-2);
+		background-color: var(--shelfway-surface-2);
 	}
 	/* a plain select gets the kit's chevron (the kit's `Select` draws its own) */
 	select:not([multiple]):not([size]) {
 		-webkit-appearance: none;
 		appearance: none;
 		background-image:
-			linear-gradient(45deg, transparent 50%, var(--ss-muted) 50%),
-			linear-gradient(135deg, var(--ss-muted) 50%, transparent 50%);
+			linear-gradient(45deg, transparent 50%, var(--shelfway-muted) 50%),
+			linear-gradient(135deg, var(--shelfway-muted) 50%, transparent 50%);
 		background-position:
 			calc(100% - 15px) 50%,
 			calc(100% - 11px) 50%;
@@ -1033,8 +1035,8 @@
 		padding-right: 2rem;
 	}
 	option {
-		background-color: var(--ss-surface);
-		color: var(--ss-fg);
+		background-color: var(--shelfway-surface);
+		color: var(--shelfway-fg);
 	}
 	/* details / summary: a chevron instead of the browser's triangle */
 	summary {
@@ -1044,7 +1046,7 @@
 	summary::-webkit-details-marker {
 		display: none;
 	}
-	details > summary:not([data-ss-plain])::before {
+	details > summary:not([data-shelfway-plain])::before {
 		content: '';
 		display: inline-block;
 		width: 0.375rem;
@@ -1055,19 +1057,19 @@
 		border-bottom: 1.5px solid currentColor;
 		rotate: -45deg;
 		opacity: 0.6;
-		transition: rotate var(--ss-motion-fast) var(--ss-ease);
+		transition: rotate var(--shelfway-motion-fast) var(--shelfway-ease);
 	}
-	details[open] > summary:not([data-ss-plain])::before {
+	details[open] > summary:not([data-shelfway-plain])::before {
 		rotate: 45deg;
 	}
 	hr {
-		border-color: var(--ss-line-soft);
+		border-color: var(--shelfway-line-soft);
 	}
 	/* a clicked router link whose page is still on the way looks pressed (`data-link-pending` inside it) */
 	a:has(> [data-link-pending]) {
 		cursor: progress;
 		opacity: 0.7;
-		transition: opacity var(--ss-motion) var(--ss-ease);
+		transition: opacity var(--shelfway-motion) var(--shelfway-ease);
 	}
 	/* reduced motion: only opacity and colors change (the keyframes above carry no offsets); loops stand still */
 	@media (prefers-reduced-motion: reduce) {
@@ -1079,22 +1081,22 @@
 				opacity, color, background-color, border-color, box-shadow, text-decoration-color, fill, stroke !important;
 		}
 		.animate-spin,
-		.ss-shimmer::after,
-		.ss-progress > span {
+		.shelfway-shimmer::after,
+		.shelfway-progress > span {
 			animation-duration: 0.01ms !important;
 		}
 	}
 }
 
 /* a scrolling pane (`ScrollArea`, the frame's panes): its own scroll, never the page's; the thumb shows on hover */
-@utility ss-scroll {
+@utility shelfway-scroll {
 	overflow: auto;
 	overscroll-behavior: contain;
 	scrollbar-gutter: stable;
 }
 
 /* a wrapper around a `Page` (the page transition) passes the pane's height on, so the page fills the frame */
-[data-ss-transition]:has([data-ss-page]) {
+[data-shelfway-transition]:has([data-shelfway-page]) {
 	display: flex;
 	min-height: 0;
 	flex: 1 1 0%;

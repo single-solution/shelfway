@@ -9,8 +9,8 @@
 import { act } from 'react';
 import { renderToString } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { byText, cleanup, click, render } from '@ss/ui/testing';
-import { DashboardProvider } from '@ss/ui/dashboard';
+import { byText, cleanup, click, render } from '@shelfway/ui/testing';
+import { DashboardProvider } from '@shelfway/ui/dashboard';
 import manifest from '../manifest.json' with { type: 'json' };
 import { aiLabelNotice } from '../app/dashboard/settings.js';
 import { TABS } from '../app/dashboard/tabs.js';
@@ -228,7 +228,7 @@ describe('Developers: the AI provider connections', () => {
 		await settle();
 		/** @param {string} name */
 		const open = (name) => {
-			click(/** @type {HTMLElement} */ (container.querySelector(`[role="option"][data-ss-id="connection-${name}"]`)));
+			click(/** @type {HTMLElement} */ (container.querySelector(`[role="option"][data-shelfway-id="connection-${name}"]`)));
 			return /** @type {HTMLElement} */ (container.querySelector(`#section-connection-${name}`));
 		};
 		const main = open('ai');

@@ -1,5 +1,5 @@
 /**
- * @ss/net — the server-side networking and runtime shared by the Portal and products: SSRF policy and address
+ * @shelfway/net — the server-side networking and runtime shared by the Portal and products: SSRF policy and address
  * classification, DNS-pinned guarded lookups, a guarded fetch, MongoDB connection strings and client rules, AWS SigV4
  * signing, the structured logger with redaction and the static security headers. See README.md.
  */

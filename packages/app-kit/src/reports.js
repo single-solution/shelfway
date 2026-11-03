@@ -15,7 +15,7 @@ import { isKitError } from './util.js';
 import { problem } from './http/results.js';
 import { currentFeatures, featuresDiffer } from './connection.js';
 
-/** @typedef {import('@ss/contracts').Manifest} Manifest */
+/** @typedef {import('@shelfway/contracts').Manifest} Manifest */
 /** @typedef {import('./stores/types.js').Store} Store */
 /** @typedef {import('./recent.js').Who} Who */
 /** @typedef {import('./http/results.js').ProblemResult} ProblemResult */
@@ -36,8 +36,8 @@ export const reportingKey = (websiteId) => `reporting|${websiteId}`;
  * @returns {ProblemResult}
  */
 const portalProblem = (error) => {
-	if (!isKitError(error, 'portal_refused'))
-		return problem('portal_unreachable', 'The Portal cannot be reached. Nothing was changed.');
+	if (!isKitError(error, 'platform_refused'))
+		return problem('platform_unreachable', 'The Portal cannot be reached. Nothing was changed.');
 	const status = /** @type {number} */ (error.details?.status);
 	const detail = `The Portal refused the change (${error.details?.problem || status}). Nothing was changed.`;
 	if (status === 404) return problem('website_not_found', detail);
@@ -62,7 +62,7 @@ const missingDependencies = (manifest, on) =>
 /**
  * @param {{ store: Store, manifest: Manifest, connection: ReturnType<typeof import('./connection.js').createConnection>,
  *   status: import('./status.js').StatusCache, recent: import('./recent.js').RecentChanges, now: () => number,
- *   logger: import('@ss/net').Logger }} options
+ *   logger: import('@shelfway/net').Logger }} options
  */
 export const createReports = ({ store, manifest, connection, status, recent, now, logger }) => {
 	const keys = manifest.features.map((feature) => feature.key);
@@ -124,7 +124,7 @@ export const createReports = ({ store, manifest, connection, status, recent, now
 		if (!found.ok)
 			return {
 				ok: false,
-				problem: found.code === 'website_not_found' ? problem('website_not_found') : problem('portal_unreachable'),
+				problem: found.code === 'website_not_found' ? problem('website_not_found') : problem('platform_unreachable'),
 			};
 		const ordered = keys.filter((key) => on.includes(key));
 		const version = found.status.featuresVersion + 1;

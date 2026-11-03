@@ -5,13 +5,13 @@
  */
 /* global document */
 import { act } from 'react';
-import { click } from '@ss/ui/testing';
+import { click } from '@shelfway/ui/testing';
 
 /**
  * The rows of a list.
  * @param {HTMLElement} root
  */
-const rowsOf = (root) => /** @type {HTMLElement[]} */ ([...root.querySelectorAll('[data-ss-row]')]);
+const rowsOf = (root) => /** @type {HTMLElement[]} */ ([...root.querySelectorAll('[data-shelfway-row]')]);
 
 /** @param {Element} row the name of a row (its title) */
 const titleOf = (row) => row.querySelector('span.truncate')?.textContent ?? '';

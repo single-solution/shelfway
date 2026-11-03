@@ -4,11 +4,11 @@
  * events or alerts, no stock held), `finish`, which recomputes what the shop derives (categories' paths; products'
  * price, stock state, sold and rating; customers' order and RTO counts; loyalty balances; serial statuses; order
  * counters) in pages of at most {@link FINISH_PAGE} records (`more` and `next`: call again with `?after=<next>`), and
- * the sums `ss-import verify` compares. The catalog's part is `imports-catalog.js`; the shoppers' and orders'
+ * the sums `shelfway-import verify` compares. The catalog's part is `imports-catalog.js`; the shoppers' and orders'
  * `imports-orders.js` (its steps run after the catalog's).
  * @module
  */
-import { problem } from '@ss/app-kit';
+import { problem } from '@shelfway/app-kit';
 import { catalogImports } from './imports-catalog.js';
 import { orderImports } from './imports-orders.js';
 
@@ -18,7 +18,7 @@ import { orderImports } from './imports-orders.js';
  * @typedef {object} ImportDeps
  * @property {(websiteId: string, name: string) => Promise<unknown>} list a list setting (`order_flow`, `grades` …)
  * @property {(websiteId: string, feature: string) => Promise<Record<string, unknown>>} settings a feature's settings
- * @property {(websiteId: string) => Promise<import('@ss/contracts').WebsiteSettings>} website the website's settings from the
+ * @property {(websiteId: string) => Promise<import('@shelfway/contracts').WebsiteSettings>} website the website's settings from the
  *   Portal
  * @property {(websiteId: string) => Promise<string[]>} featuresOn the switched-on features
  * @property {() => number} now
@@ -43,7 +43,7 @@ import { orderImports } from './imports-orders.js';
 /**
  * One part of the import: its collections, its steps of `finish` and its verification sums.
  * @typedef {object} ImportPart
- * @property {Record<string, import('@ss/app-kit').ImportCollection>} collections
+ * @property {Record<string, import('@shelfway/app-kit').ImportCollection>} collections
  * @property {FinishStep[]} steps
  * @property {(ctx: any) => Promise<Record<string, number>>} totals
  */
@@ -105,7 +105,7 @@ const finishPage = async (steps, ctx) => {
 /**
  * The kit's `imports` option.
  * @param {ImportDeps} deps
- * @returns {import('@ss/app-kit').ImportOptions}
+ * @returns {import('@shelfway/app-kit').ImportOptions}
  */
 export const createImportOptions = (deps) => {
 	const parts = [catalogImports(deps), orderImports(deps)];

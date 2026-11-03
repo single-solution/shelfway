@@ -1,5 +1,5 @@
 /**
- * The product on the kit: `createProductInstance(options)` wires `@ss/app-kit` `createProduct` with Chat's manifest
+ * The product on the kit: `createProductInstance(options)` wires `@shelfway/app-kit` `createProduct` with Chat's manifest
  * (each feature's settings schema from `schemas/` inline), its widget texts, its Connections (storage, the main and
  * backup AI providers, and the Accounts, Notifications and Ecommerce tokens), the merchant database indexes, the
  * data-rights hooks, the widget settings, what the `import` feature takes (`imports.js`) and its part of the website
@@ -9,7 +9,7 @@
  * Public entry `./product` of this package, so a system test can compose the product with `./routes`.
  * @module
  */
-import { createAiClient, createProduct, createProductBase } from '@ss/app-kit';
+import { createAiClient, createProduct, createProductBase } from '@shelfway/app-kit';
 import guide from '../docs/guide.json' with { type: 'json' };
 import manifestFile from '../manifest.json' with { type: 'json' };
 import openapi from '../openapi.json' with { type: 'json' };
@@ -49,7 +49,7 @@ const SETTINGS = {
 };
 
 /** The manifest as the kit and the Portal take it: settings schemas inline. */
-export const manifest = /** @type {import('@ss/contracts').Manifest} */ (
+export const manifest = /** @type {import('@shelfway/contracts').Manifest} */ (
 	/** @type {unknown} */ ({
 		...manifestFile,
 		features: manifestFile.features.map((feature) => ({ ...feature, settings: SETTINGS[feature.key] })),
@@ -190,7 +190,7 @@ const setupPart = async (lists, { websiteId, on }) => {
 
 /**
  * What the Next.js route and the tests pass: every option but those the adapter sets itself.
- * @typedef {Omit<import('@ss/app-kit').ProductOptions, 'manifest' | 'strings' | 'hooks' | 'connections' | 'data'
+ * @typedef {Omit<import('@shelfway/app-kit').ProductOptions, 'manifest' | 'strings' | 'hooks' | 'connections' | 'data'
  *   | 'problemCodes' | 'messages' | 'imports' | 'lists' | 'openapi' | 'build'>} InstanceOptions
  */
 
@@ -210,7 +210,7 @@ export const createProductInstance = (options) => {
 	const files = createFileSigner(keys?.encryptionKey ?? UNCONFIGURED_KEY, keys?.previousEncryptionKey ?? null);
 	const ai = createAiClient({ send, policy });
 	const lists = createLists({ store, sealer, now });
-	/** @type {NonNullable<import('@ss/app-kit').ProductOptions['hooks']>} */
+	/** @type {NonNullable<import('@shelfway/app-kit').ProductOptions['hooks']>} */
 	const hooks = {};
 
 	const product = createProduct({
@@ -256,7 +256,7 @@ export const createProductInstance = (options) => {
 		// the website Setup sheet: the API document and what the merchant's website builds per feature
 		openapi,
 		build: guide.build,
-		// staff, guests, conversations and messages moved in from another system with ss-import (feature `import`,
+		// staff, guests, conversations and messages moved in from another system with shelfway-import (feature `import`,
 		// PLAN 0.8.10 K10)
 		imports: createImportOptions({
 			list: (websiteId, name) => lists.get(websiteId, name),
@@ -284,7 +284,7 @@ export const createProductInstance = (options) => {
 		counters: store,
 		send,
 		now,
-		/** Attach the data-rights and widget-config hooks (server/routes.js). @param {NonNullable<import('@ss/app-kit').ProductOptions['hooks']>} attached */
+		/** Attach the data-rights and widget-config hooks (server/routes.js). @param {NonNullable<import('@shelfway/app-kit').ProductOptions['hooks']>} attached */
 		attach: (attached) => Object.assign(hooks, attached),
 	});
 };

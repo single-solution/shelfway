@@ -1,7 +1,7 @@
 /**
- * The test product `fixtures/notes` is exactly what `ss app init --id notes --name Notes --base-url https://notes.test`
+ * The test product `fixtures/notes` is exactly what `shelfway app init --id notes --name Notes --base-url https://notes.test`
  * writes inside a pnpm workspace, plus the test-only `import` feature (README). This test keeps the two from drifting
- * apart: it runs the real `ss app init` and compares.
+ * apart: it runs the real `shelfway app init` and compares.
  *
  * - Every file the CLI writes is in the fixture, and the fixture has no other file but the import feature's settings
  *   schema.
@@ -11,7 +11,7 @@
  * - The code files it extends hold every generated line, in order, after the few lines it changes (listed below).
  *
  * The generated `openapi.json` and `server/widget-script.js` follow the fixture's own sources (they include the import
- * feature): `ss app validate fixtures/notes` (this workspace's `pnpm validate`) checks them.
+ * feature): `shelfway app validate fixtures/notes` (this workspace's `pnpm validate`) checks them.
  */
 import { execFile } from 'node:child_process';
 import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
@@ -26,9 +26,9 @@ const require = createRequire(import.meta.url);
 
 const FIXTURE = path.join(import.meta.dirname, '..', 'fixtures', 'notes');
 
-/** Written by `ss app init` from the sources: checked against the fixture's own sources by `ss app validate`. */
+/** Written by `shelfway app init` from the sources: checked against the fixture's own sources by `shelfway app validate`. */
 const GENERATED = new Set(['openapi.json', 'server/widget-script.js']);
-/** The development secrets `ss app init` writes (git-ignored, never in the fixture). */
+/** The development secrets `shelfway app init` writes (git-ignored, never in the fixture). */
 const LOCAL_ONLY = new Set(['.env.local']);
 /** The import feature's own files. */
 const IMPORT_FILES = new Set(['schemas/import.settings.json']);
@@ -100,14 +100,14 @@ let root;
 let generated;
 
 beforeAll(async () => {
-	root = await mkdtemp(path.join(tmpdir(), 'ss-notes-fixture-'));
-	// inside a pnpm workspace, as the fixture is: the workspace's settings apply and `@ss/*` are `workspace:^`
+	root = await mkdtemp(path.join(tmpdir(), 'shelfway-notes-fixture-'));
+	// inside a pnpm workspace, as the fixture is: the workspace's settings apply and `@shelfway/*` are `workspace:^`
 	await writeFile(path.join(root, 'pnpm-workspace.yaml'), "packages:\n   - 'notes'\n");
 	generated = path.join(root, 'notes');
-	const cli = path.dirname(require.resolve('@ss/cli/package.json'));
+	const cli = path.dirname(require.resolve('@shelfway/cli/package.json'));
 	const { bin } = JSON.parse(await readFile(path.join(cli, 'package.json'), 'utf8'));
 	await run(process.execPath, [
-		path.join(cli, bin.ss),
+		path.join(cli, bin.shelfway),
 		'app',
 		'init',
 		generated,
@@ -127,7 +127,7 @@ afterAll(async () => {
 /** @param {string} dir @param {string} file */
 const text = (dir, file) => readFile(path.join(dir, file), 'utf8');
 
-describe('the test product Notes is what ss app init writes (plus the import feature)', () => {
+describe('the test product Notes is what shelfway app init writes (plus the import feature)', () => {
 	it('has every generated file and no other but the import feature’s', async () => {
 		const made = (await filesOf(generated)).filter((file) => !LOCAL_ONLY.has(file));
 		const kept = (await filesOf(FIXTURE)).filter((file) => !IMPORT_FILES.has(file));

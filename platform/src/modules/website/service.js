@@ -1,6 +1,6 @@
 /**
  * Public service of the `website` module (INTERFACES.md): the website settings of each website — the facts every product
- * of the website shares (`@ss/contracts` `ss.website-settings/1`: business, brand, region, pages, team).
+ * of the website shares (`@shelfway/contracts` `shelfway.website-settings/1`: business, brand, region, pages, team).
  *
  * - **Who changes them**: only a signed-in merchant (own websites), Owner or Support, through the console routes
  *   (`website_settings.write`); a product can only read them (`forProduct`, a client assertion, only for a website that
@@ -26,7 +26,7 @@ import {
 	missingWebsiteSettings,
 	tidyWebsiteSection,
 	validateWebsiteSettings,
-} from '@ss/contracts';
+} from '@shelfway/contracts';
 import { problem } from '../../infra/http.js';
 import { isDuplicateKey } from '../../infra/util.js';
 import { createConnections } from './connections.js';
@@ -35,8 +35,8 @@ import { SETTINGS } from './schema.js';
 
 /** @typedef {import('../../infra/modules.js').ModuleContext} ModuleContext */
 /** @typedef {import('../../infra/rbac.js').Actor} Actor */
-/** @typedef {import('@ss/contracts').WebsiteSettings} WebsiteSettings */
-/** @typedef {import('@ss/contracts').WebsiteSection} WebsiteSection */
+/** @typedef {import('@shelfway/contracts').WebsiteSettings} WebsiteSettings */
+/** @typedef {import('@shelfway/contracts').WebsiteSection} WebsiteSection */
 /** @typedef {{ actor: Actor, requestId?: string | null, ip?: string | null }} Audited */
 
 /** Sections whose before/after values go into Activity (the others hold contacts and people: only field names). */

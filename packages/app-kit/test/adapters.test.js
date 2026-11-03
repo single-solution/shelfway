@@ -1,4 +1,4 @@
-import { createOutboundPolicy, netError } from '@ss/net';
+import { createOutboundPolicy, netError } from '@shelfway/net';
 import { describe, expect, it } from 'vitest';
 import { MAX_UPLOAD_SECONDS, createS3Storage } from '../src/adapters/storage.js';
 

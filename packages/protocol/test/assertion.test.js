@@ -77,7 +77,7 @@ describe('client assertions', () => {
 		const iat = Math.floor(clock.now() / 1000);
 		const long = await signCompact({
 			signer: product.signer,
-			typ: 'ss-assertion+jwt',
+			typ: 'shelfway-assertion+jwt',
 			payload: { iss: 'notes', sub: 'notes', aud: AUD, jti: 'j'.repeat(20), iat, exp: iat + 301 },
 		});
 		await expectCode(verify(clock, long), 'lifetime_too_long');
@@ -109,7 +109,7 @@ describe('client assertions', () => {
 		const iat = Math.floor(clock.now() / 1000);
 		const base = { iss: 'notes', sub: 'notes', aud: AUD, jti: 'j'.repeat(20), iat, exp: iat + 60 };
 		/** @param {Record<string, unknown>} payload */
-		const raw = (payload) => signCompact({ signer: product.signer, typ: 'ss-assertion+jwt', payload });
+		const raw = (payload) => signCompact({ signer: product.signer, typ: 'shelfway-assertion+jwt', payload });
 		await expectCode(verify(clock, await raw({ ...base, sub: 'someone' })), 'subject');
 		await expectCode(verify(clock, await raw({ ...base, jti: 'short' })), 'malformed');
 		await expectCode(verify(clock, await raw({ ...base, aud: [AUD] })), 'audience');

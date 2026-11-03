@@ -47,10 +47,11 @@ export const moveItem = (items, from, to) => {
  * @template T
  * @param {{ legend: string, items: readonly T[], onChange: (next: T[]) => void, newItem: () => T,
  *   renderItem: (item: T, index: number, update: (next: T) => void) => import('react').ReactNode,
- *   nameOf?: (item: T, index: number) => string, max?: number, help?: string, error?: string | null,
+ *   nameOf?: (item: T, index: number) => string, keyOf?: (item: T, index: number) => import('react').Key,
+ *   max?: number, help?: string, error?: string | null,
  *   texts?: Partial<ListEditorTexts>, className?: string, disabled?: boolean }} props
  *   `renderItem`: the row's fields (`update` replaces the row); `nameOf`: the row's name in button labels (default its
- *   position); `max`: the most rows (Add is gone at it)
+ *   position); `keyOf`: stable key for each item (default item.id ?? item.key ?? index); `max`: the most rows (Add is gone at it)
  */
 export function ListEditor({
 	legend,
@@ -59,6 +60,7 @@ export function ListEditor({
 	newItem,
 	renderItem,
 	nameOf = (_item, index) => String(index + 1),
+	keyOf = (item, index) => /** @type {any} */ (item)?.id ?? /** @type {any} */ (item)?.key ?? index,
 	max,
 	help,
 	error,
@@ -83,14 +85,15 @@ export function ListEditor({
 			<ol className="divide-y divide-line-soft border-y border-line empty:hidden">
 				{items.map((item, index) => {
 					const name = nameOf(item, index);
+					const rowKey = keyOf(item, index);
 					return (
-						<li key={index} className="flex flex-wrap items-start gap-3 py-3.5">
+						<li key={rowKey} className="flex flex-wrap items-center gap-3 py-3.5">
 							<div className="grid min-w-0 flex-1 gap-3 sm:grid-cols-3">
 								<FieldLayoutContext.Provider value="stack">
 									{renderItem(item, index, (next) => onChange(items.map((old, i) => (i === index ? next : old))))}
 								</FieldLayoutContext.Provider>
 							</div>
-							<div className="flex shrink-0 items-center gap-1 pt-6">
+							<div className="flex shrink-0 items-center gap-1">
 								<IconButton
 									label={`${T.moveUp}: ${name}`}
 									disabled={index === 0}

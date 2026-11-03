@@ -1,12 +1,12 @@
 /**
  * The one AI client of the products (PLAN 0.8.3 AI): it calls OpenAI, Anthropic, Google Gemini or any OpenAI-compatible
  * service directly with the website's AI key (the Portal's, `portal: 'ai'`, or a product's own backup key of the same
- * shape), through the product's outbound `send` (`@ss/net` `safeFetch` under its outbound policy: no redirects, a
+ * shape), through the product's outbound `send` (`@shelfway/net` `safeFetch` under its outbound policy: no redirects, a
  * deadline, a body cap). Requests are built and answers parsed by ./wire.js. A key is tested with a read-only call (the
  * provider's model list).
  * @module
  */
-import { checkUrl, createOutboundPolicy, jsonOf } from '@ss/net';
+import { checkUrl, createOutboundPolicy, jsonOf } from '@shelfway/net';
 import { PROVIDER_BASE, checkAiConnection } from './models.js';
 import { WIRE } from './wire.js';
 
@@ -37,7 +37,7 @@ export const endpointOf = (connection) => {
 };
 
 /**
- * @param {{ send: OutboundSend, policy?: import('@ss/net').OutboundPolicy }} options the product's outbound `send` and its
+ * @param {{ send: OutboundSend, policy?: import('@shelfway/net').OutboundPolicy }} options the product's outbound `send` and its
  *   policy (default: public https only), which vets a compatible service's address when a key is tested
  */
 export const createAiClient = ({ send, policy = createOutboundPolicy() }) =>

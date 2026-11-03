@@ -320,7 +320,7 @@ describe('payments', () => {
 		expect(checkCustomer({ id: 'x'.repeat(200) })).toMatchObject({ ok: false, field: 'customer/id' });
 		expect(checkCustomer({ name: 'x'.repeat(200) })).toMatchObject({ ok: false, field: 'customer/name' });
 		expect(checkCustomer({ email: 'nope' })).toMatchObject({ ok: false, field: 'customer/email' });
-		// an address no sending path can deliver to is refused; a Unicode domain is kept in punycode (@ss/contracts/email)
+		// an address no sending path can deliver to is refused; a Unicode domain is kept in punycode (@shelfway/contracts/email)
 		for (const email of ['ana@example.c', 'ana..x@example.com', 'ana@exa_mple.com'])
 			expect(checkCustomer({ email })).toMatchObject({ ok: false, field: 'customer/email' });
 		expect(checkCustomer({ email: 'Ana@Bücher.Example' })).toEqual({ ok: true, value: { email: 'ana@xn--bcher-kva.example' } });
@@ -540,7 +540,7 @@ describe('snippets', () => {
 			],
 			permissions: ['payments.read'],
 		});
-		expect(snippets.admin).toContain('data-ss-payments="payments_admin"');
+		expect(snippets.admin).toContain('data-shelfway-payments="payments_admin"');
 		expect(snippets.create).toContain('https://p/v1/payments');
 		expect(snippets.ticketCurl).toContain('payments.read');
 	});

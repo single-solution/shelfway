@@ -7,7 +7,7 @@ const dev = createOutboundPolicy({ allowHosts: ['LocalHost', '[::1]', '10.0.0.5'
 
 describe('createOutboundPolicy', () => {
 	it('has safe defaults', () => {
-		expect(policy.userAgent).toBe('ss-net/1');
+		expect(policy.userAgent).toBe('shelfway-net/1');
 		expect(policy.allowHosts.size).toBe(0);
 		expect(Object.isFrozen(policy)).toBe(true);
 		expect([...dev.allowHosts]).toEqual(['localhost', '::1', '10.0.0.5', 'minio.internal']);

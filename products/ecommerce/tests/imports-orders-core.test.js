@@ -2,7 +2,7 @@
  * The shoppers' and orders' checks in import mode (`core/imports-orders.js`, PLAN 0.8.10 K10): what each collection
  * takes and refuses, field by field, and the pure parts of finish. No database.
  */
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_FLOW } from '../core/flow.js';
 import { MAX_NOTE } from '../core/orders.js';

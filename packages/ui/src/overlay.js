@@ -169,7 +169,7 @@ export function Drawer({
 			className={cx(
 				'group fixed inset-0 z-50 flex bg-overlay',
 				DRAWER.layer,
-				'animate-ss-fade data-[state=closed]:pointer-events-none data-[state=closed]:animate-ss-fade-out',
+				'animate-shelfway-fade data-[state=closed]:pointer-events-none data-[state=closed]:animate-shelfway-fade-out',
 			)}
 			onMouseDown={(event) => {
 				if (event.target === event.currentTarget) close();
@@ -185,9 +185,9 @@ export function Drawer({
 				className={cx(
 					DRAWER.panel,
 					DRAWER_WIDTH[size],
-					'animate-ss-side group-data-[state=closed]:animate-ss-side-out focus:outline-none',
+					'animate-shelfway-side group-data-[state=closed]:animate-shelfway-side-out focus:outline-none',
 				)}>
-				<div data-ss-part="header" className={DRAWER.header}>
+				<div data-shelfway-part="header" className={DRAWER.header}>
 					<h2 id={titleId} className="min-w-0 truncate text-lead font-semibold tracking-[-0.01em] text-fg">
 						{title}
 					</h2>
@@ -207,13 +207,13 @@ export function Drawer({
 								type="button"
 								onClick={onClose}
 								aria-label={closeLabel}
-								className="ss-motion ss-press rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg focus-visible:outline-2 focus-visible:outline-focus">
+								className="shelfway-motion shelfway-press rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg focus-visible:outline-2 focus-visible:outline-focus">
 								<Icon name="close" size={16} />
 							</button>
 						) : null}
 					</div>
 				</div>
-				<div data-ss-part="body" className={DRAWER.body}>
+				<div data-shelfway-part="body" className={DRAWER.body}>
 					{description ? (
 						<p id={descriptionId} className="text-sm text-muted">
 							{description}
@@ -226,7 +226,7 @@ export function Drawer({
 					)}
 				</div>
 				{footer ? (
-					<div data-ss-part="footer" className={DRAWER.footer}>
+					<div data-shelfway-part="footer" className={DRAWER.footer}>
 						{footer}
 					</div>
 				) : null}
@@ -257,7 +257,7 @@ function CenterDialog({ open, onClose, title, description, children, footer, siz
 			data-placement="center"
 			className={cx(
 				'group fixed inset-0 z-50 flex items-end justify-center bg-overlay p-0 sm:items-center sm:p-4',
-				'animate-ss-fade data-[state=closed]:pointer-events-none data-[state=closed]:animate-ss-fade-out',
+				'animate-shelfway-fade data-[state=closed]:pointer-events-none data-[state=closed]:animate-shelfway-fade-out',
 			)}
 			onMouseDown={(event) => {
 				if (event.target === event.currentTarget) close();
@@ -271,7 +271,7 @@ function CenterDialog({ open, onClose, title, description, children, footer, siz
 				tabIndex={-1}
 				className={cx(
 					'flex max-h-[92vh] w-full flex-col rounded-t-card border border-line bg-surface text-fg shadow-overlay focus:outline-none sm:rounded-card',
-					'animate-ss-sheet group-data-[state=closed]:animate-ss-sheet-out sm:animate-ss-pop sm:group-data-[state=closed]:animate-ss-pop-out',
+					'animate-shelfway-sheet group-data-[state=closed]:animate-shelfway-sheet-out sm:animate-shelfway-pop sm:group-data-[state=closed]:animate-shelfway-pop-out',
 					size === 'sm' ? 'max-w-md' : size === 'lg' ? 'max-w-3xl' : 'max-w-xl',
 				)}>
 				<div className="flex items-start justify-between gap-4 px-6 pt-6 pb-1">
@@ -290,12 +290,12 @@ function CenterDialog({ open, onClose, title, description, children, footer, siz
 							type="button"
 							onClick={onClose}
 							aria-label={closeLabel}
-							className="ss-motion ss-press rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg focus-visible:outline-2 focus-visible:outline-focus">
+							className="shelfway-motion shelfway-press rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg focus-visible:outline-2 focus-visible:outline-focus">
 							<Icon name="close" size={16} />
 						</button>
 					) : null}
 				</div>
-				<div className="ss-scroll min-h-0 flex-1 space-y-4 px-6 py-4">
+				<div className="shelfway-scroll min-h-0 flex-1 space-y-4 px-6 py-4">
 					<FieldLayoutContext.Provider value="stack">{children}</FieldLayoutContext.Provider>
 				</div>
 				{footer ? (
@@ -363,7 +363,7 @@ export function ConfirmDialog({
 			}>
 			{children}
 			{error ? (
-				<p role="alert" className="animate-ss-shake text-sm font-medium text-danger">
+				<p role="alert" className="animate-shelfway-shake text-sm font-medium text-danger">
 					{error}
 				</p>
 			) : null}

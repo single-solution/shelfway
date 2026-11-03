@@ -1,5 +1,5 @@
 /**
- * The website Setup sheet (owner request 2026-10-14, `ss.blueprint/1`) against the REAL Portal, the test product Notes
+ * The website Setup sheet (owner request 2026-10-14, `shelfway.blueprint/1`) against the REAL Portal, the test product Notes
  * and Notifications, in this process: the Portal gathers each product's part through a signed Portal call
  * (`GET /v1/blueprint`), the merchant and the admin read and download it, a product that cannot be reached shows as
  * not reachable while the sheet still renders, and a share link gives a read-only copy (without values when asked)
@@ -10,23 +10,23 @@
  * provider (Resend) is a fake in this process.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { validateBlueprint } from '@ss/contracts';
+import { validateBlueprint } from '@shelfway/contracts';
 import {
 	createProductInstance as createNotifications,
 	manifest as notifyManifest,
 	strings as notifyStrings,
-} from '@ss/product-notifications/product';
-import { createRoutes as notifyRoutes } from '@ss/product-notifications/routes';
-import * as accounts from '@ss/product-accounts/product';
-import { createRoutes as accountsRoutes } from '@ss/product-accounts/routes';
-import * as chat from '@ss/product-chat/product';
-import { createRoutes as chatRoutes } from '@ss/product-chat/routes';
-import * as ecommerce from '@ss/product-ecommerce/product';
-import { createRoutes as ecommerceRoutes } from '@ss/product-ecommerce/routes';
-import * as growth from '@ss/product-growth/product';
-import { createRoutes as growthRoutes } from '@ss/product-growth/routes';
-import * as payments from '@ss/product-payments/product';
-import { createRoutes as paymentsRoutes } from '@ss/product-payments/routes';
+} from '@shelfway/product-notifications/product';
+import { createRoutes as notifyRoutes } from '@shelfway/product-notifications/routes';
+import * as accounts from '@shelfway/product-accounts/product';
+import { createRoutes as accountsRoutes } from '@shelfway/product-accounts/routes';
+import * as chat from '@shelfway/product-chat/product';
+import { createRoutes as chatRoutes } from '@shelfway/product-chat/routes';
+import * as ecommerce from '@shelfway/product-ecommerce/product';
+import { createRoutes as ecommerceRoutes } from '@shelfway/product-ecommerce/routes';
+import * as growth from '@shelfway/product-growth/product';
+import { createRoutes as growthRoutes } from '@shelfway/product-growth/routes';
+import * as payments from '@shelfway/product-payments/product';
+import { createRoutes as paymentsRoutes } from '@shelfway/product-payments/routes';
 import { createProductInstance, manifest, strings } from '../fixtures/notes/adapters/product.js';
 import { createRoutes } from '../fixtures/notes/server/routes.js';
 import { PRODUCT_URL, codeOf, savePortalSettings, startSystem } from './helpers.js';
@@ -321,8 +321,8 @@ describe('Setup sheet (end to end)', () => {
 		expect(switched.json.added).toEqual(['import']);
 		expect(partOf(switched.json.sheet, 'notes').recommended[1]).toMatchObject({ feature: 'import', on: true });
 		expect((await sys.activity('product.features_changed')).length).toBe(before + 1);
-		// a feature with what it needs: Chat's language lock needs AI replies and visitor chat (all on already here)
-		const again = await owner.post(`${sheetPath()}/features`, { productId: 'chat', feature: 'language_lock' });
+		// a feature with what it needs: Chat's knowledge base needs AI replies and visitor chat (all on already here)
+		const again = await owner.post(`${sheetPath()}/features`, { productId: 'chat', feature: 'knowledge_base' });
 		expect(again.json.added).toEqual([]);
 		expect((await sys.activity('website.setup_profile_saved')).length).toBe(1);
 	});

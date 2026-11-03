@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { KIT_IMPORT_ROUTES, KIT_ROUTES } from '../src/api.js';
 import { createImports } from '../src/imports.js';
-import { checkUrl, isSafeMongoUri } from '@ss/net';
+import { checkUrl, isSafeMongoUri } from '@shelfway/net';
 import { activityFilter, createProductBase, verifyIdentityToken } from '../src/index.js';
 import { createKitRoutes } from '../src/kit-routes.js';
 import { createServerApi } from '../src/server-api.js';

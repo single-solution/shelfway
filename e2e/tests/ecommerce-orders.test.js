@@ -13,28 +13,28 @@
  * merchant's S3 bucket are fakes in this process. The business facts, region and Format are the website's settings in the
  * Portal, saved there once for every product.
  */
-import { staffSignIns } from '@ss/product-accounts/testing';
+import { staffSignIns } from '@shelfway/product-accounts/testing';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
 	createProductInstance as createAccounts,
 	manifest as accountsManifest,
 	strings as accountsStrings,
-} from '@ss/product-accounts/product';
-import { createRoutes as accountsRoutes } from '@ss/product-accounts/routes';
-import { createProductInstance, manifest, strings } from '@ss/product-ecommerce/product';
-import { createRoutes } from '@ss/product-ecommerce/routes';
+} from '@shelfway/product-accounts/product';
+import { createRoutes as accountsRoutes } from '@shelfway/product-accounts/routes';
+import { createProductInstance, manifest, strings } from '@shelfway/product-ecommerce/product';
+import { createRoutes } from '@shelfway/product-ecommerce/routes';
 import {
 	createProductInstance as createNotifications,
 	manifest as notifyManifest,
 	strings as notifyStrings,
-} from '@ss/product-notifications/product';
-import { createRoutes as notifyRoutes } from '@ss/product-notifications/routes';
+} from '@shelfway/product-notifications/product';
+import { createRoutes as notifyRoutes } from '@shelfway/product-notifications/routes';
 import {
 	createProductInstance as createPayments,
 	manifest as payManifest,
 	strings as payStrings,
-} from '@ss/product-payments/product';
-import { createRoutes as payRoutes } from '@ss/product-payments/routes';
+} from '@shelfway/product-payments/product';
+import { createRoutes as payRoutes } from '@shelfway/product-payments/routes';
 import { codeOf, savePortalSettings, splitPortal, startSystem } from './helpers.js';
 
 const SHOP = 'https://ecommerce-orders.test';
@@ -148,7 +148,7 @@ const accountsHeaders = async () => {
 		domain: DOMAIN,
 		base: ACCOUNTS,
 	});
-	return { 'ss-sign-in': await accountsStaff() };
+	return { 'shelfway-sign-in': await accountsStaff() };
 };
 /** @type {Record<string, { browser: string, server: string }>} */
 const tokens = {};
@@ -174,9 +174,9 @@ const shopper = (method, path, { body, signIn, key, orderKey } = {}) =>
 		...(body === undefined ? {} : { body }),
 		headers: {
 			'x-forwarded-for': nextIp(),
-			...(signIn ? { 'ss-sign-in': signIn } : {}),
+			...(signIn ? { 'shelfway-sign-in': signIn } : {}),
 			...(key ? { 'idempotency-key': key } : {}),
-			...(orderKey ? { 'ss-order-key': orderKey } : {}),
+			...(orderKey ? { 'shelfway-order-key': orderKey } : {}),
 		},
 	});
 
@@ -190,7 +190,10 @@ const server = (method, path, body, { staff, key } = {}) =>
 		...(body === undefined ? {} : { body }),
 		headers: {
 			...(staff
-				? { 'ss-actor-id': `usr_${staff.split(' ')[0]?.toLowerCase()}`, 'ss-actor-name': encodeURIComponent(staff) }
+				? {
+						'shelfway-actor-id': `usr_${staff.split(' ')[0]?.toLowerCase()}`,
+						'shelfway-actor-name': encodeURIComponent(staff),
+					}
 				: {}),
 			...(key ? { 'idempotency-key': key } : {}),
 		},
@@ -203,13 +206,6 @@ const write = async (method, path, body) => {
 	return answer.json;
 };
 
-const ECOMMERCE_SETTING_MAP = {
-	'staff_alerts.staffPermission': 'checkout.staffPermission',
-	'staff_alerts.events': 'checkout.events',
-	'staff_alerts.adminUrl': 'checkout.adminUrl',
-	'staff_alerts.includePhone': 'checkout.includePhone',
-};
-
 /**
  * Save settings and lists through a product's settings API (K1) with its server token.
  * @param {string} base @param {string} productId @param {Record<string, unknown>} values
@@ -219,8 +215,7 @@ const configureOn = async (base, productId, values) => {
 	const { portal, own } = splitPortal(values);
 	if (Object.keys(portal).length > 0 && merchant)
 		await savePortalSettings(merchant, `/v1/merchants/${merchantId}/websites/${websiteId}/settings`, portal);
-	for (const [rawKey, value] of Object.entries(own)) {
-		const key = productId === 'ecommerce' ? (ECOMMERCE_SETTING_MAP[rawKey] ?? rawKey) : rawKey;
+	for (const [key, value] of Object.entries(own)) {
 		const path = key.startsWith('list.') ? `/v1/lists/${key.slice(5)}` : `/v1/settings/${key}`;
 		const saved = await sys.call('PUT', path, {
 			base,
@@ -418,13 +413,19 @@ beforeAll(async () => {
 	const support = await sys.admin('support');
 	await sys.switchFeatures(await sys.adminSession(support.client, websiteId), websiteId, [
 		'catalog',
+		'variants',
+		'grades_serials',
 		'checkout',
 		'delivery_zones',
 		'deals',
 		'loyalty',
+		'role_pricing',
 		'returns',
 		'invoices',
 		'reports',
+		'events',
+		'staff_alerts',
+		'alerts',
 	]);
 	await sys.connectDatabase(websiteId);
 	await sys.connectStorage(websiteId, {
@@ -438,10 +439,6 @@ beforeAll(async () => {
 		'catalog.enableVariants': true,
 		'catalog.enableGradesSerials': true,
 		'catalog.enableMeasuredSales': true,
-		'catalog.enableAlerts': true,
-		'catalog.enableEvents': true,
-		'checkout.enableRolePricing': true,
-		'checkout.enableStaffAlerts': true,
 		// the website's facts, region and Format (Website settings in the Portal)
 		'business.name': 'Example Shop',
 		'business.email': 'hello@shop.example.com',
@@ -840,7 +837,7 @@ describe('Ecommerce orders on the real Portal, Accounts, Payments and Notificati
 		// the money arrives anyway and the store's staff confirm it in Payments: it is to be refunded
 		const late = await payments('POST', `/v1/payments/${paymentId}/confirm`, { reference: 'TRX-9', note: 'Late' });
 		expect(late.json).toMatchObject({ status: 'paid', refundDue: true });
-		await dashboardOf(PAYMENTS, 'payments', '/features', { on: ['payment_api', 'manual_payments'] });
+		await dashboardOf(PAYMENTS, 'payments', '/features', { on: ['payment_api', 'manual_payments', 'refunds'] });
 		sys.clock.advance(31_000);
 		const read = await orderOf(order.id);
 		expect(read).toMatchObject({ status: 'canceled', payment: { paid: total, refundDue: total } });

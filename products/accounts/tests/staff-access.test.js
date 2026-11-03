@@ -125,7 +125,12 @@ describe('a staff sign-in', () => {
 	it('is checked live: a blocked user’s sign-in no longer works, a forged or foreign one never did', async () => {
 		const sign = await env.staffSignIn({ id: 'usr_secblocked', name: 'Bob Blocked', role: 'owner' });
 		const asBob = () =>
-			env.call('PUT', '/v1/roles/editor', { token: env.server, bare: true, headers: { 'ss-sign-in': sign }, body: ROLE });
+			env.call('PUT', '/v1/roles/editor', {
+				token: env.server,
+				bare: true,
+				headers: { 'shelfway-sign-in': sign },
+				body: ROLE,
+			});
 		expect((await asBob()).status).toBe(200);
 		const bob = (await env.call('GET', '/v1/users?q=Bob%20Blocked', { token: env.server })).json.items[0];
 		await env.call('PATCH', `/v1/users/${bob.id}`, { token: env.server, body: { blocked: true, blockedReason: 'test' } });
@@ -135,7 +140,7 @@ describe('a staff sign-in', () => {
 			const refused = await env.call('PUT', '/v1/roles/editor', {
 				token: env.server,
 				bare: true,
-				headers: { 'ss-sign-in': junk },
+				headers: { 'shelfway-sign-in': junk },
 				body: ROLE,
 			});
 			expect([junk.slice(0, 8), refused.status, typeOf(refused)]).toEqual([junk.slice(0, 8), 401, 'invalid_sign_in']);

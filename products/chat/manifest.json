@@ -68,7 +68,7 @@
 		{
 			"key": "visitor_chat",
 			"name": "Visitor chat",
-			"description": "The ready chat widget and the visitor API for your own chat screens, with window.SSChat.",
+			"description": "The ready chat widget and the visitor API for your own chat screens, with window.ShelfwayChat.",
 			"dependsOn": [],
 			"recommendFor": ["chat.*"],
 			"settings": {
@@ -176,7 +176,7 @@
 		{
 			"key": "import",
 			"name": "Import",
-			"description": "Staff, guests and conversations with their messages moved in from another system with ss-import (server token only; no messages, events or alerts). Our admins switch it on for a migration and off after it.",
+			"description": "Staff, guests and conversations with their messages moved in from another system with shelfway-import (server token only; no messages, events or alerts). Our admins switch it on for a migration and off after it.",
 			"dependsOn": [],
 			"recommendFor": ["moving.yes"],
 			"settings": {

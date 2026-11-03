@@ -15,7 +15,7 @@ import { ADMIN, CONSOLE, MORE, PRODUCTS, PROFILE, SETUP, WEBSITE, WEBSITE_SETTIN
 import { AccountView } from '../../src/console/views/account.js';
 import { CreditsView } from '../../src/console/views/credits.js';
 import { BillingBanner, DaysLeft, ProductStatusBadge, productStatusLabel, productTone } from '../../src/console/views/billing.js';
-import { LocalTime } from '@ss/ui';
+import { LocalTime } from '@shelfway/ui';
 import { ConsoleShell, merchantSections } from '../../src/console/views/shell.js';
 import { contactLine, homeOf } from '../../src/console/views/sign-in.js';
 import { OverviewView, WebsiteView, WebsitesView } from '../../src/console/views/websites.js';
@@ -71,7 +71,7 @@ const BRANDING = {
 	name: 'Shelfway',
 	accent: '#0f766e',
 	logoUrl: null,
-	support: { channels: [{ type: /** @type {const} */ ('email'), label: 'Email', url: 'mailto:help@ss.test' }] },
+	support: { channels: [{ type: /** @type {const} */ ('email'), label: 'Email', url: 'mailto:help@shelfway.test' }] },
 };
 
 describe('merchant console smoke', () => {
@@ -83,7 +83,7 @@ describe('merchant console smoke', () => {
 			// no websites yet: the welcome with the support contact
 			const empty = await loaders.loadOverview(merchant.api, merchantId);
 			expect(text(ssr(<OverviewView {...empty} branding={BRANDING} />))).toContain(
-				'Your admin will add your websites and products. Questions? Contact help@ss.test',
+				'Your admin will add your websites and products. Questions? Contact help@shelfway.test',
 			);
 			expect(
 				text(ssr(<WebsitesView {...await loaders.loadWebsites(merchant.api, merchantId)} branding={BRANDING} />)),
@@ -115,7 +115,7 @@ describe('merchant console smoke', () => {
 			const websitesRaw = ssr(<WebsitesView {...await loaders.loadWebsites(merchant.api, merchantId)} branding={BRANDING} />);
 			const websitesText = text(websitesRaw);
 			expect(websitesText).toContain('www.shop.example.com');
-			expect(websitesRaw).toContain('data-ss-page');
+			expect(websitesRaw).toContain('data-shelfway-page');
 			expect(websitesRaw).toContain(`href="/websites/${site.websiteId}"`);
 			expect(websitesRaw).not.toContain('role="tab"');
 			expect(websitesText).toContain('No products yet'); // the second website's row says what it lacks

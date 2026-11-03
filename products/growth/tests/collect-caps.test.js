@@ -37,7 +37,7 @@ afterAll(async () => {
  * @param {number} [rawEvents]
  */
 const seed = async (totals, rawEvents) =>
-	db.collection('ss_growth_totals').insertOne({
+	db.collection('shelfway_growth_totals').insertOne({
 		websiteId: env.websiteId,
 		merchantId: 'm',
 		day: today(),
@@ -54,7 +54,7 @@ const keys = (prefix, count, tail = '') =>
 
 /** @param {string} metric */
 const rowsOf = async (metric) => (await dailyRows(db)).filter((row) => row.day === today() && row.metric === metric);
-const rawCount = () => db.collection('ss_growth_analytics_events').countDocuments({});
+const rawCount = () => db.collection('shelfway_growth_analytics_events').countDocuments({});
 const caplogs = () => env.logs.filter((entry) => entry.message.startsWith('collect cap'));
 
 describe('distinct keys of a metric per day (SR-7-9)', () => {
@@ -136,10 +136,10 @@ describe('distinct keys of a metric per day (SR-7-9)', () => {
 		const second = await env.operationsDuring(() => env.collect(fresh('b')));
 		// the day's counts are read again, then the 20 values are looked up, then written
 		expect(second.names).toEqual([
-			'aggregate ss_growth_totals',
-			'find ss_growth_totals',
-			'insert ss_growth_analytics_events',
-			'update ss_growth_totals',
+			'aggregate shelfway_growth_totals',
+			'find shelfway_growth_totals',
+			'insert shelfway_growth_analytics_events',
+			'update shelfway_growth_totals',
 		]);
 		const page = await rowsOf('page');
 		expect(page.filter((row) => row.key !== '(other)')).toHaveLength(MAX_DAY_KEYS);
@@ -157,10 +157,10 @@ describe('raw events per website per day (SR-7-9)', () => {
 		expect(await rawCount()).toBe(before + 2);
 		expect((await rowsOf('page')).find((row) => row.key === '/p')?.count).toBe(6);
 		const second = await env.operationsDuring(() => env.collect([view('/p'), view('/p'), view('/p')]));
-		expect(second.names).toEqual(['update ss_growth_totals']);
+		expect(second.names).toEqual(['update shelfway_growth_totals']);
 		expect(await rawCount()).toBe(before + 2);
 		expect((await rowsOf('page')).find((row) => row.key === '/p')?.count).toBe(9);
-		expect((await db.collection('ss_growth_totals').findOne({ day: today() }))?.rawEvents).toBe(MAX_DAY_EVENTS);
+		expect((await db.collection('shelfway_growth_totals').findOne({ day: today() }))?.rawEvents).toBe(MAX_DAY_EVENTS);
 		expect(caplogs().filter((entry) => entry.message.includes('raw events'))).toHaveLength(1);
 	});
 
@@ -168,7 +168,7 @@ describe('raw events per website per day (SR-7-9)', () => {
 		env.advance(DAY_MS);
 		await env.collect([view('/a'), view('/b'), view('/c')]);
 		await env.collect([view('/a')]);
-		expect((await db.collection('ss_growth_totals').findOne({ day: today() }))?.rawEvents).toBe(4);
+		expect((await db.collection('shelfway_growth_totals').findOne({ day: today() }))?.rawEvents).toBe(4);
 	});
 });
 
@@ -186,12 +186,20 @@ describe('database operations of the ceilings (RT-2)', () => {
 	it('reads the day’s counts once per instance and day, and again after 15 seconds', async () => {
 		env.advance(DAY_MS);
 		const cold = await env.operationsDuring(() => env.collect([view('/a')]));
-		expect(cold.names).toEqual(['aggregate ss_growth_totals', 'insert ss_growth_analytics_events', 'update ss_growth_totals']);
+		expect(cold.names).toEqual([
+			'aggregate shelfway_growth_totals',
+			'insert shelfway_growth_analytics_events',
+			'update shelfway_growth_totals',
+		]);
 		const warm = await env.operationsDuring(() => env.collect([view('/b')]));
-		expect(warm.names).toEqual(['insert ss_growth_analytics_events', 'update ss_growth_totals']);
+		expect(warm.names).toEqual(['insert shelfway_growth_analytics_events', 'update shelfway_growth_totals']);
 		env.advance(16_000);
 		const later = await env.operationsDuring(() => env.collect([view('/c')]));
-		expect(later.names).toEqual(['aggregate ss_growth_totals', 'insert ss_growth_analytics_events', 'update ss_growth_totals']);
+		expect(later.names).toEqual([
+			'aggregate shelfway_growth_totals',
+			'insert shelfway_growth_analytics_events',
+			'update shelfway_growth_totals',
+		]);
 		env.advance(DAY_MS);
 		const nextDay = await env.operationsDuring(() => env.collect([view('/a')]));
 		expect(nextDay.total).toBe(3);

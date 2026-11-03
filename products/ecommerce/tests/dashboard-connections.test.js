@@ -6,7 +6,7 @@
  */
 import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, click, render } from '@ss/ui/testing';
+import { cleanup, click, render } from '@shelfway/ui/testing';
 import { TABS } from '../app/dashboard/tabs.js';
 import { TEXTS } from '../app/dashboard/texts.js';
 import { inDashboard } from './dashboard-provider.js';
@@ -58,7 +58,7 @@ describe('Ecommerce’s connection forms', () => {
 		await settle();
 		// one connection per row of the list: open each
 		for (const name of ['courier_2', 'storage', 'ai', 'link_accounts']) {
-			click(/** @type {HTMLElement} */ (container.querySelector(`[role="option"][data-ss-id="connection-${name}"]`)));
+			click(/** @type {HTMLElement} */ (container.querySelector(`[role="option"][data-shelfway-id="connection-${name}"]`)));
 			await settle();
 		}
 		const courier = container.querySelector('[id="section-connection-courier_2"]')?.textContent ?? '';

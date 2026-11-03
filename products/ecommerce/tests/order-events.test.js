@@ -29,7 +29,7 @@ const placeOrder = async () => {
 		token: shop.browser,
 		origin: ORIGIN,
 		body: { lines: [{ productId: item.id }], payment: 'cod', address: ADDRESS },
-		headers: { 'x-forwarded-for': `10.5.0.${users}`, 'ss-sign-in': token, 'idempotency-key': `evt-${users}` },
+		headers: { 'x-forwarded-for': `10.5.0.${users}`, 'shelfway-sign-in': token, 'idempotency-key': `evt-${users}` },
 	});
 	expect(placed.status).toBe(201);
 	await shop.flush();

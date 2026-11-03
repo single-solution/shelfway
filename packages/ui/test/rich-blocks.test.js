@@ -63,12 +63,12 @@ describe('Card', () => {
 		expect(box.textContent).toContain('42 of 100 GB used');
 		expect(box.textContent).toContain('body text');
 		expect(box.querySelector('a[href="/storage"]')?.textContent).toBe('Manage storage');
-		expect(box.className).toContain('ss-lift');
+		expect(box.className).toContain('shelfway-lift');
 	});
 
 	it('keeps the meter between 0 and 100', () => {
 		const { container, rerender } = render(<Card meter={{ percent: 180 }} />);
-		const bar = () => /** @type {HTMLElement} */ (container.querySelector('[data-ss-meter]'));
+		const bar = () => /** @type {HTMLElement} */ (container.querySelector('[data-shelfway-meter]'));
 		expect(bar().style.width).toBe('100%');
 		rerender(<Card meter={{ percent: -5 }} />);
 		expect(bar().style.width).toBe('0%');
@@ -112,7 +112,7 @@ describe('Card', () => {
 		expect(box.id).toBe('plan');
 		expect(box.getAttribute('data-flow')).toBe('card');
 		expect(box.getAttribute('aria-label')).toBe('Plan');
-		expect(box.className).not.toContain('ss-lift');
+		expect(box.className).not.toContain('shelfway-lift');
 		expect(box.querySelector('h2')?.textContent).toBe('Plan');
 		expect(box.querySelector('header p')?.textContent).toBe('Your plan');
 		expect(box.querySelector('header button')?.textContent).toBe('Change');
@@ -216,7 +216,7 @@ describe('NextStep', () => {
 		const hint = /** @type {HTMLElement} */ (container.firstElementChild);
 		expect(hint.textContent).toBe('Connect a payment method to start selling.');
 		expect(hint.className).toContain('bg-primary-soft');
-		expect(hint.className).toContain('animate-ss-fade');
+		expect(hint.className).toContain('animate-shelfway-fade');
 		expect(hint.querySelector('svg')).not.toBeNull();
 		expect(hint.querySelector('a, button')).toBeNull();
 	});

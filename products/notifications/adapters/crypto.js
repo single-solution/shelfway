@@ -6,7 +6,7 @@
  * the new key. Lost `ENCRYPTION_KEY`: a waiting sensitive message no longer opens and fails.
  * @module
  */
-import { createSealer as createKitSealer, resealEach } from '@ss/app-kit';
+import { createSealer as createKitSealer, resealEach } from '@shelfway/app-kit';
 
 /**
  * @param {string} encryptionKey `ENCRYPTION_KEY` (at least 32 characters)
@@ -15,7 +15,7 @@ import { createSealer as createKitSealer, resealEach } from '@ss/app-kit';
 export const createSealer = (encryptionKey, previousKey = null) =>
 	createKitSealer({ encryptionKey, previousKey, label: 'notifications' });
 
-/** @typedef {import('@ss/app-kit').Sealer} Sealer */
+/** @typedef {import('@shelfway/app-kit').Sealer} Sealer */
 
 /**
  * What the sealed words of a message are bound to: the website, the channel and the address.
@@ -27,8 +27,8 @@ export const messageAadOf = (websiteId, channel, address) => `message|${websiteI
  * The Owner's Re-seal (RT-14) of one website's merchant database: the sealed words of every message still waiting,
  * sealed again with the current key.
  * @param {Sealer} sealer
- * @param {import('@ss/app-kit').WebsiteData} data
- * @returns {Promise<import('@ss/app-kit').ResealCounts>}
+ * @param {import('@shelfway/app-kit').WebsiteData} data
+ * @returns {Promise<import('@shelfway/app-kit').ResealCounts>}
  */
 export const resealWebsite = async (sealer, data) => {
 	const { websiteId } = data;

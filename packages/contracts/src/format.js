@@ -3,7 +3,7 @@
  * hosted pages and chat answers, fed by a website's Format value (stored like the theme) and its business.json time
  * zone; and the calendar helpers every calendar rule uses (days, years and weekdays in the business time zone, UTC
  * when missing). Pure and browser-safe (no Node.js imports): products' `core/` and widgets use it through
- * `@ss/contracts/format` and `@ss/app-kit/widget`.
+ * `@shelfway/contracts/format` and `@shelfway/app-kit/widget`.
  *
  * - `locale`: BCP 47; '' = the viewer's browser in widgets and `en-US` in text the server makes.
  * - `currencyDisplay`: `code` ("USD 12,500.00") or `symbol` ("$12,500.00": the currency's own symbol from

@@ -40,9 +40,9 @@ Every factory receives a `ModuleContext`:
 | `collection(name)`                                             | repository of **one of this module's** collections (foreign collections throw)                                                                                                                       |
 | `service(name)`                                                | another module's (or this module's) public service                                                                                                                                                   |
 | `config`, `logger` (child with `module`), `now`, `randomBytes` | configuration and injected I/O                                                                                                                                                                       |
-| `config.outbound.allowHosts`                                   | hosts outbound calls may reach over loopback / plain http (the loopback hosts outside production; empty in production) — build the `@ss/net` policy from it                                          |
-| `problems`                                                     | RFC 9457 factory (`@ss/contracts`) including every module's codes                                                                                                                                    |
-| `keys`                                                         | `keys.signer` (`@ss/protocol`): the Portal key that signs launches, notices and calls to products                                                                                                    |
+| `config.outbound.allowHosts`                                   | hosts outbound calls may reach over loopback / plain http (the loopback hosts outside production; empty in production) — build the `@shelfway/net` policy from it                                    |
+| `problems`                                                     | RFC 9457 factory (`@shelfway/contracts`) including every module's codes                                                                                                                              |
+| `keys`                                                         | `keys.signer` (`@shelfway/protocol`): the Portal key that signs launches, notices and calls to products                                                                                              |
 | `keys.tokenSigner`, `keys.publishedJwks()`                     | the dedicated signer of browser and server tokens (generated on first start, `infra/system.js`); `keys.publishedJwks()` = both key sets                                                              |
 | `secretBox`                                                    | `seal` / `openText` / `reseal` with `ENCRYPTION_KEY` (and `ENCRYPTION_KEY_PREVIOUS` while it changes) for the Portal's stored secrets (mail password, two-step secrets, server tokens, signing keys) |
 | `withTransaction(fn)`                                          | run `fn(session)` in a retried multi-document transaction; pass `{ session }` to every repository call inside it                                                                                     |
@@ -50,7 +50,7 @@ Every factory receives a `ModuleContext`:
 | `audit`                                                        | `record({ actor, action, target, before, after, requestId, ip, reason })`, `list(...)` (append-only)                                                                                                 |
 | `locks`                                                        | lease locks                                                                                                                                                                                          |
 | `sessions`, `loginThrottle`, `cookies`                         | console session primitives (identity module)                                                                                                                                                         |
-| `replayStore`                                                  | shared atomic replay store for `@ss/protocol` verifiers (client assertions, launch consumption)                                                                                                      |
+| `replayStore`                                                  | shared atomic replay store for `@shelfway/protocol` verifiers (client assertions, launch consumption)                                                                                                |
 
 ## Rules
 
@@ -59,7 +59,7 @@ appendOnly, tenant })`. `ensureIndexes` creates everything declared. Merchant-ow
   `tenant: 'merchant'` and are reached with `repo.forMerchant(merchantId)` (every filter pins `merchantId`);
   admin/system code that must cross merchants uses `repo.acrossMerchants()` explicitly. Ledgers, audit-like and
   event-like records use `appendOnly: true` (the repository has no update or delete).
-- **Outbound calls** to admin-supplied destinations (product connect, notices) go through `@ss/net` only: one
+- **Outbound calls** to admin-supplied destinations (product connect, notices) go through `@shelfway/net` only: one
   `createOutboundPolicy` per module built from `ctx.config.outbound.allowHosts` (forced empty when
   `ctx.config.isProduction`), `safeFetch` for HTTP(S). No module keeps its own SSRF rules.
 - **No business data** in Portal collections: ids, hashes, sealed secrets, control-plane facts only.
@@ -81,5 +81,5 @@ appendOnly, tenant })`. `ensureIndexes` creates everything declared. Merchant-ow
   after any request it made). Without `productKeys`, product assertions are refused.
 - **Audit** every admin and merchant mutation (Activity; never personal details) with the actor from `ctx.actor`.
 - **Tests** live in `platform/test/**`: pure `core/` tests, and repository/route tests on `MongoMemoryReplSet`
-  through `createPortal` (see `test/integration.test.js` for a probe module that uses every extension point, and
+  through `createPlatform` (see `test/integration.test.js` for a probe module that uses every extension point, and
   `test/modules/catalog/boot.js` for the real modules with fake products).

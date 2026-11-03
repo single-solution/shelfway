@@ -10,7 +10,7 @@
  *   that need attention, and the billing of the merchants on a page.
  * @module
  */
-import { isId } from '@ss/contracts';
+import { isId } from '@shelfway/contracts';
 import { defineRoute, ok, created, problem } from '../../infra/http.js';
 import { PERMISSIONS as P } from '../../infra/rbac.js';
 import { checkAddProduct, checkDayRange, checkReceipt } from './core/validate.js';

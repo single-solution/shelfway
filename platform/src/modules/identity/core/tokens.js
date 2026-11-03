@@ -1,6 +1,6 @@
 /**
  * One-time tokens (setup links, password resets, email changes, two-step sign-in steps): 256-bit random, base64url,
- * shown once; only `HMAC-SHA-256(secret, "ss-identity-token.v1|<purpose>|<token>")` is stored, so a database leak
+ * shown once; only `HMAC-SHA-256(secret, "shelfway-identity-token.v1|<purpose>|<token>")` is stored, so a database leak
  * reveals no usable token and a token minted for one purpose never matches another. Deterministic given the
  * injected randomness (no I/O).
  * @module
@@ -36,7 +36,7 @@ export const newToken = (randomBytes) => Buffer.from(randomBytes(32)).toString('
  */
 export const hashToken = (secret, purpose, token) => {
 	if (!TOKEN_PURPOSES.includes(purpose)) throw new TypeError(`unknown token purpose ${purpose}`);
-	return createHmac('sha256', secret).update(`ss-identity-token.v1|${purpose}|${token}`).digest('hex');
+	return createHmac('sha256', secret).update(`shelfway-identity-token.v1|${purpose}|${token}`).digest('hex');
 };
 
 /** Console paths of each link kind. */
@@ -49,9 +49,9 @@ const LINK_PATHS = Object.freeze({
 /**
  * Console links sent by email or copied by an admin. The token travels in the URL fragment so it never reaches
  * server logs, proxies or Referer headers; the console page reads it and posts it to the API.
- * @param {string} portalUrl `PORTAL_URL` (no trailing slash)
+ * @param {string} platformUrl `PLATFORM_URL` (no trailing slash)
  * @param {keyof typeof LINK_PATHS} kind
  * @param {string} token
  */
-export const linkFor = (portalUrl, kind, token) =>
-	`${portalUrl.replace(/\/+$/, '')}${LINK_PATHS[kind]}#token=${encodeURIComponent(token)}`;
+export const linkFor = (platformUrl, kind, token) =>
+	`${platformUrl.replace(/\/+$/, '')}${LINK_PATHS[kind]}#token=${encodeURIComponent(token)}`;

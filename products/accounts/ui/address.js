@@ -1,10 +1,10 @@
 /**
  * Addresses in the Accounts widgets (My account, the Users widget): one set of inputs and one written form, both by
- * the address's country (`@ss/contracts/address`, the table Ecommerce uses too: its order and its labels such as State,
+ * the address's country (`@shelfway/contracts/address`, the table Ecommerce uses too: its order and its labels such as State,
  * Province or ZIP code).
  * @module
  */
-import { element } from '@ss/app-kit/widget';
+import { element } from '@shelfway/app-kit/widget';
 import {
 	ADDRESS_LIMITS,
 	LABEL_KINDS,

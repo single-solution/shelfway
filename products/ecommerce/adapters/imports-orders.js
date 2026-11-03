@@ -6,7 +6,7 @@
  * last order, loyalty balances and lifetime points, products' units sold and rating (where their order lines or reviews
  * were moved too; otherwise the numbers imported stay), serials sold through order lines and the order counters — a
  * page of records at a time in `_id` order with aggregations, writing only what differs, so a second run changes
- * nothing. Its sums feed `ss-import verify`.
+ * nothing. Its sums feed `shelfway-import verify`.
  * @module
  */
 import {
@@ -31,7 +31,7 @@ import { ratingSummary } from '../core/reviews.js';
 import { setOrderCounter } from './ledger.js';
 import { captureIndexes, counterIdOf, formNumbers, numberFormOf } from '../core/order-numbers.js';
 
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/imports-orders.js').ImportRules} ImportRules */
 /** @typedef {import('../core/imports-orders.js').ImportCheck} ImportCheck */
 
@@ -375,7 +375,7 @@ export const orderImports = (deps) => {
 	 * What every check of a call reads of the website: the order flow, the checkout and catalog settings, the
 	 * Portal's Region and format (the currency, and the calling code and country of national phone numbers, K12), the order
 	 * and customer fields, the time.
-	 * @param {{ websiteId: string, data: import('@ss/app-kit').WebsiteData, now: () => number,
+	 * @param {{ websiteId: string, data: import('@shelfway/app-kit').WebsiteData, now: () => number,
 	 *   business: () => Promise<{ country?: string | null }> }} ctx
 	 * @returns {Promise<ImportRules>}
 	 */
@@ -397,7 +397,7 @@ export const orderImports = (deps) => {
 	 * @param {string} collection
 	 * @param {(record: Record<string, unknown>, rules: ImportRules) => ImportCheck} check
 	 * @param {string[]} [key]
-	 * @returns {import('@ss/app-kit').ImportCollection}
+	 * @returns {import('@shelfway/app-kit').ImportCollection}
 	 */
 	const collection = (collection, check, key) => ({
 		collection,

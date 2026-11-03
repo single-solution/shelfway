@@ -1,5 +1,5 @@
 /**
- * Test harness: Accounts on the kit, connected to the kit's fake Portal (`@ss/app-kit/testing`), with one website, its
+ * Test harness: Accounts on the kit, connected to the kit's fake Portal (`@shelfway/app-kit/testing`), with one website, its
  * two tokens, dashboard sessions, a merchant database on the run's MongoDB (`TEST_MONGODB_URI`) and fakes for every
  * outside service: Notifications (records what Accounts sends), other products (permissions, data rights, orders),
  * Google, Apple, Facebook, the breached-password list and the website's settings in the Portal. No real network call is
@@ -15,8 +15,8 @@ import {
 	createNetwork,
 	portalConnector,
 	portalSectionsOf,
-} from '@ss/app-kit/testing';
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
+} from '@shelfway/app-kit/testing';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import apiJson from '../schemas/api.json' with { type: 'json' };
 import { createProductInstance, manifest } from '../adapters/product.js';
 import { createStore } from '../adapters/store.js';
@@ -162,7 +162,13 @@ export const setup = async ({ start = Date.parse('2026-10-01T10:00:00Z') } = {})
 		{ token, origin, body, raw, cookie, signIn, headers = {}, after = true, bare = false, staff } = {},
 	) => {
 		requests += 1;
-		if (token === server && !bare && !signIn && headers['ss-sign-in'] === undefined && headers['ss-visitor-ip'] === undefined)
+		if (
+			token === server &&
+			!bare &&
+			!signIn &&
+			headers['shelfway-sign-in'] === undefined &&
+			headers['shelfway-visitor-ip'] === undefined
+		)
 			// eslint-disable-next-line no-param-reassign -- the harness signs the staff member in
 			headers = await staffHeaders({ headers, staff });
 		const response = await handler(
@@ -175,7 +181,7 @@ export const setup = async ({ start = Date.parse('2026-10-01T10:00:00Z') } = {})
 					...(token ? { authorization: `Bearer ${token}` } : {}),
 					...(origin ? { origin } : {}),
 					...(cookie ? { cookie } : {}),
-					...(signIn ? { 'ss-sign-in': signIn } : {}),
+					...(signIn ? { 'shelfway-sign-in': signIn } : {}),
 					...(body === undefined ? {} : { 'content-type': 'application/json' }),
 					...(raw === undefined ? {} : { 'content-type': 'application/x-www-form-urlencoded' }),
 					...headers,
@@ -228,14 +234,20 @@ export const setup = async ({ start = Date.parse('2026-10-01T10:00:00Z') } = {})
 	});
 
 	/**
-	 * The headers of a staff member's call from the website's server: the `ss-actor-*` headers of older tests name an
+	 * The headers of a staff member's call from the website's server: the `shelfway-actor-*` headers of older tests name an
 	 * existing user (or a new one made for the name), `staff` names one too; an Owner otherwise.
 	 * @param {{ headers?: Record<string, string>, staff?: Record<string, any> }} [input]
 	 * @returns {Promise<Record<string, string>>}
 	 */
 	const staffHeaders = async ({ headers = {}, staff = {} } = {}) => {
-		const { 'ss-actor-id': id, 'ss-actor-name': name, 'ss-actor-role': role, 'ss-actor-email': email, ...rest } = headers;
-		if (rest['ss-sign-in'] !== undefined) return rest;
+		const {
+			'shelfway-actor-id': id,
+			'shelfway-actor-name': name,
+			'shelfway-actor-role': role,
+			'shelfway-actor-email': email,
+			...rest
+		} = headers;
+		if (rest['shelfway-sign-in'] !== undefined) return rest;
 		try {
 			const signIn = await staffSignIn({
 				...((staff.id ?? id) ? { id: staff.id ?? id } : {}),
@@ -250,7 +262,7 @@ export const setup = async ({ start = Date.parse('2026-10-01T10:00:00Z') } = {})
 					: {}),
 				...((staff.email ?? email) ? { email: staff.email ?? email } : {}),
 			});
-			return { ...rest, 'ss-sign-in': signIn };
+			return { ...rest, 'shelfway-sign-in': signIn };
 		} catch {
 			// no database or no Roles yet: the server token goes alone
 			return rest;
@@ -317,7 +329,7 @@ export const setup = async ({ start = Date.parse('2026-10-01T10:00:00Z') } = {})
 
 	/**
 	 * The merchant saves website settings in the Portal (Website settings): the product is told and fetches them.
-	 * @param {Partial<Pick<import('@ss/contracts').WebsiteSettings, 'business' | 'brand' | 'region' | 'pages' | 'team'>>} sections
+	 * @param {Partial<Pick<import('@shelfway/contracts').WebsiteSettings, 'business' | 'brand' | 'region' | 'pages' | 'team'>>} sections
 	 */
 	const setWebsite = async (sections) => {
 		Object.assign(site, sections);

@@ -5,7 +5,7 @@
  * No I/O.
  * @module
  */
-import { TEMPLATE_KEY } from '@ss/contracts/templates';
+import { TEMPLATE_KEY } from '@shelfway/contracts/templates';
 import { CHANNELS, FALLBACK_CHANNELS } from './channels.js';
 
 /** @typedef {import('./channels.js').Channel} Channel */

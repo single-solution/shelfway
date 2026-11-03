@@ -4,12 +4,12 @@
  * `conversations` and their `messages` (one record per message) — checked by `core/imports.js` with the website's
  * staff list, custom fields and calling code; `finish`, which numbers each imported conversation's messages 1..n in
  * time order and derives its counters, preview and read marks (C8), a bounded batch of conversations per call; and the
- * sums `ss-import verify` compares. Nothing is sent: no message, event, alert, AI call or activity copy.
+ * sums `shelfway-import verify` compares. Nothing is sent: no message, event, alert, AI call or activity copy.
  * @module
  */
-import { problem } from '@ss/app-kit';
-import { isId } from '@ss/contracts';
-import { callingCodeOf } from '@ss/contracts/phone';
+import { problem } from '@shelfway/app-kit';
+import { isId } from '@shelfway/contracts';
+import { callingCodeOf } from '@shelfway/contracts/phone';
 import { STATUSES } from '../core/conversation.js';
 import { changesOf, checkConversation, checkGuest, checkMessage, checkStaff, finishPlan, previewText } from '../core/imports.js';
 
@@ -23,13 +23,13 @@ import { changesOf, checkConversation, checkGuest, checkMessage, checkStaff, fin
 
 /** Conversations one `finish` call takes (call again with `?after=<next>` while `more`). */
 const FINISH_BATCH = 100;
-/** The kit's note of the keys imports wrote (`ss_chat_imports`): `finish` takes only imported conversations. */
+/** The kit's note of the keys imports wrote (`shelfway_chat_imports`): `finish` takes only imported conversations. */
 const LEDGER = 'imports';
 
 /**
  * The kit's `imports` option.
  * @param {ImportDeps} deps
- * @returns {import('@ss/app-kit').ImportOptions}
+ * @returns {import('@shelfway/app-kit').ImportOptions}
  */
 export const createImportOptions = (deps) => ({
 	collections: {
@@ -88,7 +88,7 @@ const finish = async (ctx) => {
 	const after = ctx.query.after === undefined || ctx.query.after === '' ? null : String(ctx.query.after);
 	if (after !== null && !isId(after, 'conv'))
 		throw problem('validation_failed', 'after is the next value of the previous finish: a conversation id.');
-	/** @type {import('@ss/app-kit').WebsiteData} */
+	/** @type {import('@shelfway/app-kit').WebsiteData} */
 	const data = await ctx.data();
 	const websiteId = String(ctx.websiteId);
 	const conversations = data.collection('conversations');
@@ -120,7 +120,7 @@ const finish = async (ctx) => {
  * One conversation: its messages numbered 1..n in time order (ties by id) and its derived fields set, writing only what
  * changes. The numbers move in two steps (first below every number the conversation holds, then into place), so no two
  * messages ever share one (the unique index on the conversation and number).
- * @param {import('@ss/app-kit').WebsiteData} data
+ * @param {import('@shelfway/app-kit').WebsiteData} data
  * @param {string} websiteId
  * @param {Record<string, any> & { id: string, lastMessageAt: Date }} conversation
  */
@@ -155,12 +155,12 @@ const finishOne = async (data, websiteId, conversation) => {
 };
 
 /**
- * The sums `ss-import verify` compares (`GET /v1/import/status`): conversations, messages, conversations per status and
+ * The sums `shelfway-import verify` compares (`GET /v1/import/status`): conversations, messages, conversations per status and
  * conversations waiting for a person.
  * @param {any} ctx
  */
 const totals = async (ctx) => {
-	/** @type {import('@ss/app-kit').WebsiteData} */
+	/** @type {import('@shelfway/app-kit').WebsiteData} */
 	const data = await ctx.data();
 	const websiteId = String(ctx.websiteId);
 	const conversations = data.collection('conversations');

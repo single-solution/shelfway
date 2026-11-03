@@ -1,18 +1,18 @@
-# @ss/ui
+# @shelfway/ui
 
-React 19 components for the Portal and the product dashboards: design tokens (light and dark, `--ss-*` CSS variables in
+React 19 components for the Portal and the product dashboards: design tokens (light and dark, `--shelfway-*` CSS variables in
 `theme.css`), form controls, data display, overlays, `AppShell` and `SchemaForm` (a feature's settings form, rendered
 from its settings schema). Untranspiled JSX in `.js` files: Next.js apps list the package in `transpilePackages`, and
-Tailwind scans `node_modules/@ss/ui/src` (`@source` in the app's CSS).
+Tailwind scans `node_modules/@shelfway/ui/src` (`@source` in the app's CSS).
 
-| Entry                | What it is                                                                                                                 |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `@ss/ui`             | every component, `cx`, and the format and problem helpers                                                                  |
-| `@ss/ui/dashboard`   | the product dashboard every product shares: the page, its standard tabs, their pieces, words and API helpers               |
-| `@ss/ui/problems`    | RFC 9457 problem → user message and field-error helpers                                                                    |
-| `@ss/ui/seo-preview` | the search result and share card preview without React, for widgets (`seoPreview`, `SEO_PREVIEW_CSS`, the measure)         |
-| `@ss/ui/theme.css`   | the design tokens                                                                                                          |
-| `@ss/ui/testing`     | DOM test helpers on `react-dom/client` + jsdom (`render`, `cleanup`, `click`, `type`, `byLabel`, …) for other units' tests |
+| Entry                      | What it is                                                                                                                 |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `@shelfway/ui`             | every component, `cx`, and the format and problem helpers                                                                  |
+| `@shelfway/ui/dashboard`   | the product dashboard every product shares: the page, its standard tabs, their pieces, words and API helpers               |
+| `@shelfway/ui/problems`    | RFC 9457 problem → user message and field-error helpers                                                                    |
+| `@shelfway/ui/seo-preview` | the search result and share card preview without React, for widgets (`seoPreview`, `SEO_PREVIEW_CSS`, the measure)         |
+| `@shelfway/ui/theme.css`   | the design tokens                                                                                                          |
+| `@shelfway/ui/testing`     | DOM test helpers on `react-dom/client` + jsdom (`render`, `cleanup`, `click`, `type`, `byLabel`, …) for other units' tests |
 
 ## How to build a screen
 
@@ -59,7 +59,7 @@ An example, a list of merchants. The rows of the list are `Row`s, made from what
 
 ```js
 'use client';
-import { Button, Card, ListColumn, Page, Stat, StatGrid, Switch, useListSelection } from '@ss/ui';
+import { Button, Card, ListColumn, Page, Stat, StatGrid, Switch, useListSelection } from '@shelfway/ui';
 
 export function Merchants({ merchants, onAdd, onToggle }) {
 	const [selected, select] = useListSelection({ ids: merchants.map((m) => m.id) });
@@ -208,12 +208,12 @@ the page is as wide as the window leaves it. Nothing is centered in a narrow col
   flat group under a hairline with its name and Move up, Move down and Remove, or collapsed under a `summary`), `Badge onRemove` (a removable tag), `TextLink` (the one
   link in text, a table, a header or a footer; `as` for a router link, `external`, `tone="plain"`), and `Input
 type="file"` for a file field.
-- `SaveOutcome` (`@ss/ui/dashboard`): the outcome of a save in an editor. Saved and a refused save are toasts; the errors
+- `SaveOutcome` (`@shelfway/ui/dashboard`): the outcome of a save in an editor. Saved and a refused save are toasts; the errors
   that name a row or a field stay inline under the editor (`problemLines` words a 422 answer). `Outcome` is the same
   without the inline list (toasts only).
 - Empty and error states are frameless (whitespace, a tinted icon, what to do); loading shows skeletons shaped like the
   content (`Skeleton`, `SkeletonBlock`, `OverviewSkeleton`).
-- The setup checklist (`SetupChecklist`, `useSetupSteps` in `@ss/ui/dashboard`): a product declares a short list of
+- The setup checklist (`SetupChecklist`, `useSetupSteps` in `@shelfway/ui/dashboard`): a product declares a short list of
   requirements (a setting, a list or "one of these features on", for the features that are on, with a plain label, a
   one-line why and a button); each is ticked from the saved state and its button opens the exact section
   (`open('settings', 'catalog.page-addresses')` → `?view=settings#catalog.page-addresses`; a hash that names a feature
@@ -257,12 +257,12 @@ controls (buttons, callouts) and a lone control (a card with one short setting d
 
 ## Motion and feedback
 
-One motion system for the Portal and every product dashboard (PLAN.md 0.6): three durations (`--ss-motion-fast` 120 ms,
-`--ss-motion` 180 ms, `--ss-motion-slow` 240 ms) and three curves (`--ss-ease` for entering and hover, `--ss-ease-move`
-between two places, `--ss-ease-exit` for leaving) in `theme.css`; only `transform` (`translate`, `scale`) and `opacity`
+One motion system for the Portal and every product dashboard (PLAN.md 0.6): three durations (`--shelfway-motion-fast` 120 ms,
+`--shelfway-motion` 180 ms, `--shelfway-motion-slow` 240 ms) and three curves (`--shelfway-ease` for entering and hover, `--shelfway-ease-move`
+between two places, `--shelfway-ease-exit` for leaving) in `theme.css`; only `transform` (`translate`, `scale`) and `opacity`
 move. With `prefers-reduced-motion` nothing moves.
 
-- Buttons tint on hover and press in (`ss-motion ss-press`). A button whose `onClick` returns a promise, and the submit
+- Buttons tint on hover and press in (`shelfway-motion shelfway-press`). A button whose `onClick` returns a promise, and the submit
   button of a `Form` whose `onSubmit` returns one, show the spinner and stay disabled until it settles (`loading` and
   `busy` still work). `FormBusyContext` gives the same to a submit button inside another form.
 - `Dialog`, `ActionMenu`, toasts and the phone menu animate in and out (they stay mounted while they leave);
@@ -294,7 +294,7 @@ button), a setup checklist, the key numbers and the latest activity as a timelin
 
 ## Product dashboard
 
-`@ss/ui/dashboard` (client only) is the dashboard of every product (PLAN.md 0.4.3), one implementation for all: a
+`@shelfway/ui/dashboard` (client only) is the dashboard of every product (PLAN.md 0.4.3), one implementation for all: a
 product's `app/dashboard/page.js` is `<ProductDashboard manifest={manifest} texts={TEXTS} tabs={TABS} />`.
 
 - `ProductDashboard` loads the session, then shows the sidebar (Overview, Settings, Texts, Developers;
@@ -304,8 +304,8 @@ product's `app/dashboard/page.js` is `<ProductDashboard manifest={manifest} text
   (`{ lists: { component, icon, kind, global? } }`, its label in `texts.tabs`). Each tab gets `TabProps`:
   `websiteId`, `merchantId`, `domain`, `who`, `support`, `portal` and `open(tab)`. The header has the Docs link.
 - Words: `DASHBOARD_TEXTS` are the shared ones (US English). `dashboardTexts({ title, ...own })` lays the product's
-  title and its own words over them group by group (a product may reword one shared text). Both come from `@ss/ui`
-  itself, not from the client-only `@ss/ui/dashboard`, because the product's server `app/layout.js` reads its title; `useDashboard()` gives the
+  title and its own words over them group by group (a product may reword one shared text). Both come from `@shelfway/ui`
+  itself, not from the client-only `@shelfway/ui/dashboard`, because the product's server `app/layout.js` reads its title; `useDashboard()` gives the
   merged words and `namesOf(keys, max?)` (feature names from the manifest) inside the page or a `DashboardProvider`.
 - Every standard tab draws through `Page` (layout contract 2026-10-17): crumbs `Product > Section > sub-page`, the old
   description behind the (i), the actions in the header, and a tab with several views lists them as rich rows in a
@@ -342,7 +342,7 @@ product's `app/dashboard/page.js` is `<ProductDashboard manifest={manifest} text
 ## SchemaForm
 
 `<SchemaForm schema values onChange errors? overridden? onReset? disabled? title? description? before? after? dirty? onSave? onDiscard? />`
-renders each setting of a settings schema (what `@ss/contracts` allows: string, integer, number, boolean and list
+renders each setting of a settings schema (what `@shelfway/contracts` allows: string, integer, number, boolean and list
 settings) as a control chosen by its type, its `format` (`email`, `uri`) and `x-ui.widget`, with its `description` as help.
 The settings are titled cards, one per `x-ui.group` (settings without a group share one card, titled with the feature's
 `title`; with several groups `title` heads them), each setting a row, in the schema's order or by `x-ui.order` (those
@@ -394,7 +394,7 @@ of a settings form use it.
 
 `<SeoPreview title description url siteName? image? texts? />` shows a page as Google lists it (site name, breadcrumb
 address, title, description) and as a share card (image at 1.91 : 1, domain, title, description). Widgets draw the
-same part without React from `@ss/ui/seo-preview`: `seoPreview(document, input, { texts })` gives `{ node, update }`
+same part without React from `@shelfway/ui/seo-preview`: `seoPreview(document, input, { texts })` gives `{ node, update }`
 and the widget adds `SEO_PREVIEW_CSS` to its CSS. Title and description are measured in pixels (a canvas in the
 browser, else an estimate that knows Latin, accented, wide and combining characters), never counted in characters, so
 it holds for any language and script; past Google's usual widths (`SERP_LIMITS`: title 600 px at 20 px Arial,

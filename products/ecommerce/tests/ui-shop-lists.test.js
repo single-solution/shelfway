@@ -2,7 +2,7 @@
 /* global window */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { LABEL_KINDS } from '@ss/contracts/address';
+import { LABEL_KINDS } from '@shelfway/contracts/address';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { LINE_PROBLEMS } from '../core/checkout.js';
 import { mountCompare } from '../ui/compare.js';

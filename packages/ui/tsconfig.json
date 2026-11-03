@@ -1,4 +1,4 @@
 {
-	"extends": "@ss/config/tsconfig.base.json",
+	"extends": "@shelfway/config/tsconfig.base.json",
 	"include": ["src/**/*.js", "test/**/*.js"]
 }

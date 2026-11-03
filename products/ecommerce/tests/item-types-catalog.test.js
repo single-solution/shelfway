@@ -51,7 +51,7 @@ const place = async (lines) => {
 				country: 'US',
 			},
 		},
-		headers: { 'x-forwarded-for': `10.7.0.${ip}`, 'ss-sign-in': token, 'idempotency-key': `types-${ip}` },
+		headers: { 'x-forwarded-for': `10.7.0.${ip}`, 'shelfway-sign-in': token, 'idempotency-key': `types-${ip}` },
 	});
 	if (answer.status !== 201) throw new Error(`place: ${answer.status} ${answer.text}`);
 	return answer.json.order;

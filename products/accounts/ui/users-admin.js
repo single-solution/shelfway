@@ -11,7 +11,17 @@
  * invited), open again. PLAN 0.8.6, 0.8.10 A3–A5.
  * @module
  */
-import { adminCall, badge, block, element, formatText, moreMenu, mountWidget, openDialog, stateSlot } from '@ss/app-kit/widget';
+import {
+	adminCall,
+	badge,
+	block,
+	element,
+	formatText,
+	moreMenu,
+	mountWidget,
+	openDialog,
+	stateSlot,
+} from '@shelfway/app-kit/widget';
 import { customInputs, datesOf, errorText, fieldMaker, setHidden, textsOf } from './common.js';
 import { addressInputs, addressText } from './address.js';
 import { card, chips, copyable } from './parts.js';
@@ -26,7 +36,7 @@ const REQUEST_CHIPS = /** @type {const} */ (['', 'pending', 'invited', 'expired'
 /** @typedef {Record<string, any>} User */
 
 /**
- * @param {{ host: HTMLElement, api: import('@ss/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig }} input
+ * @param {{ host: HTMLElement, api: import('@shelfway/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig }} input
  */
 export const mountUsersAdmin = ({ host, api, config }) => {
 	const t = textsOf(config);
@@ -42,7 +52,7 @@ export const mountUsersAdmin = ({ host, api, config }) => {
 		css: WIDGET_CSS,
 		render: (root) => {
 			const doc = /** @type {Document} */ (root.ownerDocument);
-			const make = fieldMaker(doc, 'ss-users');
+			const make = fieldMaker(doc, 'shelfway-users');
 			/** @type {Array<{ key: string, name: string, permissions: string[] }>} */
 			let roles = [];
 			/** Every custom field, staff-only ones too (A6). @type {import('./common.js').CustomField[]} */
@@ -63,7 +73,7 @@ export const mountUsersAdmin = ({ host, api, config }) => {
 			const nameOf = (user) => user.name || user.email || user.phone || user.id;
 			/** @param {User} user */
 			const statusOf = (user) => (user.blocked ? 'blocked' : String(user.status ?? 'active'));
-			/** @param {User} user @returns {import('@ss/app-kit/widget').Tone} */
+			/** @param {User} user @returns {import('@shelfway/app-kit/widget').Tone} */
 			const toneOf = (user) => {
 				const status = statusOf(user);
 				return status === 'blocked' ? 'danger' : status === 'active' ? (user.deletion ? 'warning' : 'success') : 'warning';
@@ -153,8 +163,8 @@ export const mountUsersAdmin = ({ host, api, config }) => {
 			const roleFilter = make.field('select', t('users.roles'), { multiple: '', size: '3' });
 			const permission = make.field('select', t('users.permission'));
 			const joined = make.field('input', t('users.joinedAfter'), { type: 'date' });
-			const tagFilter = make.field('input', t('users.tagsFilter'), { maxlength: '200', list: 'ss-users-tags' });
-			const knownTags = element(doc, 'datalist', { id: 'ss-users-tags' });
+			const tagFilter = make.field('input', t('users.tagsFilter'), { maxlength: '200', list: 'shelfway-users-tags' });
+			const knownTags = element(doc, 'datalist', { id: 'shelfway-users-tags' });
 			const hideBlocked = make.flip(t('users.hideBlocked'));
 			const search = element(doc, 'button', { type: 'submit' }, t('users.searchButton'));
 			filters.append(
@@ -481,7 +491,7 @@ export const mountUsersAdmin = ({ host, api, config }) => {
 
 				const edit = button(t('users.edit'));
 				edit.addEventListener('click', () => editDialog(user, done));
-				/** @type {import('@ss/app-kit/widget').MenuItem[]} */
+				/** @type {import('@shelfway/app-kit/widget').MenuItem[]} */
 				const items = [];
 				if (on('staff_links') && !user.blocked) {
 					items.push({
@@ -653,7 +663,7 @@ export const mountUsersAdmin = ({ host, api, config }) => {
 				});
 				const notes = make.field('textarea', t('users.notes'), { rows: '3', maxlength: '5000' });
 				notes.wrap.classList.add('wide');
-				const tags = make.field('input', t('users.tags'), { maxlength: '900', list: 'ss-users-tags' });
+				const tags = make.field('input', t('users.tags'), { maxlength: '900', list: 'shelfway-users-tags' });
 				tags.input.value = (user?.tags ?? []).join(', ');
 				name.input.value = user?.name ?? '';
 				email.input.value = user?.email ?? '';
@@ -942,7 +952,7 @@ export const mountUsersAdmin = ({ host, api, config }) => {
 					),
 					...(request.note ? [element(doc, 'span', { class: 'meta' }, request.note)] : []),
 				);
-				/** @type {import('@ss/app-kit/widget').Tone} */
+				/** @type {import('@shelfway/app-kit/widget').Tone} */
 				const tone =
 					request.status === 'completed'
 						? 'success'
@@ -979,7 +989,7 @@ export const mountUsersAdmin = ({ host, api, config }) => {
 						);
 					else requestNote.textContent = formatText(t('requests.given'), { name: request.name });
 				};
-				/** @type {import('@ss/app-kit/widget').MenuItem[]} */
+				/** @type {import('@shelfway/app-kit/widget').MenuItem[]} */
 				const items = [];
 				if (request.status === 'pending')
 					items.push({ label: t('requests.invite'), onSelect: () => linkOf('/invite', 'requests.inviteTitle') });

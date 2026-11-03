@@ -22,7 +22,7 @@ import {
 	splitView,
 	stateSlot,
 	toggle,
-} from '@ss/app-kit/widget';
+} from '@shelfway/app-kit/widget';
 import { GATEWAYS, GATEWAY_CURRENCIES, GATEWAY_FEATURES } from '../core/gateways.js';
 import { field } from './admin-kit.js';
 import { formattersOf } from './format.js';
@@ -45,7 +45,7 @@ const currencyChoices = (also = '') => {
 };
 
 /**
- * @param {{ host: HTMLElement, api: import('@ss/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig,
+ * @param {{ host: HTMLElement, api: import('@shelfway/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig,
  *   open: (url: string) => void, copy?: (text: string) => void }} input `open`: open an address in a new tab; `copy`:
  *   put a text on the clipboard
  */
@@ -124,7 +124,7 @@ export const mountLinksAdmin = ({ host, api, config, open, copy = () => {} }) =>
 					view.detail.querySelector('[role="status"]')?.replaceChildren(t(active ? 'links.turnedOn' : 'links.turnedOff'));
 					return null;
 				};
-				/** @type {import('@ss/app-kit/widget').MenuItem[]} */
+				/** @type {import('@shelfway/app-kit/widget').MenuItem[]} */
 				const menu = [
 					{ label: t('links.openPage'), onSelect: () => open(link.url) },
 					{ label: t('links.copyId'), onSelect: () => copy(link.id) },

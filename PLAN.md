@@ -37,7 +37,7 @@
 
 **Docs** = one **public** Docs hub (all catalog products, even not placed).  
 **Portal** = control plane only — not a docs site, not a developer desk.  
-**Products** that pass `ss app validate` + connect + place **just work** — no hacks.
+**Products** that pass `shelfway app validate` + connect + place **just work** — no hacks.
 
 Everyday merchant path after A/B:
 
@@ -58,7 +58,7 @@ Every row is planned. Skip none when claiming “done.”
 | 5   | Step-up = **OTP**, not password again and again               | §8 Step-up                        | **A5**                   |
 | 6   | Public Docs hub + pack `docsHubUrl`                           | §5                                | **B**                    |
 | 7   | LIVE_OPS / configure≠operate honesty                          | §8, kit/cli                       | **C**                    |
-| 8   | Store migration (`ss-import`) after pack exists               | importer READMEs                  | **D**                    |
+| 8   | Store migration (`shelfway-import`) after pack exists         | importer READMEs                  | **D**                    |
 | 9   | Product feature simplify (all six audited)                    | `products/*/FEATURE-AUDIT.md`     | **E**                    |
 | 10  | Configure dashboard calm UX (no accordion)                    | `packages/ui/DASHBOARD-AUDIT.md`  | **F**                    |
 | 11  | **Security (login, staff, show/hide, abuse)** — most critical | §8 + `platform/SECURITY-AUDIT.md` | **always + S checklist** |
@@ -147,7 +147,7 @@ Login/2FA · credits mechanics · admin merchants/billing redesign · operate wi
 
 **Ports:** Portal `3000`; Accounts `3001`; Notifications `3002`; Chat `3003`; Payments `3004`; Ecommerce `3005`; Growth `3006`.
 
-**New products:** `ss app init` **outside** this monorepo — never clone this tree to start one.
+**New products:** `shelfway app init` **outside** this monorepo — never clone this tree to start one.
 
 ---
 
@@ -187,7 +187,7 @@ OPERATE on merchant site (tickets + widgets)
 
 ### Env (Portal)
 
-`MONGODB_URI`, `PORTAL_URL`, `ENCRYPTION_KEY`, optional `ENCRYPTION_KEY_PREVIOUS`, `LOG_LEVEL`.
+`MONGODB_URI`, `PLATFORM_URL`, `ENCRYPTION_KEY`, optional `ENCRYPTION_KEY_PREVIOUS`, `LOG_LEVEL`.
 
 ---
 
@@ -240,7 +240,7 @@ Each product audit has **remove → where** tables. Do not merge by memory — f
 | Merchant        | Yes          | Own sites, **Add product**, Open, **Share** |
 | Developer / AI  | **No**       | Pack + Docs hub                             |
 | Site staff      | No           | Tickets on site                             |
-| Migration op    | No           | `ss-import` + env                           |
+| Migration op    | No           | `shelfway-import` + env                     |
 
 | Session            | Configure              | Live records                   |
 | ------------------ | ---------------------- | ------------------------------ |
@@ -273,7 +273,7 @@ Each product audit has **remove → where** tables. Do not merge by memory — f
 | Login throttle                   | Account + IP lockouts                                |
 | Sealed secrets                   | Server tokens, connections, TOTP at rest             |
 | Finance / Support splits         | Finance: no launch/tokens; Support: no server reveal |
-| `@ss/net` SSRF                   | No raw fetch to merchant URLs                        |
+| `@shelfway/net` SSRF             | No raw fetch to merchant URLs                        |
 | Share setup                      | Never includes server token plaintext                |
 
 ### Step-up — **A5** (OTP, not password spam)
@@ -318,9 +318,9 @@ Admins: no password field on Open/critical dialogs. Merchants without 2FA: enabl
 | Stolen server token          | No configure; revoke/regenerate; website-bound            |
 | Stolen ticket                | 15m + origin + permission list                            |
 | Cross-website                | websiteId on tokens/tickets/DB guards                     |
-| SSRF / hang product URL      | `@ss/net` + timeouts + body caps                          |
+| SSRF / hang product URL      | `@shelfway/net` + timeouts + body caps                    |
 | Hang auth / APIs             | Rate limits; fail closed to local throttle if store fails |
-| Import abuse                 | CLI/ops only — never deploy `ss-import`                   |
+| Import abuse                 | CLI/ops only — never deploy `shelfway-import`             |
 | Operate via configure cookie | Kit tests + LIVE_OPS validate (**C1** complete the list)  |
 
 ### Security gates before you merge (S)
@@ -341,7 +341,7 @@ Admins: no password field on Open/critical dialogs. Merchants without 2FA: enabl
 ## 9. Quality
 
 - Per-unit: `pnpm check` (format, lint, typecheck, coverage **90/90/85**).
-- Products: `pnpm validate` (`ss app validate`).
+- Products: `pnpm validate` (`shelfway app validate`).
 - E2E: connect, place, tokens, tickets, launch, plug-in path; **add** pack, Docs hub, merchant placement, capability Settings when those ship.
 - Notes fixture drift-guarded.
 
@@ -410,7 +410,7 @@ Admins: no password field on Open/critical dialogs. Merchants without 2FA: enabl
 
 ## 11. Bans (do not ship)
 
-- Second design system alongside `@ss/ui` (Unite theme pack only — `packages/ui/THEME-PACK.md`, tokens in `theme.css`)
+- Second design system alongside `@shelfway/ui` (Unite theme pack only — `packages/ui/THEME-PACK.md`, tokens in `theme.css`)
 - Developers reading docs inside logged-in Portal
 - Docs gated on placement
 - Install / Usage / Changes as peer apps
@@ -421,7 +421,7 @@ Admins: no password field on Open/critical dialogs. Merchants without 2FA: enabl
 - One token for all products
 - Merchants connecting deployables globally
 - Onboarding authors via monorepo clone
-- Deploying `ss-import`
+- Deploying `shelfway-import`
 - Claiming A–F done without that letter’s acceptance ticks
 
 ---
@@ -460,7 +460,7 @@ Admins: no password field on Open/critical dialogs. Merchants without 2FA: enabl
 
 1. `pnpm install` · read root `README.md` · skim §0–§2 here.
 2. Skim `platform/PORTAL-AUDIT.md`, `platform/SECURITY-AUDIT.md` (at least §0 + §9), and one `FEATURE-AUDIT.md` (Chat).
-3. Run `pnpm --filter @ss/platform check` (or a small unit) so tooling works.
+3. Run `pnpm --filter @shelfway/platform check` (or a small unit) so tooling works.
 4. Pick **A1** or ask which letter is active — do not start E on Ecommerce while A1 is open unless told.
 5. Every PR: name the letter (A1…F5 / **S**), link the audit section, tick acceptance; **security-touching PRs must tick §8 S**.
 6. If unsure whether something is secret or who may see it → **SECURITY-AUDIT** show/hide + access matrices, not guesswork.

@@ -3,9 +3,9 @@
  * reply alerts to visitors (C6), guests and sign-ins with imported keys, merges by time and claims by phone (C7),
  * older messages (C8), typing, Seen and the paused notice (C9), the inbox options (C11) and staff attachments (C12).
  */
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import { afterAll, describe, expect, it } from 'vitest';
-import { sha256Hex } from '@ss/protocol';
+import { sha256Hex } from '@shelfway/protocol';
 import { REASSURE_AFTER_MINUTES, STAFF_ATTACHMENT_MAX_BYTES } from '../core/limits.js';
 import { AI_KEY, STORAGE_KEY, ready, verifiedVisitor } from './helpers.js';
 

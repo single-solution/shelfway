@@ -119,7 +119,7 @@ const ORDER = {
 };
 
 /** The labels of the guest's details, in order. @param {HTMLElement} host */
-const labelsOf = (host) => $$(host, 'label[for^="ss-cart-guest-"]').map((node) => node.textContent);
+const labelsOf = (host) => $$(host, 'label[for^="shelfway-cart-guest-"]').map((node) => node.textContent);
 
 const SETTINGS = {
 	currency: 'EUR',
@@ -172,7 +172,7 @@ describe('cart', () => {
 		const { fake, host } = await setup({ lines: [] });
 		expect(textOf(host)).toContain(text('cart.empty'));
 		expect(fake.calls).toHaveLength(0);
-		expect(host.getAttribute('data-ss-mounted')).toBe('cart');
+		expect(host.getAttribute('data-shelfway-mounted')).toBe('cart');
 	});
 
 	it('prices the cart and changes quantities after a short pause', async () => {
@@ -216,8 +216,8 @@ describe('cart', () => {
 		// an optional address field keeps its name in its label (review M10)
 		const line2 = text('checkout.field.line2');
 		expect(text('checkout.optional', { field: line2 })).toContain(line2);
-		expect($(host, 'label[for="ss-cart-line2"]').textContent).toBe(text('checkout.optional', { field: line2 }));
-		expect($(host, 'label[for="ss-cart-line1"]').textContent).toBe(text('checkout.field.line1'));
+		expect($(host, 'label[for="shelfway-cart-line2"]').textContent).toBe(text('checkout.optional', { field: line2 }));
+		expect($(host, 'label[for="shelfway-cart-line1"]').textContent).toBe(text('checkout.field.line1'));
 		await click(buttonOf(host, text('cart.more', { name: 'Phone' })));
 		await click(buttonOf(host, text('cart.more', { name: 'Phone' })));
 		expect(timers.pending()).toBe(1);
@@ -447,10 +447,10 @@ describe('cart', () => {
 					}),
 				),
 		});
-		const form = () => $(host, '#ss-cart-coupon').closest('form');
+		const form = () => $(host, '#shelfway-cart-coupon').closest('form');
 		await submit(form());
 		expect(timers.pending()).toBe(0);
-		$(host, '#ss-cart-coupon').value = ' free ';
+		$(host, '#shelfway-cart-coupon').value = ' free ';
 		await submit(form());
 		await timers.run();
 		expect(fake.last('POST /v1/shop/cart/quote')?.body.coupon).toBe('free');
@@ -469,7 +469,7 @@ describe('cart', () => {
 
 		resetPage();
 		const off = await setup({ features: ['checkout', 'loyalty'] });
-		expect($(off.host, '#ss-cart-coupon')).toBeNull();
+		expect($(off.host, '#shelfway-cart-coupon')).toBeNull();
 	});
 
 	it('redeems loyalty points when signed in', async () => {
@@ -482,28 +482,28 @@ describe('cart', () => {
 			},
 		});
 		expect(textOf(host)).toContain(text('cart.points.balance', { balance: 500 }));
-		$(host, '#ss-cart-points').value = '100';
-		await submit($(host, '#ss-cart-points').closest('form'));
+		$(host, '#shelfway-cart-points').value = '100';
+		await submit($(host, '#shelfway-cart-points').closest('form'));
 		await timers.run();
 		expect(fake.last('POST /v1/shop/cart/quote')?.body.points).toBe(100);
 		expect(textOf(host)).toContain(text('cart.points.used', { points: 100, amount: 'EUR 10.00' }));
 		expect(textOf(host)).toContain(text('cart.pointsDiscount'));
-		$(host, '#ss-cart-points').value = '5000';
-		await submit($(host, '#ss-cart-points').closest('form'));
+		$(host, '#shelfway-cart-points').value = '5000';
+		await submit($(host, '#shelfway-cart-points').closest('form'));
 		await timers.run();
 		expect(fake.last('POST /v1/shop/cart/quote')?.body.points).toBe(200);
 		expect(textOf(host)).toContain(text('cart.points.notEnough'));
-		$(host, '#ss-cart-points').value = 'x';
-		await submit($(host, '#ss-cart-points').closest('form'));
+		$(host, '#shelfway-cart-points').value = 'x';
+		await submit($(host, '#shelfway-cart-points').closest('form'));
 		await timers.run();
 		expect(fake.last('POST /v1/shop/cart/quote')?.body.points).toBe(0);
 		fake.identify(null);
 		await timers.run();
-		expect($(host, '#ss-cart-points')).toBeNull();
+		expect($(host, '#shelfway-cart-points')).toBeNull();
 
 		resetPage();
 		const none = await setup({ signIn: 's1', quote: () => ok(quoteOf({ points: { balance: 0, max: 0, used: 0, value: 0 } })) });
-		expect($(none.host, '#ss-cart-points')).toBeNull();
+		expect($(none.host, '#shelfway-cart-points')).toBeNull();
 		expect(textOf(none.host)).toContain(text('cart.points.balance', { balance: 0 }));
 	});
 
@@ -521,15 +521,15 @@ describe('cart', () => {
 		};
 		const { fake, timers, host } = await setup({ settings });
 		// without a country the address is in the business country: its regions are a list to pick from
-		const picker = /** @type {HTMLSelectElement} */ ($(host, '#ss-cart-region'));
+		const picker = /** @type {HTMLSelectElement} */ ($(host, '#shelfway-cart-region'));
 		expect(picker.tagName).toBe('SELECT');
 		expect([...picker.options].map((option) => option.value)).toEqual(['', 'California', 'Texas']);
 		// the business country is picked first, and the form follows its format: US order, State and ZIP code required
-		expect(/** @type {HTMLSelectElement} */ ($(host, '#ss-cart-country')).value).toBe('US');
+		expect(/** @type {HTMLSelectElement} */ ($(host, '#shelfway-cart-country')).value).toBe('US');
 		/** The address fields shown, in order, with their labels. */
 		const shown = () =>
 			$$(host, 'fieldset.box .field label')
-				.map((label) => `${label.getAttribute('for')?.replace('ss-cart-', '')}:${label.textContent}`)
+				.map((label) => `${label.getAttribute('for')?.replace('shelfway-cart-', '')}:${label.textContent}`)
 				.filter((entry) => !entry.startsWith('guest'));
 		expect(shown()).toEqual([
 			`name:${text('checkout.field.name')}`,
@@ -543,37 +543,37 @@ describe('cart', () => {
 			`notes:${text('checkout.optional', { field: text('checkout.field.notes') })}`,
 		]);
 		await setValue(picker, 'Texas');
-		await setValue($(host, '#ss-cart-postalCode'), '73301');
+		await setValue($(host, '#shelfway-cart-postalCode'), '73301');
 		await timers.run();
 		expect(fake.last('POST /v1/shop/cart/quote')?.body.delivery).toMatchObject({ region: 'Texas', postalCode: '73301' });
 		// another country: the region is typed (what was picked stays)
-		await setValue($(host, '#ss-cart-country'), 'CA');
+		await setValue($(host, '#shelfway-cart-country'), 'CA');
 		expect(shown().slice(5, 8)).toEqual([
 			`city:${text('checkout.optional', { field: text('address.city.city') })}`,
 			`region:${text('address.region.province')}`,
 			`postalCode:${text('address.postalCode.postal')}`,
 		]);
-		const typed = /** @type {HTMLInputElement} */ ($(host, '#ss-cart-region'));
+		const typed = /** @type {HTMLInputElement} */ ($(host, '#shelfway-cart-region'));
 		expect(typed.tagName).toBe('INPUT');
 		expect(typed.value).toBe('Texas');
 		expect(typed.getAttribute('maxlength')).toBe('100');
 		await setValue(typed, 'Ontario');
 		// Japan writes the postal code and prefecture first; a country with no postal codes asks for none
-		await setValue($(host, '#ss-cart-country'), 'JP');
+		await setValue($(host, '#shelfway-cart-country'), 'JP');
 		expect(shown().slice(3, 5)).toEqual([
 			`postalCode:${text('address.postalCode.postal')}`,
 			`region:${text('address.region.prefecture')}`,
 		]);
-		expect(/** @type {HTMLInputElement} */ ($(host, '#ss-cart-postalCode')).value).toBe('73301');
-		await setValue($(host, '#ss-cart-country'), 'AE');
-		expect($(host, '#ss-cart-postalCode')).toBeNull();
+		expect(/** @type {HTMLInputElement} */ ($(host, '#shelfway-cart-postalCode')).value).toBe('73301');
+		await setValue($(host, '#shelfway-cart-country'), 'AE');
+		expect($(host, '#shelfway-cart-postalCode')).toBeNull();
 		expect(shown()).toContain(`region:${text('address.region.emirate')}`);
-		await setValue($(host, '#ss-cart-country'), 'US');
-		expect($(host, '#ss-cart-region').tagName).toBe('SELECT');
-		expect(/** @type {HTMLSelectElement} */ ($(host, '#ss-cart-region')).value).toBe('');
+		await setValue($(host, '#shelfway-cart-country'), 'US');
+		expect($(host, '#shelfway-cart-region').tagName).toBe('SELECT');
+		expect(/** @type {HTMLSelectElement} */ ($(host, '#shelfway-cart-region')).value).toBe('');
 		// each field at most its length in the one address table
-		expect($(host, '#ss-cart-city').getAttribute('maxlength')).toBe('100');
-		expect($(host, '#ss-cart-phone').getAttribute('maxlength')).toBe('40');
+		expect($(host, '#shelfway-cart-city').getAttribute('maxlength')).toBe('100');
+		expect($(host, '#shelfway-cart-phone').getAttribute('maxlength')).toBe('40');
 	});
 
 	it('shows the shop’s delivery, packing and pickup texts and the pickup point’s address and hours (E22)', async () => {
@@ -601,7 +601,7 @@ describe('cart', () => {
 		for (const part of [notes.delivery, notes.prep, '1 Market Street', text('checkout.pickupHours', { hours: 'Mon–Fri 9–17' })])
 			expect(page).toContain(part);
 		expect(page).not.toContain(notes.pickupReady);
-		await setValue($$(host, 'input[name="ss-cart-delivery"]')[1], true);
+		await setValue($$(host, 'input[name="shelfway-cart-delivery"]')[1], true);
 		await timers.run();
 		page = textOf(host);
 		expect(page).not.toContain(notes.delivery);
@@ -627,7 +627,7 @@ describe('cart', () => {
 							}),
 						),
 		});
-		const radios = () => $$(host, 'input[name="ss-cart-delivery"]');
+		const radios = () => $$(host, 'input[name="shelfway-cart-delivery"]');
 		expect(radios().map((radio) => radio.checked)).toEqual([true, false, false]);
 		expect(textOf(host)).toContain(text('checkout.deliver', { rate: 'Express', fee: 'EUR 350.00' }));
 		await setValue(radios()[1], true);
@@ -636,10 +636,10 @@ describe('cart', () => {
 		expect(radios().map((radio) => radio.checked)).toEqual([false, true, false]);
 		expect(textOf(host)).toContain(text('cart.deliveryRate', { rate: 'Express' }));
 		// no rate for the place: the shopper is told, and the address stays to change
-		await setValue($(host, '#ss-cart-city'), 'Nowhere');
+		await setValue($(host, '#shelfway-cart-city'), 'Nowhere');
 		await timers.run();
 		expect(textOf(host)).toContain(text('checkout.deliveryProblem.no_delivery'));
-		expect($(host, '#ss-cart-name').closest('fieldset').hidden).toBe(false);
+		expect($(host, '#shelfway-cart-name').closest('fieldset').hidden).toBe(false);
 	});
 
 	it('switches between delivery and pickup and prices the address city', async () => {
@@ -665,10 +665,10 @@ describe('cart', () => {
 			text('checkout.deliver', { rate: text('checkout.delivery'), fee: text('checkout.free') }),
 		);
 		expect(textOf(host)).toContain(text('cart.tax'));
-		await setValue($(host, '#ss-cart-city'), 'Paris');
+		await setValue($(host, '#shelfway-cart-city'), 'Paris');
 		await timers.run();
 		expect(fake.last('POST /v1/shop/cart/quote')?.body.delivery.city).toBe('Paris');
-		const radios = () => $$(host, 'input[name="ss-cart-delivery"]');
+		const radios = () => $$(host, 'input[name="shelfway-cart-delivery"]');
 		await setValue(radios()[1], true);
 		await timers.run();
 		expect(fake.last('POST /v1/shop/cart/quote')?.body.delivery).toEqual({
@@ -683,11 +683,11 @@ describe('cart', () => {
 		});
 		expect(radios()[1].checked).toBe(true);
 		expect($(host, 'fieldset.box legend').closest('fieldset')).toBeTruthy();
-		expect($(host, '#ss-cart-name').closest('fieldset').hidden).toBe(true);
+		expect($(host, '#shelfway-cart-name').closest('fieldset').hidden).toBe(true);
 		expect(textOf(host)).not.toContain(text('cart.delivery') + 'Free');
 		await setValue(radios()[0], true);
 		await timers.run();
-		expect($(host, '#ss-cart-name').closest('fieldset').hidden).toBe(false);
+		expect($(host, '#shelfway-cart-name').closest('fieldset').hidden).toBe(false);
 
 		resetPage();
 		const problem = await setup({
@@ -715,8 +715,8 @@ describe('cart', () => {
 					}),
 				),
 		});
-		expect($(digital.host, 'input[name="ss-cart-delivery"]')).toBeNull();
-		expect($(digital.host, '#ss-cart-name').closest('fieldset').hidden).toBe(true);
+		expect($(digital.host, 'input[name="shelfway-cart-delivery"]')).toBeNull();
+		expect($(digital.host, '#shelfway-cart-name').closest('fieldset').hidden).toBe(true);
 		expect(textOf(digital.host)).toContain(text('cart.taxIncluded'));
 	});
 
@@ -750,15 +750,15 @@ describe('cart', () => {
 describe('checkout', () => {
 	/** @param {any} host */
 	const fillAddress = async (host) => {
-		$(host, '#ss-cart-name').value = 'Ana';
-		$(host, '#ss-cart-phone').value = '+44 7700 900123';
-		$(host, '#ss-cart-line1').value = '1 Road';
-		await setValue($(host, '#ss-cart-city'), 'Paris');
+		$(host, '#shelfway-cart-name').value = 'Ana';
+		$(host, '#shelfway-cart-phone').value = '+44 7700 900123';
+		$(host, '#shelfway-cart-line1').value = '1 Road';
+		await setValue($(host, '#shelfway-cart-city'), 'Paris');
 	};
 
 	it('asks a guest to sign in, checks the address and pays on Payments', async () => {
 		const { fake, timers, host } = await setup({
-			url: 'https://shop.example.com/cart?ss_order=bad#top',
+			url: 'https://shop.example.com/cart?shelfway_order=bad#top',
 			routes: {
 				'POST /v1/shop/orders': () =>
 					ok(
@@ -773,19 +773,19 @@ describe('checkout', () => {
 		await timers.run();
 		await click(buttonOf(host, text('checkout.place')));
 		expect(textOf(host)).toContain(text('checkout.missing', { field: text('checkout.field.name') }));
-		expect(host.shadowRoot?.activeElement?.id).toBe('ss-cart-name');
+		expect(host.shadowRoot?.activeElement?.id).toBe('shelfway-cart-name');
 		await fillAddress(host);
 		// a postal code is checked against the shape of the country's codes before placing
-		await setValue($(host, '#ss-cart-country'), 'US');
-		$(host, '#ss-cart-region').value = 'TX';
-		$(host, '#ss-cart-postalCode').value = '787';
+		await setValue($(host, '#shelfway-cart-country'), 'US');
+		$(host, '#shelfway-cart-region').value = 'TX';
+		$(host, '#shelfway-cart-postalCode').value = '787';
 		await click(buttonOf(host, text('checkout.place')));
 		expect(textOf(host)).toContain(text('checkout.fieldWrong', { field: text('address.postalCode.zip') }));
 		expect(fake.all('POST /v1/shop/orders')).toHaveLength(0);
-		await setValue($(host, '#ss-cart-country'), '');
+		await setValue($(host, '#shelfway-cart-country'), '');
 		await timers.run();
-		await setValue($$(host, 'input[name="ss-cart-payment"]')[1], true);
-		$(host, '#ss-cart-note').value = ' Ring twice ';
+		await setValue($$(host, 'input[name="shelfway-cart-payment"]')[1], true);
+		$(host, '#shelfway-cart-note').value = ' Ring twice ';
 		await click(buttonOf(host, text('checkout.place')));
 		const placed = fake.last('POST /v1/shop/orders');
 		expect(placed?.key).toBe('key-1');
@@ -864,14 +864,14 @@ describe('checkout', () => {
 			quote: pickupOnly,
 			routes: { 'POST /v1/shop/orders': () => answerOf },
 		});
-		expect($(host, '#ss-cart-guest-name').closest('fieldset').hidden).toBe(false);
+		expect($(host, '#shelfway-cart-guest-name').closest('fieldset').hidden).toBe(false);
 		expect(textOf(host)).toContain(text('checkout.guest.title'));
 		expect(textOf(host)).toContain(text('checkout.guest.signIn'));
 		expect(textOf(host)).not.toContain(text('checkout.signIn'));
 		await click(buttonOf(host, text('checkout.place')));
 		expect(textOf(host)).toContain(text('checkout.missing', { field: text('checkout.guest.name') }));
 		expect(fake.all('POST /v1/shop/orders')).toHaveLength(0);
-		$(host, '#ss-cart-guest-name').value = ' Gina Guest ';
+		$(host, '#shelfway-cart-guest-name').value = ' Gina Guest ';
 		// guests check out by phone: it is needed, the email address is not
 		expect(labelsOf(host)).toEqual([
 			text('checkout.guest.name'),
@@ -881,7 +881,7 @@ describe('checkout', () => {
 		await click(buttonOf(host, text('checkout.place')));
 		expect(textOf(host)).toContain(text('checkout.missing', { field: text('checkout.guest.phone') }));
 		expect(fake.all('POST /v1/shop/orders')).toHaveLength(0);
-		$(host, '#ss-cart-guest-phone').value = '555 000 7777';
+		$(host, '#shelfway-cart-guest-phone').value = '555 000 7777';
 		await click(buttonOf(host, text('checkout.place')));
 		expect(fake.last('POST /v1/shop/orders')?.body.customer).toEqual({ name: 'Gina Guest', phone: '555 000 7777', email: '' });
 		// a contact of a member with a password signs in instead
@@ -894,7 +894,7 @@ describe('checkout', () => {
 		await click(buttonOf(host, text('checkout.place')));
 		const lost = fake.last('POST /v1/shop/orders')?.key;
 		answerOf = ok({ order: ORDER, next: { kind: 'done' }, orderKey: 'k'.repeat(32) }, 201);
-		await setValue($(host, '#ss-cart-guest-email'), 'gina@example.com', 'input');
+		await setValue($(host, '#shelfway-cart-guest-email'), 'gina@example.com', 'input');
 		await click(buttonOf(host, text('checkout.place')));
 		expect(fake.last('POST /v1/shop/orders')?.key).not.toBe(lost);
 		expect(fake.last('POST /v1/shop/orders')?.body.customer.email).toBe('gina@example.com');
@@ -908,7 +908,7 @@ describe('checkout', () => {
 			settings: { ...SETTINGS, checkout: { ...SETTINGS.checkout, guests: { identity: 'phone', phoneRequired: true } } },
 			quote: pickupOnly,
 		});
-		expect($(member.host, '#ss-cart-guest-name').closest('fieldset').hidden).toBe(true);
+		expect($(member.host, '#shelfway-cart-guest-name').closest('fieldset').hidden).toBe(true);
 		expect(buttonOf(member.host, text('checkout.place'))).toBeTruthy();
 	});
 
@@ -945,10 +945,10 @@ describe('checkout', () => {
 			text('checkout.guest.email'),
 			text('checkout.optional', { field: text('checkout.guest.phone') }),
 		]);
-		$(host, '#ss-cart-guest-name').value = 'Ella Guest';
+		$(host, '#shelfway-cart-guest-name').value = 'Ella Guest';
 		await click(buttonOf(host, text('checkout.place')));
 		expect(textOf(host)).toContain(text('checkout.missing', { field: text('checkout.guest.email') }));
-		$(host, '#ss-cart-guest-email').value = 'ella@example.com';
+		$(host, '#shelfway-cart-guest-email').value = 'ella@example.com';
 		await click(buttonOf(host, text('checkout.place')));
 		expect(byEmail.fake.last('POST /v1/shop/orders')?.body.customer).toEqual({
 			name: 'Ella Guest',
@@ -968,11 +968,11 @@ describe('checkout', () => {
 		host = either.host;
 		expect(labelsOf(host)).toEqual([text('checkout.guest.name'), text('checkout.guest.phone'), text('checkout.guest.email')]);
 		expect(textOf(host)).toContain(text('checkout.guest.either'));
-		$(host, '#ss-cart-guest-name').value = 'Eve Guest';
+		$(host, '#shelfway-cart-guest-name').value = 'Eve Guest';
 		await click(buttonOf(host, text('checkout.place')));
 		expect(textOf(host)).toContain(text('checkout.guest.contactNeeded'));
 		expect(either.fake.all('POST /v1/shop/orders')).toHaveLength(0);
-		$(host, '#ss-cart-guest-email').value = 'eve@example.com';
+		$(host, '#shelfway-cart-guest-email').value = 'eve@example.com';
 		await click(buttonOf(host, text('checkout.place')));
 		expect(either.fake.last('POST /v1/shop/orders')?.body.customer).toEqual({
 			name: 'Eve Guest',
@@ -997,7 +997,7 @@ describe('checkout', () => {
 
 	it('reads a guest’s order back from Payments with the key kept in the browser (E21)', async () => {
 		const { fake, host } = await setup({
-			url: 'https://shop.example.com/cart?ss_order=ord_1',
+			url: 'https://shop.example.com/cart?shelfway_order=ord_1',
 			routes: { 'GET /v1/shop/orders/ord_1': () => ok(ORDER) },
 			guestOrders: ['ord_1'],
 		});
@@ -1343,7 +1343,7 @@ describe('success page after Payments', () => {
 			payment: { ...ORDER.payment, state: 'pending', payUrl: 'https://pay.example.com/again', payBy: null },
 		};
 		const { fake, timers, host } = await setup({
-			url: 'https://shop.example.com/cart?ss_order=ord_1',
+			url: 'https://shop.example.com/cart?shelfway_order=ord_1',
 			routes: { 'GET /v1/shop/orders/ord_1': () => ok(paidLater) },
 		});
 		expect(textOf(host)).toContain(text('success.signIn'));
@@ -1360,20 +1360,20 @@ describe('success page after Payments', () => {
 	});
 
 	it('says when the order cannot be found or read', async () => {
-		const missing = await setup({ signIn: 's1', url: 'https://shop.example.com/cart?ss_order=ord_9' });
+		const missing = await setup({ signIn: 's1', url: 'https://shop.example.com/cart?shelfway_order=ord_9' });
 		expect(textOf(missing.host)).toContain(text('success.notFound'));
 		expect(missing.fake.cart.state().lines).toHaveLength(1);
 		resetPage();
 		const broken = await setup({
 			signIn: 's1',
-			url: 'https://shop.example.com/cart?ss_order=ord_1',
+			url: 'https://shop.example.com/cart?shelfway_order=ord_1',
 			routes: { 'GET /v1/shop/orders/ord_1': () => fail(500, 'internal_error') },
 		});
 		expect(textOf(broken.host)).toContain(text('success.error'));
 	});
 
-	it('makes the return address without ss_order', () => {
-		const fake = makeShop({ url: 'https://shop.example.com/checkout?a=1&ss_order=ord_1#x' });
+	it('makes the return address without shelfway_order', () => {
+		const fake = makeShop({ url: 'https://shop.example.com/checkout?a=1&shelfway_order=ord_1#x' });
 		expect(returnUrlOf(fake.shop)).toBe('https://shop.example.com/checkout?a=1');
 	});
 });

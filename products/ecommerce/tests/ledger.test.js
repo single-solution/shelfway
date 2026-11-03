@@ -3,7 +3,7 @@
  * transaction; giving them back (a transition the order engine plans, applied with `applyTransition`) happens exactly
  * once. Runs on the MongoDB replica set (real transactions).
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
 	applyTransition,
@@ -26,7 +26,7 @@ import { setup, storedOrder } from './helpers.js';
 
 /** @type {Awaited<ReturnType<typeof setup>>} */
 let shop;
-/** @type {import('@ss/app-kit').WebsiteData} */
+/** @type {import('@shelfway/app-kit').WebsiteData} */
 let data;
 
 beforeAll(async () => {

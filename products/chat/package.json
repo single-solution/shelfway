@@ -1,7 +1,7 @@
 {
-	"name": "@ss/product-chat",
+	"name": "@shelfway/product-chat",
 	"version": "0.1.0",
-	"description": "Chat: the visitor chat widget and API, AI replies with the merchant’s own provider, knowledge, tools, guests and Accounts sign-ins, handoff, the inbox, assignment, presence, leads and flows, attachments, ratings, transcripts, staff alerts, moderation and reports (PLAN 0.8.3).",
+	"description": "Chat: the visitor chat widget and API, AI replies with the merchant\u2019s own provider, knowledge, tools, guests and Accounts sign-ins, handoff, the inbox, assignment, presence, leads and flows, attachments, ratings, transcripts, staff alerts, moderation and reports (PLAN 0.8.3).",
 	"type": "module",
 	"private": true,
 	"license": "UNLICENSED",
@@ -13,10 +13,10 @@
 	"engines": {
 		"node": "22.x"
 	},
-	"prettier": "@ss/config/prettier.json",
+	"prettier": "@shelfway/config/prettier.json",
 	"scripts": {
-		"dev": "ss app assets . && next dev --port 3003",
-		"build": "ss app assets . && next build",
+		"dev": "shelfway app assets . && next dev --port 3003",
+		"build": "shelfway app assets . && next build",
 		"start": "next start --port 3003",
 		"check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test",
 		"test": "vitest run --coverage",
@@ -24,22 +24,22 @@
 		"typecheck": "tsc -p tsconfig.json",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
-		"validate": "ss app validate ."
+		"validate": "shelfway app validate ."
 	},
 	"dependencies": {
-		"@ss/app-kit": "workspace:^",
-		"@ss/contracts": "workspace:^",
-		"@ss/net": "workspace:^",
-		"@ss/protocol": "workspace:^",
-		"@ss/ui": "workspace:^",
+		"@shelfway/app-kit": "workspace:^",
+		"@shelfway/contracts": "workspace:^",
+		"@shelfway/net": "workspace:^",
+		"@shelfway/protocol": "workspace:^",
+		"@shelfway/ui": "workspace:^",
 		"mongodb": "^6.21.0",
 		"next": "~16.3.8",
 		"react": "^19.3.0",
 		"react-dom": "^19.3.0"
 	},
 	"devDependencies": {
-		"@ss/cli": "workspace:^",
-		"@ss/config": "workspace:^",
+		"@shelfway/cli": "workspace:^",
+		"@shelfway/config": "workspace:^",
 		"@tailwindcss/postcss": "^4.3.3",
 		"@types/node": "^22.20.4",
 		"@types/react": "^19.3.0",

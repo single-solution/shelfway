@@ -1,6 +1,6 @@
 /**
  * The small JSON Schema subset of API descriptions (`schemas/api.json` of a product, `kit-api.json` of the kit): what
- * a request or an answer may hold. Build-time and test-time only: `ss app validate` checks the schemas themselves
+ * a request or an answer may hold. Build-time and test-time only: `shelfway app validate` checks the schemas themselves
  * (`schemaProblems`) and the products' tests check every answer against them (`validateValue`); no request in
  * production is validated with it.
  *
@@ -12,7 +12,7 @@
  * @module
  */
 import { isDeepStrictEqual } from 'node:util';
-import { isObject } from '@ss/contracts/util';
+import { isObject } from '@shelfway/contracts/util';
 
 /**
  * @typedef {{ [keyword: string]: unknown }} Schema

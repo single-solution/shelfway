@@ -3,7 +3,7 @@
  * Money, Payments, Orders, Loyalty, "Per store" Orders and Loyalty; IMP-5, IMP-9, IMP-10, IMP-13, IMP-17, IMP-19,
  * IMP-23, IMP-49, CU-6; owner quirk 7):
  *
- * - **customers**: one per normalized phone (`@ss/contracts/phone`, +92); SB's duplicates merge, the member's record
+ * - **customers**: one per normalized phone (`@shelfway/contracts/phone`, +92); SB's duplicates merge, the member's record
  *   winning, with their notes and "seen" markers; members and password holders name their Accounts user.
  * - **orders**: numbers and status keys kept (the `order_flow` list gives them their roles); money × 100, the stored
  *   discount (offers, member discount and points: what makes SB's total) spread over the lines so every line has its

@@ -16,10 +16,10 @@
  * @module
  */
 import { createHash } from 'node:crypto';
-import { isId } from '@ss/contracts';
-import { fromDecimal, toDecimal } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
-import { constantTimeEqual, sha256Hex } from '@ss/protocol';
+import { isId } from '@shelfway/contracts';
+import { fromDecimal, toDecimal } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
+import { constantTimeEqual, sha256Hex } from '@shelfway/protocol';
 import { formBody, formFields } from '../util.js';
 import { localMobile } from './easypaisa.js';
 import { pakistanTime } from './jazzcash.js';
@@ -140,7 +140,7 @@ export const payfastPk = {
 	// the keys are tested by asking for an access token (no payment is made with it)
 	test: async (keys, ctx) => {
 		const answer = await accessToken(keys, ctx, {
-			basketId: `SS-TEST-${Math.floor(ctx.now() / 1000)}`,
+			basketId: `SHELFWAY-TEST-${Math.floor(ctx.now() / 1000)}`,
 			amount: '1',
 			currency: 'PKR',
 		});

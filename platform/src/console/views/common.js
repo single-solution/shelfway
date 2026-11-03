@@ -6,13 +6,13 @@
  * @module
  */
 import { useEffect, useRef, useState } from 'react';
-import { ButtonLink, Page, PasswordConfirmDialog, describeProblem, fieldErrors, problemCode } from '@ss/ui';
+import { ButtonLink, Page, PasswordConfirmDialog, describeProblem, fieldErrors, problemCode, useToast } from '@shelfway/ui';
 import { CONFIRM_CHANGE, CONSOLE, MORE, WEBSITE } from '../../texts/console.js';
 import { apiFetch } from '../client.js';
 import { Link } from '../link.js';
-import { routes } from '../paths.js';
+import { api, routes } from '../paths.js';
 
-/** @typedef {import('@ss/ui/problems').Problem} Problem */
+/** @typedef {import('@shelfway/ui/problems').Problem} Problem */
 /**
  * @template [T=any]
  * @typedef {import('../client.js').ApiResult<T>} ApiResult
@@ -150,13 +150,13 @@ export function useListPages(list, size = PAGE_SIZE) {
 const DEFAULT_ACCENTS = new Set(['#0f766e', '#2226f7', '#4f46e5']);
 
 /**
- * Inline style that applies a changed accent to a subtree (the theme reads `--ss-primary`).
+ * Inline style that applies a changed accent to a subtree (the theme reads `--shelfway-primary`).
  * @param {string | null | undefined} accent
  * @returns {Record<string, string> | undefined}
  */
 export const accentStyle = (accent) =>
 	accent && /^#[0-9a-f]{6}$/i.test(accent) && !DEFAULT_ACCENTS.has(accent.toLowerCase())
-		? { '--ss-primary': accent, '--ss-primary-hover': accent }
+		? { '--shelfway-primary': accent, '--shelfway-primary-hover': accent }
 		: undefined;
 
 /**
@@ -164,12 +164,12 @@ export const accentStyle = (accent) =>
  */
 export function BrandMark({ branding, tagline }) {
 	const mark =
-		String(branding.name ?? 'SS')
+		String(branding.name ?? 'SW')
 			.split(/\s+/)
 			.filter(Boolean)
 			.slice(0, 2)
 			.map((part) => part[0]?.toUpperCase() ?? '')
-			.join('') || 'SS';
+			.join('') || 'SW';
 	return (
 		<div className="flex items-center gap-3">
 			{branding.logoUrl ? (
@@ -224,15 +224,34 @@ export function ConfirmChange({
 	onClose,
 	onDone,
 }) {
+	const toast = useToast();
 	const [busy, setBusy] = useState(false);
+	const [resending, setResending] = useState(false);
 	const [errors, setErrors] = useState(/** @type {{ password?: string, code?: string, form?: string }} */ ({}));
 	const [wantsCode, setWantsCode] = useState(otpOnly || twoStepOn);
+
+	const isEmailOtp = otpOnly && !twoStepOn;
+
 	useEffect(() => {
 		if (open) {
 			setWantsCode(otpOnly || twoStepOn);
 			setErrors({});
+			if (otpOnly && !twoStepOn) {
+				void apiFetch(api.stepUpOtp(), { method: 'POST' });
+			}
 		}
 	}, [open, twoStepOn, otpOnly]);
+
+	const resendEmailOtp = async () => {
+		setResending(true);
+		try {
+			await apiFetch(api.stepUpOtp(), { method: 'POST' });
+			toast.show({ title: 'A new confirmation code was sent to your email.' });
+		} finally {
+			setResending(false);
+		}
+	};
+
 	/** @param {{ password?: string, code: string }} input */
 	const confirm = async ({ password, code }) => {
 		setBusy(true);
@@ -266,6 +285,9 @@ export function ConfirmChange({
 			danger={danger}
 			showCode={otpOnly || wantsCode}
 			otpOnly={otpOnly}
+			isEmailOtp={isEmailOtp}
+			onResendEmailOtp={isEmailOtp ? resendEmailOtp : undefined}
+			resendingEmailOtp={resending}
 			{...(expected === undefined ? {} : { expected })}
 			confirmLabel={confirmLabel}
 			title={title}

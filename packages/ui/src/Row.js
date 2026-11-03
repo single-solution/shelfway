@@ -86,7 +86,7 @@ export function Row({
 	);
 	return (
 		<div
-			data-ss-row=""
+			data-shelfway-row=""
 			{...(selected ? { 'data-selected': '' } : {})}
 			{...(button ? { role: 'button', tabIndex: disabled ? -1 : 0 } : {})}
 			{...(disabled ? { 'aria-disabled': true } : {})}
@@ -112,14 +112,14 @@ export function Row({
 					: undefined
 			}
 			className={cx(
-				'ss-motion relative flex w-full min-w-0 items-center gap-3 rounded-control px-2.5 text-left',
+				'shelfway-motion relative flex w-full min-w-0 items-center gap-3 rounded-control px-2.5 text-left',
 				LIST.row,
-				live && 'ss-press cursor-pointer',
+				live && 'shelfway-press cursor-pointer',
 				button
 					? 'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus'
 					: 'has-[a:focus-visible]:outline-2 has-[a:focus-visible]:-outline-offset-2 has-[a:focus-visible]:outline-focus',
 				selected
-					? 'border border-line bg-surface ss-hard group-data-[ss-slide]/list:border-transparent group-data-[ss-slide]/list:bg-transparent group-data-[ss-slide]/list:shadow-none'
+					? 'border border-line bg-surface shelfway-hard group-data-[shelfway-slide]/list:border-transparent group-data-[shelfway-slide]/list:bg-transparent group-data-[shelfway-slide]/list:shadow-none'
 					: live && 'hover:bg-surface-2',
 				disabled && 'cursor-not-allowed opacity-50',
 				className,
@@ -139,7 +139,7 @@ export function Row({
 					)}
 					{changed ? (
 						<span
-							data-ss-changed=""
+							data-shelfway-changed=""
 							className="shrink-0 rounded-full bg-attention-soft px-1.5 text-micro font-medium text-on-attention-soft">
 							{texts?.changed ?? UNSAVED_TEXTS.changed}
 						</span>
@@ -152,7 +152,7 @@ export function Row({
 					) : null}
 				</div>
 				{warning ? (
-					<p className={cx('truncate text-micro', tone)} data-ss-warning="">
+					<p className={cx('truncate text-micro', tone)} data-shelfway-warning="">
 						{warning.text}
 					</p>
 				) : metaItems.length > 0 ? (
@@ -176,7 +176,7 @@ export function Row({
 			) : null}
 			{trailing ? (
 				<div
-					data-ss-row-trailing=""
+					data-shelfway-row-trailing=""
 					className="relative z-10 flex shrink-0 items-center"
 					onClick={(event) => event.stopPropagation()}
 					onKeyDown={(event) => event.stopPropagation()}>

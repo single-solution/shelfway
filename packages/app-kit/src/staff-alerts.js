@@ -21,7 +21,7 @@
  *   takes the messages from `prepare` and delivers them itself; `send`, the saved messages here, `retry` and `forget` are
  *   then not used.
  * - Nothing that matters is lost (K-17, owner decision D7): a message Notifications did not take (no answer, 5xx, a
- *   refused token, 408, 409 `in_progress` or 429) is saved in the merchant database (`ss_<product>_staff_alerts`) and
+ *   refused token, 408, 409 `in_progress` or 429) is saved in the merchant database (`shelfway_<product>_staff_alerts`) and
  *   tried again with the same key on the website's next uses ({@link RETRY_MS}, then every 3 hours), for at most a day;
  *   a TTL index removes rows a website never used again. Nothing runs in the background.
  * - A data-rights deletion removes the saved messages that hold the person's details at once (as Ecommerce's outbox,
@@ -29,8 +29,8 @@
  *   value (`forget`, for example Chat's alerts about the person's conversations).
  * @module
  */
-import { createId } from '@ss/contracts';
-import { normalizePhone } from '@ss/contracts/phone';
+import { createId } from '@shelfway/contracts';
+import { normalizePhone } from '@shelfway/contracts/phone';
 import { formatText } from './util.js';
 
 /** @typedef {{ email?: string | null, phone?: string | null, id?: string | null }} Assignee */
@@ -109,7 +109,7 @@ const PERMISSION = /^[a-z][a-z0-9_.]{0,63}$/;
 
 /**
  * An address: `{ email }` or `{ phone }` with the key that names the person whatever the channel, or null. Phones are
- * E.164 through the normalizer every product shares (`@ss/contracts/phone`), with their `+` or `00` and calling code,
+ * E.164 through the normalizer every product shares (`@shelfway/contracts/phone`), with their `+` or `00` and calling code,
  * as Notifications sends to them; a local number is left out.
  * @param {unknown} value
  * @returns {{ key: string, to: { email: string } | { phone: string } } | null}
@@ -147,7 +147,7 @@ export const recipientOf = (value, phoneChannel = 'sms') => {
 /**
  * @param {{ productId: string, settings: import('./settings.js').Settings,
  *   connections: import('./connections.js').Connections, data: import('./data.js').Data, now: () => number,
- *   logger: import('@ss/net').Logger, website: import('./website-settings.js').WebsiteSettingsCache }} options
+ *   logger: import('@shelfway/net').Logger, website: import('./website-settings.js').WebsiteSettingsCache }} options
  *   `website`: the Portal's copy of the website's settings (its team gets the alerts)
  */
 export const createStaffAlerts = ({ productId, settings, connections, data, now, logger, website }) => {

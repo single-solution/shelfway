@@ -13,9 +13,9 @@
 		"/v1/activity": {
 			"get": {
 				"summary": "The activity log, newest first",
-				"x-ss-auth": "server",
-				"x-ss-permission": "audit.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "audit.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -106,7 +106,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -159,9 +159,9 @@
 		"/v1/activity/count": {
 			"get": {
 				"summary": "Count the activity log",
-				"x-ss-auth": "server",
-				"x-ss-permission": "audit.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "audit.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -219,7 +219,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -249,9 +249,9 @@
 		"/v1/activity/counts": {
 			"get": {
 				"summary": "Count the activity log by action, actor or kind",
-				"x-ss-auth": "server",
-				"x-ss-permission": "audit.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "audit.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -322,7 +322,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -352,15 +352,17 @@
 		"/v1/admin/messages": {
 			"get": {
 				"summary": "The delivery log, newest first (delivery log widget)",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": [
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": [
 					"send_api",
 					"email",
 					"sms",
 					"whatsapp",
-					"push"
+					"push",
+					"browser_push",
+					"staff_push"
 				],
-				"x-ss-permission": "log.read",
+				"x-shelfway-permission": "log.read",
 				"security": [
 					{
 						"ticket": []
@@ -445,9 +447,9 @@
 			"post": {
 				"summary": "Send a message from your staff (send message and template editor widgets)",
 				"description": "Without template: a one-off message with the words typed now, transactional by default (required and urgent: it ignores unsubscribes, quiet hours and send limits that count optional messages only) or marketing (optional: unsubscribes, its topic, quiet hours and send limits apply). It may go by email, SMS, WhatsApp, browser push (to a subscriber id) or staff push (to a staff user id). With template: the saved template with sample values (the template editor's test send). Either is logged as a staff message and in the activity log. The answer is the message as the delivery log keeps it. 422 validation_failed for a field; 422 template_not_found. Send an Idempotency-Key so a retried request sends once.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "send_api",
-				"x-ss-permission": "messages.send",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "send_api",
+				"x-shelfway-permission": "messages.send",
 				"security": [
 					{
 						"ticket": []
@@ -547,15 +549,17 @@
 		"/v1/admin/messages/count": {
 			"get": {
 				"summary": "Count the delivery log (delivery log widget)",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": [
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": [
 					"send_api",
 					"email",
 					"sms",
 					"whatsapp",
-					"push"
+					"push",
+					"browser_push",
+					"staff_push"
 				],
-				"x-ss-permission": "log.read",
+				"x-shelfway-permission": "log.read",
 				"security": [
 					{
 						"ticket": []
@@ -621,15 +625,17 @@
 			"get": {
 				"summary": "Count the delivery log by status, channel, template or source (delivery log widget)",
 				"description": "by=template counts a one-off message from your staff under none.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": [
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": [
 					"send_api",
 					"email",
 					"sms",
 					"whatsapp",
-					"push"
+					"push",
+					"browser_push",
+					"staff_push"
 				],
-				"x-ss-permission": "log.read",
+				"x-shelfway-permission": "log.read",
 				"security": [
 					{
 						"ticket": []
@@ -709,9 +715,12 @@
 			"post": {
 				"summary": "Turn on staff push in this browser (staff notifications widget)",
 				"description": "Saves the browser's subscription for the ticket's user; send to them with to: { staffId: <the user id in the ticket> }. 422 validation_failed when the subscription is not an https endpoint with a 65-byte p256dh key and a 16-byte auth secret.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "push",
-				"x-ss-permission": "push.subscribe",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": [
+					"push",
+					"staff_push"
+				],
+				"x-shelfway-permission": "push.subscribe",
 				"security": [
 					{
 						"ticket": []
@@ -764,14 +773,16 @@
 			"get": {
 				"summary": "The templates of every channel (template editor widget)",
 				"description": "At most 1000, by key, channel and language.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": [
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": [
 					"email",
 					"sms",
 					"whatsapp",
-					"push"
+					"push",
+					"browser_push",
+					"staff_push"
 				],
-				"x-ss-permission": "templates.edit",
+				"x-shelfway-permission": "templates.edit",
 				"security": [
 					{
 						"ticket": []
@@ -804,14 +815,16 @@
 			"put": {
 				"summary": "Save a template (template editor widget)",
 				"description": "422 validation_failed for a field, or when the website already has 1000 templates. The change is in the activity log by the ticket's member of staff.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": [
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": [
 					"email",
 					"sms",
 					"whatsapp",
-					"push"
+					"push",
+					"browser_push",
+					"staff_push"
 				],
-				"x-ss-permission": "templates.edit",
+				"x-shelfway-permission": "templates.edit",
 				"security": [
 					{
 						"ticket": []
@@ -856,14 +869,16 @@
 			"delete": {
 				"summary": "Delete a template (template editor widget)",
 				"description": "language is default for the default version. 404 not_found when there is no such template.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": [
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": [
 					"email",
 					"sms",
 					"whatsapp",
-					"push"
+					"push",
+					"browser_push",
+					"staff_push"
 				],
-				"x-ss-permission": "templates.edit",
+				"x-shelfway-permission": "templates.edit",
 				"security": [
 					{
 						"ticket": []
@@ -915,9 +930,9 @@
 		"/v1/connections": {
 			"get": {
 				"summary": "Connections (whether set, and how the last test went; never a value)",
-				"x-ss-auth": "server",
-				"x-ss-permission": "connections.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "connections.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -925,7 +940,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -966,10 +981,10 @@
 		},
 		"/v1/connections/{name}": {
 			"delete": {
-				"summary": "Remove a provider key. The database, the storage and the links are the Portal's: 409 managed_by_portal",
-				"x-ss-auth": "server",
-				"x-ss-permission": "connections.manage",
-				"x-ss-access": "staff",
+				"summary": "Remove a provider key. The database, the storage and the links are the Portal's: 409 managed_by_platform",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "connections.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -985,7 +1000,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -1005,10 +1020,10 @@
 				}
 			},
 			"put": {
-				"summary": "Save a provider key ({ value }), tested live. The database, the storage and the links are the Portal's: 409 managed_by_portal",
-				"x-ss-auth": "server",
-				"x-ss-permission": "connections.manage",
-				"x-ss-access": "staff",
+				"summary": "Save a provider key ({ value }), tested live. The database, the storage and the links are the Portal's: 409 managed_by_platform",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "connections.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -1024,7 +1039,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -1076,9 +1091,9 @@
 		"/v1/connections/{name}/test": {
 			"post": {
 				"summary": "Test a connection again",
-				"x-ss-auth": "server",
-				"x-ss-permission": "connections.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "connections.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -1094,7 +1109,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -1124,8 +1139,8 @@
 		"/v1/data-rights/delete": {
 			"post": {
 				"summary": "Delete one user's records",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -1133,7 +1148,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -1216,8 +1231,8 @@
 		"/v1/data-rights/export": {
 			"post": {
 				"summary": "Export one user's records",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -1225,7 +1240,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -1306,9 +1321,9 @@
 			"post": {
 				"summary": "Forward another product's event to your webhook URLs",
 				"description": "Products call it with the Notifications server token right after an event, with the event id as the Idempotency-Key. The event goes, signed, to each webhook URL that takes its type (or every event), and is tried there up to 5 times in all, on later uses of your website. The webhook keeps id and at as its id and createdAt (else a new id and the time it was received). 422 validation_failed for a field.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "webhooks",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "webhooks",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -1326,7 +1341,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -1403,8 +1418,8 @@
 		"/v1/features": {
 			"get": {
 				"summary": "Features with on/off and hourly price",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -1412,7 +1427,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -1481,8 +1496,8 @@
 			"get": {
 				"summary": "The Format of money and dates",
 				"description": "The website's Format from the Portal (sources `portal`: Website settings › Region and format); the built-in Format (sources `built-in`) while the Portal holds no settings yet.",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -1490,7 +1505,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -1518,10 +1533,10 @@
 			},
 			"put": {
 				"summary": "The Format is set in the Portal",
-				"description": "Always answers 409 managed_by_portal: the Format is set once for every product, in the Portal (Website settings › Region and format).",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"description": "Always answers 409 managed_by_platform: the Format is set once for every product, in the Portal (Website settings › Region and format).",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -1529,7 +1544,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -1622,8 +1637,8 @@
 		"/v1/lists/{list}": {
 			"get": {
 				"summary": "A list setting ({ value })",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -1639,7 +1654,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -1676,9 +1691,9 @@
 			},
 			"put": {
 				"summary": "Save a whole list setting ({ value })",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -1694,7 +1709,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -1749,10 +1764,10 @@
 		"/v1/messages": {
 			"get": {
 				"summary": "The delivery log, newest first",
-				"x-ss-auth": "server",
-				"x-ss-feature": "send_api",
-				"x-ss-permission": "log.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "send_api",
+				"x-shelfway-permission": "log.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -1811,7 +1826,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -1841,10 +1856,10 @@
 		"/v1/messages/count": {
 			"get": {
 				"summary": "Count the delivery log (the list's filters)",
-				"x-ss-auth": "server",
-				"x-ss-feature": "send_api",
-				"x-ss-permission": "log.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "send_api",
+				"x-shelfway-permission": "log.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -1882,7 +1897,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -1913,10 +1928,10 @@
 			"get": {
 				"summary": "Count the delivery log by status, channel, template or source",
 				"description": "by=template counts a one-off message from your staff under none.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "send_api",
-				"x-ss-permission": "log.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "send_api",
+				"x-shelfway-permission": "log.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -1968,7 +1983,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -1999,9 +2014,9 @@
 			"post": {
 				"summary": "Send an email from a template",
 				"description": "The answer is the message as the delivery log keeps it. It is saved before its first attempt and sent at once unless a delayed send or quiet hours hold it; an attempt that fails or breaks off answers retrying and is tried again on later uses of your website, then on the fallback channel. Someone who unsubscribed gets only required messages (else skipped, reason unsubscribed); send limits skip with reason limited. A product's message (accounts., chat. …) carries its defaults, used while your website has no template of its own for the channel; one you switched off on the channel is skipped (reason switched_off). 422 template_not_found when the key has no email template and no default; 422 validation_failed for a field; 403 feature_off for your own keys without Merchant send API (send_api), or sendAt without Delayed send. Send an Idempotency-Key so a retried request sends once.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "email",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "email",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -2019,7 +2034,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -2126,9 +2141,12 @@
 			"post": {
 				"summary": "Send a browser push to a visitor from a template",
 				"description": "The template's subject is the title and its text the body; a url value (https://… or a path) opens on a click. The answer is the message as the delivery log keeps it: failed when no browser is subscribed for the subscriber id. An attempt that fails or breaks off answers retrying and is tried again on later uses of your website. A product's message (accounts., chat. …) carries its defaults, used while your website has no template of its own for the channel; one you switched off on the channel is skipped (reason switched_off). 422 template_not_found when the key has no push template and no default; 422 validation_failed for a field; 403 feature_off for your own keys without Merchant send API (send_api), or sendAt without Delayed send. Send an Idempotency-Key so a retried request sends once.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "push",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": [
+					"push",
+					"browser_push"
+				],
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -2146,7 +2164,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -2253,9 +2271,9 @@
 			"post": {
 				"summary": "Send an SMS from a template",
 				"description": "The answer is the message as the delivery log keeps it. It is saved before its first attempt and sent at once unless a delayed send or quiet hours hold it; an attempt that fails or breaks off answers retrying and is tried again on later uses of your website, then on the fallback channel. Someone who unsubscribed (by link or STOP reply) gets only required messages (else skipped, reason unsubscribed); send limits skip with reason limited. A product's message (accounts., chat. …) carries its defaults, used while your website has no template of its own for the channel; one you switched off on the channel is skipped (reason switched_off). 422 template_not_found when the key has no SMS template and no default; 422 validation_failed for a field; 403 feature_off for your own keys without Merchant send API (send_api), or sendAt without Delayed send. Send an Idempotency-Key so a retried request sends once.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "sms",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "sms",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -2273,7 +2291,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -2380,9 +2398,12 @@
 			"post": {
 				"summary": "Send a browser push to a member of your staff from a template",
 				"description": "Goes to every browser where they turned staff notifications on. The template's subject is the title and its text the body; a url value (https://… or a path) opens on a click. The answer is the message as the delivery log keeps it: failed when none of their browsers is subscribed. An attempt that fails or breaks off answers retrying and is tried again on later uses of your website. A product's message (accounts., chat. …) carries its defaults, used while your website has no template of its own for the channel; one you switched off on the channel is skipped (reason switched_off). 422 template_not_found when the key has no staff_push template and no default; 422 validation_failed for a field; 403 feature_off for your own keys without Merchant send API (send_api), or sendAt without Delayed send. Send an Idempotency-Key so a retried request sends once.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "push",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": [
+					"push",
+					"staff_push"
+				],
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -2400,7 +2421,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -2507,9 +2528,9 @@
 			"post": {
 				"summary": "Send a WhatsApp message from a template",
 				"description": "The answer is the message as the delivery log keeps it. It is saved before its first attempt and sent at once unless a delayed send or quiet hours hold it; an attempt that fails or breaks off answers retrying and is tried again on later uses of your website, then on the fallback channel. Someone who unsubscribed (by link or STOP reply) gets only required messages (else skipped, reason unsubscribed); send limits skip with reason limited. A template with a providerTemplate is sent as that template at Meta, its values as body parameters in the order the text uses them. A product's message (accounts., chat. …) carries its defaults, used while your website has no template of its own for the channel; one you switched off on the channel is skipped (reason switched_off). WhatsApp has no defaults: a product's message without your WhatsApp template is answered failed (reason not_set_up, in the delivery log) and goes to the fallback channel when one is set. 422 template_not_found when your own key has no WhatsApp template; 422 validation_failed for a field; 403 feature_off for your own keys without Merchant send API (send_api), or sendAt without Delayed send. Send an Idempotency-Key so a retried request sends once.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "whatsapp",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "whatsapp",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -2527,7 +2548,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -2634,10 +2655,10 @@
 			"get": {
 				"summary": "Read a message of the delivery log",
 				"description": "404 not_found when there is no such message (or it was removed after the days the delivery log keeps).",
-				"x-ss-auth": "server",
-				"x-ss-feature": "send_api",
-				"x-ss-permission": "log.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "send_api",
+				"x-shelfway-permission": "log.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -2653,7 +2674,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -2683,8 +2704,8 @@
 		"/v1/permissions": {
 			"get": {
 				"summary": "This product's permissions and the kit's own (for Accounts roles)",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -2692,7 +2713,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -2752,8 +2773,11 @@
 			"post": {
 				"summary": "Turn on browser push for a visitor",
 				"description": "The push-permission widget calls it with the browser token; send to the answer's id with to: { subscriberId }. 422 validation_failed when the subscription is not an https endpoint with a 65-byte p256dh key and a 16-byte auth secret.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "push",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"push",
+					"browser_push"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -2764,10 +2788,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -2816,8 +2840,11 @@
 			"post": {
 				"summary": "Turn off browser push for a visitor",
 				"description": "Removes the subscription when the subscriber id and its endpoint match (the browser proves it holds it); 204 also when there is none.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "push",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": [
+					"push",
+					"browser_push"
+				],
 				"security": [
 					{
 						"browserToken": []
@@ -2828,10 +2855,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -2876,8 +2903,8 @@
 		"/v1/settings": {
 			"get": {
 				"summary": "Settings schemas, and values of switched-on features",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -2885,7 +2912,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -2975,9 +3002,9 @@
 		"/v1/settings/{key}": {
 			"delete": {
 				"summary": "Reset one setting to the default",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -2993,7 +3020,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -3040,9 +3067,9 @@
 			"put": {
 				"summary": "Save one setting (<feature>.<setting>, { value })",
 				"description": "The feature must be on (else 403 feature_off); an invalid value answers 422 validation_failed with errors.",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3058,7 +3085,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -3125,15 +3152,17 @@
 			"get": {
 				"summary": "The templates of the switched-on channels",
 				"description": "At most 1000, by key, channel and language.",
-				"x-ss-auth": "server",
-				"x-ss-feature": [
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": [
 					"email",
 					"sms",
 					"whatsapp",
-					"push"
+					"push",
+					"browser_push",
+					"staff_push"
 				],
-				"x-ss-permission": "templates.edit",
-				"x-ss-access": "staff",
+				"x-shelfway-permission": "templates.edit",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3141,7 +3170,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -3169,16 +3198,18 @@
 			},
 			"put": {
 				"summary": "Save a template",
-				"description": "The same checks as the dashboard: 422 validation_failed for a field, or when the website already has 1000 templates; 403 feature_off while the channel's feature is off. Writes count in the settings API's 60 writes per minute (429 rate_limited). The change shows in Recent changes and the activity log (template.saved, template.deleted) with the acting user (SS-Actor-* headers), else Server.",
-				"x-ss-auth": "server",
-				"x-ss-feature": [
+				"description": "The same checks as the dashboard: 422 validation_failed for a field, or when the website already has 1000 templates; 403 feature_off while the channel's feature is off. Writes count in the settings API's 60 writes per minute (429 rate_limited). The change shows in Recent changes and the activity log (template.saved, template.deleted) with the acting user (Shelfway-Actor-* headers), else Server.",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": [
 					"email",
 					"sms",
 					"whatsapp",
-					"push"
+					"push",
+					"browser_push",
+					"staff_push"
 				],
-				"x-ss-permission": "templates.edit",
-				"x-ss-access": "staff",
+				"x-shelfway-permission": "templates.edit",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3186,7 +3217,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -3227,15 +3258,17 @@
 			"delete": {
 				"summary": "Delete a template",
 				"description": "language is default for the default version. 404 not_found when there is no such template; 403 feature_off while the channel's feature is off. Writes count in the settings API's 60 writes per minute (429 rate_limited).",
-				"x-ss-auth": "server",
-				"x-ss-feature": [
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": [
 					"email",
 					"sms",
 					"whatsapp",
-					"push"
+					"push",
+					"browser_push",
+					"staff_push"
 				],
-				"x-ss-permission": "templates.edit",
-				"x-ss-access": "staff",
+				"x-shelfway-permission": "templates.edit",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3267,7 +3300,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -3290,8 +3323,8 @@
 		"/v1/texts": {
 			"get": {
 				"summary": "Widget texts",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -3299,7 +3332,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -3341,9 +3374,9 @@
 		"/v1/texts/{key}": {
 			"delete": {
 				"summary": "Reset one widget text to English",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3359,7 +3392,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -3388,9 +3421,9 @@
 			"put": {
 				"summary": "Save one widget text ({ value })",
 				"description": "1–2000 characters with the same {placeholders} as the English text.",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3406,7 +3439,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -3457,8 +3490,8 @@
 			"get": {
 				"summary": "The widgets' theme",
 				"description": "The website's theme from the Portal (sources `portal`: Website settings › Brand and look); the built-in look (sources `built-in`) while the Portal holds no settings yet.",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -3466,7 +3499,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -3494,10 +3527,10 @@
 			},
 			"put": {
 				"summary": "The theme is set in the Portal",
-				"description": "Always answers 409 managed_by_portal: the theme is set once for every product, in the Portal (Website settings › Brand and look).",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"description": "Always answers 409 managed_by_platform: the theme is set once for every product, in the Portal (Website settings › Brand and look).",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3505,7 +3538,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -3587,9 +3620,9 @@
 		"/v1/tickets": {
 			"post": {
 				"summary": "Ticket for an admin widget (15 minutes)",
-				"description": "Your server asks for a ticket for the signed-in member of your staff who opens an admin widget: send their Accounts sign-in in SS-Sign-In next to the server token. The ticket is for that person and carries only the permissions of their role out of those asked for (and of switched-on features); the server token alone gets 403 needs_signed_in_staff.",
-				"x-ss-auth": "server",
-				"x-ss-access": "staff",
+				"description": "Your server asks for a ticket for the signed-in member of your staff who opens an admin widget: send their Accounts sign-in in Shelfway-Sign-In next to the server token. The ticket is for that person and carries only the permissions of their role out of those asked for (and of switched-on features); the server token alone gets 403 needs_signed_in_staff.",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3597,7 +3630,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -3670,7 +3703,7 @@
 			"get": {
 				"summary": "Widget config (admin widgets)",
 				"description": "The same for the admin widgets, with a ticket from POST /v1/tickets, from the origin it names.",
-				"x-ss-auth": "ticket",
+				"x-shelfway-auth": "ticket",
 				"security": [
 					{
 						"ticket": []
@@ -3705,7 +3738,7 @@
 			"get": {
 				"summary": "Widget config (visitor widgets)",
 				"description": "With the browser token from the website (an Origin is required; the server token is refused): what the visitor widgets need. No feature of its own: it answers while the product serves the website and its merchant database is connected.",
-				"x-ss-auth": "browser",
+				"x-shelfway-auth": "browser",
 				"security": [
 					{
 						"browserToken": []
@@ -3716,10 +3749,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -3757,7 +3790,7 @@
 			"serverToken": {
 				"type": "http",
 				"scheme": "bearer",
-				"description": "The website's server token: the merchant's server only, never with an Origin header. On its own it runs the shop (x-ss-access: runtime): it also reaches every visitor route, acting for the visitor named by SS-Visitor-IP and, for a signed-in shopper, SS-Sign-In (their Accounts sign-in, checked for this website; a wrong, expired or foreign one is 401 invalid_sign_in). Every change of configuration and every piece of staff work (x-ss-access: staff) also needs the verified Accounts sign-in of a signed-in staff member in SS-Sign-In, whose role has the permission: a stolen server token changes nothing by itself."
+				"description": "The website's server token: the merchant's server only, never with an Origin header. On its own it runs the shop (x-shelfway-access: runtime): it also reaches every visitor route, acting for the visitor named by Shelfway-Visitor-IP and, for a signed-in shopper, Shelfway-Sign-In (their Accounts sign-in, checked for this website; a wrong, expired or foreign one is 401 invalid_sign_in). Every change of configuration and every piece of staff work (x-shelfway-access: staff) also needs the verified Accounts sign-in of a signed-in staff member in Shelfway-Sign-In, whose role has the permission: a stolen server token changes nothing by itself."
 			},
 			"ticket": {
 				"type": "http",
@@ -3766,8 +3799,8 @@
 			}
 		},
 		"parameters": {
-			"SSVisitorIp": {
-				"name": "SS-Visitor-IP",
+			"ShelfwayVisitorIp": {
+				"name": "Shelfway-Visitor-IP",
 				"in": "header",
 				"required": false,
 				"description": "With the server token: the visitor's IP address (required on writes, else 400 visitor_ip_required). These calls count in their own window of 3,000 requests per minute per route per website, plus the per-visitor limits.",
@@ -3776,8 +3809,8 @@
 					"maxLength": 45
 				}
 			},
-			"SSSignIn": {
-				"name": "SS-Sign-In",
+			"ShelfwaySignIn": {
+				"name": "Shelfway-Sign-In",
 				"in": "header",
 				"required": false,
 				"description": "The signed-in shopper's Accounts sign-in, checked for this website (a wrong, expired or foreign one is 401 invalid_sign_in). Only a verified sign-in names the shopper: a user id alone is never taken.",
@@ -3786,8 +3819,8 @@
 					"maxLength": 8192
 				}
 			},
-			"SSSignInStaff": {
-				"name": "SS-Sign-In",
+			"ShelfwaySignInStaff": {
+				"name": "Shelfway-Sign-In",
 				"in": "header",
 				"required": true,
 				"description": "The Accounts sign-in of the signed-in staff member whose role has the permission this call needs, checked for this website. The server token alone changes nothing: without it the call is 403 needs_signed_in_staff, with a role that lacks the permission 403 forbidden, with a sign-in of another website or an expired or forged one 401 invalid_sign_in. The person it names is who the activity log and the histories record.",
@@ -4273,7 +4306,7 @@
 					"built-in",
 					"portal"
 				],
-				"description": "Where a theme or Format value comes from: the website's settings in the Portal, or built in while the Portal holds none yet. It cannot be saved in a product (409 managed_by_portal)."
+				"description": "Where a theme or Format value comes from: the website's settings in the Portal, or built in while the Portal holds none yet. It cannot be saved in a product (409 managed_by_platform)."
 			},
 			"Message": {
 				"type": "object",
@@ -4598,7 +4631,7 @@
 					"subscriberId": {
 						"type": "string",
 						"pattern": "^[A-Za-z0-9_-]{1,64}$",
-						"description": "The subscriber id the push-permission widget announces (the ss-notifications:subscribed event)."
+						"description": "The subscriber id the push-permission widget announces (the shelfway-notifications:subscribed event)."
 					},
 					"language": {
 						"type": "string",

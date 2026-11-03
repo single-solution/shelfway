@@ -372,7 +372,7 @@ describe('import (K10): a run, a re-run and finish', () => {
 			more: false,
 		});
 
-		// the old guest cookie value, sent as SS-Guest, reaches the conversation (C7)
+		// the old guest cookie value, sent as Shelfway-Guest, reaches the conversation (C7)
 		const visitor = sys.visitor({ guestKey: COOKIE });
 		const chat = await visitor('GET', '/v1/chat');
 		expect(chat.status).toBe(200);

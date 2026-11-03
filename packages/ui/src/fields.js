@@ -85,7 +85,7 @@ export function FieldGrid({ children, className }) {
 }
 // flat at rest; focus shows the accent edge with a soft halo (no outline jump)
 const CONTROL =
-	'w-full max-w-[35rem] rounded-control border bg-surface px-3 py-2 text-sm text-fg placeholder:text-subtle ss-motion ' +
+	'w-full max-w-[35rem] rounded-control border bg-surface px-3 py-2 text-sm text-fg placeholder:text-subtle shelfway-motion ' +
 	'focus:outline-none focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/20 ' +
 	'disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-muted [&:read-only:not(select)]:bg-surface-2';
 
@@ -118,7 +118,7 @@ const controlClass = (invalid) =>
  */
 const adornedClass = (invalid) =>
 	cx(
-		'flex h-9 w-full max-w-[35rem] items-center rounded-control border bg-surface text-sm ss-motion',
+		'flex h-9 w-full max-w-[35rem] items-center rounded-control border bg-surface text-sm shelfway-motion',
 		'has-[input:focus-visible]:ring-[3px] has-[input:disabled]:cursor-not-allowed has-[input:disabled]:bg-surface-2 has-[input:disabled]:text-muted has-[input:read-only]:bg-surface-2',
 		invalid
 			? 'border-danger has-[input:focus-visible]:border-danger has-[input:focus-visible]:ring-danger/20'
@@ -159,7 +159,7 @@ function FieldMessages({ ids, help, error, part }) {
 				<p
 					key={typeof error === 'string' ? error : undefined}
 					id={ids.error}
-					className="flex animate-ss-shake items-center gap-1 text-help font-medium text-danger"
+					className="flex animate-shelfway-shake items-center gap-1 text-help font-medium text-danger"
 					role="alert">
 					<Icon name="alert" size={12} />
 					{error}
@@ -423,7 +423,7 @@ export function Select({
 // every browser and theme: a hairline box at rest, the accent fill (a check mark, a dash when mixed, or a ring for a
 // radio) when chosen, the accent edge on hover.
 const BOX =
-	'size-[18px] shrink-0 cursor-pointer appearance-none border border-line-strong bg-surface ss-motion hover:border-primary ' +
+	'size-[18px] shrink-0 cursor-pointer appearance-none border border-line-strong bg-surface shelfway-motion hover:border-primary ' +
 	'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-50';
 const RADIO = cx(BOX, 'rounded-full checked:border-[5px] checked:border-primary');
 
@@ -456,7 +456,7 @@ export function CheckboxInput({ className, indeterminate = false, ref, ...rest }
 			/>
 			<span
 				aria-hidden="true"
-				className="pointer-events-none absolute inset-0 flex items-center justify-center text-on-primary opacity-0 ss-motion peer-checked:opacity-100 peer-indeterminate:hidden">
+				className="pointer-events-none absolute inset-0 flex items-center justify-center text-on-primary opacity-0 shelfway-motion peer-checked:opacity-100 peer-indeterminate:hidden">
 				<Icon name="check" size={12} />
 			</span>
 			<span
@@ -554,7 +554,7 @@ export function Switch({
 					disabled={inactive}
 					onClick={() => onChange?.(!checked)}
 					className={cx(
-						'ss-motion ss-press relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent',
+						'shelfway-motion shelfway-press relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent',
 						'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-60',
 						track,
 						checked ? 'bg-primary hover:bg-primary-hover' : 'bg-line-strong hover:bg-muted',
@@ -562,7 +562,7 @@ export function Switch({
 					<span
 						aria-hidden="true"
 						className={cx(
-							'inline-block rounded-full bg-surface shadow-knob transition-transform duration-(--ss-motion) ease-ss',
+							'inline-block rounded-full bg-surface shadow-knob transition-transform duration-(--shelfway-motion) ease-shelfway',
 							knob,
 							checked ? shift : 'translate-x-0',
 						)}
@@ -715,8 +715,8 @@ export function RadioGroup({
 							<div
 								key={o.value}
 								className={cx(
-									'ss-motion relative flex items-start gap-3 rounded-card border p-3.5',
-									'has-[:checked]:border-primary has-[:checked]:border-primary has-[:checked]:bg-surface has-[:checked]:ss-hard',
+									'shelfway-motion relative flex items-start gap-3 rounded-card border p-3.5',
+									'has-[:checked]:border-primary has-[:checked]:border-primary has-[:checked]:bg-surface has-[:checked]:shelfway-hard',
 									'has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-primary/20',
 									off ? 'border-line opacity-60' : 'border-line hover:border-line-strong',
 								)}>
@@ -821,8 +821,8 @@ export function SegmentedControl({
 							/>
 							<span
 								className={cx(
-									'ss-motion flex h-7 items-center justify-center gap-1.5 rounded-control px-3 text-label font-medium whitespace-nowrap text-muted',
-									'hover:text-fg peer-checked:bg-surface peer-checked:text-fg peer-checked:ss-hard',
+									'shelfway-motion flex h-7 items-center justify-center gap-1.5 rounded-control px-3 text-label font-medium whitespace-nowrap text-muted',
+									'hover:text-fg peer-checked:bg-surface peer-checked:text-fg peer-checked:shelfway-hard',
 									'peer-focus-visible:outline-2 peer-focus-visible:outline-focus',
 								)}>
 								{o.icon ? <Icon name={o.icon} size={14} /> : null}
@@ -972,13 +972,13 @@ export function ChoicePicker({
 						return (
 							<span
 								key={choice}
-								className="inline-flex animate-ss-fade items-center gap-1 rounded-control border border-line bg-surface py-0.5 pr-1 pl-2.5 text-xs leading-5 font-medium text-fg ss-hard">
+								className="inline-flex animate-shelfway-fade items-center gap-1 rounded-control border border-line bg-surface py-0.5 pr-1 pl-2.5 text-xs leading-5 font-medium text-fg shelfway-hard">
 								{label}
 								<button
 									type="button"
 									onClick={() => toggle(choice)}
 									aria-label={`${removeLabel} ${typeof label === 'string' ? label : choice}`}
-									className="ss-motion rounded-full p-0.5 hover:bg-surface focus-visible:outline-2 focus-visible:outline-focus">
+									className="shelfway-motion rounded-full p-0.5 hover:bg-surface focus-visible:outline-2 focus-visible:outline-focus">
 									<Icon name="close" size={12} />
 								</button>
 							</span>
@@ -986,7 +986,7 @@ export function ChoicePicker({
 					})
 				)}
 			</div>
-			<div className="ss-motion overflow-hidden rounded-control border border-line bg-surface focus-within:border-primary focus-within:ring-[3px] focus-within:ring-primary/20">
+			<div className="shelfway-motion overflow-hidden rounded-control border border-line bg-surface focus-within:border-primary focus-within:ring-[3px] focus-within:ring-primary/20">
 				<input
 					type="search"
 					aria-label={searchLabel}
@@ -1006,7 +1006,7 @@ export function ChoicePicker({
 						<button
 							type="button"
 							onClick={addOwn}
-							className="ss-motion flex w-full items-center gap-2.5 rounded-control px-2 py-1.5 text-left text-sm font-medium text-primary hover:bg-surface-2">
+							className="shelfway-motion flex w-full items-center gap-2.5 rounded-control px-2 py-1.5 text-left text-sm font-medium text-primary hover:bg-surface-2">
 							<Icon name="plus" size={14} />
 							{addOwnLabel(typed)}
 						</button>
@@ -1021,7 +1021,7 @@ export function ChoicePicker({
 								<label
 									key={o.value}
 									htmlFor={optionId}
-									className="ss-motion flex cursor-pointer items-center gap-2.5 rounded-control px-2 py-1.5 text-sm text-fg hover:bg-surface-2">
+									className="shelfway-motion flex cursor-pointer items-center gap-2.5 rounded-control px-2 py-1.5 text-sm text-fg hover:bg-surface-2">
 									<CheckboxInput id={optionId} checked={on} disabled={o.disabled} onChange={() => toggle(o.value)} />
 									<span className="min-w-0 flex-1 truncate">{o.label}</span>
 									{o.label !== o.value ? <span className="text-xs text-muted tabular-nums">{o.value}</span> : null}

@@ -1,23 +1,23 @@
 /**
- * Names the widgets and the docs share (PLAN 0.4.10): the browser global of `widget.js` (`window.SSNotifications`)
- * and the attribute of the elements the merchant places for widgets (`<div data-ss-notifications="delivery_log">`).
+ * Names the widgets and the docs share (PLAN 0.4.10): the browser global of `widget.js` (`window.ShelfwayNotifications`)
+ * and the attribute of the elements the merchant places for widgets (`<div data-shelfway-notifications="delivery_log">`).
  * @module
  */
 
-/** The browser global `widget.js` sets: `window.SSNotifications.admin({ getTicket })`. */
-export const WIDGET_GLOBAL = 'SSNotifications';
+/** The browser global `widget.js` sets: `window.ShelfwayNotifications.admin({ getTicket })`. */
+export const WIDGET_GLOBAL = 'ShelfwayNotifications';
 
 /** Widgets mount only into elements with this attribute; its value is the widget key from manifest.json. */
-export const WIDGET_ATTRIBUTE = 'data-ss-notifications';
+export const WIDGET_ATTRIBUTE = 'data-shelfway-notifications';
 
 /** Where the browser keeps the visitor's push subscriber id (so the merchant's site can read it back). */
-export const SUBSCRIBER_STORAGE_KEY = 'ss-notifications-subscriber';
+export const SUBSCRIBER_STORAGE_KEY = 'shelfway-notifications-subscriber';
 
 /** The DOM event the push-permission widget fires on `window` with `{ subscriberId }` once the visitor subscribed. */
-export const SUBSCRIBED_EVENT = 'ss-notifications:subscribed';
+export const SUBSCRIBED_EVENT = 'shelfway-notifications:subscribed';
 
 /** The service worker file the merchant hosts at the root of their website (the docs give its contents). */
-export const SERVICE_WORKER_PATH = '/ss-notifications-sw.js';
+export const SERVICE_WORKER_PATH = '/shelfway-notifications-sw.js';
 
 /**
  * The service worker the merchant copies to `SERVICE_WORKER_PATH`: it shows each push (`{ title, body, url }`) and

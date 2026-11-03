@@ -6,9 +6,9 @@
  * leaves every optional message. Plain HTML; every value is escaped and the page runs no script.
  * @module
  */
-import { escapeHtml } from '@ss/contracts/text';
-import { formatText } from '@ss/app-kit';
-import { themeCss } from '@ss/app-kit/widget';
+import { escapeHtml } from '@shelfway/contracts/text';
+import { formatText } from '@shelfway/app-kit';
+import { themeCss } from '@shelfway/app-kit/widget';
 
 /** Security headers of the hosted page. */
 export const PAGE_HEADERS = Object.freeze({
@@ -23,22 +23,22 @@ export const PAGE_HEADERS = Object.freeze({
 const PAGE_CSS = `
 :root { color-scheme: light dark; }
 body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 16px; box-sizing: border-box;
-  font-family: var(--ss-font-family, system-ui, sans-serif); background: Canvas; color: CanvasText; }
-.box { max-width: 420px; width: 100%; padding: 24px; border-radius: var(--ss-radius, 0.35rem);
-  background: var(--ss-color-background, Canvas); color: var(--ss-color-text, CanvasText);
-  border: 1px solid var(--ss-color-border, GrayText); }
+  font-family: var(--shelfway-font-family, system-ui, sans-serif); background: Canvas; color: CanvasText; }
+.box { max-width: 420px; width: 100%; padding: 24px; border-radius: var(--shelfway-radius, 0.35rem);
+  background: var(--shelfway-color-background, Canvas); color: var(--shelfway-color-text, CanvasText);
+  border: 1px solid var(--shelfway-color-border, GrayText); }
 h1 { font-size: 1.3em; margin: 0 0 12px; }
-button { font: inherit; padding: 10px 18px; border: 0; border-radius: var(--ss-radius, 0.35rem); cursor: pointer;
-  background: var(--ss-color-accent, #0f766e); color: var(--ss-color-onAccent, #ffffff); }
+button { font: inherit; padding: 10px 18px; border: 0; border-radius: var(--shelfway-radius, 0.35rem); cursor: pointer;
+  background: var(--shelfway-color-accent, #0f766e); color: var(--shelfway-color-onAccent, #ffffff); }
 fieldset { border: 0; padding: 0; margin: 0 0 16px; }
 label { display: flex; gap: 8px; align-items: center; margin: 8px 0; }
 .actions { display: flex; flex-wrap: wrap; gap: 8px; }
-button.secondary { background: transparent; color: inherit; border: 1px solid var(--ss-color-border, GrayText); }
+button.secondary { background: transparent; color: inherit; border: 1px solid var(--shelfway-color-border, GrayText); }
 `;
 
 /**
  * The page.
- * @param {{ texts: Record<string, string>, theme?: import('@ss/app-kit/widget').WidgetTheme & { customCss?: string },
+ * @param {{ texts: Record<string, string>, theme?: import('@shelfway/app-kit/widget').WidgetTheme & { customCss?: string },
  *   state: 'ask' | 'done' | 'saved' | 'invalid' | 'unavailable', business?: string, action?: string,
  *   topics?: Array<{ id: string, name: string, subscribed: boolean }> }} input `topics`: the website's topics with the
  *   recipient's choices (none: one button leaves every optional message)

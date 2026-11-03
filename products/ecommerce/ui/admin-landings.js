@@ -119,8 +119,8 @@ export const landingsTab = (kit, panel, lookups) => {
 		const brandPick = kit.select(withNone(t('catalogAdmin.anyBrand'), brandChoices), landing?.brandId ?? '');
 		const facets = facetChoices();
 		const facetPick = kit.select(withNone(t('catalogAdmin.noFacet'), facets), landing?.facet?.field ?? '');
-		const facetValue = kit.input(landing?.facet?.value ?? '', { maxlength: '100', list: 'ss-landing-values' });
-		const valueList = h('datalist', { id: 'ss-landing-values' });
+		const facetValue = kit.input(landing?.facet?.value ?? '', { maxlength: '100', list: 'shelfway-landing-values' });
+		const valueList = h('datalist', { id: 'shelfway-landing-values' });
 		const fillValues = () =>
 			kit.put(
 				valueList,

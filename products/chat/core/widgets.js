@@ -1,38 +1,38 @@
 /**
  * Names the widgets, the API and the docs share (PLAN 0.4.10, 0.8.3): the browser global of `widget.js`
- * (`window.SSChat`), the attribute of the elements the merchant places for admin widgets, the headers a visitor request
+ * (`window.ShelfwayChat`), the attribute of the elements the merchant places for admin widgets, the headers a visitor request
  * carries, where the browser keeps the guest key, the event a product card's Add to cart dispatches, and the back-off
  * checking constants (fixed code constants, never settings).
  * @module
  */
 
-/** The browser global `widget.js` sets: `window.SSChat`. */
-export const WIDGET_GLOBAL = 'SSChat';
+/** The browser global `widget.js` sets: `window.ShelfwayChat`. */
+export const WIDGET_GLOBAL = 'ShelfwayChat';
 
 /** Admin widgets mount only into elements with this attribute; its value is the widget key from manifest.json. */
-export const WIDGET_ATTRIBUTE = 'data-ss-chat';
+export const WIDGET_ATTRIBUTE = 'data-shelfway-chat';
 
 /** A visitor's Accounts sign-in (the kit's CORS headers allow it). */
-export const SIGN_IN_HEADER = 'ss-sign-in';
+export const SIGN_IN_HEADER = 'shelfway-sign-in';
 
 /** A guest's device key (the kit's CORS headers allow it). */
-export const GUEST_HEADER = 'ss-guest';
+export const GUEST_HEADER = 'shelfway-guest';
 
 /** What a guest key may be: 16–128 characters of `A–Z a–z 0–9 - _`, so a store's own guest cookie works once imported (C7). */
 export const GUEST_KEY = /^[A-Za-z0-9_-]{16,128}$/;
 
 /** Where the widget keeps the guest key (with its expiry) on the visitor's device. */
-export const GUEST_STORAGE_KEY = 'ss-chat-guest';
+export const GUEST_STORAGE_KEY = 'shelfway-chat-guest';
 
 /** Where the widget keeps proactive memory (shown this session, dismissed until). */
-export const PROACTIVE_STORAGE_KEY = 'ss-chat-proactive';
+export const PROACTIVE_STORAGE_KEY = 'shelfway-chat-proactive';
 
 /**
  * The window event a product card's Add to cart dispatches (cancelable), with `detail: { productId, variantId,
  * quantity }`. Ecommerce's widget on the page listens and calls `preventDefault()` once it added the item to the cart;
  * when nobody does, the card opens the product page instead.
  */
-export const ADD_TO_CART_EVENT = 'ss-ecommerce:add-to-cart';
+export const ADD_TO_CART_EVENT = 'shelfway-ecommerce:add-to-cart';
 
 /** A phone's screen: the chat window goes full screen there (when set), and the idle nudge may stay away (C14). */
 export const PHONE_MEDIA = '(max-width: 480px)';

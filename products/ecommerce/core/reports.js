@@ -7,9 +7,9 @@
  * `YYYY-MM-DD` day is that day in the business time zone (PLAN 0.8.10 K8). No I/O.
  * @module
  */
-import { zonedDay } from '@ss/contracts/format';
+import { zonedDay } from '@shelfway/contracts/format';
 import { dayBounds } from './durations.js';
-import { toDecimal } from '@ss/contracts/format';
+import { toDecimal } from '@shelfway/contracts/format';
 import { DAY_MS } from './durations.js';
 
 /** The longest range, in days. */
@@ -623,7 +623,7 @@ const decimal = (amount, currency) => (amount < 0 ? -Number(toDecimal(-amount, c
  * @param {ReadonlyArray<readonly [string, string, ('money' | undefined)?]>} columns
  * @param {Array<Record<string, unknown>>} rows
  * @param {string} currency
- * @returns {{ header: string[], rows: import('@ss/contracts/csv').CsvCell[][] }}
+ * @returns {{ header: string[], rows: import('@shelfway/contracts/csv').CsvCell[][] }}
  */
 export const reportCsv = (columns, rows, currency) => ({
 	header: columns.map(([column]) => column),

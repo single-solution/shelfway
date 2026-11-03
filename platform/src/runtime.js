@@ -2,7 +2,7 @@
  * Process-wide Portal instance for the Next.js adapters and the scripts. Built lazily on first use (never at import or
  * build time) and cached on `globalThis`, so warm serverless invocations reuse it:
  *
- * 1. the environment (`MONGODB_URI`, `PORTAL_URL`, `ENCRYPTION_KEY`, optional `ENCRYPTION_KEY_PREVIOUS`) is
+ * 1. the environment (`MONGODB_URI`, `PLATFORM_URL`, `ENCRYPTION_KEY`, optional `ENCRYPTION_KEY_PREVIOUS`) is
  *    validated — a misconfigured deployment fails fast, naming the variable (never its value);
  * 2. the system state is loaded from the control database: secrets generated on first start, settings recorded by
  *    admins (`infra/system.js`);
@@ -11,21 +11,21 @@
  *    (or rotated a key), and the Portal is rebuilt.
  * @module
  */
-import { createLogger } from '@ss/net';
-import { sha256Hex } from '@ss/protocol';
+import { createLogger } from '@shelfway/net';
+import { sha256Hex } from '@shelfway/protocol';
 import { buildConfig, loadEnv } from './infra/config.js';
 import { connectMongoClient } from './infra/db.js';
 import { createSystemStore } from './infra/system.js';
 import { modules as defaultModules } from './modules/index.js';
-import { createPortal } from './portal.js';
+import { createPlatform } from './platform.js';
 
-const KEY = Symbol.for('ss.platform.portal');
+const KEY = Symbol.for('shelfway.platform');
 /** A settings change, made on any instance (this one too), is noticed within this delay. */
 const SETTINGS_RECHECK_MS = 5_000;
 
 /**
  * @typedef {object} Entry
- * @property {import('./portal.js').Portal} portal
+ * @property {import('./platform.js').Portal} portal
  * @property {import('./infra/system.js').SystemStore} system
  * @property {number} version settings version the portal was built from
  * @property {number} checkedAt
@@ -39,16 +39,16 @@ const shared = () => {
 
 /**
  * Fingerprint of every collection definition: indexes are applied when it changes.
- * @param {import('./portal.js').Portal} portal
+ * @param {import('./platform.js').Portal} portal
  */
 const schemaFingerprint = (portal) =>
 	sha256Hex(JSON.stringify({ collections: portal.registry.all().map((def) => [def.name, def.indexes, def.ttl ?? null]) }));
 
 /**
  * Apply indexes once per schema version (idempotent).
- * @param {import('./portal.js').Portal} portal
+ * @param {import('./platform.js').Portal} portal
  * @param {import('./infra/system.js').SystemStore} system
- * @param {import('@ss/net').Logger} logger
+ * @param {import('@shelfway/net').Logger} logger
  */
 const prepareSchema = async (portal, system, logger) => {
 	const fingerprint = schemaFingerprint(portal);
@@ -68,9 +68,9 @@ const prepareSchema = async (portal, system, logger) => {
  * The Portal of this process (built or rebuilt when needed). Options given once are kept for later rebuilds (a
  * settings change); by default everything comes from `process.env`.
  * @param {GetPortalOptions} [given]
- * @returns {Promise<import('./portal.js').Portal>}
+ * @returns {Promise<import('./platform.js').Portal>}
  */
-export const getPortal = async (given) => {
+export const getPlatform = async (given) => {
 	const store = shared();
 	if (given) store.options = given;
 	const { env = process.env, modules = defaultModules, write, now = Date.now } = store.options ?? {};
@@ -98,7 +98,7 @@ export const getPortal = async (given) => {
 			service: 'portal',
 			env: config.env,
 		});
-		const portal = createPortal({ config, db, modules, logger, system });
+		const portal = createPlatform({ config, db, modules, logger, system });
 		await prepareSchema(portal, system, logger);
 		/** @type {Entry} */
 		const entry = { portal, system, version, checkedAt: now() };

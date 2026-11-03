@@ -1,7 +1,7 @@
 /**
  * The two tokens of each product on a website (PLAN 0.4.4): a browser token (public, stored in full) and a server
  * token (secret, sealed with `ENCRYPTION_KEY` so it can be revealed), both signed by the Portal's dedicated token
- * signer with `@ss/protocol` `issueToken`. They are created when the product is first added to the website and kept
+ * signer with `@shelfway/protocol` `issueToken`. They are created when the product is first added to the website and kept
  * when it is removed, so a re-add restores the same ids.
  *
  * - **Reveal** opens the server token (never cached; Activity `token.revealed`, shown to the merchant too). A token
@@ -13,7 +13,7 @@
  */
 import { resealEach } from '../../infra/crypto.js';
 import { isDuplicateKey } from '../../infra/util.js';
-import { issueToken } from '@ss/protocol';
+import { issueToken } from '@shelfway/protocol';
 import { problem } from '../../infra/http.js';
 import { REVOCATION_PAGE, decodeRevocationCursor, revocationFilter, revocationPage } from './core/revocations.js';
 import { C } from './schema.js';
@@ -52,7 +52,7 @@ export const createProductTokens = (deps, hooks) => {
 	const sign = async (website, productId, kind) => {
 		const { token, claims } = await issueToken({
 			signer: ctx.keys.tokenSigner,
-			issuer: ctx.config.portalUrl,
+			issuer: ctx.config.platformUrl,
 			websiteId: String(website._id),
 			domain: website.domain,
 			productId,

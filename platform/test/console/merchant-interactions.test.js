@@ -9,13 +9,13 @@
  */
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import * as hooks from 'next/dist/shared/lib/hooks-client-context.shared-runtime.js';
-import { ToastProvider } from '@ss/ui';
+import { ToastProvider } from '@shelfway/ui';
 import { totpCode } from '../../src/infra/auth.js';
 import { closeMongoClients } from '../../src/testing.js';
 import * as loaders from '../../src/console/loaders.js';
 import { apiFetch, signInAgain, takeFragmentToken, useResource } from '../../src/console/client.js';
 import { AccountView } from '../../src/console/views/account.js';
-import { LocalTime } from '@ss/ui';
+import { LocalTime } from '@shelfway/ui';
 import { ActivityTable, ActivityTimeline, QrCode } from '../../src/console/views/login-settings.js';
 import {
 	ConfirmEmailView,
@@ -26,7 +26,7 @@ import {
 } from '../../src/console/views/sign-in.js';
 import { ConsoleShell } from '../../src/console/views/shell.js';
 import { OverviewView, WebsiteView, WebsitesView } from '../../src/console/views/websites.js';
-import { act, byLabel, cleanup, render, type } from '@ss/ui/testing';
+import { act, byLabel, cleanup, render, type } from '@shelfway/ui/testing';
 import { startMongo } from '../helpers.js';
 import {
 	browserOf,
@@ -86,7 +86,7 @@ const BRANDING = {
 	logoUrl: null,
 	support: {
 		channels: [
-			{ type: /** @type {const} */ ('email'), label: 'Email', url: 'mailto:help@ss.test' },
+			{ type: /** @type {const} */ ('email'), label: 'Email', url: 'mailto:help@shelfway.test' },
 			{ type: /** @type {const} */ ('phone'), label: 'Phone', url: 'tel:+442079460123' },
 		],
 	},
@@ -101,11 +101,11 @@ describe('merchant console interactions (jsdom): sign-in, Account, Overview, web
 		const db = mongo.db('merchant_ui_1');
 		// ---------------------------------------------------------------- Create admin while no admin exists
 		{
-			const { createPortal } = await import('../../src/portal.js');
+			const { createPlatform } = await import('../../src/platform.js');
 			const { modules } = await import('../../src/modules/index.js');
 			const { testConfig, createTestLogger, ENCRYPTION_KEY } = await import('../helpers.js');
 			const { createSystemStore } = await import('../../src/infra/system.js');
-			const empty = createPortal({
+			const empty = createPlatform({
 				config: await testConfig(),
 				db: mongo.db('merchant_ui_1_first'),
 				modules,
@@ -270,7 +270,7 @@ describe('merchant console interactions (jsdom): sign-in, Account, Overview, web
 		fill('Email', 'owner@shop.test');
 		fill('Password', 'a brand new passphrase');
 		await press('Sign in');
-		await until(() => shows('Your account is suspended. Contact help@ss.test (Email), +442079460123 (Phone).'));
+		await until(() => shows('Your account is suspended. Contact help@shelfway.test (Email), +442079460123 (Phone).'));
 		cleanup();
 		await world.ownerBrowser.api.post(`/v1/admin/merchants/${merchantId}/resume`, {});
 
@@ -350,7 +350,7 @@ describe('merchant console interactions (jsdom): sign-in, Account, Overview, web
 		await e.api.post('/v1/auth/sign-in', { email: 'bea@beta.test', password: PASSWORD });
 		const beta = /** @type {any} */ (await loaders.loadSession(e.api));
 		render(<WebsitesView {...await loaders.loadWebsites(e.api, beta.merchantId)} branding={BRANDING} />);
-		expect(shows('Your admin will add your websites and products.') && shows('help@ss.test')).toBe(true);
+		expect(shows('Your admin will add your websites and products.') && shows('help@shelfway.test')).toBe(true);
 		cleanup();
 		const site = await world.addWebsite(beta.merchantId, 'beta.example.com');
 		await world.connect();
@@ -415,16 +415,18 @@ describe('merchant console interactions (jsdom): sign-in, Account, Overview, web
 					branding={{
 						name: 'Acme',
 						accent: '#112233',
-						support: { channels: [{ type: /** @type {const} */ ('email'), label: 'Email', url: 'mailto:help@ss.test' }] },
+						support: {
+							channels: [{ type: /** @type {const} */ ('email'), label: 'Email', url: 'mailto:help@shelfway.test' }],
+						},
 					}}>
 					<p>child</p>
 				</ConsoleShell>
 			</PathnameContext.Provider>,
 		);
-		expect(shows('child') && shows('Credits are running low') && shows('help@ss.test') && shows('Acme')).toBe(true);
+		expect(shows('child') && shows('Credits are running low') && shows('help@shelfway.test') && shows('Acme')).toBe(true);
 		// the balance is a link at the bottom of the sidebar, and Usage and credits carries an attention dot while it is low
 		expect(document.querySelector('a[title="Credit balance"]')?.getAttribute('href')).toBe('/credits');
-		expect(document.querySelector('nav a[href="/credits"] [data-ss-dot]')?.getAttribute('title')).toBe(
+		expect(document.querySelector('nav a[href="/credits"] [data-shelfway-dot]')?.getAttribute('title')).toBe(
 			'Credits are running low',
 		);
 		const [siteSelect] = /** @type {HTMLSelectElement[]} */ ([...document.querySelectorAll('select')]);

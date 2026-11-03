@@ -52,11 +52,11 @@ describe('InnerNav', () => {
 		const { container, rerender } = render(<InnerNav groups={groups} value="overview" />);
 		expect(link(container, 'Overview').getAttribute('aria-current')).toBe('true');
 		expect(link(container, 'Products').getAttribute('aria-current')).toBeNull();
-		const marker = /** @type {HTMLElement} */ (container.querySelector('[data-ss-indicator]'));
+		const marker = /** @type {HTMLElement} */ (container.querySelector('[data-shelfway-indicator]'));
 		expect(marker).not.toBeNull();
 		rerender(<InnerNav groups={groups} value="products" />);
 		expect(link(container, 'Products').getAttribute('aria-current')).toBe('true');
-		expect(container.querySelectorAll('[data-ss-indicator]')).toHaveLength(1);
+		expect(container.querySelectorAll('[data-shelfway-indicator]')).toHaveLength(1);
 		expect(marker.style.transform).toContain('translateY');
 	});
 
@@ -158,21 +158,21 @@ describe('InnerNav', () => {
 		expect(trigger.getAttribute('aria-expanded')).toBe('false');
 		click(trigger);
 		expect(trigger.getAttribute('aria-expanded')).toBe('true');
-		const menu = /** @type {HTMLElement} */ (container.querySelector('[data-ss-inner-menu]'));
+		const menu = /** @type {HTMLElement} */ (container.querySelector('[data-shelfway-inner-menu]'));
 		click(link(menu, 'Business'));
 		expect(onSelect).toHaveBeenCalledWith('business', expect.objectContaining({ id: 'business' }));
 		expect(trigger.getAttribute('aria-expanded')).toBe('false');
-		expect(container.querySelector('[data-ss-inner-menu]')).toBeNull();
+		expect(container.querySelector('[data-shelfway-inner-menu]')).toBeNull();
 	});
 
 	it('closes the phone menu on Escape', () => {
 		const { container } = render(<InnerNav groups={groups} value="overview" />);
 		click(/** @type {HTMLElement} */ (container.querySelector('button[aria-haspopup="true"]')));
-		expect(container.querySelector('[data-ss-inner-menu]')).not.toBeNull();
+		expect(container.querySelector('[data-shelfway-inner-menu]')).not.toBeNull();
 		act(() => {
 			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
 		});
-		expect(container.querySelector('[data-ss-inner-menu]')).toBeNull();
+		expect(container.querySelector('[data-shelfway-inner-menu]')).toBeNull();
 	});
 
 	it('renders its skeleton with the same panel while loading', () => {

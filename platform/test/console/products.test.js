@@ -6,13 +6,13 @@
  * Defaults with no website, Set active / inactive, Reconnect, the numbers and the paged websites).
  */
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { ToastProvider } from '@ss/ui';
-import { act, cleanup, render, type } from '@ss/ui/testing';
+import { ToastProvider } from '@shelfway/ui';
+import { act, cleanup, render, type } from '@shelfway/ui/testing';
 import { closeMongoClients } from '../../src/testing.js';
 import * as admin from '../../src/console/admin/loaders.js';
 import { ProductsView } from '../../src/console/admin/views/products.js';
 import { startMongo } from '../helpers.js';
-import { PORTAL_URL } from '../helpers.js';
+import { PLATFORM_URL } from '../helpers.js';
 import { startFakeProduct } from '../modules/catalog/fakes/product.js';
 import {
 	button,
@@ -66,7 +66,10 @@ describe('admin Products (jsdom)', () => {
 	it('lists products and connects one with Add product', async () => {
 		const restore = quiet();
 		const world = await createWorld({ db: mongo.db('products_add') });
-		const delta = await startFakeProduct({ manifest: productManifest({ id: 'delta', name: 'Delta' }), portalUrl: PORTAL_URL });
+		const delta = await startFakeProduct({
+			manifest: productManifest({ id: 'delta', name: 'Delta' }),
+			platformUrl: PLATFORM_URL,
+		});
 		try {
 			const { ownerBrowser, owner } = world;
 			const notes = await world.connect();
@@ -166,7 +169,7 @@ describe('admin Products (jsdom)', () => {
 			// Open as admin: OTP confirm, then Defaults with no website
 			await press('Open as admin');
 			await ownerBrowser.api.post('/v1/me/step-up-otp', {});
-			const openCode = world.lastOtp('olivia@ss.test');
+			const openCode = world.lastOtp('olivia@shelfway.test');
 			fillDialog('Two-step or recovery code', openCode);
 			await pressDialog('Open configure');
 			const launched = await ownerBrowser.waitCall(

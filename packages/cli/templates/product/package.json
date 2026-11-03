@@ -1,5 +1,5 @@
 {
-	"name": "@ss/product-{{id}}",
+	"name": "@shelfway/product-{{id}}",
 	"version": "0.1.0",
 	"description": "{{name}}: a Shelfway product (widgets and API).",
 	"type": "module",
@@ -13,10 +13,10 @@
 	"engines": {
 		"node": "22.x"
 	},
-	"prettier": "@ss/config/prettier.json",
+	"prettier": "@shelfway/config/prettier.json",
 	"scripts": {
-		"dev": "ss app assets . && next dev --port {{port}}",
-		"build": "ss app assets . && next build",
+		"dev": "shelfway app assets . && next dev --port {{port}}",
+		"build": "shelfway app assets . && next build",
 		"start": "next start --port {{port}}",
 		"check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test",
 		"test": "vitest run --coverage",
@@ -24,20 +24,20 @@
 		"typecheck": "tsc -p tsconfig.json",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
-		"validate": "ss app validate ."
+		"validate": "shelfway app validate ."
 	},
 	"dependencies": {
-		"@ss/app-kit": "{{sdkVersion}}",
-		"@ss/contracts": "{{sdkVersion}}",
-		"@ss/ui": "{{sdkVersion}}",
+		"@shelfway/app-kit": "{{sdkVersion}}",
+		"@shelfway/contracts": "{{sdkVersion}}",
+		"@shelfway/ui": "{{sdkVersion}}",
 		"mongodb": "^6.21.0",
 		"next": "~16.3.8",
 		"react": "^19.3.0",
 		"react-dom": "^19.3.0"
 	},
 	"devDependencies": {
-		"@ss/cli": "{{sdkVersion}}",
-		"@ss/config": "{{sdkVersion}}",
+		"@shelfway/cli": "{{sdkVersion}}",
+		"@shelfway/config": "{{sdkVersion}}",
 		"@tailwindcss/postcss": "^4.3.3",
 		"@types/node": "^22.20.4",
 		"@types/react": "^19.3.0",

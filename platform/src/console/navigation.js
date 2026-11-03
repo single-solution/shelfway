@@ -7,7 +7,7 @@
  */
 import { useRouter } from 'next/navigation.js';
 import { useTransition } from 'react';
-import { FormBusyContext, useNavigationProgress } from '@ss/ui';
+import { FormBusyContext, useNavigationProgress } from '@shelfway/ui';
 
 /** @returns {{ pending: boolean, go: (href: string) => void }} */
 export const useNavigation = () => {

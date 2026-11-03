@@ -7,7 +7,13 @@
  * ticket snippets. Plain HTML; every value is escaped.
  * @module
  */
-import { docsBlock as block, docsFeatureSections, docsOperations, docsParagraph as para, renderDocsPage } from '@ss/app-kit';
+import {
+	docsBlock as block,
+	docsFeatureSections,
+	docsOperations,
+	docsParagraph as para,
+	renderDocsPage,
+} from '@shelfway/app-kit';
 import guide from '../docs/guide.json' with { type: 'json' };
 import openapi from '../openapi.json' with { type: 'json' };
 import { createSnippets } from '../core/snippets.js';

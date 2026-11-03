@@ -1,11 +1,11 @@
 /**
  * The product's routes (the kit adds its own: connect, notices, tickets, data rights, `/sso` and the dashboard API).
  * Every browser-token, server-token and ticket route belongs to one feature; `openapi.json` is generated from these
- * definitions (`ss app assets`), so `method`, `path`, `auth`, `feature` and `permission` stay string literals.
+ * definitions (`shelfway app assets`), so `method`, `path`, `auth`, `feature` and `permission` stay string literals.
  * Public entry `./routes` of this package: `product.handler(createRoutes(product))`.
  * @module
  */
-import { countHandlers, created, defineRoute, paginate, problem } from '@ss/app-kit';
+import { countHandlers, created, defineRoute, paginate, problem } from '@shelfway/app-kit';
 import { checkNote, noteView } from '../core/notes.js';
 import { NOTES, createNotesStore, notesFilter } from '../adapters/notes-store.js';
 import { renderDocs } from './docs.js';
@@ -44,7 +44,7 @@ const noteCounts = countHandlers({
 export const createRoutes = (product) => [
 	// the widgets' script: public and the same for every website (no token, no Origin needed). With data-token it
 	// fetches the website's widget config from the kit (GET /v1/widget/config); admin pages call
-	// window.SS<Product>.admin({ getTicket })
+	// window.Shelfway<Product>.admin({ getTicket })
 	defineRoute({
 		method: 'GET',
 		path: '/widget.js',

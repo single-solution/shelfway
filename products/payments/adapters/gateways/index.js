@@ -15,7 +15,7 @@ import { stripe } from './stripe.js';
 /** @typedef {import('./types.js').GatewayAdapter} GatewayAdapter */
 
 /**
- * @param {import('@ss/net').OutboundPolicy} [policy] the outbound policy for addresses the merchant enters (generic)
+ * @param {import('@shelfway/net').OutboundPolicy} [policy] the outbound policy for addresses the merchant enters (generic)
  * @returns {Readonly<Record<import('../../core/gateways.js').Gateway, GatewayAdapter>>}
  */
 export const createAdapters = (policy) =>

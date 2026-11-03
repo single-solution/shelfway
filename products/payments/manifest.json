@@ -187,6 +187,16 @@
 			"settings": {
 				"$ref": "schemas/subscriptions.settings.json"
 			}
+		},
+		{
+			"key": "refunds",
+			"name": "Refunds",
+			"description": "Full and partial refunds by API or the Payments admin widget, recorded in the payment's history.",
+			"dependsOn": [],
+			"recommendFor": ["pays.online"],
+			"settings": {
+				"$ref": "schemas/refunds.settings.json"
+			}
 		}
 	],
 	"permissions": [
@@ -198,7 +208,7 @@
 		{
 			"key": "payments.refund",
 			"name": "Refund payments",
-			"feature": "payment_api"
+			"feature": "refunds"
 		},
 		{
 			"key": "payments.confirm",

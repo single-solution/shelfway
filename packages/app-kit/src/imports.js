@@ -15,7 +15,7 @@
  *   out) and is not kept are removed, at most 1,000 per call (`more: true`: call again). The importer sends the
  *   source's keys sorted ({@link compareKeyTexts}) and cut into calls, each range ending at its last key and the last
  *   one open, so records deleted in the source go too (the final pass, IMP-22). Only records written by an import are
- *   ever removed (the kit notes each key it writes in `ss_<product>_imports`): records the merchant made in the product
+ *   ever removed (the kit notes each key it writes in `shelfway_<product>_imports`): records the merchant made in the product
  *   itself, ready-made ones and live totals stay, and a wrong keep list can only take away what a re-import restores.
  *   A dry run answers what would go. Each real call writes one activity entry (`import.<collection>.prune`, values
  *   `{ removed, more }`).
@@ -23,16 +23,16 @@
  *   A finish that works in bounded batches reads `ctx.query.after` and answers `more: true` with `next` while work is
  *   left; the importer calls again with `?after=<next>` until `more` is false.
  * - `GET /v1/import/status` → `{ collections: { <name>: <records> }, imported: { <name>: <records an import wrote> },
- *   totals: { <name>: <number> } }` (`totals`: the product's verification sums, for `ss-import verify`).
+ *   totals: { <name>: <number> } }` (`totals`: the product's verification sums, for `shelfway-import verify`).
  *
  * The kit serves the four routes (server token alone, only while the feature `import` is on, which the manifest must have and
  * Portal admins switch on for a migration and off after it; the importer is a program, not a person) when the product passes
  * `imports`; the product describes them in its `schemas/api.json` (its collections, its finish and its totals), and
- * `ss app assets` documents them for every manifest with the `import` feature (`KIT_IMPORT_ROUTES`, `@ss/app-kit/api`).
+ * `shelfway app assets` documents them for every manifest with the `import` feature (`KIT_IMPORT_ROUTES`, `@shelfway/app-kit/api`).
  * @module
  */
-import { IMPORT_LIMITS, isId } from '@ss/contracts';
-import { isObject } from '@ss/contracts/util';
+import { IMPORT_LIMITS, isId } from '@shelfway/contracts';
+import { isObject } from '@shelfway/contracts/util';
 import { defineRoute } from './http/routes.js';
 import { problem } from './http/results.js';
 import { omit } from './util.js';
@@ -45,7 +45,7 @@ import { omit } from './util.js';
  * @property {() => number} now
  * @property {boolean} dryRun
  * @property {import('./data.js').WebsiteData} data the website's merchant database (lookups; the kit writes)
- * @property {() => Promise<import('@ss/contracts').BusinessInfo>} business the website's business facts (from the Portal's settings) with its
+ * @property {() => Promise<import('@shelfway/contracts').BusinessInfo>} business the website's business facts (from the Portal's settings) with its
  *   defaults (read once per call, on first use): its `country` gives national phone numbers their calling code
  * @property {unknown} prepared what the collection's `prepare` gave for this call (undefined without one)
  */
@@ -80,7 +80,7 @@ const NAME = /^[a-z][a-z0-9_]{0,40}$/;
 const FIELD = /^[A-Za-z][A-Za-z0-9_]{0,40}$/;
 const NDJSON = /^application\/(x-)?ndjson(\s*;|$)/;
 const JSON_TYPE = /^application\/json(\s*;|$)/;
-/** Ledger of the keys imports wrote (`ss_<product>_imports`). */
+/** Ledger of the keys imports wrote (`shelfway_<product>_imports`). */
 const LEDGER = 'imports';
 const LEDGER_INDEXES = Object.freeze([
 	{ collection: LEDGER, keys: { websiteId: 1, name: 1, key: 1 }, name: 'kit_imports_key', unique: true },
@@ -155,7 +155,7 @@ const keyValuesOf = (record, fields) => {
 /**
  * @param {{ options: ImportOptions | undefined, now: () => number,
  *   record: (ctx: any, entry: import('./activity.js').ActivityEntry, options?: { copy?: boolean }) => Promise<void>,
- *   business: (websiteId: string) => Promise<import('@ss/contracts').BusinessInfo> }} kit `business`: the kept
+ *   business: (websiteId: string) => Promise<import('@shelfway/contracts').BusinessInfo> }} kit `business`: the kept
  *   business facts of a website (the Portal's settings), with defaults
  */
 export const createImports = ({ options, now, record, business }) => {
@@ -233,7 +233,7 @@ export const createImports = ({ options, now, record, business }) => {
 			return problem('payload_too_large', `One call takes at most ${IMPORT_LIMITS.records} records.`);
 		const data = await dataOf(ctx);
 		const target = data.collection(definition.collection ?? name);
-		/** @type {Promise<import('@ss/contracts').BusinessInfo> | null} */
+		/** @type {Promise<import('@shelfway/contracts').BusinessInfo> | null} */
 		let info = null;
 		const base = {
 			websiteId: ctx.websiteId,

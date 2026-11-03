@@ -1,13 +1,13 @@
 /**
  * Starts the widgets on a page (PLAN 0.4.10). `widget.js` is the same for every website. With `data-token` on its
  * script tag (the website's browser token) it fetches the website's widget config and mounts the visitor widgets of
- * switched-on features. Without it (the merchant's admin pages) it only offers `window.SS<Product>.admin({ getTicket })`,
+ * switched-on features. Without it (the merchant's admin pages) it only offers `window.Shelfway<Product>.admin({ getTicket })`,
  * which fetches the config with a ticket and mounts the admin widgets. Widgets mount only into the elements the
- * merchant placed (`data-ss-<id>="<widget key>"`), and render nothing while the product is stopped, their feature is
+ * merchant placed (`data-shelfway-<id>="<widget key>"`), and render nothing while the product is stopped, their feature is
  * off or the merchant database is not connected.
  * @module
  */
-import { requestJson } from '@ss/app-kit/widget';
+import { requestJson } from '@shelfway/app-kit/widget';
 import { WIDGET_ATTRIBUTE, WIDGET_GLOBAL } from '../core/widgets.js';
 import { mountInbox } from './inbox.js';
 import { mountNoteForm } from './note-form.js';
@@ -20,15 +20,15 @@ export const ADMIN_CONFIG_PATH = '/v1/widget/admin/config';
  * The website's widget config, from the kit.
  * @typedef {object} WidgetConfig
  * @property {Record<string, string>} texts the widget texts (the website's own, else the defaults)
- * @property {import('@ss/app-kit/widget').WidgetTheme} theme
+ * @property {import('@shelfway/app-kit/widget').WidgetTheme} theme
  * @property {string} customCss
  * @property {string[]} features the switched-on features
  * @property {string[]} widgets the widgets whose feature is on (manifest.json `widgets`): only these mount
  * @property {{ maxLength: number }} settings what the widgets need of the settings (`hooks.widgetConfig`)
  */
 
-/** @typedef {import('@ss/app-kit/widget').Ticket} Ticket */
-/** @typedef {import('@ss/app-kit/widget').GetTicket} GetTicket */
+/** @typedef {import('@shelfway/app-kit/widget').Ticket} Ticket */
+/** @typedef {import('@shelfway/app-kit/widget').GetTicket} GetTicket */
 
 /**
  * @param {typeof globalThis.fetch} request
@@ -44,7 +44,7 @@ const loadConfig = async (request, url, credential) => {
 /**
  * @param {{ window: Window, script: HTMLScriptElement | null }} input
  * @returns {{ admin: (options: { getTicket: GetTicket }) => Promise<void>, ready: Promise<void> }} `admin` is the page's
- *   API (`window.SS<Product>.admin`); `ready` settles once the visitor widgets are mounted (or not)
+ *   API (`window.Shelfway<Product>.admin`); `ready` settles once the visitor widgets are mounted (or not)
  */
 export const startWidget = ({ window: win, script }) => {
 	const doc = win.document;

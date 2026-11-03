@@ -9,7 +9,7 @@
  */
 import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { byText, cleanup, click, keydown, render, type } from '@ss/ui/testing';
+import { byText, cleanup, click, keydown, render, type } from '@shelfway/ui/testing';
 import { FallbackAnswersEditor, PageRulesEditor, RedactionPatternsEditor, TeamsEditor } from '../app/dashboard/lists.js';
 import { TABS } from '../app/dashboard/tabs.js';
 import { checkFallbackAnswers } from '../core/fallback.js';

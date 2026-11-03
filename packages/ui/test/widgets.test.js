@@ -836,7 +836,7 @@ describe('AppShell', () => {
 describe('AppShell frame', () => {
 	afterEach(() => {
 		try {
-			window.localStorage.removeItem('ss-nav-rail');
+			window.localStorage.removeItem('shelfway-nav-rail');
 		} catch {
 			// no storage
 		}
@@ -872,7 +872,7 @@ describe('AppShell frame', () => {
 		const link = /** @type {HTMLElement} */ (aside.querySelector('nav a[href="/websites"]'));
 		expect(link.getAttribute('title')).toBe('Websites');
 		expect(link.querySelector('.sr-only')?.textContent).toBe('Websites');
-		expect(window.localStorage.getItem('ss-nav-rail')).toBe('1');
+		expect(window.localStorage.getItem('shelfway-nav-rail')).toBe('1');
 		// a new visit starts folded
 		unmount();
 		const again = render(
@@ -883,7 +883,7 @@ describe('AppShell frame', () => {
 		expect(again.container.querySelector('aside')?.hasAttribute('data-rail')).toBe(true);
 		click(/** @type {HTMLElement} */ (again.container.querySelector('button[aria-label="Expand sidebar"]')));
 		expect(again.container.querySelector('aside')?.hasAttribute('data-rail')).toBe(false);
-		expect(window.localStorage.getItem('ss-nav-rail')).toBe('0');
+		expect(window.localStorage.getItem('shelfway-nav-rail')).toBe('0');
 	});
 
 	it('can be fixed wide (collapsible off)', () => {
@@ -1074,7 +1074,7 @@ describe('theme', () => {
 	it('the head script applies a stored choice before paint, with the CSP nonce', () => {
 		const html = renderToStaticMarkup(<ThemeScript nonce="abc123" />);
 		expect(html).toContain('nonce="abc123"');
-		expect(html).toContain('ss-theme');
+		expect(html).toContain('shelfway-theme');
 		expect(renderToStaticMarkup(<ThemeScript />)).not.toContain('nonce');
 		window.localStorage.setItem(THEME_STORAGE_KEY, 'dark');
 		new Function(THEME_SCRIPT)();

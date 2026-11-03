@@ -4,7 +4,7 @@
  * shows a product row and the sheet aggregates `GET /v1/blueprint`.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { validateBlueprint } from '@ss/contracts';
+import { validateBlueprint } from '@shelfway/contracts';
 import { CONNECT_SECRET, PRODUCT_URL, codeOf, startSystem } from './helpers.js';
 
 const DOMAIN = 'plugin.example.com';

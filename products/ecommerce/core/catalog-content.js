@@ -7,8 +7,8 @@
  * `existing`, so a change can name only what it changes. No I/O.
  * @module
  */
-import { decodeEntities, escapeHtml } from '@ss/contracts/text';
-import { isObject } from '@ss/contracts/util';
+import { decodeEntities, escapeHtml } from '@shelfway/contracts/text';
+import { isObject } from '@shelfway/contracts/util';
 
 /** @typedef {{ path: string, message: string }} FieldError */
 

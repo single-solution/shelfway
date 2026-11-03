@@ -1,7 +1,7 @@
 /**
- * @ss/contracts — versioned schemas and validators binding the Portal and every product: the manifest and settings
+ * @shelfway/contracts — versioned schemas and validators binding the Portal and every product: the manifest and settings
  * schemas, the Product ↔ Portal wire shapes, business.json, cross-product shapes (with the message defaults products
- * declare), the website Setup sheet (`ss.blueprint/1`) with the business profile of its advisor (`./profile`), ids,
+ * declare), the website Setup sheet (`shelfway.blueprint/1`) with the business profile of its advisor (`./profile`), ids,
  * RFC 9457 problems, phone numbers and the template rules (`./templates`).
  * Additive changes only within v1; breaking changes ship as v2 schema ids.
  * @module

@@ -11,7 +11,7 @@
 /**
  * The collections the kit uses. Per-website documents carry `websiteId`.
  * @typedef {'state' | 'switches' | 'settings' | 'connections' | 'changes' | 'status' | 'revoked'
- *   | 'website_settings' | 'portal_connections' | 'widget' | 'sessions' | 'idempotency'} Collection
+ *   | 'website_settings' | 'platform_connections' | 'widget' | 'sessions' | 'idempotency'} Collection
  */
 
 /** @typedef {Record<string, any>} Doc */

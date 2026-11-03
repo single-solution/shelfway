@@ -15,7 +15,7 @@ import { namesMatching, searchStage } from '../core/search.js';
 
 /** @typedef {import('../adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Site} Site */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/catalog-query.js').Sort} Sort */
 
 /**

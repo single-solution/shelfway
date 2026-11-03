@@ -17,7 +17,7 @@
  * - **Websites** (row 5): the websites that have the product (removed excluded), with their status.
  * @module
  */
-import { validateFeatureReport, validatePriceReport } from '@ss/contracts';
+import { validateFeatureReport, validatePriceReport } from '@shelfway/contracts';
 import { problem } from '../../../infra/http.js';
 import { dayOf, floorDay, floorMonth, productStatusOf } from '../core/money.js';
 

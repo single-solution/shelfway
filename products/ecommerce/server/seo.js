@@ -8,11 +8,11 @@
  * sitemap becomes an index of files above `SITEMAP_FILE_SIZE` addresses, with images (E16). Read-only.
  * @module
  */
-import { defineRoute, problem } from '@ss/app-kit';
+import { defineRoute, problem } from '@shelfway/app-kit';
 import { attributesOf, findBySlugHistory, productTypes } from '../adapters/catalog-store.js';
 import { mediaSignatureOk } from '../adapters/crypto.js';
 import { valueLabel } from '../core/catalog.js';
-import { toDecimal } from '@ss/contracts/format';
+import { toDecimal } from '@shelfway/contracts/format';
 import { htmlToText, siteAddress } from '../core/catalog-content.js';
 import { lineageOf } from '../core/catalog-taxonomy.js';
 import { homeRate } from '../core/delivery.js';
@@ -86,7 +86,7 @@ import {
 /** @typedef {import('../core/model.js').ProductRecord} ProductRecord */
 /** @typedef {import('../core/model.js').CategoryRecord} CategoryRecord */
 /** @typedef {import('../core/model.js').VariantRecord} VariantRecord */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 
 /** At most this many images per product in structured data and sitemaps. */
 const MAX_IMAGES = 10;
@@ -1367,7 +1367,7 @@ export const createSeo = (product, service) => {
 				path: '/v1/llms.txt',
 				auth: 'server',
 				runtime: true,
-				feature: 'seo',
+				feature: 'llms_txt',
 				rateLimit: SEO_LIMITS,
 				handler: llmsTxt,
 			}),
@@ -1376,7 +1376,7 @@ export const createSeo = (product, service) => {
 				path: '/v1/llms-full.txt',
 				auth: 'server',
 				runtime: true,
-				feature: 'seo',
+				feature: 'llms_txt',
 				rateLimit: SEO_LIMITS,
 				handler: llmsFull,
 			}),

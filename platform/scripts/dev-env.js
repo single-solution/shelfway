@@ -5,8 +5,8 @@
 import { randomBytes } from 'node:crypto';
 
 const lines = [
-	`MONGODB_URI=${process.env.MONGODB_URI ?? 'mongodb://127.0.0.1:27999/ss_portal?replicaSet=testset'}`,
-	'PORTAL_URL=http://localhost:3000',
+	`MONGODB_URI=${process.env.MONGODB_URI ?? 'mongodb://127.0.0.1:27999/shelfway_platform?replicaSet=testset'}`,
+	'PLATFORM_URL=http://localhost:3000',
 	`ENCRYPTION_KEY=${randomBytes(32).toString('base64url')}`,
 ];
 process.stdout.write(`${lines.join('\n')}\n`);

@@ -10,8 +10,8 @@
  * for the global defaults.
  * @module
  */
-import { Callout, TextLink } from '@ss/ui';
-import { SettingsTab as SharedSettingsTab, fill, useLoad } from '@ss/ui/dashboard';
+import { Callout, TextLink } from '@shelfway/ui';
+import { SettingsTab as SharedSettingsTab, fill, useLoad } from '@shelfway/ui/dashboard';
 import {
 	AttachmentKindsEditor,
 	ClaimKindsEditor,
@@ -37,7 +37,7 @@ import { PaymentMethodsEditor } from './payment-methods.js';
 import { StoreDetailsView } from './store-details.js';
 import { TEXTS } from './texts.js';
 
-/** @typedef {import('@ss/ui/dashboard').FeatureSettings} FeatureSettings */
+/** @typedef {import('@shelfway/ui/dashboard').FeatureSettings} FeatureSettings */
 
 /**
  * The notice on a feature's settings card: with the `catalog` setting `search` at `atlas` (saved or being edited), the index Atlas Search needs and where the docs explain it (E14, SF-13).
@@ -62,7 +62,7 @@ export const settingsNotice = (key, values) =>
 /**
  * The settings a grade's glossary page preview takes (R7 #105): the title pattern and default description of `seo`, the
  * website's name and share image (the Portal's), and the grade patterns of `landing_pages`.
- * @param {FeatureSettings[]} features @param {import('@ss/contracts').WebsiteSettings | null} website
+ * @param {FeatureSettings[]} features @param {import('@shelfway/contracts').WebsiteSettings | null} website
  * @returns {import('./grades.js').GradePreview}
  */
 const gradePreview = (features, website) => {
@@ -89,7 +89,7 @@ const useShop = (websiteId) => {
 	const website = useLoad(`/v1/dashboard/websites/${websiteId}/website-settings`);
 	/** @type {FeatureSettings[]} */
 	const features = settings.answer?.ok ? settings.answer.data.features : [];
-	/** @type {import('@ss/contracts').WebsiteSettings | null} */
+	/** @type {import('@shelfway/contracts').WebsiteSettings | null} */
 	const portal = website.answer?.ok ? website.answer.data.settings : null;
 	return { currency: portal?.region.currency || DEFAULT_CURRENCY, website: portal, features };
 };
@@ -114,8 +114,8 @@ function WithCurrency({ websiteId, bare = false, editor }) {
 /**
  * The shop's list editors, each under its feature (a feature that is off is not listed). The ones of Cart and checkout
  * are listed beside it (`top`), as they are many.
- * @param {import('@ss/ui/dashboard').TabProps} props the tab's props (the website, the viewer and the Portal's address)
- * @returns {Record<string, import('@ss/ui/dashboard').FeatureExtra>}
+ * @param {import('@shelfway/ui/dashboard').TabProps} props the tab's props (the website, the viewer and the Portal's address)
+ * @returns {Record<string, import('@shelfway/ui/dashboard').FeatureExtra>}
  */
 const extrasOf = (props) => {
 	const websiteId = String(props.websiteId);
@@ -206,7 +206,7 @@ const extrasOf = (props) => {
 	};
 };
 
-/** @param {import('@ss/ui/dashboard').TabProps} props */
+/** @param {import('@shelfway/ui/dashboard').TabProps} props */
 export function SettingsTab(props) {
 	return <SharedSettingsTab {...props} notice={settingsNotice} extras={extrasOf(props)} />;
 }

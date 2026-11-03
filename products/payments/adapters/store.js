@@ -1,5 +1,5 @@
 /**
- * Payments' records in the merchant database (collections `ss_payments_<name>`, through the kit's tenant guard: every
+ * Payments' records in the merchant database (collections `shelfway_payments_<name>`, through the kit's tenant guard: every
  * query carries the website id; inserts are stamped with `websiteId`, `merchantId`, `createdAt` and `updatedAt`).
  * Payment records are kept; nothing expires (PLAN 0.8.7).
  *
@@ -10,9 +10,9 @@
  * Payment events live in the kit's `events` collection (`product.events`, PLAN 0.8.10 K5).
  * @module
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /**
  * One step of a payment's or subscription's history; a bank transfer's proof and confirmation carry the transfer's
  * `reference`, and a confirmation the merchant's `note` (PLAN 0.8.10 P3).
@@ -73,7 +73,7 @@ const PAYMENTS = 'payments';
 const LINKS = 'links';
 const SUBSCRIPTIONS = 'subscriptions';
 
-/** Merchant database indexes (created on a website's first use). @type {import('@ss/app-kit').IndexDefinition[]} */
+/** Merchant database indexes (created on a website's first use). @type {import('@shelfway/app-kit').IndexDefinition[]} */
 export const INDEXES = [
 	{ collection: PAYMENTS, keys: { websiteId: 1, id: 1 }, name: 'by_id', unique: true },
 	{ collection: PAYMENTS, keys: { websiteId: 1, createdAt: -1, id: -1 }, name: 'newest' },

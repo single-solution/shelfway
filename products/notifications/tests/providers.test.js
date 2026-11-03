@@ -1,5 +1,5 @@
 import { createECDH } from 'node:crypto';
-import { createOutboundPolicy, netError } from '@ss/net';
+import { createOutboundPolicy, netError } from '@shelfway/net';
 import { describe, expect, it } from 'vitest';
 import { createProviders, providerViolation } from '../adapters/providers.js';
 import { verifyMeta, verifyTwilio } from '../adapters/signatures.js';

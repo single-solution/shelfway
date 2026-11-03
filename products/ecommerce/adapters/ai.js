@@ -5,15 +5,15 @@
  * connection test are the kit's.
  * @module
  */
-import { checkAiConnection, createAiClient } from '@ss/app-kit';
+import { checkAiConnection, createAiClient } from '@shelfway/app-kit';
 
 /** How freely the AI writes copy (0 to 2). */
 const TEMPERATURE = 0.7;
 
-/** @typedef {(url: string, init?: import('@ss/net').SafeFetchInit) => Promise<import('@ss/net').SafeResponse>} Send */
+/** @typedef {(url: string, init?: import('@shelfway/net').SafeFetchInit) => Promise<import('@shelfway/net').SafeResponse>} Send */
 
 /**
- * @param {{ send: Send, policy?: import('@ss/net').OutboundPolicy }} options the product's outbound `send` and policy
+ * @param {{ send: Send, policy?: import('@shelfway/net').OutboundPolicy }} options the product's outbound `send` and policy
  */
 export const createAi = ({ send, policy }) => {
 	const client = createAiClient({ send, ...(policy ? { policy } : {}) });

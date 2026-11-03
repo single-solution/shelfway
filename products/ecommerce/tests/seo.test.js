@@ -2,7 +2,7 @@
  * Catalog SEO, feeds, llms.txt and policies (PLAN 0.8.8, 0.4.10): the server-token answers the merchant's site serves
  * on its own domain, and the pure builders behind them.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { feedMoney, feedRows, googleItem, metaLine } from '../core/feeds.js';
 import { gradeCondition } from '../core/grades.js';

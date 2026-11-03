@@ -116,6 +116,36 @@
 			}
 		},
 		{
+			"key": "conversion_funnel",
+			"name": "Goals and funnels",
+			"description": "Counts the merchant's goals and funnels, each step an event (the shop events, contacts, or the merchant's own events sent with ShelfwayGrowth.track) or a page; the shop funnel to start with, and revenue per currency.",
+			"dependsOn": ["visitor_analytics"],
+			"recommendFor": ["marketing.analytics"],
+			"settings": {
+				"$ref": "schemas/conversion_funnel.settings.json"
+			}
+		},
+		{
+			"key": "searches_404s",
+			"name": "Searches and 404s",
+			"description": "Records what visitors search for on the site and the pages they reach that do not exist.",
+			"dependsOn": ["visitor_analytics"],
+			"recommendFor": ["marketing.analytics", "marketing.seo"],
+			"settings": {
+				"$ref": "schemas/searches_404s.settings.json"
+			}
+		},
+		{
+			"key": "web_vitals",
+			"name": "Web Vitals",
+			"description": "Measures how fast and stable pages are for real visitors (LCP, INP, CLS, FCP, TTFB): kept in your analytics while Visitor analytics is on, and sent to Google Analytics 4 when you ask, also without it.",
+			"dependsOn": [],
+			"recommendFor": ["marketing.seo"],
+			"settings": {
+				"$ref": "schemas/web_vitals.settings.json"
+			}
+		},
+		{
 			"key": "robots_verification",
 			"name": "robots and verification",
 			"description": "The robots.txt rules (with the AI training crawlers the merchant blocks) and the verification tags (Google, Bing, Meta, Yandex and the merchant's own), served for the merchant's site to include.",
@@ -168,7 +198,7 @@
 		{
 			"key": "import",
 			"name": "Import",
-			"description": "Daily analytics totals moved in from another system with ss-import (server token only; no messages, events or alerts). Our admins switch it on for a migration and off after it.",
+			"description": "Daily analytics totals moved in from another system with shelfway-import (server token only; no messages, events or alerts). Our admins switch it on for a migration and off after it.",
 			"dependsOn": [],
 			"recommendFor": ["moving.yes"],
 			"settings": {

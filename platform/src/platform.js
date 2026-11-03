@@ -8,12 +8,12 @@
  * - `ensureIndexes()` — applies the declared indexes (on the first request after a deploy)
  * @module
  */
-import { createProblemFactory } from '@ss/contracts';
+import { createProblemFactory } from '@shelfway/contracts';
 import { createAudit } from './infra/audit.js';
 import { createBackground } from './infra/background.js';
 import { clearCookie, createLoginThrottle, createSessions, serializeCookie, sessionCookieName } from './infra/auth.js';
 import { createAuthenticators } from './infra/authenticators.js';
-import { createPortalKeys, createSecretBox } from './infra/crypto.js';
+import { createPlatformKeys, createSecretBox } from './infra/crypto.js';
 import { createLocks, createRegistry, createRepositories, createTransactionRunner, ensureIndexes } from './infra/db.js';
 import { platformError } from './infra/errors.js';
 import { INFRA_PROBLEMS, createApiHandler } from './infra/http.js';
@@ -28,7 +28,7 @@ import { defaultRandomBytes } from './infra/util.js';
 
 /** @typedef {import('./infra/modules.js').ModuleDefinition} ModuleDefinition */
 /** @typedef {import('./infra/modules.js').SharedContext} SharedContext */
-/** @typedef {import('@ss/net').Logger} Logger */
+/** @typedef {import('@shelfway/net').Logger} Logger */
 
 /**
  * @param {{ config: Readonly<PortalConfig>, db: import('mongodb').Db, modules: ReadonlyArray<Readonly<ModuleDefinition>>,
@@ -38,7 +38,7 @@ import { defaultRandomBytes } from './infra/util.js';
  *   `background`: work after responses (default `off` when `config.env` is `test`); `fallback` runs it when the
  *   adapter gave no `after()` (default: in the background of the request)
  */
-export const createPortal = ({
+export const createPlatform = ({
 	config,
 	db,
 	modules,
@@ -55,7 +55,7 @@ export const createPortal = ({
 	for (const code of Object.keys(moduleCodes))
 		if (Object.hasOwn(INFRA_PROBLEMS, code)) throw new TypeError(`problem code ${code} is reserved by the infra layer`);
 	const problems = createProblemFactory({ baseUri: config.problemBaseUri, codes: { ...INFRA_PROBLEMS, ...moduleCodes } });
-	const keys = createPortalKeys(config.signingKeys, config.tokenSigningKeys, config.publishedOnly);
+	const keys = createPlatformKeys(config.signingKeys, config.tokenSigningKeys, config.publishedOnly);
 	const locks = createLocks(repos.mutable(COLLECTIONS.locks), { now, randomBytes });
 	const sessions = createSessions({
 		repo: repos.mutable(COLLECTIONS.sessions),
@@ -123,11 +123,11 @@ export const createPortal = ({
 			sessions,
 			replayStore,
 			ports: composed.ports,
-			portalUrl: config.portalUrl,
+			platformUrl: config.platformUrl,
 			cookieSecure: config.cookieSecure,
 			now,
 		}),
-		allowedOrigin: config.portalUrl,
+		allowedOrigin: config.platformUrl,
 		can,
 		idempotency: createIdempotencyStore(repos.mutable(COLLECTIONS.idempotency), { now }),
 		idempotencySecret: config.idempotencySecret,
@@ -161,4 +161,4 @@ export const createPortal = ({
 		ensureIndexes: ({ dryRun = false } = {}) => ensureIndexes(db, registry, { dryRun, logger }),
 	});
 };
-/** @typedef {ReturnType<typeof createPortal>} Portal */
+/** @typedef {ReturnType<typeof createPlatform>} Portal */

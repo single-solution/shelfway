@@ -428,14 +428,14 @@ describe('every way an order moves goes through the engine', () => {
 						country: 'US',
 					},
 				},
-				headers: { 'ss-sign-in': token, 'idempotency-key': key, 'x-forwarded-for': `10.77.0.${key.length}` },
+				headers: { 'shelfway-sign-in': token, 'idempotency-key': key, 'x-forwarded-for': `10.77.0.${key.length}` },
 			});
 		const cod = (await place('cod', 'engine-1')).json.order;
 		expect((await recordOf(cod.id)).facts).toEqual(PLACED_FACTS);
 		const canceled = await shop.call('POST', `/v1/shop/orders/${cod.id}/cancel`, {
 			token: shop.browser,
 			origin: ORIGIN,
-			headers: { 'ss-sign-in': token },
+			headers: { 'shelfway-sign-in': token },
 		});
 		expect(canceled.status).toBe(200);
 		expect((await recordOf(cod.id)).facts).toMatchObject({ stock: 'back', offers: 'released' });

@@ -1,9 +1,9 @@
 /**
  * Which announcement a page shows (G4), on its own so the page script carries only this: the patterns of
- * `@ss/contracts/text` `pathMatches` (`*` inside one segment, `**` any number of segments).
+ * `@shelfway/contracts/text` `pathMatches` (`*` inside one segment, `**` any number of segments).
  * @module
  */
-import { pathMatches } from '@ss/contracts/text';
+import { pathMatches } from '@shelfway/contracts/text';
 
 /**
  * An announcement showing now (G4), as the page script and `GET /v1/notice` get it.

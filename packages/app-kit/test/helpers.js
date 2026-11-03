@@ -1,4 +1,4 @@
-import { manifest as manifestFixture } from '@ss/contracts/testing';
+import { manifest as manifestFixture } from '@shelfway/contracts/testing';
 import { MongoClient } from 'mongodb';
 import { createProduct, defineRoute } from '../src/index.js';
 import { apiChecker, createAccountsDouble, createFakePortal, createMemoryStore, createNetwork } from '../src/testing.js';
@@ -245,7 +245,12 @@ export const setup = async (options = {}) => {
 	const call = async (method, path, { token, origin, body, headers = {}, cookie, bare = false, staff } = {}) => {
 		// the website's server with a staff member signed in (an Owner unless `staff` says who); `bare: true` sends the
 		// server token alone
-		if (token === server.token && !bare && headers['ss-sign-in'] === undefined && headers['ss-visitor-ip'] === undefined)
+		if (
+			token === server.token &&
+			!bare &&
+			headers['shelfway-sign-in'] === undefined &&
+			headers['shelfway-visitor-ip'] === undefined
+		)
 			headers = await staffHeaders({ headers, staff });
 		const response = await handler(
 			new Request(`${BASE}${path}`, {

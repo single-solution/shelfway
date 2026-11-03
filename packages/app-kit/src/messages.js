@@ -1,7 +1,7 @@
 /**
  * Default message templates (parity P1): every product declares the messages it sends through Notifications, with
  * their US-English default words, in `schemas/messages.json` (`{ messages: [...] }`, checked at start with
- * `@ss/contracts` `validateMessageDefaults`; every key starts with the product's id). So a new website gets its staff
+ * `@shelfway/contracts` `validateMessageDefaults`; every key starts with the product's id). So a new website gets its staff
  * alerts, sign-in codes and reset links before the merchant writes a single template.
  *
  * - The kit attaches a message's defaults to every send to Notifications (`POST /v1/messages/<channel>` through
@@ -20,11 +20,11 @@
  *   `messages: []`.
  * @module
  */
-import { validateMessageDefaults } from '@ss/contracts';
-import { deepFreeze, isObject } from '@ss/contracts/util';
+import { validateMessageDefaults } from '@shelfway/contracts';
+import { deepFreeze, isObject } from '@shelfway/contracts/util';
 import { kitError } from './util.js';
 
-/** @typedef {import('@ss/contracts').DeclaredMessage} DeclaredMessage */
+/** @typedef {import('@shelfway/contracts').DeclaredMessage} DeclaredMessage */
 /**
  * @typedef {{ subject?: string, text: string, required: boolean, urgent: boolean, sensitive: boolean,
  *   translations?: Record<string, { subject?: string, text: string }> }} DefaultWords

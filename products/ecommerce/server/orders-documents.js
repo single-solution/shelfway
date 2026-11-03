@@ -6,7 +6,7 @@
  * separated); an unknown id is a 404.
  * @module
  */
-import { defineRoute, problem } from '@ss/app-kit';
+import { defineRoute, problem } from '@shelfway/app-kit';
 import { unitRulesOf } from '../adapters/catalog-store.js';
 import { packingSlipsHtml, pickListHtml } from '../core/invoice.js';
 import { COLLECTIONS } from '../core/model.js';

@@ -1,5 +1,5 @@
 /**
- * `@ss/app-kit/testing` — test doubles for products built on the kit:
+ * `@shelfway/app-kit/testing` — test doubles for products built on the kit:
  *
  * - `createFakePortal()`: the Portal side of the Product ↔ Portal contract (PLAN 0.4.12): connect, price and feature
  *   reports, status (settable), a website's settings (`setWebsiteSettings`, served at `GET /v1/product/websites/:id/settings`),
@@ -23,9 +23,9 @@ import {
 	validateFeatureReport,
 	validatePriceReport,
 	validateWebsiteSettings,
-} from '@ss/contracts';
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
-import { netError } from '@ss/net';
+} from '@shelfway/contracts';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
+import { netError } from '@shelfway/net';
 import {
 	NOTICE_PATH,
 	createConnectRequest,
@@ -36,12 +36,12 @@ import {
 	issueLaunch,
 	issueToken,
 	signNotice,
-	signPortalCall,
+	signPlatformCall,
 	toPublicJwk,
 	verifyAssertion,
 	verifyConnectResponse,
-} from '@ss/protocol';
-import { createMemoryReplayStore } from '@ss/protocol/testing';
+} from '@shelfway/protocol';
+import { createMemoryReplayStore } from '@shelfway/protocol/testing';
 import { KIT_API, apiEntries, checkApiDescription, parseRouteKey, sharedSchemas } from './api.js';
 import { validateValue } from './api-schema.js';
 import { PRODUCT_KEY_AAD } from './connection.js';
@@ -73,7 +73,7 @@ export const productKeyOf = async ({ store, encryptionKey }) => {
  * @property {string | null} graceEndsAt
  * @property {number} todayMillicredits
  * @property {Record<string, { version: number, on: string[] }>} features by product id
- * @property {import('@ss/contracts').WebsiteSettings | null} settings the website settings the Portal holds (null: none saved)
+ * @property {import('@shelfway/contracts').WebsiteSettings | null} settings the website settings the Portal holds (null: none saved)
  * @property {{ version: number, database: string | null, storage: Record<string, unknown> | null, ai: Record<string, unknown> | null, dbNames: Record<string, string>,
  *   links: Array<{ caller: string, callee: string, scopes: string[], token: string, jti: string, on: boolean }> }} connections what
  *   the Portal holds of the website's connections and links (the one counter `version`)
@@ -142,7 +142,7 @@ export const createNetwork = (handlers) => {
  * @param {{ name?: string, email?: string | null, phone?: string | null, address?: string | null, country?: string | null,
  *   timeZone?: string | null, currency?: string | null, currencies?: readonly string[], language?: string | null,
  *   logo?: string | null }} info
- * @returns {Pick<import('@ss/contracts').WebsiteSettings, 'business' | 'brand' | 'region'>}
+ * @returns {Pick<import('@shelfway/contracts').WebsiteSettings, 'business' | 'brand' | 'region'>}
  */
 export const portalSectionsOf = (websiteId, info) => {
 	const empty = emptyWebsiteSettings(websiteId);
@@ -370,7 +370,7 @@ export const createFakePortal = async ({ url = 'https://portal.test', now = Date
 			const request = createConnectRequest({
 				secret,
 				productUrl: baseUrl,
-				portalUrl: url,
+				platformUrl: url,
 				jwks,
 				priceListVersion: priceListVersion ?? known?.prices.version ?? 0,
 				now,
@@ -450,7 +450,7 @@ export const createFakePortal = async ({ url = 'https://portal.test', now = Date
 		 * Save website settings as the Portal does: the sections given replace the held ones, the version rises by one
 		 * and the whole document must be valid. Products learn it from the status (`settingsVersion`) and a notice.
 		 * @param {string} websiteId
-		 * @param {Partial<Pick<import('@ss/contracts').WebsiteSettings, 'business' | 'brand' | 'region' | 'pages' | 'team'>>} sections
+		 * @param {Partial<Pick<import('@shelfway/contracts').WebsiteSettings, 'business' | 'brand' | 'region' | 'pages' | 'team'>>} sections
 		 * @returns {number} the new version
 		 */
 		setWebsiteSettings: (websiteId, sections) => {
@@ -676,7 +676,7 @@ export const createFakePortal = async ({ url = 'https://portal.test', now = Date
 		 * @returns {Promise<Record<string, string>>} the headers
 		 */
 		signCall: (productId, method, target, body = '') =>
-			signPortalCall({ signer, audience: productId, method, target, body, timestamp: Math.floor(now() / 1000) }),
+			signPlatformCall({ signer, audience: productId, method, target, body, timestamp: Math.floor(now() / 1000) }),
 		/**
 		 * Make a signed Portal call to a connected product.
 		 * @param {string} productId
@@ -689,7 +689,7 @@ export const createFakePortal = async ({ url = 'https://portal.test', now = Date
 			const product = products.get(productId);
 			if (!product?.handler) throw new Error(`product ${productId} is not connected`);
 			const text = body === undefined ? '' : JSON.stringify(body);
-			const headers = await signPortalCall({
+			const headers = await signPlatformCall({
 				signer,
 				audience: productId,
 				method,
@@ -723,14 +723,14 @@ export const createFakePortal = async ({ url = 'https://portal.test', now = Date
  * @param {{ url?: string, now?: () => number }} [options]
  */
 export const createAccountsDouble = ({ url = 'https://accounts.test', now = Date.now } = {}) => {
-	/** @type {Array<{ token: string, copy: import('@ss/contracts').ActivityCopy }>} */
+	/** @type {Array<{ token: string, copy: import('@shelfway/contracts').ActivityCopy }>} */
 	const copies = [];
 	let failing = false;
 	/** @type {Array<{ id: string, name?: string, email?: string, phone?: string, blocked?: boolean, permissions: string[] }>} */
 	let users = [];
 	/** Users reads (`permission` asked), for cache tests. @type {string[]} */
 	const userReads = [];
-	/** @type {Promise<{ privateJwk: Record<string, any>, signer: import('@ss/protocol').Signer }> | null} */
+	/** @type {Promise<{ privateJwk: Record<string, any>, signer: import('@shelfway/protocol').Signer }> | null} */
 	let key = null;
 	const keyOf = () => {
 		key ??= generateSigningKey({ kid: 'accounts-double' }).then(({ privateJwk }) => ({
@@ -807,18 +807,23 @@ export const createAccountsDouble = ({ url = 'https://accounts.test', now = Date
 	};
 
 	/**
-	 * The `SS-Sign-In` header of a staff member for a call from the merchant's server (tests): by default an Owner
-	 * (`permissions: ['*']`). The acting user the tests used to name with `SS-Actor-*` headers
-	 * (`SS-Actor-Id`, `-Name` (percent-encoded), `-Role`, `-Email`) becomes the sign-in's person, so those tests keep
+	 * The `Shelfway-Sign-In` header of a staff member for a call from the merchant's server (tests): by default an Owner
+	 * (`permissions: ['*']`). The acting user the tests used to name with `Shelfway-Actor-*` headers
+	 * (`Shelfway-Actor-Id`, `-Name` (percent-encoded), `-Role`, `-Email`) becomes the sign-in's person, so those tests keep
 	 * their meaning; the actor headers themselves are dropped (the kit ignores them).
 	 * @param {{ websiteId: string, headers?: Record<string, string>, staff?: { id?: string, name?: string, role?: string,
 	 *   email?: string, permissions?: string[] } & Record<string, unknown> }} input
-	 * @returns {Promise<Record<string, string>>} the given headers with `ss-sign-in` (a header already given stays)
+	 * @returns {Promise<Record<string, string>>} the given headers with `shelfway-sign-in` (a header already given stays)
 	 */
 	const staffHeaders = async ({ websiteId, headers = {}, staff = {} }) => {
-		const { 'ss-actor-id': id, 'ss-actor-name': name, 'ss-actor-role': role, 'ss-actor-email': email } = headers;
+		const {
+			'shelfway-actor-id': id,
+			'shelfway-actor-name': name,
+			'shelfway-actor-role': role,
+			'shelfway-actor-email': email,
+		} = headers;
 		const rest = withoutActor(headers);
-		if (rest['ss-sign-in'] !== undefined) return rest;
+		if (rest['shelfway-sign-in'] !== undefined) return rest;
 		const decode = (/** @type {string | undefined} */ value) => (value === undefined ? undefined : decodeURIComponent(value));
 		const { id: staffId, permissions = ['*'], ...more } = staff;
 		const sub = staffId ?? id ?? 'usr_test_staff';
@@ -830,7 +835,7 @@ export const createAccountsDouble = ({ url = 'https://accounts.test', now = Date
 			permissions,
 			...more,
 		};
-		return { ...rest, 'ss-sign-in': await signIn({ websiteId, sub, ...claims }) };
+		return { ...rest, 'shelfway-sign-in': await signIn({ websiteId, sub, ...claims }) };
 	};
 
 	/**
@@ -889,16 +894,17 @@ export const createAccountsDouble = ({ url = 'https://accounts.test', now = Date
 };
 
 /**
- * Headers without the old `SS-Actor-*` ones (the kit ignores them; tests that used them name the person by `staff`).
+ * Headers without the old `Shelfway-Actor-*` ones (the kit ignores them; tests that used them name the person by `staff`).
  * @param {Record<string, string>} headers
  * @returns {Record<string, string>}
  */
-const withoutActor = (headers) => Object.fromEntries(Object.entries(headers).filter(([name]) => !name.startsWith('ss-actor-')));
+const withoutActor = (headers) =>
+	Object.fromEntries(Object.entries(headers).filter(([name]) => !name.startsWith('shelfway-actor-')));
 
 /**
  * The staff sign-in of a test product's calls from the website's server (the same everywhere): the first use pastes the
  * website's Accounts token (`paste()`, the product's own way, for example through its dashboard), then each call gets
- * `ss-sign-in` of a staff member (an Owner unless `staff` says who; the old `ss-actor-*` headers name the person, see
+ * `shelfway-sign-in` of a staff member (an Owner unless `staff` says who; the old `shelfway-actor-*` headers name the person, see
  * `createAccountsDouble().staffHeaders`).
  * @param {{ accounts: ReturnType<typeof createAccountsDouble>, websiteId: string, paste: () => Promise<unknown> }} input
  * @returns {(input?: { headers?: Record<string, string>, staff?: Record<string, any> }) => Promise<Record<string, string>>}

@@ -5,14 +5,14 @@
  * conditions, groups, hours, a banner and display fields as staff and shoppers see it, buy X get Y with both scopes, a
  * guest's points by customer id, and the shopper's points with history pages and pending points.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { COLLECTIONS } from '../core/model.js';
 import { readyShop } from './helpers.js';
 
 /** @type {Awaited<ReturnType<typeof readyShop>>} */
 let shop;
-/** @type {import('@ss/app-kit').WebsiteData} */
+/** @type {import('@shelfway/app-kit').WebsiteData} */
 let data;
 /** @type {import('../core/model.js').ProductRecord} */
 let phone;

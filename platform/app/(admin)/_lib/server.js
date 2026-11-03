@@ -4,15 +4,15 @@
 import { cache } from 'react';
 import { redirect } from 'next/navigation.js';
 import { loadAdminSession } from '../../../src/console/admin/loaders.js';
-import { portalApi, portalBranding } from '../../_lib/server.js';
+import { platformApi, platformBranding } from '../../_lib/server.js';
 
 export { one } from '../../_lib/server.js';
 
 /** The Branding (public). */
-export const adminBranding = portalBranding;
+export const adminBranding = platformBranding;
 
 /** The signed-in admin session (one `/v1/me` call per request). */
-export const adminSession = cache(async () => loadAdminSession(await portalApi()));
+export const adminSession = cache(async () => loadAdminSession(await platformApi()));
 
 /**
  * Signed-in admin context of a page; others go to the one sign-in page (and come back to `next`), merchants to their
@@ -26,5 +26,5 @@ export const adminContext = async (next) => {
 		if (/** @type {{ merchant?: boolean }} */ (session).merchant) redirect('/overview');
 		throw new Error(session.problem?.detail ?? 'The admin console is unavailable.');
 	}
-	return { api: await portalApi(), admin: session.admin };
+	return { api: await platformApi(), admin: session.admin };
 };

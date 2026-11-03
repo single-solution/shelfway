@@ -5,7 +5,7 @@
  * glossary pages without their text; the business phone, storage, bank details shoppers pay to, staff alerts that
  * reach someone and link to the admin, and no products at all.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { PAYMENTS, readyShop } from './helpers.js';
 

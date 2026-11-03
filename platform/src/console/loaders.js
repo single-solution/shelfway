@@ -5,11 +5,11 @@
  * with the admin console (the same `/v1/merchants/…` routes).
  * @module
  */
-import { isId } from '@ss/contracts';
+import { isId } from '@shelfway/contracts';
 import { api as paths } from './paths.js';
 
 /** @typedef {import('./api.js').ConsoleApi} ConsoleApi */
-/** @typedef {import('@ss/ui/problems').Problem} Problem */
+/** @typedef {import('@shelfway/ui/problems').Problem} Problem */
 /** @typedef {{ ok: false, status: number, problem: Problem }} LoadFailure */
 
 /**

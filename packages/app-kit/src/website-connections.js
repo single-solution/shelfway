@@ -36,10 +36,10 @@ const REFRESH_EVERY_MS = 30_000;
 const MEMORY_LIMIT = 200;
 
 /**
- * @param {{ store: Store, client: () => import('./portal-client.js').PortalClient, connections: import('./connections.js').Connections,
- *   now: () => number, logger: import('@ss/net').Logger }} options
+ * @param {{ store: Store, client: () => import('./platform-client.js').PortalClient, connections: import('./connections.js').Connections,
+ *   now: () => number, logger: import('@shelfway/net').Logger }} options
  */
-export const createPortalConnections = ({ store, client, connections, now, logger }) => {
+export const createPlatformConnections = ({ store, client, connections, now, logger }) => {
 	/** @type {Map<string, { held: Held | null, needed: number, at: number }>} */
 	const memory = new Map();
 	/** Fetches running on this instance, one per website. @type {Map<string, Promise<Held | null>>} */
@@ -72,7 +72,7 @@ export const createPortalConnections = ({ store, client, connections, now, logge
 	};
 
 	/** @param {string} websiteId @returns {Promise<Held | null>} */
-	const heldOf = async (websiteId) => /** @type {Held | null} */ (await store.get('portal_connections', websiteId));
+	const heldOf = async (websiteId) => /** @type {Held | null} */ (await store.get('platform_connections', websiteId));
 
 	/**
 	 * Fetch what the Portal holds for this product and adopt it; concurrent uses on an instance share one fetch. Never
@@ -91,7 +91,7 @@ export const createPortalConnections = ({ store, client, connections, now, logge
 					const results = await connections.adopt(websiteId, bundle);
 					/** @type {Held} */
 					const doc = { websiteId, version: bundle.version, linksIn: bundle.links.in, fetchedAt: now() };
-					await store.put('portal_connections', websiteId, doc);
+					await store.put('platform_connections', websiteId, doc);
 					remember(websiteId, doc, doc.version);
 					// the Portal learns how each delivered value worked (best effort: it shows "waiting" until it does)
 					const reported = new Map(results.map((each) => [each.name, each]));
@@ -235,4 +235,4 @@ export const createPortalConnections = ({ store, client, connections, now, logge
 	});
 };
 
-/** @typedef {ReturnType<typeof createPortalConnections>} PortalConnections */
+/** @typedef {ReturnType<typeof createPlatformConnections>} PlatformConnections */

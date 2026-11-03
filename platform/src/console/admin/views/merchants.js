@@ -35,7 +35,7 @@ import {
 	useNarrow,
 	useRowSelection,
 	useToast,
-} from '@ss/ui';
+} from '@shelfway/ui';
 import { ADMIN, BILLING, MERCHANT_FIELDS, MORE, TWO_STEP, WEBSITE } from '../../../texts/console.js';
 import { Link } from '../../link.js';
 import { api, withCursor } from '../../paths.js';
@@ -103,7 +103,7 @@ export function AdminWebsiteView({ detail, admin }) {
 	);
 }
 
-/** @typedef {import('@ss/ui').Problem} Problem */
+/** @typedef {import('@shelfway/ui').Problem} Problem */
 
 /**
  * The merchant's status: suspended first, else the billing status from the check (PLAN 0.5.5).
@@ -176,6 +176,7 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 	const [form, setForm] = useState({ name: '', ownerName: '', email: '', phone: '', address: '', country: '' });
 	const [busy, setBusy] = useState(false);
 	const [problem, setProblem] = useState(/** @type {Problem | null} */ (null));
+	const [unmailedLink, setUnmailedLink] = useState(/** @type {string | null} */ (null));
 	const handleInput = (/** @type {any} */ e) => {
 		const { name, value } = e.currentTarget;
 		setForm((f) => ({ ...f, [name]: value }));
@@ -202,89 +203,105 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 			description: result.data?.setup?.mailed ? ADMIN.setupMailed : ADMIN.setupNotMailed,
 		});
 		setForm({ name: '', ownerName: '', email: '', phone: '', address: '', country: '' });
+		if (!result.data?.setup?.mailed && result.data?.setup?.link) {
+			setUnmailedLink(result.data.setup.link);
+		} else {
+			onClose();
+		}
 		onCreated(result.data?.merchant);
 	};
 	const errors = fieldErrors(problem);
 	const formId = useId();
 	return (
-		<Drawer
-			open={open}
-			onClose={onClose}
-			title={ADMIN.addMerchant}
-			footer={
-				<>
-					<Button variant="secondary" onClick={onClose}>
-						{MORE.cancel}
-					</Button>
-					<Button type="submit" form={formId} loading={busy}>
-						{ADMIN.addMerchant}
-					</Button>
-				</>
-			}>
-			<Form id={formId} onSubmit={submit} busy={busy} aria-label={ADMIN.addMerchant}>
-				<Input
-					name="name"
-					label={MERCHANT_FIELDS.name}
-					autoComplete="organization"
-					value={form.name}
-					onChange={handleInput}
-					error={errors.name}
-					required
-					maxLength={120}
+		<>
+			<Drawer
+				open={open && !unmailedLink}
+				onClose={onClose}
+				title={ADMIN.addMerchant}
+				footer={
+					<>
+						<Button variant="secondary" onClick={onClose}>
+							{MORE.cancel}
+						</Button>
+						<Button type="submit" form={formId} loading={busy}>
+							{ADMIN.addMerchant}
+						</Button>
+					</>
+				}>
+				<Form id={formId} onSubmit={submit} busy={busy} aria-label={ADMIN.addMerchant}>
+					<Input
+						name="name"
+						label={MERCHANT_FIELDS.name}
+						autoComplete="organization"
+						value={form.name}
+						onChange={handleInput}
+						error={errors.name}
+						required
+						maxLength={120}
+					/>
+					<Input
+						name="ownerName"
+						label={MERCHANT_FIELDS.ownerName}
+						autoComplete="name"
+						value={form.ownerName}
+						onChange={handleInput}
+						error={errors.ownerName}
+						required
+						maxLength={120}
+					/>
+					<Input
+						name="email"
+						label={MERCHANT_FIELDS.email}
+						type="email"
+						inputMode="email"
+						autoComplete="email"
+						value={form.email}
+						onChange={handleInput}
+						error={errors.email}
+						required
+					/>
+					<Input
+						name="phone"
+						label={MERCHANT_FIELDS.phone}
+						type="tel"
+						inputMode="tel"
+						autoComplete="tel"
+						help={MERCHANT_FIELDS.phoneHelp}
+						value={form.phone}
+						onChange={handleInput}
+						error={errors.phone}
+						maxLength={40}
+					/>
+					<Select
+						label={MERCHANT_FIELDS.country}
+						value={form.country}
+						onChange={handleCountry}
+						error={errors.country}
+						options={countryOptions(MERCHANT_FIELDS.countryNone)}
+					/>
+					<Input
+						name="address"
+						label={MERCHANT_FIELDS.address}
+						autoComplete="street-address"
+						value={form.address}
+						onChange={handleInput}
+						error={errors.address}
+						maxLength={300}
+						wide
+					/>
+					<FormError problem={problem} fields={['name', 'ownerName', 'email', 'phone', 'address', 'country']} />
+				</Form>
+			</Drawer>
+			{unmailedLink ? (
+				<CopyLinkDialog
+					link={unmailedLink}
+					onClose={() => {
+						setUnmailedLink(null);
+						onClose();
+					}}
 				/>
-				<Input
-					name="ownerName"
-					label={MERCHANT_FIELDS.ownerName}
-					autoComplete="name"
-					value={form.ownerName}
-					onChange={handleInput}
-					error={errors.ownerName}
-					required
-					maxLength={120}
-				/>
-				<Input
-					name="email"
-					label={MERCHANT_FIELDS.email}
-					type="email"
-					inputMode="email"
-					autoComplete="email"
-					value={form.email}
-					onChange={handleInput}
-					error={errors.email}
-					required
-				/>
-				<Input
-					name="phone"
-					label={MERCHANT_FIELDS.phone}
-					type="tel"
-					inputMode="tel"
-					autoComplete="tel"
-					help={MERCHANT_FIELDS.phoneHelp}
-					value={form.phone}
-					onChange={handleInput}
-					error={errors.phone}
-					maxLength={40}
-				/>
-				<Select
-					label={MERCHANT_FIELDS.country}
-					value={form.country}
-					onChange={handleCountry}
-					error={errors.country}
-					options={countryOptions(MERCHANT_FIELDS.countryNone)}
-				/>
-				<Input
-					name="address"
-					label={MERCHANT_FIELDS.address}
-					autoComplete="street-address"
-					value={form.address}
-					onChange={handleInput}
-					error={errors.address}
-					maxLength={300}
-					wide
-				/>
-				<FormError problem={problem} fields={['name', 'ownerName', 'email', 'phone', 'address', 'country']} />
-			</Form>
-		</Drawer>
+			) : null}
+		</>
 	);
 }
 
@@ -399,7 +416,7 @@ function MerchantPageView({ detail, admin, list, onAddMerchant }) {
 		return result;
 	};
 
-	/** @type {import('@ss/ui').MenuItem[]} */
+	/** @type {import('@shelfway/ui').MenuItem[]} */
 	const more = [
 		{ label: MORE.usageAll, onSelect: () => openDialog('usage') },
 		{ label: MORE.openInActivity, onSelect: () => nav.go(adminRoutes.activity({ merchantId })) },
@@ -949,7 +966,14 @@ function MerchantsScreen({ list, detail, merchantId, fromList = false, admin }) 
 				{...(adminCan(admin, 'merchants.write')
 					? { actions: { primary: { label: ADMIN.addMerchant, icon: 'plus', onClick: openAdding } } }
 					: {})}>
-				<></>
+				<div className="flex h-full min-h-[360px] items-center justify-center p-8">
+					<EmptyState
+						icon="users"
+						kind="merchant"
+						title="No merchant selected"
+						description="Select a merchant from the list to view details, websites, and billing."
+					/>
+				</div>
 			</Page>
 			{addMerchantDialog}
 			{confirmDialog}

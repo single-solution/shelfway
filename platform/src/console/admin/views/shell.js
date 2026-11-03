@@ -8,7 +8,7 @@
  * @module
  */
 import { usePathname } from 'next/navigation.js';
-import { AppShell, Badge, Callout, Card, Icon, Page, ToastProvider, cx } from '@ss/ui';
+import { AppShell, Badge, Callout, Card, Icon, Page, ToastProvider, cx } from '@shelfway/ui';
 import { useRouter } from 'next/navigation.js';
 import { ADMIN, CONSOLE, TWO_STEP, WEBSITE } from '../../../texts/console.js';
 import { Link, NavLink } from '../../link.js';
@@ -47,7 +47,7 @@ export function RoleBadge({ role }) {
 
 /**
  * The admin menu, the group of each entry and the permission it needs (PLAN 0.6 Admin menu, 0.2 rights table).
- * @type {ReadonlyArray<{ href: string, label: string, group: 'operate' | 'money' | 'portal', icon: import('@ss/ui').IconName, kind: import('@ss/ui').Kind, permission: string, exact?: boolean }>}
+ * @type {ReadonlyArray<{ href: string, label: string, group: 'operate' | 'money' | 'portal', icon: import('@shelfway/ui').IconName, kind: import('@shelfway/ui').Kind, permission: string, exact?: boolean }>}
  */
 const ADMIN_NAV = Object.freeze([
 	{
@@ -97,7 +97,7 @@ const ADMIN_NAV = Object.freeze([
 		group: 'portal',
 		kind: 'settings',
 		icon: 'sliders',
-		permission: 'portal_settings.write',
+		permission: 'platform_settings.write',
 	},
 	{
 		href: adminRoutes.activity(),
@@ -115,7 +115,7 @@ const ADMIN_NAV = Object.freeze([
  * @param {any} admin
  * @param {string} pathname
  * @param {number} [attention]
- * @returns {import('@ss/ui').NavSection[]}
+ * @returns {import('@shelfway/ui').NavSection[]}
  */
 export const adminSections = (admin, pathname, attention = 0) =>
 	/** @type {const} */ (['operate', 'money', 'portal'])
@@ -146,7 +146,7 @@ export function AdminShell({ admin, twoStepRequired = false, attention = 0, bran
 		window.location.assign(adminRoutes.login());
 	};
 	const name = admin?.name ?? admin?.email ?? '';
-	/** @type {import('@ss/ui').MenuItem[]} */
+	/** @type {import('@shelfway/ui').MenuItem[]} */
 	const accountItems = [
 		...(twoStepRequired ? [] : [{ label: ADMIN.menu.myAccount, onSelect: () => router.push(adminRoutes.account()) }]),
 		{ label: ADMIN.signOut, onSelect: () => void signOut(), danger: true },
@@ -174,7 +174,7 @@ export function AdminShell({ admin, twoStepRequired = false, attention = 0, bran
 								target="_blank"
 								rel="noopener noreferrer"
 								className={cx(
-									'ss-motion ss-press flex h-9 items-center gap-2.5 rounded-control text-sm font-medium text-fg/80 hover:bg-surface-2 hover:text-fg',
+									'shelfway-motion shelfway-press flex h-9 items-center gap-2.5 rounded-control text-sm font-medium text-fg/80 hover:bg-surface-2 hover:text-fg',
 									'focus-visible:outline-2 focus-visible:outline-focus',
 									rail ? 'justify-center' : 'px-2.5',
 								)}>

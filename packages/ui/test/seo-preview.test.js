@@ -145,19 +145,19 @@ describe('the preview part (DOM, for widgets)', () => {
 		document.body.append(view.node);
 		const result = /** @type {HTMLElement} */ (view.node.querySelector('[data-part="result"]'));
 		expect(result.getAttribute('aria-label')).toBe(words.result);
-		expect(result.querySelector('.ss-seo-title')?.textContent).toBe('Blue Mug | Northwind');
-		expect(result.querySelector('.ss-seo-trail')?.textContent).toBe('https://northwind.example › products › blue-mug');
-		expect(result.querySelector('.ss-seo-text')?.textContent).toBe('A mug for tea.');
+		expect(result.querySelector('.shelfway-seo-title')?.textContent).toBe('Blue Mug | Northwind');
+		expect(result.querySelector('.shelfway-seo-trail')?.textContent).toBe('https://northwind.example › products › blue-mug');
+		expect(result.querySelector('.shelfway-seo-text')?.textContent).toBe('A mug for tea.');
 		const card = /** @type {HTMLElement} */ (view.node.querySelector('[data-part="card"]'));
 		expect(card.querySelector('img')?.getAttribute('src')).toBe('https://cdn.example/mug.jpg');
-		expect(card.querySelector('.ss-seo-domain')?.textContent).toBe('northwind.example');
-		expect(view.node.querySelector('.ss-seo-warn')).toBeNull();
+		expect(card.querySelector('.shelfway-seo-domain')?.textContent).toBe('northwind.example');
+		expect(view.node.querySelector('.shelfway-seo-warn')).toBeNull();
 		view.update({ title: 'W'.repeat(80), description: '', url: 'https://northwind.example/', image: '' });
-		expect(view.node.querySelector('.ss-seo-title')?.textContent).toMatch(/…$/);
-		expect(view.node.querySelector('.ss-seo-warn')?.textContent).toContain(words.titleCut);
-		expect(view.node.querySelector('[data-part="result"] .ss-seo-text')?.textContent).toBe(words.noDescription);
+		expect(view.node.querySelector('.shelfway-seo-title')?.textContent).toMatch(/…$/);
+		expect(view.node.querySelector('.shelfway-seo-warn')?.textContent).toContain(words.titleCut);
+		expect(view.node.querySelector('[data-part="result"] .shelfway-seo-text')?.textContent).toBe(words.noDescription);
 		expect(view.node.querySelector('[data-part="card"] img')).toBeNull();
-		expect(view.node.querySelector('[data-part="card"] .ss-seo-noimage')?.textContent).toBe(words.noImage);
+		expect(view.node.querySelector('[data-part="card"] .shelfway-seo-noimage')?.textContent).toBe(words.noImage);
 		view.node.remove();
 	});
 	it('shows each width against its limit and takes the widget’s own words', () => {
@@ -167,11 +167,11 @@ describe('the preview part (DOM, for widgets)', () => {
 			{ texts: { titleWidth: 'Title {width} / {limit}', result: 'Search' }, measure: (text) => text.length * 10 },
 		);
 		expect(view.node.querySelector('[data-part="result"]')?.getAttribute('aria-label')).toBe('Search');
-		expect(view.node.querySelector('.ss-seo-meter')?.textContent).toContain('Title 20 / 600');
+		expect(view.node.querySelector('.shelfway-seo-meter')?.textContent).toContain('Title 20 / 600');
 	});
 	it('has its own styles for light and dark', () => {
-		expect(SEO_PREVIEW_CSS).toContain('.ss-seo-title');
-		expect(SEO_PREVIEW_CSS).toContain("data-ss-mode='dark'");
+		expect(SEO_PREVIEW_CSS).toContain('.shelfway-seo-title');
+		expect(SEO_PREVIEW_CSS).toContain("data-shelfway-mode='dark'");
 		expect(SEO_PREVIEW_CSS).toContain('prefers-color-scheme: dark');
 	});
 });
@@ -181,10 +181,10 @@ describe('<SeoPreview> (React, for dashboards)', () => {
 		const { container, rerender } = render(
 			<SeoPreview title="Grade A | Shop" description="Like new." url="https://shop.example/grades/a" siteName="Shop" />,
 		);
-		expect(container.querySelector('.ss-seo-title')?.textContent).toBe('Grade A | Shop');
+		expect(container.querySelector('.shelfway-seo-title')?.textContent).toBe('Grade A | Shop');
 		rerender(<SeoPreview title="Grade B | Shop" description="" url="https://shop.example/grades/b" />);
-		expect(container.querySelector('.ss-seo-title')?.textContent).toBe('Grade B | Shop');
-		expect(container.querySelector('.ss-seo-trail')?.textContent).toBe('https://shop.example › grades › b');
-		expect(document.head.querySelectorAll('style[data-ss-seo-preview]').length).toBe(1);
+		expect(container.querySelector('.shelfway-seo-title')?.textContent).toBe('Grade B | Shop');
+		expect(container.querySelector('.shelfway-seo-trail')?.textContent).toBe('https://shop.example › grades › b');
+		expect(document.head.querySelectorAll('style[data-shelfway-seo-preview]').length).toBe(1);
 	});
 });

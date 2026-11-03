@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { IMPORT_LIMITS } from '@ss/contracts';
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
+import { IMPORT_LIMITS } from '@shelfway/contracts';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import { defineRoute } from '../src/index.js';
 import { summaryValues } from '../src/imports.js';
 import { manifest, openDb, productRoutes, setup } from './helpers.js';
@@ -142,11 +142,11 @@ describe('import routes (K10)', () => {
 			],
 		});
 		const { client, db } = await openDb(dbName);
-		const notes = db.collection('ss_notes_notes');
+		const notes = db.collection('shelfway_notes_notes');
 		expect(await notes.countDocuments({})).toBe(0);
 
 		const real = await send('notes', ndjson(records.slice(0, 2)), {
-			headers: { 'ss-actor-id': 'usr_1', 'ss-actor-name': 'Importer' },
+			headers: { 'shelfway-actor-id': 'usr_1', 'shelfway-actor-name': 'Importer' },
 		});
 		expect(real.json).toMatchObject({ inserted: 2, updated: 0, failed: [], dryRun: false });
 		expect(await notes.findOne({ id: records[0]?.id })).toMatchObject({
@@ -164,7 +164,7 @@ describe('import routes (K10)', () => {
 		});
 		expect(await notes.countDocuments({})).toBe(2);
 		// one activity entry per call, never copied
-		const entries = await db.collection('ss_notes_activity').find({}).sort({ at: 1 }).toArray();
+		const entries = await db.collection('shelfway_notes_activity').find({}).sort({ at: 1 }).toArray();
 		// what changed as values (codes and numbers), never an English sentence (A8)
 		expect(entries.map((entry) => [entry.action, entry.values, entry.detail, entry.copy])).toEqual([
 			['import.notes', { inserted: 2, updated: 0, failed: 0 }, undefined, 'none'],
@@ -175,7 +175,7 @@ describe('import routes (K10)', () => {
 		expect(entries[1]?.actor).toEqual({ kind: 'server', id: 'server', name: 'Server' });
 		// another collection, its own table; status counts each
 		expect((await send('labels', ndjson([{ id: 'lab_0123456789abcdef01234567', name: 'vip' }]))).json.inserted).toBe(1);
-		expect(await db.collection('ss_notes_note_labels').countDocuments({})).toBe(1);
+		expect(await db.collection('shelfway_notes_note_labels').countDocuments({})).toBe(1);
 		const status = await call('GET', '/v1/import/status', { token: server.token, bare: true });
 		expect(await status.json()).toEqual({
 			collections: { notes: 2, labels: 1, days: 0 },
@@ -184,7 +184,7 @@ describe('import routes (K10)', () => {
 		});
 		const finished = await call('POST', '/v1/import/finish', { token: server.token, bare: true });
 		expect(await finished.json()).toEqual({ finished: true, notes: 2 });
-		const finishedEntry = await db.collection('ss_notes_activity').findOne({ action: 'import.finish' });
+		const finishedEntry = await db.collection('shelfway_notes_activity').findOne({ action: 'import.finish' });
 		expect(finishedEntry?.values).toEqual({ notes: 2 });
 		expect(finishedEntry?.detail).toBeUndefined();
 		await client.close();
@@ -209,7 +209,7 @@ describe('import routes (K10)', () => {
 	it('report unique values already taken', async () => {
 		const { send, dbName } = await start();
 		const { client, db } = await openDb(dbName);
-		await db.collection('ss_notes_notes').createIndex({ websiteId: 1, text: 1 }, { unique: true });
+		await db.collection('shelfway_notes_notes').createIndex({ websiteId: 1, text: 1 }, { unique: true });
 		const result = await send(
 			'notes',
 			ndjson([
@@ -227,7 +227,7 @@ describe('import routes (K10)', () => {
 	it('replace the stored record, so fields the source no longer has go, and keep createdAt', async () => {
 		const { send, dbName, clock } = await start();
 		const { client, db } = await openDb(dbName);
-		const notes = db.collection('ss_notes_notes');
+		const notes = db.collection('shelfway_notes_notes');
 		const id = 'not_0123456789abcdef01234567';
 		await send('notes', ndjson([{ id, text: 'first', createdAt: '2024-01-02T03:04:05Z' }]));
 		await send('notes', ndjson([{ id: 'not_0123456789abcdef01234568', text: 'no time' }]));
@@ -254,7 +254,7 @@ describe('import routes (K10)', () => {
 		});
 		await dash(await session(), 'POST', `/v1/dashboard/websites/${websiteId}/website-settings/refresh`);
 		const { client, db } = await openDb(dbName);
-		const days = db.collection('ss_notes_days');
+		const days = db.collection('shelfway_notes_days');
 		const records = [
 			{ day: '2024-01-01', part: 0, visits: 3 },
 			{ day: '2024-01-01', part: 1, visits: 1 },
@@ -299,7 +299,7 @@ describe('import routes (K10)', () => {
 	it('prune the records an import wrote and the source no longer has, range by range, dry run first', async () => {
 		const { send, prune, dbName, call, server, websiteId } = await start();
 		const { client, db } = await openDb(dbName);
-		const notes = db.collection('ss_notes_notes');
+		const notes = db.collection('shelfway_notes_notes');
 		const ids = ['01', '02', '03', '04', '05'].map((n) => `not_0123456789abcdef012345${n}`);
 		await send('notes', ndjson(ids.map((id) => ({ id, text: id }))));
 		// a note the merchant made in the product itself: never an import's to remove
@@ -329,7 +329,7 @@ describe('import routes (K10)', () => {
 		expect((await notes.find({}).toArray()).map((note) => note.id)).toEqual(['not_0123456789abcdef01234599']);
 		const status = await call('GET', '/v1/import/status', { token: server.token, bare: true });
 		expect((await status.json()).imported).toMatchObject({ notes: 0 });
-		const entries = await db.collection('ss_notes_activity').find({ action: 'import.notes.prune' }).toArray();
+		const entries = await db.collection('shelfway_notes_activity').find({ action: 'import.notes.prune' }).toArray();
 		expect(entries.map((entry) => entry.values)).toEqual([
 			{ removed: 1, more: false },
 			{ removed: 1, more: false },
@@ -368,7 +368,7 @@ describe('import routes (K10)', () => {
 		expect((await prune('days', { keep: [days[0]] })).json).toMatchObject({ removed: 1, more: false });
 		expect(
 			await db
-				.collection('ss_notes_days')
+				.collection('shelfway_notes_days')
 				.find({}, { projection: { _id: 0, day: 1, part: 1 } })
 				.toArray(),
 		).toEqual([days[0]]);

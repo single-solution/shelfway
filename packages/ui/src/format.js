@@ -171,7 +171,7 @@ const WORD_CASE = Object.freeze({
 });
 
 /**
- * A support contact channel of the Portal (`@ss/contracts/text` support channels).
+ * A support contact channel of the Portal (`@shelfway/contracts/text` support channels).
  * @typedef {{ type: 'email' | 'phone' | 'link', label: string, url: string }} SupportChannel
  */
 

@@ -1,7 +1,7 @@
 /**
  * Events (PLAN 0.8.10 K5; Payments' mechanism of 0.8.4 step 9, moved into the kit for every product that publishes
  * events). Each event `{ id, type: '<product>.<event>', at, data }` (`data` at most 16 kB: ids and small facts, never
- * addresses or message contents) is stored in the merchant database (`ss_<product>_events`, removed 30 days after it
+ * addresses or message contents) is stored in the merchant database (`shelfway_<product>_events`, removed 30 days after it
  * happened by a TTL index) and listed by `GET /v1/events?since=&types=&cursor=&limit=` (server token, newest first).
  *
  * When Notifications is on the website (the Portal links it), each event is forwarded right after the request to Notifications'
@@ -11,8 +11,8 @@
  * or list change through the settings API or the dashboard raises `<product>.settings.changed` (SG-14).
  * @module
  */
-import { createId } from '@ss/contracts';
-import { isObject } from '@ss/contracts/util';
+import { createId } from '@shelfway/contracts';
+import { isObject } from '@shelfway/contracts/util';
 import { paginate, problem } from './http/results.js';
 import { countHandlers } from './counts.js';
 import { isKitError, kitError } from './util.js';
@@ -64,7 +64,7 @@ const eventView = (productId, event) => ({
 
 /**
  * @param {{ productId: string, enabled: boolean, data: import('./data.js').Data,
- *   connections: import('./connections.js').Connections, now: () => number, logger: import('@ss/net').Logger }} options
+ *   connections: import('./connections.js').Connections, now: () => number, logger: import('@shelfway/net').Logger }} options
  */
 export const createEvents = ({ productId, enabled, data, connections, now, logger }) => {
 	/** Per instance: websites known to have nothing to forward. @type {Set<string>} */

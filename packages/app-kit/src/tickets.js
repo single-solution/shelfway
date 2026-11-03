@@ -5,11 +5,11 @@
  * (`ENCRYPTION_KEY` lost) is replaced: tickets last 15 minutes and the admin widgets ask for new ones.
  * @module
  */
-import { createKeyResolver, createSigner, generateSigningKey, issueTicket, toPublicJwk, verifyTicket } from '@ss/protocol';
+import { createKeyResolver, createSigner, generateSigningKey, issueTicket, toPublicJwk, verifyTicket } from '@shelfway/protocol';
 import { openKey, resealKey, sealKey } from './sealing.js';
 
 /** @typedef {import('./stores/types.js').Store} Store */
-/** @typedef {import('@ss/protocol').TicketClaims} TicketClaims */
+/** @typedef {import('@shelfway/protocol').TicketClaims} TicketClaims */
 
 /** What the sealed ticket key is bound to. */
 const KEY_AAD = 'state|ticketKey';
@@ -19,7 +19,7 @@ const KEY_AAD = 'state|ticketKey';
  *   randomBytes: (length: number) => Uint8Array }} options
  */
 export const createTickets = ({ store, productId, sealer, now, randomBytes }) => {
-	/** @type {Promise<{ signer: import('@ss/protocol').Signer, resolver: import('@ss/protocol').KeyResolver }> | null} */
+	/** @type {Promise<{ signer: import('@shelfway/protocol').Signer, resolver: import('@shelfway/protocol').KeyResolver }> | null} */
 	let loaded = null;
 
 	const load = () => {

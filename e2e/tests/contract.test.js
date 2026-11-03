@@ -3,7 +3,7 @@
  * or every connected product) and the status response as the product receives them, and notices kept while the
  * product cannot be reached and delivered right after its next call to the Portal.
  */
-import { validateDirectoryList } from '@ss/contracts';
+import { validateDirectoryList } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { PRODUCT_URL, codeOf, startSystem } from './helpers.js';
 

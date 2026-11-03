@@ -6,22 +6,22 @@
  * fake in this process), the guest limit lifted while Accounts pauses the Customer role's sign-in (C17), every
  * conversation deleted before going live (C20), and the hourly charge.
  */
-import { staffSignIns } from '@ss/product-accounts/testing';
+import { staffSignIns } from '@shelfway/product-accounts/testing';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
 	createProductInstance as createAccounts,
 	manifest as accountsManifest,
 	strings as accountsStrings,
-} from '@ss/product-accounts/product';
-import { createRoutes as accountsRoutes } from '@ss/product-accounts/routes';
-import { createProductInstance, manifest, strings } from '@ss/product-chat/product';
-import { createRoutes } from '@ss/product-chat/routes';
+} from '@shelfway/product-accounts/product';
+import { createRoutes as accountsRoutes } from '@shelfway/product-accounts/routes';
+import { createProductInstance, manifest, strings } from '@shelfway/product-chat/product';
+import { createRoutes } from '@shelfway/product-chat/routes';
 import {
 	createProductInstance as createNotifications,
 	manifest as notifyManifest,
 	strings as notifyStrings,
-} from '@ss/product-notifications/product';
-import { createRoutes as notifyRoutes } from '@ss/product-notifications/routes';
+} from '@shelfway/product-notifications/product';
+import { createRoutes as notifyRoutes } from '@shelfway/product-notifications/routes';
 import { HOUR, codeOf, savePortalSettings, startSystem } from './helpers.js';
 
 const CHAT = 'https://chat.test';
@@ -144,11 +144,11 @@ describe('Chat on the real Portal', () => {
 		const pasted = await sys.dashboard(cookie, 'PUT', `/v1/dashboard/websites/${websiteId}/connections/ai`, {
 			value: { provider: 'openai', apiKey: 'sk-pasted-in-chat', model: 'gpt-4.1-mini' },
 		});
-		expect([pasted.status, codeOf(pasted)]).toEqual([409, 'managed_by_portal']);
+		expect([pasted.status, codeOf(pasted)]).toEqual([409, 'managed_by_platform']);
 		const sent = await visitor('POST', '/v1/chat/messages', { body: { text: 'How fast do you ship?' } });
 		expect(sent.status).toBe(201);
 		const guestKey = String(sent.json.guestKey);
-		const state = await visitor('GET', '/v1/chat', { headers: { 'ss-guest': guestKey } });
+		const state = await visitor('GET', '/v1/chat', { headers: { 'shelfway-guest': guestKey } });
 		expect(state.json.messages.map((/** @type {any} */ msg) => [msg.author, msg.text])).toEqual([
 			['visitor', 'How fast do you ship?'],
 			['ai', 'We ship in two days.'],
@@ -177,7 +177,7 @@ describe('Chat on the real Portal', () => {
 			body: { email: 'reader@example.com', password: 'a long enough password', name: 'Rea Der' },
 		});
 		expect(up.json.status).toBe('signed_in');
-		const headers = { 'ss-sign-in': String(up.json.signIn) };
+		const headers = { 'shelfway-sign-in': String(up.json.signIn) };
 		signedIn = headers;
 		const sent = await visitor('POST', '/v1/chat/messages', { body: { text: 'Where is my order?' }, headers });
 		expect(sent.status).toBe(201);
@@ -209,11 +209,11 @@ describe('Chat on the real Portal', () => {
 		expect((await sys.call('GET', '/v1/admin/conversations', { ...auth, origin: ORIGIN })).status).toBe(401);
 	});
 
-	it('the merchant’s server replies as a named member of staff (SS-Actor), and counts match the inbox', async () => {
+	it('the merchant’s server replies as a named member of staff (Shelfway-Actor), and counts match the inbox', async () => {
 		const actor = {
-			'ss-actor-id': 'usr_staff_42',
-			'ss-actor-name': encodeURIComponent('Alex Morgan'),
-			'ss-actor-role': 'Support staff',
+			'shelfway-actor-id': 'usr_staff_42',
+			'shelfway-actor-name': encodeURIComponent('Alex Morgan'),
+			'shelfway-actor-role': 'Support staff',
 		};
 		const replied = await sys.call('POST', `/v1/conversations/${conversationId}/messages`, {
 			token: chatTokens.server,
@@ -337,7 +337,7 @@ describe('Chat on the real Portal', () => {
 			sys.call(method, path, {
 				base: ACCOUNTS,
 				token: accountsTokens.server,
-				headers: { 'ss-sign-in': await staffSignIn() },
+				headers: { 'shelfway-sign-in': await staffSignIn() },
 				...(body === undefined ? {} : { body }),
 			});
 		const customer = (await accounts('GET', '/v1/roles')).json.items.find((/** @type {any} */ r) => r.key === 'customer');
@@ -350,7 +350,7 @@ describe('Chat on the real Portal', () => {
 		// Chat keeps what it read from Accounts for a minute, and earlier messages already read it (not paused then)
 		sys.clock.advance(61_000);
 		const first = await visitor('POST', '/v1/chat/messages', { body: { text: 'Do you have gift cards?' } });
-		const headers = { 'ss-guest': String(first.json.guestKey) };
+		const headers = { 'shelfway-guest': String(first.json.guestKey) };
 		const second = await visitor('POST', '/v1/chat/messages', { body: { text: 'And gift wrap?' }, headers });
 		expect(second.status).toBe(201);
 		expect(second.json.chat.guestMessagesLeft).toBeNull();

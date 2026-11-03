@@ -1,9 +1,9 @@
 /*
  * Marketing layout for Portal `/` (composition only).
- * Theme pack: Unite — tokens from `@ss/ui/theme.css` (see packages/ui/THEME-PACK.md).
+ * Theme pack: Unite — tokens from `@shelfway/ui/theme.css` (see packages/ui/THEME-PACK.md).
  * Alias kit vars below; never redefine a parallel palette here.
  */
-.ss-site {
+.shelfway-site {
 	/* readable column — ~85% viewport, not full-bleed */
 	--max: min(85vw, 96rem);
 	--gutter: clamp(1.25rem, 3.5vw, 2.5rem);
@@ -12,48 +12,48 @@
 	min-height: 100dvh;
 	margin: 0;
 	font-family: var(--font-sans);
-	color: var(--ss-fg);
-	background: var(--ss-canvas);
+	color: var(--shelfway-fg);
+	background: var(--shelfway-canvas);
 	line-height: 1.5;
 	/* clip avoids creating a scrollport that kills position:sticky on the nav */
 	overflow-x: clip;
 }
-.ss-site,
-.ss-site * {
+.shelfway-site,
+.shelfway-site * {
 	box-sizing: border-box;
 }
 
-.ss-site .compare-card.hard:hover,
-.ss-site .shot-frame.hard:hover,
-.ss-site .feature-mock.hard:hover {
+.shelfway-site .compare-card.hard:hover,
+.shelfway-site .shot-frame.hard:hover,
+.shelfway-site .feature-mock.hard:hover {
 	transform: none;
 	box-shadow: none;
 }
-.ss-site .compare-card.diy-card.hard:hover {
+.shelfway-site .compare-card.diy-card.hard:hover {
 	box-shadow: none;
 }
-.ss-site .compare-card.us-card.hard:hover {
-	box-shadow: 4px 4px 0 color-mix(in srgb, var(--ss-primary) 18%, transparent);
+.shelfway-site .compare-card.us-card.hard:hover {
+	box-shadow: 4px 4px 0 color-mix(in srgb, var(--shelfway-primary) 18%, transparent);
 }
 
 /* nav: sticky bar — stays visible while scrolling */
-.ss-site .nav-shell {
+.shelfway-site .nav-shell {
 	position: sticky;
 	top: 0;
 	z-index: 60;
 	padding: 0.85rem var(--gutter) 0;
 	isolation: isolate;
-	transition: padding var(--ss-motion-slow) var(--ss-ease);
+	transition: padding var(--shelfway-motion-slow) var(--shelfway-ease);
 }
-.ss-site .nav-shell.is-scrolled {
+.shelfway-site .nav-shell.is-scrolled {
 	padding: 0 var(--gutter);
-	background: color-mix(in srgb, var(--ss-surface) 94%, transparent);
+	background: color-mix(in srgb, var(--shelfway-surface) 94%, transparent);
 	backdrop-filter: blur(14px);
 	-webkit-backdrop-filter: blur(14px);
-	border-bottom: 1px solid var(--ss-line);
-	box-shadow: 0 8px 24px color-mix(in srgb, var(--ss-fg) 6%, transparent);
+	border-bottom: 1px solid var(--shelfway-line);
+	box-shadow: 0 8px 24px color-mix(in srgb, var(--shelfway-fg) 6%, transparent);
 }
-.ss-site .nav {
+.shelfway-site .nav {
 	max-width: var(--max);
 	margin: 0 auto;
 	width: 100%;
@@ -62,19 +62,19 @@
 	gap: 1.15rem;
 	padding: 0.65rem 0.75rem 0.65rem 1.1rem;
 	border-radius: var(--radius-control);
-	border: 1px solid var(--ss-line);
-	background: var(--ss-glass-strong);
+	border: 1px solid var(--shelfway-line);
+	background: var(--shelfway-glass-strong);
 	backdrop-filter: blur(16px);
 	-webkit-backdrop-filter: blur(16px);
-	box-shadow: var(--ss-shadow-1, none);
+	box-shadow: var(--shelfway-shadow-1, none);
 	transition:
-		border-radius var(--ss-motion-slow) var(--ss-ease),
-		padding var(--ss-motion-slow) var(--ss-ease),
-		box-shadow var(--ss-motion-slow) var(--ss-ease),
-		background var(--ss-motion) var(--ss-ease),
-		border-color var(--ss-motion) var(--ss-ease);
+		border-radius var(--shelfway-motion-slow) var(--shelfway-ease),
+		padding var(--shelfway-motion-slow) var(--shelfway-ease),
+		box-shadow var(--shelfway-motion-slow) var(--shelfway-ease),
+		background var(--shelfway-motion) var(--shelfway-ease),
+		border-color var(--shelfway-motion) var(--shelfway-ease);
 }
-.ss-site .nav-shell.is-scrolled .nav {
+.shelfway-site .nav-shell.is-scrolled .nav {
 	border-radius: 0;
 	border: 0;
 	background: transparent;
@@ -83,112 +83,112 @@
 	box-shadow: none;
 	padding: 0.75rem 0;
 }
-.ss-site .brand {
+.shelfway-site .brand {
 	font-family: var(--font-display);
 	font-size: 1.15rem;
 	font-weight: 700;
 	letter-spacing: -0.03em;
 	margin-right: auto;
-	color: var(--ss-fg);
+	color: var(--shelfway-fg);
 	text-decoration: none;
 	white-space: nowrap;
 	flex-shrink: 0;
 }
-.ss-site .nav nav {
+.shelfway-site .nav nav {
 	display: flex;
 	align-items: center;
 	gap: 1.15rem;
 	flex-wrap: nowrap;
 }
-.ss-site .nav nav a {
-	color: var(--ss-muted);
+.shelfway-site .nav nav a {
+	color: var(--shelfway-muted);
 	text-decoration: none;
 	font-size: 0.875rem;
 	font-weight: 600;
 	position: relative;
 	white-space: nowrap;
-	transition: color var(--ss-motion-fast) var(--ss-ease);
+	transition: color var(--shelfway-motion-fast) var(--shelfway-ease);
 }
-.ss-site .nav nav a::after {
+.shelfway-site .nav nav a::after {
 	content: '';
 	position: absolute;
 	left: 0;
 	bottom: -0.2rem;
 	width: 0;
 	height: 2px;
-	background: var(--ss-primary);
-	transition: width var(--ss-motion) var(--ss-ease);
+	background: var(--shelfway-primary);
+	transition: width var(--shelfway-motion) var(--shelfway-ease);
 }
-.ss-site .nav nav a:hover {
-	color: var(--ss-primary);
+.shelfway-site .nav nav a:hover {
+	color: var(--shelfway-primary);
 }
-.ss-site .nav nav a:hover::after {
+.shelfway-site .nav nav a:hover::after {
 	width: 100%;
 }
-.ss-site .cta {
+.shelfway-site .cta {
 	flex-shrink: 0;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	background: var(--ss-fg) !important;
-	color: var(--ss-canvas) !important;
+	background: var(--shelfway-fg) !important;
+	color: var(--shelfway-canvas) !important;
 	padding: 0.5rem 1rem;
 	min-height: 2.25rem;
 	border-radius: var(--radius-control);
-	border: 1px solid var(--ss-fg);
+	border: 1px solid var(--shelfway-fg);
 	font-weight: 600 !important;
 	font-size: 0.8125rem !important;
 	text-decoration: none !important;
 	white-space: nowrap;
 	transition:
-		transform var(--ss-motion-fast) var(--ss-ease),
-		background var(--ss-motion-fast) var(--ss-ease),
-		border-color var(--ss-motion-fast) var(--ss-ease) !important;
+		transform var(--shelfway-motion-fast) var(--shelfway-ease),
+		background var(--shelfway-motion-fast) var(--shelfway-ease),
+		border-color var(--shelfway-motion-fast) var(--shelfway-ease) !important;
 }
-.ss-site .cta::after {
+.shelfway-site .cta::after {
 	display: none !important;
 }
-.ss-site .nav-shell.is-scrolled .cta {
-	background: var(--ss-primary) !important;
-	border-color: var(--ss-primary);
-	color: var(--ss-on-primary) !important;
+.shelfway-site .nav-shell.is-scrolled .cta {
+	background: var(--shelfway-primary) !important;
+	border-color: var(--shelfway-primary);
+	color: var(--shelfway-on-primary) !important;
 }
-.ss-site .cta:hover {
+.shelfway-site .cta:hover {
 	transform: translateY(-1px);
 }
 
-.ss-site main {
+.shelfway-site main {
 	position: relative;
 	z-index: 1;
 }
 
-.ss-site [data-d='1'] {
+.shelfway-site [data-d='1'] {
 	--d: 1;
 }
-.ss-site [data-d='2'] {
+.shelfway-site [data-d='2'] {
 	--d: 2;
 }
-.ss-site [data-d='3'] {
+.shelfway-site [data-d='3'] {
 	--d: 3;
 }
-.ss-site .reveal {
+.shelfway-site .reveal {
 	opacity: 0;
 	transform: translateY(28px);
 	transition:
-		opacity 0.7s var(--ss-ease),
-		transform 0.7s var(--ss-ease);
+		opacity 0.7s var(--shelfway-ease),
+		transform 0.7s var(--shelfway-ease);
 	transition-delay: calc(var(--d, 0) * 0.08s);
 }
-.ss-site .reveal.in {
+.shelfway-site .reveal.in {
 	opacity: 1;
 	transform: none;
 }
-.ss-site .hero .reveal {
+.shelfway-site .hero .reveal {
 	opacity: 1;
 	transform: none;
 }
 
-.ss-site .hero {
+.shelfway-site .hero {
 	width: min(calc(100% - 2 * var(--gutter)), var(--max));
 	max-width: var(--max);
 	margin: 0 auto;
@@ -198,22 +198,22 @@
 	gap: clamp(1.5rem, 3vw, 2.5rem);
 	align-items: stretch;
 }
-.ss-site .byline {
+.shelfway-site .byline {
 	margin: 0 0 1.15rem;
 	font-size: 0.8rem;
 	font-weight: 600;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 }
-.ss-site .muted-link {
-	border-bottom-color: color-mix(in srgb, var(--ss-fg) 18%, transparent);
+.shelfway-site .muted-link {
+	border-bottom-color: color-mix(in srgb, var(--shelfway-fg) 18%, transparent);
 	font-weight: 600;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 }
-.ss-site .muted-link:hover {
-	color: var(--ss-primary);
-	border-bottom-color: var(--ss-info-solid);
+.shelfway-site .muted-link:hover {
+	color: var(--shelfway-primary);
+	border-bottom-color: var(--shelfway-info-solid);
 }
-.ss-site .fit-body {
+.shelfway-site .fit-body {
 	display: grid;
 	grid-template-columns: 1fr auto 1fr;
 	gap: 0.65rem;
@@ -223,82 +223,82 @@
 	z-index: 1;
 	flex: 1;
 }
-.ss-site .fit-vs {
+.shelfway-site .fit-vs {
 	display: grid;
 	place-items: center;
 	font-weight: 700;
-	color: var(--ss-primary);
+	color: var(--shelfway-primary);
 	font-size: 1.1rem;
 }
-.ss-site .fit-col .label {
+.shelfway-site .fit-col .label {
 	margin: 0 0 0.55rem;
 }
-.ss-site .fit-card {
+.shelfway-site .fit-card {
 	min-height: 11rem;
 	padding: 0.95rem;
-	border: 1px solid var(--ss-line);
+	border: 1px solid var(--shelfway-line);
 	border-radius: var(--radius-control);
-	background: color-mix(in srgb, var(--ss-surface) 80%, transparent);
+	background: color-mix(in srgb, var(--shelfway-surface) 80%, transparent);
 	display: flex;
 	flex-direction: column;
 	gap: 0.35rem;
 }
-.ss-site .fit-card.hot {
-	background: color-mix(in srgb, var(--ss-primary) 10%, var(--ss-surface));
-	border-color: color-mix(in srgb, var(--ss-primary) 35%, transparent);
-	box-shadow: 4px 4px 0 color-mix(in srgb, var(--ss-primary) 20%, transparent);
+.shelfway-site .fit-card.hot {
+	background: color-mix(in srgb, var(--shelfway-primary) 10%, var(--shelfway-surface));
+	border-color: color-mix(in srgb, var(--shelfway-primary) 35%, transparent);
+	box-shadow: 4px 4px 0 color-mix(in srgb, var(--shelfway-primary) 20%, transparent);
 }
-.ss-site .fit-bar {
+.shelfway-site .fit-bar {
 	display: block;
 	height: 0.45rem;
 	border-radius: 99px;
-	background: color-mix(in srgb, var(--ss-fg) 12%, transparent);
+	background: color-mix(in srgb, var(--shelfway-fg) 12%, transparent);
 	width: 100%;
 }
-.ss-site .fit-bar.short {
+.shelfway-site .fit-bar.short {
 	width: 55%;
 }
-.ss-site .fit-bar.mid {
+.shelfway-site .fit-bar.mid {
 	width: 78%;
 	margin-bottom: 0.55rem;
 }
-.ss-site .fit-card strong {
+.shelfway-site .fit-card strong {
 	font-family: var(--font-display);
 	font-size: 1.05rem;
 	font-weight: 700;
 	letter-spacing: -0.02em;
 }
-.ss-site .fit-card em {
+.shelfway-site .fit-card em {
 	font-style: normal;
 	font-size: 0.8rem;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 }
-.ss-site .fit-card ul {
+.shelfway-site .fit-card ul {
 	list-style: none;
 	margin: 0;
 	padding: 0;
 	display: grid;
 	gap: 0.4rem;
 }
-.ss-site .fit-card li {
+.shelfway-site .fit-card li {
 	font-size: 0.85rem;
 	font-weight: 600;
 	padding: 0.35rem 0.45rem;
 	border-radius: var(--radius-control);
-	background: color-mix(in srgb, var(--ss-surface) 70%, transparent);
-	border: 1px solid var(--ss-line);
+	background: color-mix(in srgb, var(--shelfway-surface) 70%, transparent);
+	border: 1px solid var(--shelfway-line);
 }
-.ss-site .fit-foot {
+.shelfway-site .fit-foot {
 	margin: 0;
 	padding: 0.65rem 1rem 0.85rem;
 	font-size: 0.65rem;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 	position: relative;
 	z-index: 1;
 }
-.ss-site .hero h1 {
+.shelfway-site .hero h1 {
 	margin: 0;
 	font-family: var(--font-display);
 	font-size: clamp(1.85rem, 4vw, 2.75rem);
@@ -307,117 +307,117 @@
 	font-weight: 700;
 	max-width: 14ch;
 }
-.ss-site .accent {
-	color: var(--ss-primary);
+.shelfway-site .accent {
+	color: var(--shelfway-primary);
 }
-.ss-site .lede {
+.shelfway-site .lede {
 	margin: 1.1rem 0 0;
 	max-width: 32rem;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 	font-size: 1.02rem;
 }
-.ss-site .hero-actions {
+.shelfway-site .hero-actions {
 	display: flex;
 	align-items: center;
 	gap: 1.1rem;
 	margin-top: 1.5rem;
 	flex-wrap: wrap;
 }
-.ss-site .text-link {
-	color: var(--ss-fg);
+.shelfway-site .text-link {
+	color: var(--shelfway-fg);
 	text-decoration: none;
 	font-weight: 700;
-	border-bottom: 2px solid var(--ss-info-solid);
+	border-bottom: 2px solid var(--shelfway-info-solid);
 	transition:
 		color 0.2s ease,
 		border-color 0.2s ease;
 }
-.ss-site .text-link:hover {
-	color: var(--ss-primary);
+.shelfway-site .text-link:hover {
+	color: var(--shelfway-primary);
 }
 
-.ss-site .hero-stage {
+.shelfway-site .hero-stage {
 	position: relative;
 	border-radius: var(--radius-control);
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
 	min-height: 100%;
-	background: var(--ss-glass-strong);
-	box-shadow: 8px 8px 0 color-mix(in srgb, var(--ss-primary) 18%, transparent);
+	background: var(--shelfway-glass-strong);
+	box-shadow: 8px 8px 0 color-mix(in srgb, var(--shelfway-primary) 18%, transparent);
 }
-.ss-site .stage-chrome {
+.shelfway-site .stage-chrome {
 	display: flex;
 	justify-content: space-between;
 	padding: 0.7rem 0.95rem;
-	border-bottom: 1px solid var(--ss-line);
-	background: color-mix(in srgb, var(--ss-fg) 4%, transparent);
+	border-bottom: 1px solid var(--shelfway-line);
+	background: color-mix(in srgb, var(--shelfway-fg) 4%, transparent);
 }
-.ss-site .mono {
+.shelfway-site .mono {
 	font-family: var(--font-mono);
 }
-.ss-site .stage-chrome .mono {
+.shelfway-site .stage-chrome .mono {
 	font-size: 0.65rem;
 	letter-spacing: 0.06em;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 }
-.ss-site .label {
+.shelfway-site .label {
 	margin: 0 0 0.65rem;
 	font-family: var(--font-mono);
 	font-size: 0.62rem;
 	letter-spacing: 0.1em;
-	color: var(--ss-primary);
+	color: var(--shelfway-primary);
 	font-weight: 700;
 }
-.ss-site .product-strip {
+.shelfway-site .product-strip {
 	width: min(calc(100% - 2 * var(--gutter)), var(--max));
 	max-width: var(--max);
 	margin: 0 auto;
 	padding: 0.35rem 0 0.15rem;
 }
-.ss-site .product-strip-inner {
+.shelfway-site .product-strip-inner {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.55rem 1.35rem;
 	padding: 0.85rem 0 1.1rem;
-	border-top: 1px solid var(--ss-line);
+	border-top: 1px solid var(--shelfway-line);
 	font-family: var(--font-mono);
 	font-size: 0.68rem;
 	font-weight: 600;
 	letter-spacing: 0.06em;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 }
 
-.ss-site .block {
+.shelfway-site .block {
 	width: min(calc(100% - 2 * var(--gutter)), var(--max));
 	max-width: var(--max);
 	margin: 0 auto;
 	padding: clamp(3.25rem, 7vw, 5rem) 0;
 }
-.ss-site .band {
+.shelfway-site .band {
 	width: 100%;
 	max-width: none;
-	background: color-mix(in srgb, var(--ss-surface) 45%, transparent);
-	border-block: 1px solid var(--ss-line);
+	background: color-mix(in srgb, var(--shelfway-surface) 45%, transparent);
+	border-block: 1px solid var(--shelfway-line);
 	padding-left: max(var(--gutter), calc((100% - var(--max)) / 2));
 	padding-right: max(var(--gutter), calc((100% - var(--max)) / 2));
 	padding-top: clamp(3.25rem, 7vw, 5rem);
 	padding-bottom: clamp(3.25rem, 7vw, 5rem);
 }
-.ss-site .block-head {
+.shelfway-site .block-head {
 	max-width: 38rem;
 	margin-bottom: 2rem;
 }
-.ss-site .eyebrow {
+.shelfway-site .eyebrow {
 	margin: 0 0 0.65rem;
 	font-family: var(--font-mono);
 	font-size: 0.68rem;
 	letter-spacing: 0.1em;
 	text-transform: uppercase;
-	color: var(--ss-primary);
+	color: var(--shelfway-primary);
 	font-weight: 700;
 }
-.ss-site .block-head h2 {
+.shelfway-site .block-head h2 {
 	margin: 0;
 	font-family: var(--font-display);
 	font-size: clamp(1.8rem, 3.4vw, 2.6rem);
@@ -425,165 +425,165 @@
 	line-height: 1.1;
 	font-weight: 800;
 }
-.ss-site .block-head p {
+.shelfway-site .block-head p {
 	margin: 0.65rem 0 0;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 }
 
-.ss-site .why-split {
+.shelfway-site .why-split {
 	display: grid;
 	grid-template-columns: 1fr auto 1fr;
 	gap: 1rem;
 	align-items: stretch;
 	margin-bottom: 1.35rem;
 }
-.ss-site .why-split article {
+.shelfway-site .why-split article {
 	padding: 1.35rem 1.25rem;
 }
-.ss-site .why-split .muted {
-	color: var(--ss-muted);
+.shelfway-site .why-split .muted {
+	color: var(--shelfway-muted);
 }
-.ss-site .why-split .lime {
-	color: var(--ss-success-solid);
+.shelfway-site .why-split .lime {
+	color: var(--shelfway-success-solid);
 }
-.ss-site .why-split p {
+.shelfway-site .why-split p {
 	margin: 0.45rem 0 0;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 }
-.ss-site .why-split .hot {
-	background: color-mix(in srgb, var(--ss-primary) 10%, transparent);
-	border-color: color-mix(in srgb, var(--ss-primary) 35%, transparent);
-	box-shadow: 4px 4px 0 color-mix(in srgb, var(--ss-primary) 20%, transparent);
+.shelfway-site .why-split .hot {
+	background: color-mix(in srgb, var(--shelfway-primary) 10%, transparent);
+	border-color: color-mix(in srgb, var(--shelfway-primary) 35%, transparent);
+	box-shadow: 4px 4px 0 color-mix(in srgb, var(--shelfway-primary) 20%, transparent);
 }
-.ss-site .why-split .burden {
-	background: color-mix(in srgb, var(--ss-danger) 5%, var(--ss-surface));
-	border-color: color-mix(in srgb, var(--ss-danger) 28%, transparent);
+.shelfway-site .why-split .burden {
+	background: color-mix(in srgb, var(--shelfway-danger) 5%, var(--shelfway-surface));
+	border-color: color-mix(in srgb, var(--shelfway-danger) 28%, transparent);
 }
-.ss-site .compare-pair {
+.shelfway-site .compare-pair {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 1rem;
 	align-items: stretch;
 }
-.ss-site .compare-card {
+.shelfway-site .compare-card {
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
 }
-.ss-site .compare-card.diy-card {
-	border-color: color-mix(in srgb, var(--ss-danger) 28%, transparent);
-	background: color-mix(in srgb, var(--ss-danger) 4%, var(--ss-surface));
+.shelfway-site .compare-card.diy-card {
+	border-color: color-mix(in srgb, var(--shelfway-danger) 28%, transparent);
+	background: color-mix(in srgb, var(--shelfway-danger) 4%, var(--shelfway-surface));
 }
-.ss-site .compare-card.us-card {
-	border-color: color-mix(in srgb, var(--ss-primary) 35%, transparent);
-	background: color-mix(in srgb, var(--ss-primary) 8%, var(--ss-surface));
-	box-shadow: 4px 4px 0 color-mix(in srgb, var(--ss-primary) 18%, transparent);
+.shelfway-site .compare-card.us-card {
+	border-color: color-mix(in srgb, var(--shelfway-primary) 35%, transparent);
+	background: color-mix(in srgb, var(--shelfway-primary) 8%, var(--shelfway-surface));
+	box-shadow: 4px 4px 0 color-mix(in srgb, var(--shelfway-primary) 18%, transparent);
 }
-.ss-site .compare-card-h {
+.shelfway-site .compare-card-h {
 	margin: 0;
 	padding: 0.9rem 1.15rem;
 	font-size: 0.68rem;
 	letter-spacing: 0.08em;
 	font-weight: 700;
-	border-bottom: 1px solid var(--ss-line);
+	border-bottom: 1px solid var(--shelfway-line);
 }
-.ss-site .compare-card.diy-card .compare-card-h {
-	color: color-mix(in srgb, var(--ss-danger) 72%, var(--ss-fg));
+.shelfway-site .compare-card.diy-card .compare-card-h {
+	color: color-mix(in srgb, var(--shelfway-danger) 72%, var(--shelfway-fg));
 }
-.ss-site .compare-card.us-card .compare-card-h {
-	color: var(--ss-success);
+.shelfway-site .compare-card.us-card .compare-card-h {
+	color: var(--shelfway-success);
 }
-.ss-site .compare-card ul {
+.shelfway-site .compare-card ul {
 	list-style: none;
 	margin: 0;
 	padding: 0;
 }
-.ss-site .compare-card li {
+.shelfway-site .compare-card li {
 	display: grid;
 	grid-template-columns: 1.15rem 1fr;
 	gap: 0.65rem;
 	align-items: start;
 	padding: 0.95rem 1.15rem;
-	border-top: 1px solid var(--ss-line);
+	border-top: 1px solid var(--shelfway-line);
 }
-.ss-site .compare-card li:first-child {
+.shelfway-site .compare-card li:first-child {
 	border-top: 0;
 }
-.ss-site .compare-card .mark {
+.shelfway-site .compare-card .mark {
 	font-size: 0.95rem;
 	line-height: 1.4;
 	font-weight: 700;
 }
-.ss-site .compare-card.diy-card .mark {
-	color: var(--ss-danger);
+.shelfway-site .compare-card.diy-card .mark {
+	color: var(--shelfway-danger);
 }
-.ss-site .compare-card.us-card .mark {
-	color: var(--ss-success);
+.shelfway-site .compare-card.us-card .mark {
+	color: var(--shelfway-success);
 }
-.ss-site .compare-card strong {
+.shelfway-site .compare-card strong {
 	display: block;
 	font-size: 0.92rem;
 	font-weight: 700;
 	letter-spacing: -0.015em;
-	color: var(--ss-fg);
+	color: var(--shelfway-fg);
 }
-.ss-site .compare-card p {
+.shelfway-site .compare-card p {
 	margin: 0.3rem 0 0;
 	font-size: 0.88rem;
 	line-height: 1.45;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 }
-.ss-site .compare-card.diy-card p {
-	color: color-mix(in srgb, var(--ss-danger) 42%, var(--ss-muted));
+.shelfway-site .compare-card.diy-card p {
+	color: color-mix(in srgb, var(--shelfway-danger) 42%, var(--shelfway-muted));
 }
-.ss-site .compare-card li.burden-foot {
-	background: color-mix(in srgb, var(--ss-fg) 4%, transparent);
+.shelfway-site .compare-card li.burden-foot {
+	background: color-mix(in srgb, var(--shelfway-fg) 4%, transparent);
 }
-.ss-site .compare-card li.burden-foot p {
+.shelfway-site .compare-card li.burden-foot p {
 	font-weight: 650;
-	color: var(--ss-fg);
+	color: var(--shelfway-fg);
 }
-.ss-site .vs {
+.shelfway-site .vs {
 	display: grid;
 	place-items: center;
 	font-weight: 700;
-	color: var(--ss-primary);
+	color: var(--shelfway-primary);
 	font-size: 0.85rem;
 }
 
-.ss-site .ok {
-	color: var(--ss-success);
+.shelfway-site .ok {
+	color: var(--shelfway-success);
 	font-weight: 650;
 }
-.ss-site .mid {
-	color: var(--ss-attention);
+.shelfway-site .mid {
+	color: var(--shelfway-attention);
 	font-weight: 700;
 }
-.ss-site .no {
-	color: var(--ss-danger);
+.shelfway-site .no {
+	color: var(--shelfway-danger);
 	font-weight: 700;
 }
 
-.ss-site .doc-code-wrap {
+.shelfway-site .doc-code-wrap {
 	padding: 1rem 1.15rem;
 	overflow-x: auto;
 }
-.ss-site .doc-code-wrap pre {
+.shelfway-site .doc-code-wrap pre {
 	margin: 0;
 	font-family: var(--font-mono);
 	font-size: 0.82rem;
 	line-height: 1.55;
-	color: var(--ss-fg);
+	color: var(--shelfway-fg);
 	white-space: pre;
 }
-.ss-site .doc-copy-pill {
+.shelfway-site .doc-copy-pill {
 	appearance: none;
 	margin-left: auto;
 	padding: 0.2rem 0.65rem;
 	border-radius: var(--radius-control);
-	border: 1px solid var(--ss-line);
-	background: var(--ss-surface);
-	color: var(--ss-primary);
+	border: 1px solid var(--shelfway-line);
+	background: var(--shelfway-surface);
+	color: var(--shelfway-primary);
 	font-family: var(--font-mono);
 	font-size: 0.72rem;
 	font-weight: 600;
@@ -592,132 +592,132 @@
 		background 0.15s ease,
 		border-color 0.15s ease;
 }
-.ss-site .doc-copy-pill:hover {
-	border-color: var(--ss-primary);
-	background: var(--ss-surface-2);
+.shelfway-site .doc-copy-pill:hover {
+	border-color: var(--shelfway-primary);
+	background: var(--shelfway-surface-2);
 }
 
-.ss-site .faq {
+.shelfway-site .faq {
 	margin: 0;
 	display: grid;
 	gap: 0;
-	border: 1px solid var(--ss-line);
+	border: 1px solid var(--shelfway-line);
 	border-radius: var(--radius-control);
-	background: color-mix(in srgb, var(--ss-surface) 70%, transparent);
+	background: color-mix(in srgb, var(--shelfway-surface) 70%, transparent);
 	overflow: hidden;
 }
-.ss-site .faq-item {
+.shelfway-site .faq-item {
 	display: grid;
 	grid-template-columns: 1fr 1.35fr;
 	gap: 1rem 1.5rem;
 	padding: 1.15rem 1.25rem;
-	border-top: 1px solid var(--ss-line);
+	border-top: 1px solid var(--shelfway-line);
 }
-.ss-site .faq-item:first-child {
+.shelfway-site .faq-item:first-child {
 	border-top: 0;
 }
-.ss-site .faq dt {
+.shelfway-site .faq dt {
 	margin: 0;
 	font-weight: 700;
 	font-size: 0.95rem;
 	letter-spacing: -0.01em;
 }
-.ss-site .faq dd {
+.shelfway-site .faq dd {
 	margin: 0;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 	font-size: 0.95rem;
 	line-height: 1.45;
 }
-.ss-site footer .by {
+.shelfway-site footer .by {
 	display: block;
 	margin-top: 0.25rem;
 	font-size: 0.75rem;
 	font-weight: 600;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 }
 
 /* Feature stage: tabs rail on left + mockup & details panel on right */
-.ss-site .feature-stage {
+.shelfway-site .feature-stage {
 	display: grid;
 	grid-template-columns: minmax(18rem, 21rem) 1fr;
 	gap: 1.5rem;
 	align-items: stretch;
 }
 
-.ss-site .feature-rail {
+.shelfway-site .feature-rail {
 	display: grid;
 	gap: 0.55rem;
 	align-content: start;
 }
 
-.ss-site .feature-tab {
+.shelfway-site .feature-tab {
 	appearance: none;
 	display: flex;
 	align-items: center;
 	gap: 0.95rem;
 	padding: 0.95rem 1.15rem;
-	border: 1px solid var(--ss-line);
+	border: 1px solid var(--shelfway-line);
 	border-radius: var(--radius-control);
-	background: var(--ss-surface);
+	background: var(--shelfway-surface);
 	text-align: left;
 	cursor: pointer;
 	font: inherit;
-	color: var(--ss-fg);
+	color: var(--shelfway-fg);
 	transition:
-		border-color 0.2s var(--ss-ease),
-		background 0.2s var(--ss-ease),
-		box-shadow 0.2s var(--ss-ease),
-		transform 0.2s var(--ss-ease);
+		border-color 0.2s var(--shelfway-ease),
+		background 0.2s var(--shelfway-ease),
+		box-shadow 0.2s var(--shelfway-ease),
+		transform 0.2s var(--shelfway-ease);
 }
 
-.ss-site .feature-tab:hover {
+.shelfway-site .feature-tab:hover {
 	transform: translateX(3px);
-	border-color: var(--ss-primary);
+	border-color: var(--shelfway-primary);
 }
 
-.ss-site .feature-tab.on {
-	border-color: var(--ss-primary);
-	background: color-mix(in srgb, var(--ss-primary) 8%, var(--ss-surface));
-	box-shadow: 4px 4px 0 color-mix(in srgb, var(--ss-primary) 22%, transparent);
+.shelfway-site .feature-tab.on {
+	border-color: var(--shelfway-primary);
+	background: color-mix(in srgb, var(--shelfway-primary) 8%, var(--shelfway-surface));
+	box-shadow: 4px 4px 0 color-mix(in srgb, var(--shelfway-primary) 22%, transparent);
 }
 
-.ss-site .feature-tab .mono {
+.shelfway-site .feature-tab .mono {
 	font-size: 0.75rem;
 	font-weight: 700;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 	padding: 0.25rem 0.45rem;
 	border-radius: var(--radius-control);
-	background: color-mix(in srgb, var(--ss-fg) 5%, transparent);
+	background: color-mix(in srgb, var(--shelfway-fg) 5%, transparent);
 }
 
-.ss-site .feature-tab.on .mono {
-	color: var(--ss-primary);
-	background: color-mix(in srgb, var(--ss-primary) 12%, transparent);
+.shelfway-site .feature-tab.on .mono {
+	color: var(--shelfway-primary);
+	background: color-mix(in srgb, var(--shelfway-primary) 12%, transparent);
 }
 
-.ss-site .feature-tab-copy strong {
+.shelfway-site .feature-tab-copy strong {
 	display: block;
 	font-size: 0.96rem;
 	font-weight: 700;
 	letter-spacing: -0.015em;
-	color: var(--ss-fg);
+	color: var(--shelfway-fg);
 }
 
-.ss-site .feature-tab-copy em {
+.shelfway-site .feature-tab-copy em {
 	display: block;
 	margin-top: 0.2rem;
 	font-style: normal;
 	font-size: 0.8rem;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 	line-height: 1.35;
 }
 
-.ss-site .feature-panel {
+.shelfway-site .feature-panel {
 	display: grid;
 	grid-template-columns: 1.15fr 1fr;
 	gap: 1.5rem;
 	align-items: stretch;
-	animation: featureFade 0.25s var(--ss-ease) both;
+	animation: featureFade 0.25s var(--shelfway-ease) both;
 }
 
 @keyframes featureFade {
@@ -731,67 +731,67 @@
 	}
 }
 
-.ss-site .feature-mock {
+.shelfway-site .feature-mock {
 	border-radius: var(--radius-control);
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
-	background: var(--ss-glass-strong);
-	box-shadow: 6px 6px 0 color-mix(in srgb, var(--ss-primary) 15%, transparent);
+	background: var(--shelfway-glass-strong);
+	box-shadow: 6px 6px 0 color-mix(in srgb, var(--shelfway-primary) 15%, transparent);
 }
 
-.ss-site .feature-detail {
+.shelfway-site .feature-detail {
 	display: flex;
 	flex-direction: column;
 	gap: 0.95rem;
 	padding: 1.35rem 1.45rem;
-	border: 1px solid var(--ss-line);
+	border: 1px solid var(--shelfway-line);
 	border-radius: var(--radius-control);
-	background: var(--ss-surface);
+	background: var(--shelfway-surface);
 }
 
-.ss-site .feature-detail h3 {
+.shelfway-site .feature-detail h3 {
 	margin: 0;
 	font-family: var(--font-display);
 	font-size: 1.55rem;
 	font-weight: 800;
 	letter-spacing: -0.03em;
-	color: var(--ss-fg);
+	color: var(--shelfway-fg);
 }
 
-.ss-site .feature-detail p {
+.shelfway-site .feature-detail p {
 	margin: 0;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 	font-size: 0.92rem;
 	line-height: 1.5;
 }
 
-.ss-site .feature-detail .gets {
+.shelfway-site .feature-detail .gets {
 	list-style: none;
 	margin: 0.35rem 0;
 	padding: 0.85rem 1rem;
-	border: 1px solid var(--ss-line);
+	border: 1px solid var(--shelfway-line);
 	border-radius: var(--radius-control);
-	background: color-mix(in srgb, var(--ss-fg) 2%, transparent);
+	background: color-mix(in srgb, var(--shelfway-fg) 2%, transparent);
 	display: grid;
 	gap: 0.55rem;
 }
 
-.ss-site .feature-detail .gets li {
+.shelfway-site .feature-detail .gets li {
 	position: relative;
 	padding-left: 1.25rem;
 	font-size: 0.88rem;
 	font-weight: 600;
 	line-height: 1.4;
-	color: var(--ss-fg);
+	color: var(--shelfway-fg);
 }
 
-.ss-site .feature-detail .gets li::before {
+.shelfway-site .feature-detail .gets li::before {
 	content: '✓';
 	position: absolute;
 	left: 0;
 	top: 0;
-	color: var(--ss-primary);
+	color: var(--shelfway-primary);
 	font-weight: 800;
 	font-size: 0.85rem;
 	background: none;
@@ -799,42 +799,42 @@
 	height: auto;
 }
 
-.ss-site .feature-detail .spot-for,
-.ss-site .feature-detail .spot-use {
+.shelfway-site .feature-detail .spot-for,
+.shelfway-site .feature-detail .spot-use {
 	font-size: 0.88rem;
 	line-height: 1.45;
 }
 
-.ss-site .feature-detail .spot-for .mono,
-.ss-site .feature-detail .spot-use .mono {
+.shelfway-site .feature-detail .spot-for .mono,
+.shelfway-site .feature-detail .spot-use .mono {
 	font-size: 0.65rem;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
-	color: var(--ss-primary);
+	color: var(--shelfway-primary);
 	font-weight: 700;
 	margin-right: 0.35rem;
 }
 
-.ss-site .feature-detail .product-docs {
+.shelfway-site .feature-detail .product-docs {
 	margin-top: auto;
 	padding-top: 0.75rem;
-	color: var(--ss-primary);
+	color: var(--shelfway-primary);
 	font-weight: 700;
 	font-size: 0.9rem;
 	text-decoration: none;
 	display: inline-flex;
 	align-items: center;
 	gap: 0.35rem;
-	transition: gap 0.2s var(--ss-ease);
+	transition: gap 0.2s var(--shelfway-ease);
 }
 
-.ss-site .feature-detail .product-docs:hover {
+.shelfway-site .feature-detail .product-docs:hover {
 	gap: 0.6rem;
 	text-decoration: underline;
 }
 
 /* Workflow 3-step cards */
-.ss-site .work-steps {
+.shelfway-site .work-steps {
 	list-style: none;
 	margin: 2.25rem 0 1.75rem;
 	padding: 0;
@@ -843,7 +843,7 @@
 	gap: 1.25rem;
 }
 
-.ss-site .work-steps li {
+.shelfway-site .work-steps li {
 	padding: 1.5rem 1.4rem;
 	display: grid;
 	gap: 0.5rem;
@@ -851,86 +851,86 @@
 	border-radius: var(--radius-control);
 }
 
-.ss-site .work-head {
+.shelfway-site .work-head {
 	display: flex;
 	align-items: center;
 	gap: 0.65rem;
 	margin-bottom: 0.25rem;
 }
 
-.ss-site .work-steps .work-n {
+.shelfway-site .work-steps .work-n {
 	font-size: 0.8rem;
 	font-weight: 800;
-	color: var(--ss-primary);
+	color: var(--shelfway-primary);
 	padding: 0.15rem 0.45rem;
 	border-radius: var(--radius-control);
-	background: color-mix(in srgb, var(--ss-primary) 12%, transparent);
+	background: color-mix(in srgb, var(--shelfway-primary) 12%, transparent);
 }
 
-.ss-site .work-steps .work-k {
+.shelfway-site .work-steps .work-k {
 	font-size: 0.68rem;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 	font-weight: 600;
 }
 
-.ss-site .work-steps h3 {
+.shelfway-site .work-steps h3 {
 	margin: 0.15rem 0 0;
 	font-family: var(--font-display);
 	font-size: 1.15rem;
 	font-weight: 700;
 	letter-spacing: -0.02em;
-	color: var(--ss-fg);
+	color: var(--shelfway-fg);
 }
 
-.ss-site .work-steps p {
+.shelfway-site .work-steps p {
 	margin: 0;
 	font-size: 0.9rem;
 	line-height: 1.5;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 }
 
 /* For your developer handoff banner */
-.ss-site .handoff {
+.shelfway-site .handoff {
 	padding: 1.85rem 2.15rem;
 	display: grid;
 	grid-template-columns: 1.35fr 1.1fr auto;
 	gap: 2rem;
 	align-items: center;
 	border-radius: var(--radius-control);
-	border: 1px solid color-mix(in srgb, var(--ss-primary) 28%, var(--ss-line));
-	background: color-mix(in srgb, var(--ss-primary) 4%, var(--ss-glass-strong));
-	box-shadow: 6px 6px 0 color-mix(in srgb, var(--ss-primary) 14%, transparent);
+	border: 1px solid color-mix(in srgb, var(--shelfway-primary) 28%, var(--shelfway-line));
+	background: color-mix(in srgb, var(--shelfway-primary) 4%, var(--shelfway-glass-strong));
+	box-shadow: 6px 6px 0 color-mix(in srgb, var(--shelfway-primary) 14%, transparent);
 }
 
-.ss-site .handoff-copy .eyebrow {
+.shelfway-site .handoff-copy .eyebrow {
 	margin: 0 0 0.4rem;
 	font-family: var(--font-mono);
 	font-size: 0.68rem;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
-	color: var(--ss-primary);
+	color: var(--shelfway-primary);
 	font-weight: 700;
 }
 
-.ss-site .handoff-copy h3 {
+.shelfway-site .handoff-copy h3 {
 	margin: 0 0 0.5rem;
 	font-family: var(--font-display);
 	font-size: 1.25rem;
 	font-weight: 800;
 	letter-spacing: -0.025em;
-	color: var(--ss-fg);
+	color: var(--shelfway-fg);
 }
 
-.ss-site .handoff-copy p {
+.shelfway-site .handoff-copy p {
 	margin: 0;
 	font-size: 0.9rem;
 	line-height: 1.5;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 }
 
-.ss-site .handoff-bits {
+.shelfway-site .handoff-bits {
 	list-style: none;
 	margin: 0;
 	padding: 0;
@@ -939,31 +939,31 @@
 	gap: 0.65rem 1rem;
 }
 
-.ss-site .handoff-bits li {
+.shelfway-site .handoff-bits li {
 	position: relative;
 	padding-left: 1.35rem;
 	font-size: 0.85rem;
 	font-weight: 600;
-	color: var(--ss-fg);
+	color: var(--shelfway-fg);
 	line-height: 1.4;
 }
 
-.ss-site .handoff-bits li::before {
+.shelfway-site .handoff-bits li::before {
 	content: '✓';
 	position: absolute;
 	left: 0;
 	top: 0;
-	color: var(--ss-primary);
+	color: var(--shelfway-primary);
 	font-weight: 800;
 	font-size: 0.85rem;
 }
 
-.ss-site .handoff-action {
+.shelfway-site .handoff-action {
 	display: flex;
 	align-items: center;
 }
 
-.ss-site footer {
+.shelfway-site footer {
 	position: relative;
 	z-index: 1;
 	width: min(calc(100% - 2 * var(--gutter)), var(--max));
@@ -971,134 +971,134 @@
 	margin: 0 auto;
 	padding: 1.75rem 0 3rem;
 	font-size: 0.8rem;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: 1rem;
 	flex-wrap: wrap;
 }
-.ss-site footer strong {
+.shelfway-site footer strong {
 	display: block;
 	font-family: var(--font-display);
 	font-size: 1.15rem;
-	color: var(--ss-fg);
+	color: var(--shelfway-fg);
 	font-weight: 800;
 	letter-spacing: -0.03em;
 }
-.ss-site footer .mono {
+.shelfway-site footer .mono {
 	font-size: 0.65rem;
 	letter-spacing: 0.08em;
 }
-.ss-site footer nav {
+.shelfway-site footer nav {
 	display: flex;
 	gap: 1.25rem;
 }
-.ss-site footer a {
-	color: var(--ss-muted);
+.shelfway-site footer a {
+	color: var(--shelfway-muted);
 	font-weight: 600;
 	text-decoration: none;
 }
-.ss-site footer a:hover {
-	color: var(--ss-primary);
+.shelfway-site footer a:hover {
+	color: var(--shelfway-primary);
 }
 
 /* Above-the-fold: never wait on IntersectionObserver */
-.ss-site .hero .reveal {
+.shelfway-site .hero .reveal {
 	opacity: 1;
 	transform: none;
 }
 
 /* Internal screen mockups — same Unite glass/hard language */
-.ss-site .shot-chrome {
+.shelfway-site .shot-chrome {
 	display: flex;
 	align-items: center;
 	gap: 0.45rem;
 	padding: 0.75rem 1rem;
-	border-bottom: 1px solid var(--ss-line);
-	background: color-mix(in srgb, var(--ss-fg) 4%, transparent);
+	border-bottom: 1px solid var(--shelfway-line);
+	background: color-mix(in srgb, var(--shelfway-fg) 4%, transparent);
 }
-.ss-site .shot-chrome i {
+.shelfway-site .shot-chrome i {
 	width: 0.55rem;
 	height: 0.55rem;
 	border-radius: 50%;
-	background: var(--ss-line-strong, var(--ss-line));
+	background: var(--shelfway-line-strong, var(--shelfway-line));
 }
-.ss-site .shot-chrome i:nth-child(1) {
-	background: var(--ss-danger-solid, var(--ss-danger));
+.shelfway-site .shot-chrome i:nth-child(1) {
+	background: var(--shelfway-danger-solid, var(--shelfway-danger));
 }
-.ss-site .shot-chrome i:nth-child(2) {
-	background: var(--ss-warning-solid, var(--ss-warning));
+.shelfway-site .shot-chrome i:nth-child(2) {
+	background: var(--shelfway-warning-solid, var(--shelfway-warning));
 }
-.ss-site .shot-chrome i:nth-child(3) {
-	background: var(--ss-success-solid, var(--ss-success));
+.shelfway-site .shot-chrome i:nth-child(3) {
+	background: var(--shelfway-success-solid, var(--shelfway-success));
 }
-.ss-site .shot-chrome .mono {
+.shelfway-site .shot-chrome .mono {
 	margin-left: 0.6rem;
 	font-size: 0.68rem;
 	letter-spacing: 0.06em;
-	color: var(--ss-muted);
+	color: var(--shelfway-muted);
 }
-.ss-site .block-head p {
+.shelfway-site .block-head p {
 	max-width: 42rem;
 }
 
 @media (max-width: 1040px) {
-	.ss-site .feature-stage {
+	.shelfway-site .feature-stage {
 		grid-template-columns: 1fr;
 	}
-	.ss-site .feature-rail {
+	.shelfway-site .feature-rail {
 		display: flex;
 		overflow-x: auto;
 		gap: 0.65rem;
 		padding-bottom: 0.5rem;
 		scroll-snap-type: x mandatory;
 	}
-	.ss-site .feature-tab {
+	.shelfway-site .feature-tab {
 		flex: 0 0 auto;
 		min-width: 15rem;
 		scroll-snap-align: start;
 	}
-	.ss-site .handoff {
+	.shelfway-site .handoff {
 		grid-template-columns: 1fr;
 		gap: 1.25rem;
 	}
 }
 
 @media (max-width: 960px) {
-	.ss-site .hero,
-	.ss-site .fit-body,
-	.ss-site .feature-panel,
-	.ss-site .work-steps,
-	.ss-site .why-split {
+	.shelfway-site .hero,
+	.shelfway-site .fit-body,
+	.shelfway-site .feature-panel,
+	.shelfway-site .work-steps,
+	.shelfway-site .why-split {
 		grid-template-columns: 1fr;
 	}
-	.ss-site .compare-pair,
-	.ss-site .faq-item {
+	.shelfway-site .compare-pair,
+	.shelfway-site .faq-item {
 		grid-template-columns: 1fr;
 		gap: 0.85rem;
 	}
-	.ss-site .fit-vs {
+	.shelfway-site .fit-vs {
 		padding: 0.15rem 0;
 	}
 }
 @media (max-width: 640px) {
-	.ss-site .hero h1 {
+	.shelfway-site .hero h1 {
 		max-width: none;
 	}
 }
 @media (prefers-reduced-motion: reduce) {
-	.ss-site *,
-	.ss-site *::before,
-	.ss-site *::after {
+	.shelfway-site *,
+	.shelfway-site *::before,
+	.shelfway-site *::after {
 		animation: none !important;
 		transition: none !important;
 	}
-	.ss-site .reveal {
+	.shelfway-site .reveal {
 		opacity: 1;
 		transform: none;
 	}
-	.ss-site .hard:hover {
+	.shelfway-site .hard:hover {
 		transform: none;
 	}
 }

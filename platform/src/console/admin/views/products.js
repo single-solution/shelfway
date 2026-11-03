@@ -31,7 +31,7 @@ import {
 	isEmptySeries,
 	problemCode,
 	useToast,
-} from '@ss/ui';
+} from '@shelfway/ui';
 import { MORE, PRODUCTS, WEBSITE } from '../../../texts/console.js';
 import { Link } from '../../link.js';
 import { useNavigation } from '../../navigation.js';
@@ -42,7 +42,7 @@ import { apiFetch } from '../../client.js';
 import { adminApi, adminRoutes } from '../paths.js';
 import { AdminProblem, adminCan } from './shell.js';
 
-/** @typedef {import('@ss/ui').Problem} Problem */
+/** @typedef {import('@shelfway/ui').Problem} Problem */
 
 /**
  * The pill of a connected product's status.

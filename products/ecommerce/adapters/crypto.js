@@ -2,7 +2,7 @@
  * Cryptography (node:crypto), kept out of `core/` (pure logic):
  *
  * - **Order keys** (PLAN 0.8.10 E21): a guest order's key — 32 random characters, shown once and kept only as its
- *   SHA-256 hash — that the guest sends as `SS-Order-Key` to read, pay, cancel and send proof for it; alert stop links
+ *   SHA-256 hash — that the guest sends as `Shelfway-Order-Key` to read, pay, cancel and send proof for it; alert stop links
  *   use the same kind of key (E34).
  * - **Deal locks** (E18 `lockMinutes`): while a cart is open, each quote line with a per-unit deal carries a signed
  *   lock — the deal, the variant, the variant's price and what the deal took off each unit, and when the lock ends — so
@@ -15,7 +15,7 @@
  * @module
  */
 import { createHash, createHmac, randomBytes } from 'node:crypto';
-import { constantTimeEqual } from '@ss/protocol';
+import { constantTimeEqual } from '@shelfway/protocol';
 import { ORDER_KEY_LENGTH } from '../core/guests.js';
 
 /** An order key's characters. */

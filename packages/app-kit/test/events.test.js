@@ -100,10 +100,10 @@ describe('events (K5)', () => {
 			'notes.note.deleted': 1,
 		});
 		const { client, db } = await openDb(dbName);
-		const stored = await db.collection('ss_notes_events').findOne({ id: first.json.id });
+		const stored = await db.collection('shelfway_notes_events').findOne({ id: first.json.id });
 		expect(stored?.expiresAt.getTime() - stored?.at.getTime()).toBe(EVENT_TTL_MS);
 		expect(
-			(await db.collection('ss_notes_events').indexes()).find((index) => index.name === 'kit_events_expiry'),
+			(await db.collection('shelfway_notes_events').indexes()).find((index) => index.name === 'kit_events_expiry'),
 		).toMatchObject({
 			expireAfterSeconds: 0,
 		});
@@ -121,7 +121,7 @@ describe('events (K5)', () => {
 		notifications.setFailing(true);
 		const event = await emit();
 		const { client, db } = await openDb(dbName);
-		const events = db.collection('ss_notes_events');
+		const events = db.collection('shelfway_notes_events');
 		expect(await events.findOne({ id: event.json.id })).toMatchObject({ delivery: 'pending', attempts: 1 });
 		// not due again for a minute
 		await call('GET', '/v1/events', { token: server.token });

@@ -28,7 +28,7 @@ import { classifyAddress } from './address.js';
  * @typedef {object} OutboundPolicyOptions
  * @property {ReadonlyArray<string>} [allowHosts] exact host names / IP literals admitted despite the rules (development)
  * @property {Resolver} [resolve] DNS resolver returning every address (default `dns.lookup` with `all`, `verbatim`)
- * @property {string} [userAgent] default `user-agent` request header (default `ss-net/1`)
+ * @property {string} [userAgent] default `user-agent` request header (default `shelfway-net/1`)
  */
 
 /** @typedef {Readonly<{ allowHosts: ReadonlySet<string>, resolve: Resolver, userAgent: string }>} OutboundPolicy */
@@ -102,7 +102,7 @@ export const normalizeHost = (host) => {
  * @param {OutboundPolicyOptions} [options]
  * @returns {OutboundPolicy}
  */
-export const createOutboundPolicy = ({ allowHosts = [], resolve = defaultResolve, userAgent = 'ss-net/1' } = {}) => {
+export const createOutboundPolicy = ({ allowHosts = [], resolve = defaultResolve, userAgent = 'shelfway-net/1' } = {}) => {
 	if (!Array.isArray(allowHosts) || allowHosts.some((h) => typeof h !== 'string'))
 		throw new TypeError('allowHosts must be an array of strings');
 	if (typeof resolve !== 'function') throw new TypeError('resolve must be a function');

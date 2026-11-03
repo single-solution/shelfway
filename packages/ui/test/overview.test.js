@@ -104,14 +104,14 @@ describe('a product dashboard Overview', () => {
 		const { container, text } = show(answer());
 		// the page is a Page: the title is the crumb, the status and the setup progress sit in the header, the greeting
 		// behind the (i); no heading of its own in the body
-		expect(container.querySelector('[data-ss-page]')).not.toBeNull();
+		expect(container.querySelector('[data-shelfway-page]')).not.toBeNull();
 		expect(container.querySelector('h1')?.textContent).toBe('Overview');
 		expect(crumbsOf(container)).toEqual(['Notes', 'Overview']);
 		expect(container.textContent).not.toContain('Welcome back');
 		click(/** @type {HTMLElement} */ (container.querySelector('button[aria-label="About this page"]')));
 		expect(container.textContent).toContain('Welcome back, Acme Store');
 		click(/** @type {HTMLElement} */ (container.querySelector('button[aria-label="About this page"]')));
-		const header = /** @type {HTMLElement} */ (container.querySelector('[data-ss-part="header"]'));
+		const header = /** @type {HTMLElement} */ (container.querySelector('[data-shelfway-part="header"]'));
 		expect(byText(header, 'Active').closest('span')?.className).toContain('bg-success-soft');
 		expect(header.querySelector('[aria-label="Key numbers"]')?.textContent).toContain('4 of 4 done');
 		expect(text).toContain('Everything on shop.example.com is ready, and nothing needs you right now.');
@@ -439,7 +439,7 @@ describe('the shared pieces', () => {
 			{ who: { name: 'Sam' }, detail: 'Changed the price of Inbox', at: '2026-10-03T09:00:00.000Z' },
 		];
 		const { container } = render(<ChangesTable items={items} />);
-		const rows = [...container.querySelectorAll('[data-ss-row]')];
+		const rows = [...container.querySelectorAll('[data-shelfway-row]')];
 		expect(rows).toHaveLength(2);
 		expect(rows[0]?.textContent).toContain('Alex Morgan');
 		expect(rows[0]?.textContent).toContain('Turned on Notes');
@@ -500,7 +500,7 @@ describe('the shared pieces', () => {
 			<Page crumbs={[{ label: 'Notes' }, { label: 'Overview' }]} loading skeleton={<OverviewSkeleton />} />,
 		);
 		expect(allByRole(inPage.container, 'status')).toHaveLength(1);
-		expect(inPage.container.querySelector('[data-ss-page][aria-busy="true"]')).not.toBeNull();
+		expect(inPage.container.querySelector('[data-shelfway-page][aria-busy="true"]')).not.toBeNull();
 		expect(inPage.container.innerHTML).not.toContain('h-28');
 	});
 });

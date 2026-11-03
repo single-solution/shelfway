@@ -122,19 +122,19 @@ describe('TOTP (RFC 6238)', () => {
 
 describe('cookies', () => {
 	it('serializes HttpOnly SameSite=Lax cookies with the __Host- prefix when secure', () => {
-		expect(sessionCookieName('admin', true)).toBe('__Host-ss_admin');
-		expect(sessionCookieName('merchant', false)).toBe('ss_merchant');
-		expect(serializeCookie('__Host-ss_staff', 'abc', { secure: true, maxAgeSeconds: 60.7 })).toBe(
-			'__Host-ss_staff=abc; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=60',
+		expect(sessionCookieName('admin', true)).toBe('__Host-shelfway_admin');
+		expect(sessionCookieName('merchant', false)).toBe('shelfway_merchant');
+		expect(serializeCookie('__Host-shelfway_staff', 'abc', { secure: true, maxAgeSeconds: 60.7 })).toBe(
+			'__Host-shelfway_staff=abc; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=60',
 		);
-		expect(clearCookie('ss_staff', { secure: false })).toBe('ss_staff=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0');
+		expect(clearCookie('shelfway_staff', { secure: false })).toBe('shelfway_staff=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0');
 		expect(() => serializeCookie('bad name', 'x', { secure: true })).toThrow();
 		expect(() => serializeCookie('ok', 'x;y', { secure: true })).toThrow();
 	});
 
 	it('reads cookies and refuses duplicates', () => {
-		expect(readCookie('a=1; ss_staff=tok; b=2', 'ss_staff')).toBe('tok');
-		expect(readCookie('ss_staff=one; ss_staff=two', 'ss_staff')).toBeUndefined();
+		expect(readCookie('a=1; shelfway_staff=tok; b=2', 'shelfway_staff')).toBe('tok');
+		expect(readCookie('shelfway_staff=one; shelfway_staff=two', 'shelfway_staff')).toBeUndefined();
 		expect(readCookie(null, 'x')).toBeUndefined();
 		expect(readCookie('novalue; x=1', 'x')).toBe('1');
 	});

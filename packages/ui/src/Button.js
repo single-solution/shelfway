@@ -18,7 +18,7 @@ export const FormBusyContext = createContext(false);
 // flat at rest; a filled button gets a soft glow of its own color only on hover (PLAN 0.6: no elevation by default).
 // A disabled button turns neutral instead of a faded accent; a busy one (spinner) keeps its color.
 const BASE =
-	'inline-flex shrink-0 items-center justify-center gap-1.5 rounded-control font-medium tracking-[-0.005em] ss-motion ss-press select-none ' +
+	'inline-flex shrink-0 items-center justify-center gap-1.5 rounded-control font-medium tracking-[-0.005em] shelfway-motion shelfway-press select-none ' +
 	"[@media(pointer:coarse)]:relative [@media(pointer:coarse)]:after:absolute [@media(pointer:coarse)]:after:-inset-1.5 [@media(pointer:coarse)]:after:content-[''] " +
 	'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed ' +
 	'aria-disabled:cursor-not-allowed aria-disabled:opacity-60 ' +
@@ -116,7 +116,7 @@ export function Button({
 			aria-description={disabledReason}
 			onClick={onClick ? click : undefined}
 			{...rest}>
-			{busy ? <Spinner size={14} className="animate-ss-fade" /> : icon}
+			{busy ? <Spinner size={14} className="animate-shelfway-fade" /> : icon}
 			{children}
 		</button>
 	);

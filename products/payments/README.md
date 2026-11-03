@@ -21,13 +21,13 @@ Three variables, and one optional while the encryption key is changed (`.env.exa
 Each deployable has its own port, so all run at once: the Portal 3000, Accounts 3001, Notifications 3002, Chat 3003,
 Payments 3004, Ecommerce 3005, Growth 3006. This product runs on **3004**.
 
-1. One local MongoDB for everything (keep it running): `pnpm --filter @ss/platform db:local` (kept in
+1. One local MongoDB for everything (keep it running): `pnpm --filter @shelfway/platform db:local` (kept in
    `platform/.mongo-data`) or `db:memory` (lost on stop). Start the Portal as its README says.
 2. `products/payments/.env.local` (git-ignored), each secret random and different (make one with
    `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`):
 
    ```bash
-   MONGODB_URI=mongodb://127.0.0.1:27999/ss_payments?replicaSet=testset
+   MONGODB_URI=mongodb://127.0.0.1:27999/shelfway_payments?replicaSet=testset
    CONNECT_SECRET=<random>
    ENCRYPTION_KEY=<random>
    ```
@@ -64,9 +64,9 @@ Routes are listed in `/docs` and `openapi.json` (generated from `server/routes.j
 subscription and pay-button routes, Payments serves `GET /v1/manual-methods` (the manual methods as payers see them), `GET /v1/payments/count` and `/v1/payments/counts?by=state|gateway`
 (and their ticket twins under `/v1/admin/payments/`), and the payment events on the kit's mechanism: `GET /v1/events`,
 `/v1/events/count` and `/v1/events/counts` (PLAN.md 0.8.10 K4, K5). The kit adds its own routes for the merchant's
-server (settings, texts, connections, activity log; the staff member's signed-in `SS-Sign-In` is needed and names them). The look and the Format are the Portal's (Website settings): the kit reads them and refuses a save (409 `managed_by_portal`).
+server (settings, texts, connections, activity log; the staff member's signed-in `Shelfway-Sign-In` is needed and names them). The look and the Format are the Portal's (Website settings): the kit reads them and refuses a save (409 `managed_by_platform`).
 
 ## Scripts
 
 `pnpm dev` and `pnpm build` regenerate `openapi.json` and `server/widget-script.js` first; `pnpm check` runs format, lint,
-typecheck and tests with coverage; `pnpm validate` runs `ss app validate`.
+typecheck and tests with coverage; `pnpm validate` runs `shelfway app validate`.

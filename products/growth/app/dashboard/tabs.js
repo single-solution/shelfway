@@ -6,8 +6,17 @@
  * they are.
  * @module
  */
-import { Button, CodeBlock, Section, Stat, useViewerTimeZone } from '@ss/ui';
-import { DefaultsTab, DevelopersTab, OverviewTab, SettingsTab, fill, isFilled, useLoad, useSetupSteps } from '@ss/ui/dashboard';
+import { Button, CodeBlock, Section, Stat, useViewerTimeZone } from '@shelfway/ui';
+import {
+	DefaultsTab,
+	DevelopersTab,
+	OverviewTab,
+	SettingsTab,
+	fill,
+	isFilled,
+	useLoad,
+	useSetupSteps,
+} from '@shelfway/ui/dashboard';
 import manifest from '../../manifest.json' with { type: 'json' };
 import { searchParamsOf, tagsReady } from '../../core/config.js';
 import { createSnippets } from '../../core/snippets.js';
@@ -16,7 +25,7 @@ import { listExtras } from './lists.js';
 import { settingsNotice } from './setup.js';
 import { TEXTS } from './texts.js';
 
-/** @type {ReadonlyArray<import('@ss/ui/dashboard').SetupRequirement>} */
+/** @type {ReadonlyArray<import('@shelfway/ui/dashboard').SetupRequirement>} */
 const SETUP = Object.freeze([
 	{
 		key: 'meta-pixel',
@@ -56,8 +65,8 @@ const SETUP = Object.freeze([
 	},
 ]);
 
-/** @typedef {import('@ss/ui/dashboard').TabProps} TabProps */
-/** @typedef {import('@ss/ui/dashboard').FeatureSettings} FeatureSettings */
+/** @typedef {import('@shelfway/ui/dashboard').TabProps} TabProps */
+/** @typedef {import('@shelfway/ui/dashboard').FeatureSettings} FeatureSettings */
 
 /**
  * The settings of each feature and shared group, from the settings screen's answer.
@@ -75,7 +84,7 @@ const valuesOf = (data) =>
  * Growth's part of the Overview (PLAN 0.6 "Overviews talk"), from the website's settings: the tags ready (while a tag
  * feature is on), the tag features with no id or script yet, and the setup steps (`setup-steps.js`; the custom scripts
  * have a step of their own, as they live in the consent categories).
- * @type {import('@ss/ui/dashboard').UseOverviewMore}
+ * @type {import('@shelfway/ui/dashboard').UseOverviewMore}
  */
 const useGrowthOverview = (overview, { websiteId, open }) => {
 	const settings = useLoad(`/v1/dashboard/websites/${websiteId}/settings`);
@@ -146,7 +155,7 @@ const GrowthOverview = (props) => <OverviewTab {...props} useMore={useGrowthOver
  */
 function GrowthSettings(props) {
 	const timeZone = useViewerTimeZone();
-	/** @type {import('@ss/ui/dashboard').SettingsNotice} */
+	/** @type {import('@shelfway/ui/dashboard').SettingsNotice} */
 	const notice = (key, values, features) =>
 		settingsNotice(key, values, {
 			on: features.filter((feature) => feature.on !== false).map((feature) => feature.key),
@@ -162,7 +171,7 @@ function GrowthSettings(props) {
 
 /**
  * The global defaults have no website: their cards say only what their values say.
- * @type {import('@ss/ui/dashboard').SettingsNotice}
+ * @type {import('@shelfway/ui/dashboard').SettingsNotice}
  */
 const defaultsNotice = (key, values) => settingsNotice(key, values, null);
 
@@ -183,7 +192,7 @@ function GrowthDevelopers(props) {
 		permissions: manifest.permissions.map((permission) => permission.key),
 		loading: /** @type {'async' | 'blocking'} */ (manifest.widgetScriptLoading),
 	});
-	/** @param {string} id @param {string} title @param {string} help @param {import('react').ReactNode} body @param {import('@ss/ui').IconName} icon */
+	/** @param {string} id @param {string} title @param {string} help @param {import('react').ReactNode} body @param {import('@shelfway/ui').IconName} icon */
 	const part = (id, title, help, body, icon) => ({
 		id,
 		label: title,

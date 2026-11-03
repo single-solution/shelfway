@@ -1,4 +1,4 @@
-import { DATABASE_DEADLINES, createOutboundPolicy } from '@ss/net';
+import { DATABASE_DEADLINES, createOutboundPolicy } from '@shelfway/net';
 import { Collection, MongoClient } from 'mongodb';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import {
@@ -77,7 +77,7 @@ describe('tenant guard (pure)', () => {
 	it('accepts Atlas Search first only when its compound filter pins the website (K11)', () => {
 		const search = (/** @type {unknown} */ filter) => ({
 			$search: {
-				index: 'ss_ecommerce_products_search',
+				index: 'shelfway_ecommerce_products_search',
 				compound: { filter, must: [{ autocomplete: { path: 'name', query: 'iph' } }] },
 			},
 		});
@@ -155,13 +155,13 @@ describe('merchant database (MongoDB)', () => {
 		const { data, db } = makeData();
 		const a = await data.forWebsite(WEBSITE, { merchantId: 'mer_1' });
 		const b = await data.forWebsite(WEBSITE_2);
-		expect(a.prefix).toBe('ss_coupon_box_');
+		expect(a.prefix).toBe('shelfway_coupon_box_');
 		const coupons = a.collection('coupons');
-		expect(coupons.name).toBe('ss_coupon_box_coupons');
+		expect(coupons.name).toBe('shelfway_coupon_box_coupons');
 		await coupons.insertOne({ code: 'A' });
 		await coupons.insertMany([{ code: 'B' }, { code: 'C', websiteId: WEBSITE }]);
 		await b.collection('coupons').insertOne({ code: 'Z' });
-		const raw = await db.collection('ss_coupon_box_coupons').findOne({ code: 'A' });
+		const raw = await db.collection('shelfway_coupon_box_coupons').findOne({ code: 'A' });
 		expect(raw).toMatchObject({ websiteId: WEBSITE, merchantId: 'mer_1' });
 		expect(raw?.createdAt).toBeInstanceOf(Date);
 		expect(raw?.env).toBeUndefined();
@@ -217,7 +217,7 @@ describe('merchant database (MongoDB)', () => {
 		const { data, db } = makeData({ indexes: defs });
 		const a = await data.forWebsite(WEBSITE);
 		expect((await a.ensureIndexes(defs)).created).toEqual([]);
-		const names = (await db.collection('ss_coupon_box_coupons').indexes()).map((i) => i.name);
+		const names = (await db.collection('shelfway_coupon_box_coupons').indexes()).map((i) => i.name);
 		expect(names).toContain('websiteId_1_code_1');
 		await a.collection('coupons').insertOne({ code: 'A' });
 		await expect(a.collection('coupons').insertOne({ code: 'A' })).rejects.toMatchObject({ code: 11000 });
@@ -255,7 +255,7 @@ describe('merchant database (MongoDB)', () => {
 			expect(spy).toHaveBeenCalledTimes(3);
 			// two at a time: never every pooled connection
 			expect(most).toBe(2);
-			expect((await db.collection('ss_coupon_box_orders').indexes()).map((i) => i.name)).toContain('websiteId_1_at_-1');
+			expect((await db.collection('shelfway_coupon_box_orders').indexes()).map((i) => i.name)).toContain('websiteId_1_at_-1');
 			// a failed creation is tried again by the next request
 			spy.mockClear();
 			spy.mockRejectedValueOnce(new Error('index build failed'));
@@ -315,8 +315,8 @@ describe('merchant database (MongoDB)', () => {
 		const site = await first.data.forWebsite(WEBSITE);
 		await site.collection('coupons').insertMany([{ code: 'A', slug: 'a' }, { code: 'B' }]);
 		// another product's collection and a collection this product declares nothing for are never touched
-		await db.collection('ss_other_coupons').createIndex({ websiteId: 1, code: 1 }, { name: 'by_code' });
-		await db.collection('ss_coupon_box_notes').createIndex({ websiteId: 1, at: 1 }, { name: 'by_at' });
+		await db.collection('shelfway_other_coupons').createIndex({ websiteId: 1, code: 1 }, { name: 'by_code' });
+		await db.collection('shelfway_coupon_box_notes').createIndex({ websiteId: 1, at: 1 }, { name: 'by_at' });
 		await first.data.closeAll();
 
 		// the next release: by_code becomes unique, by_slug is retired for a per-category one, the TTL changes
@@ -334,17 +334,21 @@ describe('merchant database (MongoDB)', () => {
 		];
 		const second = instance(after);
 		const upgraded = await second.data.forWebsite(WEBSITE);
-		expect(await indexesOf('ss_coupon_box_coupons')).toEqual({
+		expect(await indexesOf('shelfway_coupon_box_coupons')).toEqual({
 			by_code: { key: { websiteId: 1, code: 1 }, unique: true },
 			by_category_slug: { key: { websiteId: 1, categoryId: 1, slug: 1 }, unique: true },
 			by_at: { key: { websiteId: 1, at: -1 }, partial: { at: { $type: 'date' }, active: true } },
 		});
-		expect(await indexesOf('ss_coupon_box_sessions')).toEqual({ ttl: { key: { expiresAt: 1 }, ttl: 3600 } });
+		expect(await indexesOf('shelfway_coupon_box_sessions')).toEqual({ ttl: { key: { expiresAt: 1 }, ttl: 3600 } });
 		expect(second.entries.find((entry) => entry.msg === 'merchant database indexes replaced')?.fields).toEqual({
-			dropped: ['ss_coupon_box_coupons.by_code', 'ss_coupon_box_coupons.by_slug', 'ss_coupon_box_sessions.ttl'],
+			dropped: [
+				'shelfway_coupon_box_coupons.by_code',
+				'shelfway_coupon_box_coupons.by_slug',
+				'shelfway_coupon_box_sessions.ttl',
+			],
 		});
-		expect(Object.keys(await indexesOf('ss_other_coupons'))).toEqual(['by_code']);
-		expect(Object.keys(await indexesOf('ss_coupon_box_notes'))).toEqual(['by_at']);
+		expect(Object.keys(await indexesOf('shelfway_other_coupons'))).toEqual(['by_code']);
+		expect(Object.keys(await indexesOf('shelfway_coupon_box_notes'))).toEqual(['by_at']);
 		// no record changed; a missing field reads as null, so the new index needs no backfill
 		expect(await upgraded.collection('coupons').countDocuments({ websiteId: WEBSITE, categoryId: null })).toBe(2);
 		await expect(upgraded.collection('coupons').insertOne({ code: 'A' })).rejects.toMatchObject({ code: 11000 });

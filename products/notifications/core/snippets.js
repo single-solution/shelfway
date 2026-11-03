@@ -4,7 +4,7 @@
  * signature check and the reply addresses. Plain text; no I/O.
  * @module
  */
-import { widgetScriptTag } from '@ss/contracts/text';
+import { widgetScriptTag } from '@shelfway/contracts/text';
 import { WIDGET_ATTRIBUTE, WIDGET_GLOBAL } from './widgets.js';
 
 /**
@@ -23,7 +23,7 @@ export const createSnippets = ({ base, widgets, permissions }) => {
 		'<script>',
 		`  window.${WIDGET_GLOBAL}.admin({`,
 		'    // your own server route (below): it checks the signed-in user, then asks for a ticket',
-		"    getTicket: () => fetch('/api/ss-ticket', { method: 'POST' }).then((response) => response.json()),",
+		"    getTicket: () => fetch('/api/shelfway-ticket', { method: 'POST' }).then((response) => response.json()),",
 		'  });',
 		'</script>',
 	].join('\n');
@@ -36,7 +36,7 @@ export const createSnippets = ({ base, widgets, permissions }) => {
 		"// your server, after checking the user's sign-in and role (Node.js 18+, also inside a Next.js route handler)",
 		`const response = await fetch('${base}/v1/tickets', {`,
 		"  method: 'POST',",
-		"  headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}`, 'content-type': 'application/json' },",
+		"  headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}`, 'content-type': 'application/json' },",
 		'  body: JSON.stringify({',
 		'    user: { id: user.id, name: user.name, email: user.email },',
 		`    permissions: ${JSON.stringify(permissions)},`,
@@ -47,7 +47,7 @@ export const createSnippets = ({ base, widgets, permissions }) => {
 	].join('\n');
 	const curlSnippet = [
 		`curl -X POST '${base}/v1/tickets' \\`,
-		'  -H "Authorization: Bearer $SS_SERVER_TOKEN" \\',
+		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN" \\',
 		"  -H 'Content-Type: application/json' \\",
 		`  -d '${JSON.stringify(ticketBody)}'`,
 	].join('\n');
@@ -56,7 +56,7 @@ export const createSnippets = ({ base, widgets, permissions }) => {
 		`const response = await fetch('${base}/v1/messages/whatsapp', {`,
 		"  method: 'POST',",
 		'  headers: {',
-		'    authorization: `Bearer ${process.env.SS_SERVER_TOKEN}`,',
+		'    authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}`,',
 		"    'content-type': 'application/json',",
 		"    'idempotency-key': crypto.randomUUID(),",
 		'  },',
@@ -71,14 +71,14 @@ export const createSnippets = ({ base, widgets, permissions }) => {
 	].join('\n');
 	const sendCurl = [
 		`curl -X POST '${base}/v1/messages/email' \\`,
-		'  -H "Authorization: Bearer $SS_SERVER_TOKEN" \\',
+		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN" \\',
 		"  -H 'Content-Type: application/json' \\",
 		`  -d '${JSON.stringify({ template: 'order_ready', to: { email: 'sam@example.com' }, values: { name: 'Sam' } })}'`,
 	].join('\n');
 	const pushSnippet = [
 		...places('visitor'),
 		'<script>',
-		`  window.addEventListener('ss-notifications:subscribed', (event) => {`,
+		`  window.addEventListener('shelfway-notifications:subscribed', (event) => {`,
 		'    // send event.detail.subscriberId to your server and keep it with your user',
 		'  });',
 		'</script>',
@@ -86,7 +86,7 @@ export const createSnippets = ({ base, widgets, permissions }) => {
 	const webhookSnippet = [
 		"import { createHmac, timingSafeEqual } from 'node:crypto';",
 		'',
-		'// body: the raw request body (text); header: the SS-Signature header',
+		'// body: the raw request body (text); header: the Shelfway-Signature header',
 		'export const verify = (body, header, secret) => {',
 		"  const parts = Object.fromEntries(header.split(',').map((part) => part.split('=')));",
 		'  if (Math.abs(Date.now() / 1000 - Number(parts.t)) > 300) return false;',

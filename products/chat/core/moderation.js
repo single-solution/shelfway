@@ -15,7 +15,7 @@
  * Without the Moderation feature, AI answers still go through the credential check (never switchable).
  * @module
  */
-import { luhnValid } from '@ss/contracts/text';
+import { luhnValid } from '@shelfway/contracts/text';
 import { MARKDOWN_LINK } from './markdown.js';
 import { compilePattern, replacePattern } from './patterns.js';
 import { normalize } from './text.js';

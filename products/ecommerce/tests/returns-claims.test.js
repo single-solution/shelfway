@@ -5,7 +5,7 @@
  * `return.requested` hook, through the routes. Delivered orders are placed with the ledger and moved to delivered
  * directly.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { givePoints, loyaltyAccount, placeOrder } from '../adapters/ledger.js';
 import { INDEXES } from '../adapters/product.js';
@@ -46,7 +46,7 @@ vi.mock('../server/service.js', async (original) => {
 
 /** @type {Awaited<ReturnType<typeof readyShop>>} */
 let shop;
-/** @type {import('@ss/app-kit').WebsiteData} */
+/** @type {import('@shelfway/app-kit').WebsiteData} */
 let data;
 /** @type {string} */
 let ticket;

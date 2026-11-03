@@ -166,7 +166,7 @@ describe('the media route', () => {
 		};
 		const GET = new Function('fetch', 'process', `${code.replace('export async function GET', 'return async function GET')}`)(
 			fetchStub,
-			{ env: { SS_SERVER_TOKEN: shop.server } },
+			{ env: { SHELFWAY_SERVER_TOKEN: shop.server } },
 		);
 		const served = await GET(new Request(`${ORIGIN}/media/x`), {
 			params: Promise.resolve({ key: [signature, ...key.split('/')] }),

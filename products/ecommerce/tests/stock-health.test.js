@@ -4,7 +4,7 @@
  * (`counts?by=variantStock`) a dashboard or a bell shows. Shop health (E41): its checks with counts and links, the
  * payment methods shoppers can use, and Growth's tag ids only while Growth's token is pasted.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { countsForStock, staffFilter, stockEventOf, variantStockCounts } from '../core/catalog-query.js';
 import { HEALTH_CHECKS, badTagIds, healthOf, isPublicAddress, paymentMethodsOn } from '../core/health.js';

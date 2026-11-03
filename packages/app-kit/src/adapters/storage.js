@@ -4,12 +4,12 @@
  * Objects are namespaced `<prefix><product id>/<websiteId>/<key>` so a product reaches only its own area of the bucket.
  * Callers pass and receive **relative** keys. A file is public only through `publicBaseUrl` (the public address of the bucket's
  * root, such as a CDN in front of it): `publicUrl(key)` is `<publicBaseUrl>/<absolute key>`, or null when there is none.
- * Browser uploads use a short presigned PUT that fixes the type and size (`@ss/net` SigV4); server-side calls go through the outbound `send`
- * (`@ss/net` `safeFetch` under the product's outbound policy), so a connection cannot point the product at an internal
+ * Browser uploads use a short presigned PUT that fixes the type and size (`@shelfway/net` SigV4); server-side calls go through the outbound `send`
+ * (`@shelfway/net` `safeFetch` under the product's outbound policy), so a connection cannot point the product at an internal
  * address.
  * @module
  */
-import { checkUrl, createOutboundPolicy, isNetError, objectUrl, presignV4, signV4 } from '@ss/net';
+import { checkUrl, createOutboundPolicy, isNetError, objectUrl, presignV4, signV4 } from '@shelfway/net';
 import { kitError } from '../util.js';
 
 /** @typedef {import('../connections.js').OutboundSend} OutboundSend */
@@ -59,7 +59,7 @@ const checkKey = (key) => {
 
 /**
  * @param {Record<string, unknown>} descriptor
- * @param {import('@ss/net').OutboundPolicy} policy
+ * @param {import('@shelfway/net').OutboundPolicy} policy
  * @returns {StorageDescriptor}
  */
 const checkDescriptor = (descriptor, policy) => {
@@ -87,7 +87,7 @@ const checkDescriptor = (descriptor, policy) => {
 
 /**
  * @param {{ descriptor: Record<string, unknown>, websiteId: string, slug: string, send: OutboundSend, now: () => number,
- *   policy?: import('@ss/net').OutboundPolicy }} options `policy` vets the endpoint up front (default: public https only)
+ *   policy?: import('@shelfway/net').OutboundPolicy }} options `policy` vets the endpoint up front (default: public https only)
  */
 export const createS3Storage = ({ descriptor, websiteId, slug, send, now, policy = createOutboundPolicy() }) => {
 	const d = checkDescriptor(descriptor, policy);

@@ -64,7 +64,7 @@ const read = async (path) => {
  * @param {string} html @param {string} widget
  */
 const served = (html, widget) =>
-	new JSDOM(`<!doctype html><html><body><div data-ss-ecommerce="${widget}">${html}</div></body></html>`).window.document;
+	new JSDOM(`<!doctype html><html><body><div data-shelfway-ecommerce="${widget}">${html}</div></body></html>`).window.document;
 
 describe('the product page core', () => {
 	it('gives the name as h1, the price, availability, breadcrumb links, photo, description, specs and questions', async () => {
@@ -124,7 +124,7 @@ describe('the snippets', () => {
 		const snippets = createSnippets({ base: BASE, widgets: [], permissions: [] });
 		expect(snippets.productMeta).toContain('/v1/seo/products/${encodeURIComponent(slug)}?html=1');
 		expect(snippets.productMeta).toContain(
-			'<div data-ss-ecommerce="product_page" data-product={slug} dangerouslySetInnerHTML={{ __html: seo.html }} />',
+			'<div data-shelfway-ecommerce="product_page" data-product={slug} dangerouslySetInnerHTML={{ __html: seo.html }} />',
 		);
 		expect(snippets.listingPage).toContain("html: '1'");
 		expect(snippets.listingPage).toContain('dangerouslySetInnerHTML={{ __html: head.html }}');

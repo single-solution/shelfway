@@ -29,11 +29,11 @@ import {
 	Row,
 	RowListSkeleton,
 	Select,
-} from '@ss/ui';
+} from '@shelfway/ui';
 import { FIELD_LIMITS } from '../../core/fields.js';
 import { ELEMENTS, ITEM_KINDS, TYPE_LIMITS, UNIT_CAPTURES, elementFor } from '../../core/item-types.js';
 import { MAX_DECIMALS, MAX_UNIT_LABEL, STANDARD_UNITS } from '../../core/measure.js';
-import { Loaded, fill } from '@ss/ui/dashboard';
+import { Loaded, fill } from '@shelfway/ui/dashboard';
 import { blankType, cleanType, keyOf, loadType, typeProblems } from './drafts.js';
 import { IdTags, ListOutcome, ListActions, moved, useList } from './lists.js';
 import { TEXTS } from './texts.js';
@@ -322,7 +322,7 @@ const partsOf = (type) => [
 			: []),
 ];
 
-/** The icon of a type's kind. @type {Record<TypeDraft['kind'], import('@ss/ui').IconName>} */
+/** The icon of a type's kind. @type {Record<TypeDraft['kind'], import('@shelfway/ui').IconName>} */
 const KIND_ICONS = { physical: 'box', digital: 'zap', service: 'calendar' };
 
 /** What the drawer edits: which type (null = a new one), the working copy, whether Done was pressed. */

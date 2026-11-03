@@ -22,7 +22,7 @@ import {
 	Input,
 	Select,
 	SettingsCardSkeleton,
-} from '@ss/ui';
+} from '@shelfway/ui';
 import {
 	DEFAULT_FLOW,
 	MOVE_NEEDS,
@@ -34,7 +34,7 @@ import {
 	statusOf,
 } from '../../core/flow.js';
 import { STATUS_ROLES } from '../../core/model.js';
-import { Loaded, fill, useLoad } from '@ss/ui/dashboard';
+import { Loaded, fill, useLoad } from '@shelfway/ui/dashboard';
 import { flowToSave, removeFlowStatus, renameFlowStatus } from './drafts.js';
 import { ListOutcome, ListActions, moved, useList } from './lists.js';
 import { TEXTS } from './texts.js';

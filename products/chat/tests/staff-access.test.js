@@ -120,7 +120,7 @@ describe('a staff sign-in', () => {
 		const refused = await sys.call('POST', '/v1/knowledge/entries', {
 			token: sys.server,
 			bare: true,
-			headers: { 'ss-sign-in': other },
+			headers: { 'shelfway-sign-in': other },
 			body: ENTRY,
 		});
 		expect([refused.status, typeOf(refused)]).toEqual([401, 'invalid_sign_in']);

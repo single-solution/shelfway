@@ -2,7 +2,7 @@
  * The catalog's pure rules (PLAN 0.8.8 Catalog): product checks, categories and the tree, listings and facets, views,
  * CSV files, grades, AI copy, plus what Ecommerce asks the AI through the kit’s client and the change notice with doubles.
  */
-import { csvRecords, parseCsv } from '@ss/contracts/csv';
+import { csvRecords, parseCsv } from '@shelfway/contracts/csv';
 import { describe, expect, it } from 'vitest';
 import { createAi } from '../adapters/ai.js';
 import { createCatalogCommon } from '../server/catalog-common.js';

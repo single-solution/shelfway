@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_FORMAT } from '@ss/contracts/format';
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
+import { DEFAULT_FORMAT } from '@shelfway/contracts/format';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import { defineRoute } from '../src/index.js';
 import { SETTINGS_READ_LIMIT, SETTINGS_WRITE_LIMIT } from '../src/server-api.js';
 import { DOMAIN, openDb, productRoutes, setup } from './helpers.js';
 
 const SITE = `https://${DOMAIN}`;
 /** Alex, signed in at Accounts as an Owner (the test harness turns these into the sign-in's person). */
-const ACTOR = { 'ss-actor-id': 'usr_1', 'ss-actor-name': 'Alex%20M.', 'ss-actor-role': 'Owner' };
+const ACTOR = { 'shelfway-actor-id': 'usr_1', 'shelfway-actor-name': 'Alex%20M.', 'shelfway-actor-role': 'Owner' };
 /** The staff member every other call of the harness is signed in as. */
 const STAFF = { kind: 'user', id: 'usr_test_staff', name: 'Test Staff', role: 'owner' };
 
@@ -140,19 +140,19 @@ describe('settings API for the merchant’s server (K1)', () => {
 		expect((await call('PUT', '/v1/texts/nope', { token: server.token, body: { value: 'x' } })).status).toBe(404);
 		expect((await body(await call('DELETE', '/v1/texts/form.title', { token: server.token }))).json.source).toBe('built-in');
 
-		// the theme and the Format are the Portal's: read here, never saved here (409 managed_by_portal, naming the Portal)
+		// the theme and the Format are the Portal's: read here, never saved here (409 managed_by_platform, naming the Portal)
 		const theme = await body(await call('GET', '/v1/theme', { token: server.token }));
 		expect(theme.json.theme).toMatchObject({ radius: 8, mode: 'auto' });
 		expect(theme.json.sources).toMatchObject({ radius: 'built-in', fontFamily: 'built-in' });
 		const noTheme = await body(await call('PUT', '/v1/theme', { token: server.token, body: { radius: 12, mode: 'dark' } }));
 		expect(noTheme.status).toBe(409);
-		expect(noTheme.json).toMatchObject({ status: 409, section: 'Brand and look', portalUrl: portal.url });
+		expect(noTheme.json).toMatchObject({ status: 409, section: 'Brand and look', platformUrl: portal.url });
 		expect((await body(await call('GET', '/v1/theme', { token: server.token }))).json.theme.radius).toBe(8);
 
 		expect((await body(await call('GET', '/v1/format', { token: server.token }))).json.format).toEqual(DEFAULT_FORMAT);
 		const noFormat = await body(await call('PUT', '/v1/format', { token: server.token, body: { locale: 'en-GB' } }));
 		expect(noFormat.status).toBe(409);
-		expect(noFormat.json).toMatchObject({ section: 'Region and format', portalUrl: portal.url });
+		expect(noFormat.json).toMatchObject({ section: 'Region and format', platformUrl: portal.url });
 
 		// once the Portal holds them, product code and the server's reads have them
 		const empty = emptyWebsiteSettings(websiteId);
@@ -770,7 +770,7 @@ describe('activity reads (K9)', () => {
 		const dbName = await dbless.connectDatabase();
 		expect((await dbless.call('GET', '/v1/activity', { token: dbless.server.token })).status).toBe(200);
 		const { client, db } = await openDb(dbName);
-		expect((await db.collection('ss_notes_activity').indexes()).map((index) => index.name)).toEqual(
+		expect((await db.collection('shelfway_notes_activity').indexes()).map((index) => index.name)).toEqual(
 			expect.arrayContaining(['kit_activity_newest', 'kit_activity_actor', 'kit_activity_target', 'kit_activity_copies']),
 		);
 		await client.close();

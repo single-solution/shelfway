@@ -18,17 +18,17 @@ import {
 	openDialog,
 	splitView,
 	stateSlot,
-} from '@ss/app-kit/widget';
+} from '@shelfway/app-kit/widget';
 import { SUBSCRIPTION_STATUSES } from '../core/payments.js';
 import { field, listSection } from './admin-kit.js';
 import { formattersOf } from './format.js';
 import { WIDGET_CSS } from './styles.js';
 
-/** The tone of each subscription status. @type {Record<string, import('@ss/app-kit/widget').Tone>} */
+/** The tone of each subscription status. @type {Record<string, import('@shelfway/app-kit/widget').Tone>} */
 const TONES = { pending: 'warning', active: 'success', past_due: 'danger', paused: 'warning' };
 
 /**
- * @param {{ host: HTMLElement, api: import('@ss/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig,
+ * @param {{ host: HTMLElement, api: import('@shelfway/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig,
  *   copy?: (text: string) => void }} input `copy`: put a text on the clipboard
  */
 export const mountSubscriptionsAdmin = ({ host, api, config, copy = () => {} }) => {
@@ -72,7 +72,7 @@ export const mountSubscriptionsAdmin = ({ host, api, config, copy = () => {} }) 
 				for (const item of list.querySelectorAll('li.item'))
 					item.setAttribute('aria-current', String(item.getAttribute('data-id') === subscription.id));
 				const note = element(doc, 'p', { class: 'status', role: 'status' });
-				/** @type {import('@ss/app-kit/widget').MenuItem[]} */
+				/** @type {import('@shelfway/app-kit/widget').MenuItem[]} */
 				const menu = [{ label: t('subs.copyId'), onSelect: () => copy(subscription.id) }];
 				if (subscription.status !== 'canceled' && subscription.status !== 'expired')
 					menu.push({

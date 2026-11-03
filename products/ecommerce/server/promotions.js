@@ -7,7 +7,7 @@
  * coupon uses of an Accounts user) and the loyalty settings the widgets need.
  * @module
  */
-import { defineRoute, problem } from '@ss/app-kit';
+import { defineRoute, problem } from '@shelfway/app-kit';
 import { givePoints, loyaltyAccount, takePoints } from '../adapters/ledger.js';
 import { dealsLiveNow, deletePerson, pendingPoints, personRecords } from '../adapters/promotions-store.js';
 import { byShowOrder, publicDeal } from '../core/deals.js';
@@ -57,7 +57,7 @@ export const createPromotions = (product, service) => {
 	/**
 	 * Whose account a route names (K-6): a customer id (`cus_…`: the member's account when the customer has an Accounts
 	 * user, else the guest's) or an Accounts user id; with the customer's name for the activity log.
-	 * @param {import('@ss/app-kit').WebsiteData} data @param {unknown} value
+	 * @param {import('@shelfway/app-kit').WebsiteData} data @param {unknown} value
 	 * @returns {Promise<{ owner: string | { customerId: string }, name: string }>}
 	 */
 	const ownerOf = async (data, value) => {

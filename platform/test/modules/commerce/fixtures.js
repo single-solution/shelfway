@@ -1,11 +1,11 @@
 /**
  * Commerce test fixtures: ids, price lists, and a Portal harness on MongoMemoryReplSet with fake neighbor modules.
  */
-import { createSigner, createJwks, generateSigningKey, signAssertion } from '@ss/protocol';
+import { createSigner, createJwks, generateSigningKey, signAssertion } from '@shelfway/protocol';
 import { createSystemStore } from '../../../src/infra/system.js';
-import { createPortal } from '../../../src/portal.js';
+import { createPlatform } from '../../../src/platform.js';
 import { commerceModule } from '../../../src/modules/commerce/index.js';
-import { ENCRYPTION_KEY, PORTAL_URL, T0, createClock, createTestLogger, testConfig } from '../../helpers.js';
+import { ENCRYPTION_KEY, PLATFORM_URL, T0, createClock, createTestLogger, testConfig } from '../../helpers.js';
 import { createWorld, fakeModules } from './fakes/modules.js';
 
 export const M1 = 'mer_0123456789abcdefghjkmnpq';
@@ -20,7 +20,7 @@ export const SUPPORT_ADMIN = 'adm_support000000000000000000';
 export const FINANCE_ADMIN = 'adm_finance000000000000000000';
 export const HOUR = 3_600_000;
 export const STAFF = Object.freeze({ type: 'admin', id: 'adm_finance', role: 'finance' });
-const ORIGIN_HEADERS = Object.freeze({ origin: PORTAL_URL, 'sec-fetch-site': 'same-origin' });
+const ORIGIN_HEADERS = Object.freeze({ origin: PLATFORM_URL, 'sec-fetch-site': 'same-origin' });
 
 /**
  * A price list (PLAN 0.4.12 row 2) from `{ key: millicreditsPerHour }`; `box` depends on `codes`.
@@ -67,7 +67,7 @@ export const bootCommerce = async ({ mongo, dbName, clock = createClock(T0) }) =
 	/** @type {{ to: string, template: string, data: Record<string, string> }[]} */
 	const mails = [];
 	const mailer = { available: true, send: async (/** @type {any} */ message) => void mails.push(message) };
-	const portal = createPortal({
+	const portal = createPlatform({
 		config,
 		db,
 		modules: [commerceModule, ...fakeModules(world)],
@@ -85,7 +85,7 @@ export const bootCommerce = async ({ mongo, dbName, clock = createClock(T0) }) =
 	 */
 	const call = async (method, path, { headers = {}, body } = {}) => {
 		const response = await portal.handle(
-			new Request(`${PORTAL_URL}${path}`, {
+			new Request(`${PLATFORM_URL}${path}`, {
 				method,
 				headers: { ...(body === undefined ? {} : { 'content-type': 'application/json' }), ...headers },
 				...(body === undefined ? {} : { body: JSON.stringify(body) }),
@@ -110,7 +110,7 @@ export const bootCommerce = async ({ mongo, dbName, clock = createClock(T0) }) =
 		world.productJwks.set(productId, createJwks([publicJwk]));
 		const signer = createSigner(privateJwk);
 		return async () => ({
-			authorization: `Bearer ${await signAssertion({ signer, productId, audience: PORTAL_URL, now: clock.now })}`,
+			authorization: `Bearer ${await signAssertion({ signer, productId, audience: PLATFORM_URL, now: clock.now })}`,
 		});
 	};
 

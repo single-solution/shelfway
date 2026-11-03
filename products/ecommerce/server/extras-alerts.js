@@ -16,8 +16,8 @@
  * `unsubscribeUrl`: Notifications reserves that name for its own opt-out link and refuses a send that passes it (MS-2).
  * @module
  */
-import { createId } from '@ss/contracts';
-import { created, defineRoute, noContent, problem } from '@ss/app-kit';
+import { createId } from '@shelfway/contracts';
+import { created, defineRoute, noContent, problem } from '@shelfway/app-kit';
 import { newOrderKey, orderKeyHash } from '../adapters/crypto.js';
 import { userIdsOf } from '../adapters/extras-store.js';
 import { createOrdersStore } from '../adapters/orders-store.js';
@@ -41,7 +41,7 @@ import { VISITOR_LIMITS, VISITOR_WRITE_LIMITS } from './service.js';
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./extras-cards.js').Cards} Cards */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/model.js').ProductRecord} ProductRecord */
 /**
  * An alert as stored: `dueAt` is set when a catalog change made it due (it is then sent on this or a later use).
@@ -391,7 +391,7 @@ export const createAlerts = (_product, service, cards) => {
 			method: 'POST',
 			path: '/v1/shop/alerts',
 			auth: 'browser',
-			feature: 'catalog',
+			feature: 'alerts',
 			idempotent: true,
 			rateLimit: VISITOR_WRITE_LIMITS,
 			handler: subscribe,
@@ -400,7 +400,7 @@ export const createAlerts = (_product, service, cards) => {
 			method: 'GET',
 			path: '/v1/shop/alerts',
 			auth: 'browser',
-			feature: 'catalog',
+			feature: 'alerts',
 			rateLimit: VISITOR_LIMITS,
 			handler: mine,
 		}),
@@ -408,7 +408,7 @@ export const createAlerts = (_product, service, cards) => {
 			method: 'POST',
 			path: '/v1/shop/alerts/unsubscribe/:token',
 			auth: 'browser',
-			feature: 'catalog',
+			feature: 'alerts',
 			rateLimit: VISITOR_WRITE_LIMITS,
 			handler: unsubscribe,
 		}),
@@ -416,7 +416,7 @@ export const createAlerts = (_product, service, cards) => {
 			method: 'DELETE',
 			path: '/v1/shop/alerts/:id',
 			auth: 'browser',
-			feature: 'catalog',
+			feature: 'alerts',
 			rateLimit: VISITOR_WRITE_LIMITS,
 			handler: remove,
 		}),

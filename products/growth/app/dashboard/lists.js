@@ -27,8 +27,8 @@ import {
 	Select,
 	TextArea,
 	SaveBar,
-} from '@ss/ui';
-import { Loaded, SaveOutcome, call, fill, useLoad } from '@ss/ui/dashboard';
+} from '@shelfway/ui';
+import { Loaded, SaveOutcome, call, fill, useLoad } from '@shelfway/ui/dashboard';
 import { LISTS } from '../../core/lists.js';
 import { ONLINE_STORE_PRESET } from '../../core/seo.js';
 import { TEXTS } from './texts.js';
@@ -264,7 +264,7 @@ const counted = (words, n) => (n === 1 ? words.one : fill(words.other, { n }));
 /**
  * How a list's entries look as rows: the icon, the facts under the name (empty ones are left out) and the value at the
  * right (see `TEXTS.lists.columns` for the labels).
- * @typedef {{ icon: import('@ss/ui').IconName, meta: (entry: Entry) => string[], value?: (entry: Entry) => string }} Look
+ * @typedef {{ icon: import('@shelfway/ui').IconName, meta: (entry: Entry) => string[], value?: (entry: Entry) => string }} Look
  */
 
 /** @param {string} field @param {string} label @returns {(entry: Entry) => string} */
@@ -326,7 +326,7 @@ export function ListCard({ websiteId, name, bare = false }) {
 	const { answer, reload } = useLoad(path);
 	const [draft, setDraft] = useState(/** @type {Entry[] | null} */ (null));
 	const [opened, setOpened] = useState(/** @type {number | null} */ (null));
-	const [result, setResult] = useState(/** @type {import('@ss/ui/dashboard').Answer | null} */ (null));
+	const [result, setResult] = useState(/** @type {import('@shelfway/ui/dashboard').Answer | null} */ (null));
 	const words = /** @type {{ title: string, help: string }} */ (/** @type {Record<string, unknown>} */ (L)[name]);
 	const saved = answer?.ok ? /** @type {Entry[]} */ (answer.data.value) : null;
 	/** The fields the server says this reader may not change (they need a permission the reader lacks). */
@@ -504,13 +504,13 @@ export function ListCard({ websiteId, name, bare = false }) {
  * @param {{ websiteId: string }} props
  */
 function StorePresetCard({ websiteId }) {
-	const [result, setResult] = useState(/** @type {import('@ss/ui/dashboard').Answer | null} */ (null));
+	const [result, setResult] = useState(/** @type {import('@shelfway/ui/dashboard').Answer | null} */ (null));
 	return (
 		<Card subtitle={L.preset.help}>
 			<Button
 				variant="secondary"
 				onClick={async () => {
-					/** @type {import('@ss/ui/dashboard').Answer} */
+					/** @type {import('@shelfway/ui/dashboard').Answer} */
 					let last = { ok: true, data: null };
 					for (const [name, value] of Object.entries(ONLINE_STORE_PRESET)) {
 						last = await call(

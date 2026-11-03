@@ -204,7 +204,7 @@ export const resetPage = () => {
 	document.body.replaceChildren();
 	window.localStorage.clear();
 	window.sessionStorage.clear();
-	delete (/** @type {any} */ (window).SSChat);
+	delete (/** @type {any} */ (window).ShelfwayChat);
 	Object.defineProperty(document, 'hidden', { configurable: true, get: () => false });
 	vi.restoreAllMocks();
 };

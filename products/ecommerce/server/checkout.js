@@ -5,13 +5,13 @@
  * ended on use (`service.whenUsed`), never on a timer.
  * @module
  */
-import { defineRoute, problem } from '@ss/app-kit';
+import { defineRoute, problem } from '@shelfway/app-kit';
 import { productTypes } from '../adapters/catalog-store.js';
 import { createOrdersStore } from '../adapters/orders-store.js';
 import { elementsOf } from '../core/item-types.js';
 import { OPTIONAL_ADDRESS_FIELDS } from '../core/address.js';
 import { zoneCities } from '../core/delivery.js';
-import { addressRequiredOf } from '@ss/contracts/website-settings';
+import { addressRequiredOf } from '@shelfway/contracts/website-settings';
 import { guestRules } from '../core/guests.js';
 import { createDigital } from './checkout-digital.js';
 import { createOrdering } from './checkout-orders.js';

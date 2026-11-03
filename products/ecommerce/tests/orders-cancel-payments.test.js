@@ -46,7 +46,11 @@ const visit = (method, path, token, body) => {
 		token: shop.browser,
 		origin: ORIGIN,
 		...(body === undefined ? {} : { body }),
-		headers: { 'ss-sign-in': token, 'x-forwarded-for': `10.9.${(ip >> 8) & 255}.${ip & 255}`, 'idempotency-key': `k-${ip}` },
+		headers: {
+			'shelfway-sign-in': token,
+			'x-forwarded-for': `10.9.${(ip >> 8) & 255}.${ip & 255}`,
+			'idempotency-key': `k-${ip}`,
+		},
 	});
 };
 
@@ -357,7 +361,7 @@ describe('money staff take, deletes and two "pay" at once (CK-21)', () => {
 			websiteId: shop.websiteId,
 			merchantId: null,
 			status: { domain: DOMAIN },
-			headers: new Headers({ 'ss-order-key': placed.json.orderKey }),
+			headers: new Headers({ 'shelfway-order-key': placed.json.orderKey }),
 			params: { id },
 			body: {},
 		});

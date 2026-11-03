@@ -3,16 +3,16 @@
  * is no server path between products: the shopper widgets dispatch these on `window`, not cancelable, and Growth
  * records them and forwards them to the merchant's pixels. Ecommerce needs no Growth token for this.
  *
- * - `ss:view_item`: the product page shows a product (once per product; a variant change does not fire it again);
- * - `ss:add_to_cart`: a line is added to the browser cart (the product page's Add to cart, the wishlist's Add to cart,
- *   `SSEcommerce.addToCart(…)` and the `ss-ecommerce:add-to-cart` event of Chat's product cards);
- * - `ss:begin_checkout`: the shopper first presses Place order in the cart widget (once per cart widget);
- * - `ss:purchase`: `POST /v1/shop/orders` answered and the order exists (once per order placed);
- * - `ss:search`: the product grid's own search box ran a search (`{ term, results }`: the words and how many products it
+ * - `shelfway:view_item`: the product page shows a product (once per product; a variant change does not fire it again);
+ * - `shelfway:add_to_cart`: a line is added to the browser cart (the product page's Add to cart, the wishlist's Add to cart,
+ *   `ShelfwayEcommerce.addToCart(…)` and the `shelfway-ecommerce:add-to-cart` event of Chat's product cards);
+ * - `shelfway:begin_checkout`: the shopper first presses Place order in the cart widget (once per cart widget);
+ * - `shelfway:purchase`: `POST /v1/shop/orders` answered and the order exists (once per order placed);
+ * - `shelfway:search`: the product grid's own search box ran a search (`{ term, results }`: the words and how many products it
  *   found); a search in the page's address is Growth's to find, so the grid sends none for it.
  *
  * Money is integer minor units with an ISO 4217 currency, as everywhere in Ecommerce. `value` is the sum of price ×
- * quantity of the items, except on `ss:purchase`, where it is the order's total. An item sold by length, weight or
+ * quantity of the items, except on `shelfway:purchase`, where it is the order's total. An item sold by length, weight or
  * volume is one item (`core/measure.js` `piecesOf`) priced at what its line comes to.
  * @module
  */
@@ -20,11 +20,11 @@ import { grossFits, lineGross } from './measure.js';
 
 /** The event names. */
 export const GROWTH_EVENTS = Object.freeze({
-	viewItem: 'ss:view_item',
-	addToCart: 'ss:add_to_cart',
-	beginCheckout: 'ss:begin_checkout',
-	purchase: 'ss:purchase',
-	search: 'ss:search',
+	viewItem: 'shelfway:view_item',
+	addToCart: 'shelfway:add_to_cart',
+	beginCheckout: 'shelfway:begin_checkout',
+	purchase: 'shelfway:purchase',
+	search: 'shelfway:search',
 });
 
 /**
@@ -68,7 +68,7 @@ export const growthItem = (line) => {
 };
 
 /**
- * The detail of `ss:view_item`, `ss:add_to_cart` and `ss:begin_checkout`.
+ * The detail of `shelfway:view_item`, `shelfway:add_to_cart` and `shelfway:begin_checkout`.
  * @param {string} currency
  * @param {GrowthItem[]} items
  * @returns {ItemsDetail}
@@ -80,7 +80,7 @@ export const itemsDetail = (currency, items) => ({
 });
 
 /**
- * The detail of `ss:purchase` from the placed order (the shopper's view of it).
+ * The detail of `shelfway:purchase` from the placed order (the shopper's view of it).
  * @param {{ id: string, number: string, totals: { total: number, currency: string },
  *   lines: Array<{ productId: string, variantId: string | null, name: string, unitPrice: number, quantity: number }> }} order
  * @returns {PurchaseDetail}

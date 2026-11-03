@@ -7,8 +7,8 @@
  */
 import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { byText, cleanup, click, render, type } from '@ss/ui/testing';
-import { DashboardProvider, SettingsForms } from '@ss/ui/dashboard';
+import { byText, cleanup, click, render, type } from '@shelfway/ui/testing';
+import { DashboardProvider, SettingsForms } from '@shelfway/ui/dashboard';
 import manifest from '../manifest.json' with { type: 'json' };
 import aiReplies from '../schemas/ai_replies.settings.json' with { type: 'json' };
 import { TEXTS } from '../app/dashboard/texts.js';

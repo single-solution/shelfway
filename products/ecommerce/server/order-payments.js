@@ -14,7 +14,7 @@
  *   It is looked for when the order is read and on use, for three days after the cancel.
  * @module
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { createOrdersStore } from '../adapters/orders-store.js';
 import { canMove, statusOf } from '../core/flow.js';
 import { COLLECTIONS, ID_PREFIX } from '../core/model.js';

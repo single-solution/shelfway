@@ -6,7 +6,7 @@
  * ledger (a shopper's cancel, an ended window, a staff cancel, a refund before delivery, a return to origin) and an
  * import; and merging a guest's wishlist at sign-in.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { newOrderKey, orderKeyHash } from '../adapters/crypto.js';
 import { INDEXES } from '../adapters/product.js';
@@ -16,7 +16,7 @@ import { ALL, DOMAIN, ORIGIN, readyShop, storedOrder } from './helpers.js';
 
 /** @type {Awaited<ReturnType<typeof readyShop>>} */
 let shop;
-/** @type {import('@ss/app-kit').WebsiteData} */
+/** @type {import('@shelfway/app-kit').WebsiteData} */
 let data;
 /** @type {string} */
 let ticket;
@@ -64,8 +64,8 @@ const visit = (method, path, { body, signIn, orderKey, key } = {}) => {
 		body,
 		headers: {
 			'x-forwarded-for': `10.9.${(ip >> 8) & 255}.${ip & 255}`,
-			...(signIn ? { 'ss-sign-in': signIn } : {}),
-			...(orderKey ? { 'ss-order-key': orderKey } : {}),
+			...(signIn ? { 'shelfway-sign-in': signIn } : {}),
+			...(orderKey ? { 'shelfway-order-key': orderKey } : {}),
 			...(key ? { 'idempotency-key': key } : {}),
 		},
 	});

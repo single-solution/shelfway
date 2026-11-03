@@ -9,7 +9,7 @@ import {
 	renderMail,
 	smtpTransportOptions,
 } from '../src/infra/mailer.js';
-import { escapeHtml } from '@ss/contracts/text';
+import { escapeHtml } from '@shelfway/contracts/text';
 import { isProblem } from '../src/infra/http.js';
 import { MAIL_TEXTS } from '../src/texts/mail.js';
 import { DEFAULT_SETTINGS } from '../src/infra/config.js';

@@ -12,7 +12,7 @@ export const REFRESH_BEFORE_MS = 60_000;
 /**
  * @typedef {{ ticket: string, expiresAt: string, signIn?: string }} Ticket `signIn`: the staff member's current Accounts sign-in,
  *   which the store's server may hand over with the ticket so a call that needs another product's staff route (a refund
- *   through Payments) can name the verified person (`SS-Sign-In` next to the ticket)
+ *   through Payments) can name the verified person (`Shelfway-Sign-In` next to the ticket)
  */
 /** @typedef {() => Promise<Ticket>} GetTicket */
 
@@ -118,7 +118,7 @@ export const adminCall = async ({ base, tickets, fetch }, method, path, body) =>
 	const signIn = tickets.signIn?.() ?? null;
 	return requestJson(fetch, `${base}${path}`, {
 		method,
-		headers: { authorization: `Bearer ${ticket}`, ...(signIn ? { 'ss-sign-in': signIn } : {}) },
+		headers: { authorization: `Bearer ${ticket}`, ...(signIn ? { 'shelfway-sign-in': signIn } : {}) },
 		body,
 	});
 };

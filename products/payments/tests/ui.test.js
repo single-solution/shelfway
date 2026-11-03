@@ -180,7 +180,7 @@ describe('pay button', () => {
 		await ready;
 		expect(inside(host, 'h2').textContent).toBe('Donate');
 		expect(host.shadowRoot?.textContent).toContain('At least USD 5.00');
-		inside(host, '#ss-pay-amount').value = '1';
+		inside(host, '#shelfway-pay-amount').value = '1';
 		inside(host, 'form').dispatchEvent(new window.Event('submit'));
 		await flush();
 		expect(statusText(host)).toBe('Enter an amount of at least USD 5.00.');
@@ -193,19 +193,19 @@ describe('pay button', () => {
 		// the link asks the phone and its own question (P3)
 		expect(host.shadowRoot?.textContent).toContain('Your phone');
 		expect(host.shadowRoot?.textContent).toContain('Company');
-		inside(host, '#ss-pay-phone').value = ' +447700900123 ';
-		inside(host, '#ss-pay-field-0').value = ' Northwind ';
+		inside(host, '#shelfway-pay-phone').value = ' +447700900123 ';
+		inside(host, '#shelfway-pay-field-0').value = ' Northwind ';
 		// the shown decimal sign or a comma that cannot be a thousands separator; the API gets a plain decimal (P6)
-		inside(host, '#ss-pay-amount').value = '12,5';
+		inside(host, '#shelfway-pay-amount').value = '12,5';
 		inside(host, 'form').dispatchEvent(new window.Event('submit'));
 		await flush();
 		expect(posted[1]).toMatchObject({ amount: '12.50', customer: { phone: '+447700900123' }, answers: ['Northwind'] });
-		inside(host, '#ss-pay-amount').value = '1,250';
+		inside(host, '#shelfway-pay-amount').value = '1,250';
 		inside(host, 'form').dispatchEvent(new window.Event('submit'));
 		await flush();
 		expect(posted).toHaveLength(2);
 		expect(statusText(host)).toBe('Enter an amount of at least USD 5.00.');
-		inside(host, '#ss-pay-amount').value = '10';
+		inside(host, '#shelfway-pay-amount').value = '10';
 		for (const [path, text] of [
 			['/email', strings['link.invalidEmail']],
 			['/phone', strings['link.invalidPhone']],

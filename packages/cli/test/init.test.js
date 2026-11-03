@@ -9,7 +9,7 @@ import { linkTestPackages, removeDir, runOwnTests, tempDir } from './helpers/uti
 /** @type {string} */
 let root;
 beforeAll(async () => {
-	root = await tempDir('ss-init-');
+	root = await tempDir('shelfway-init-');
 });
 afterAll(async () => {
 	await removeDir(root);
@@ -20,7 +20,7 @@ const read = (dir, file) => readFile(path.join(dir, file), 'utf8');
 /** @param {string} dir @param {string} file */
 const json = async (dir, file) => JSON.parse(await read(dir, file));
 
-describe('one version for every @ss package', () => {
+describe('one version for every @shelfway package', () => {
 	it('every package of packages/ has the CLI version, so SDK_RANGE fits all of them', async () => {
 		const packages = path.resolve(import.meta.dirname, '../..');
 		const cli = await json(packages, 'cli/package.json');
@@ -29,13 +29,13 @@ describe('one version for every @ss package', () => {
 		expect(names.length).toBeGreaterThan(1);
 		for (const { name } of names) {
 			const own = await json(packages, `${name}/package.json`);
-			expect(own.name, name).toMatch(/^@ss\//);
+			expect(own.name, name).toMatch(/^@shelfway\//);
 			expect(own.version, own.name).toBe(cli.version);
 		}
 	});
 });
 
-describe('ss app init → validate → own tests (integration)', () => {
+describe('shelfway app init → validate → own tests (integration)', () => {
 	it('generates the 0.4.13 layout that validates and whose own tests pass with the coverage thresholds', async () => {
 		const dir = path.join(root, 'notes');
 		const { files } = await initApp({ dir, id: 'order-notes', name: 'Order Notes', sdkVersion: '^0.2.0' });
@@ -119,7 +119,7 @@ describe('ss app init → validate → own tests (integration)', () => {
 		expect(manifest.widgets.map((/** @type {{ kind: string }} */ widget) => widget.kind)).toEqual(['visitor', 'admin']);
 
 		const pkg = await json(dir, 'package.json');
-		expect(pkg).toMatchObject({ name: '@ss/product-order-notes', private: true, license: 'UNLICENSED' });
+		expect(pkg).toMatchObject({ name: '@shelfway/product-order-notes', private: true, license: 'UNLICENSED' });
 		expect(pkg.exports).toEqual({
 			'./product': './adapters/product.js',
 			'./routes': './server/routes.js',
@@ -129,10 +129,10 @@ describe('ss app init → validate → own tests (integration)', () => {
 			['build', 'check', 'dev', 'format', 'format:check', 'lint', 'start', 'test', 'typecheck', 'validate'].sort(),
 		);
 		// its own local port, beside the Portal (3000) and the six products (3001–3006)
-		expect(pkg.scripts.dev).toBe('ss app assets . && next dev --port 3007');
+		expect(pkg.scripts.dev).toBe('shelfway app assets . && next dev --port 3007');
 		expect(pkg.scripts.start).toBe('next start --port 3007');
-		expect(pkg.dependencies).toMatchObject({ '@ss/app-kit': '^0.2.0', '@ss/ui': '^0.2.0' });
-		expect(pkg.devDependencies).toMatchObject({ '@ss/cli': '^0.2.0', '@ss/config': '^0.2.0' });
+		expect(pkg.dependencies).toMatchObject({ '@shelfway/app-kit': '^0.2.0', '@shelfway/ui': '^0.2.0' });
+		expect(pkg.devDependencies).toMatchObject({ '@shelfway/cli': '^0.2.0', '@shelfway/config': '^0.2.0' });
 
 		const env = await read(dir, '.env.example');
 		expect(env.split('\n').filter((line) => /^[A-Z_]+=/.test(line))).toEqual([
@@ -145,13 +145,13 @@ describe('ss app init → validate → own tests (integration)', () => {
 		const ignored = (await read(dir, '.gitignore')).split('\n');
 		for (const line of ['.env*', '!.env.example']) expect(ignored).toContain(line);
 		expect((await json(dir, 'vercel.json')).crons).toBeUndefined();
-		expect(await read(dir, 'vitest.config.js')).toContain("from '@ss/config/vitest'");
-		expect((await json(dir, 'tsconfig.json')).extends).toBe('@ss/config/tsconfig.base.json');
+		expect(await read(dir, 'vitest.config.js')).toContain("from '@shelfway/config/vitest'");
+		expect((await json(dir, 'tsconfig.json')).extends).toBe('@shelfway/config/tsconfig.base.json');
 		expect(await read(dir, 'next.config.js')).toContain("'/widget.js', '/docs', '/openapi.json', '/v1/:path*'");
 		// the dashboard page refuses frames (tests/next-config.test.js checks it with the project's own tests below)
 		expect(await read(dir, 'next.config.js')).toContain('headers: async () => dashboardHeaders()');
-		expect(await read(dir, 'core/widgets.js')).toContain("WIDGET_GLOBAL = 'SSOrderNotes'");
-		expect(await read(dir, 'core/widgets.js')).toContain("WIDGET_ATTRIBUTE = 'data-ss-order-notes'");
+		expect(await read(dir, 'core/widgets.js')).toContain("WIDGET_GLOBAL = 'ShelfwayOrderNotes'");
+		expect(await read(dir, 'core/widgets.js')).toContain("WIDGET_ATTRIBUTE = 'data-shelfway-order-notes'");
 		expect(await read(dir, 'server/widget-script.js')).toContain('export const WIDGET_SCRIPT = ');
 		const openapi = await json(dir, 'openapi.json');
 		expect(Object.keys(openapi.paths)).toEqual([
@@ -180,22 +180,25 @@ describe('ss app init → validate → own tests (integration)', () => {
 			'/v1/widget/admin/config',
 			'/v1/widget/config',
 		]);
-		// visitor routes also take the server token with SS-Visitor-IP; a staff route of the server token needs the signed-in staff
-		// member's SS-Sign-In (the token alone is 403), a runtime route takes the token alone
+		// visitor routes also take the server token with Shelfway-Visitor-IP; a staff route of the server token needs the signed-in staff
+		// member's Shelfway-Sign-In (the token alone is 403), a runtime route takes the token alone
 		expect(openapi.paths['/v1/notes'].post.security).toEqual([{ browserToken: [] }, { serverToken: [] }]);
-		expect(openapi.paths['/v1/notes'].post.parameters).toContainEqual({ $ref: '#/components/parameters/SSVisitorIp' });
+		expect(openapi.paths['/v1/notes'].post.parameters).toContainEqual({ $ref: '#/components/parameters/ShelfwayVisitorIp' });
 		expect(openapi.paths['/v1/settings/{key}'].put.parameters).toContainEqual({
-			$ref: '#/components/parameters/SSSignInStaff',
+			$ref: '#/components/parameters/ShelfwaySignInStaff',
 		});
 		expect(openapi.paths['/v1/settings/{key}'].put).toMatchObject({
-			'x-ss-access': 'staff',
-			'x-ss-permission': 'settings.manage',
+			'x-shelfway-access': 'staff',
+			'x-shelfway-permission': 'settings.manage',
 		});
-		expect(openapi.paths['/v1/theme'].get).toMatchObject({ 'x-ss-access': 'runtime' });
-		expect(openapi.paths['/v1/notes'].get).toMatchObject({ 'x-ss-access': 'staff', 'x-ss-permission': 'notes.read' });
-		expect(openapi.components.parameters.SSSignInStaff).toMatchObject({ name: 'SS-Sign-In', required: true });
-		expect(openapi.components.parameters.SSVisitorIp.name).toBe('SS-Visitor-IP');
-		expect(openapi.paths['/v1/admin/notes'].get).toMatchObject({ 'x-ss-auth': 'ticket', 'x-ss-feature': 'notes' });
+		expect(openapi.paths['/v1/theme'].get).toMatchObject({ 'x-shelfway-access': 'runtime' });
+		expect(openapi.paths['/v1/notes'].get).toMatchObject({
+			'x-shelfway-access': 'staff',
+			'x-shelfway-permission': 'notes.read',
+		});
+		expect(openapi.components.parameters.ShelfwaySignInStaff).toMatchObject({ name: 'Shelfway-Sign-In', required: true });
+		expect(openapi.components.parameters.ShelfwayVisitorIp.name).toBe('Shelfway-Visitor-IP');
+		expect(openapi.paths['/v1/admin/notes'].get).toMatchObject({ 'x-shelfway-auth': 'ticket', 'x-shelfway-feature': 'notes' });
 
 		expect((await validateProject(dir)).problems).toEqual([]);
 		await linkTestPackages(dir);
@@ -206,7 +209,7 @@ describe('ss app init → validate → own tests (integration)', () => {
 		expect(stdout).toMatch(/Tests\s+\d+ passed/);
 	}, 120_000);
 
-	it('inside a pnpm workspace leaves the repository files to the workspace and links @ss/* with workspace:^', async () => {
+	it('inside a pnpm workspace leaves the repository files to the workspace and links @shelfway/* with workspace:^', async () => {
 		const workspace = path.join(root, 'monorepo');
 		await mkdir(path.join(workspace, 'products'), { recursive: true });
 		await writeFile(path.join(workspace, 'pnpm-workspace.yaml'), "packages:\n   - 'products/*'\n");
@@ -216,14 +219,14 @@ describe('ss app init → validate → own tests (integration)', () => {
 		const { files } = await initApp({ dir, id: 'inner', name: 'Inner', baseUrl: 'https://inner.example.com' });
 		expect(files).not.toContain('pnpm-workspace.yaml');
 		expect(files).not.toContain('.nvmrc');
-		expect((await json(dir, 'package.json')).dependencies['@ss/app-kit']).toBe('workspace:^');
+		expect((await json(dir, 'package.json')).dependencies['@shelfway/app-kit']).toBe('workspace:^');
 		expect((await json(dir, 'manifest.json')).endpoints.base).toBe('https://inner.example.com');
 		const forced = await initApp({ dir: path.join(workspace, 'products', 'own'), id: 'own', name: 'Own', standalone: true });
 		expect(forced.files).toContain('pnpm-workspace.yaml');
 		// a repository of its own never gets workspace:^ (it would not install): the published range of this CLI
 		const own = await json(forced.dir, 'package.json');
 		for (const deps of [own.dependencies, own.devDependencies])
-			for (const [name, range] of Object.entries(deps)) if (name.startsWith('@ss/')) expect(range, name).toBe(SDK_RANGE);
+			for (const [name, range] of Object.entries(deps)) if (name.startsWith('@shelfway/')) expect(range, name).toBe(SDK_RANGE);
 	}, 60_000);
 
 	it('refuses bad options and non-empty targets', async () => {
@@ -249,8 +252,8 @@ describe('ss app init → validate → own tests (integration)', () => {
 			code: 'ENOTDIR',
 		});
 		expect(fill('{{id}} {{unknown}}', { id: 's' })).toBe('s {{unknown}}');
-		expect(globalNameOf('chat')).toBe('SSChat');
-		expect(globalNameOf('order--notes')).toBe('SSOrderNotes');
+		expect(globalNameOf('chat')).toBe('ShelfwayChat');
+		expect(globalNameOf('order--notes')).toBe('ShelfwayOrderNotes');
 		expect(devPortOf('http://localhost:3011')).toBe('3011');
 		expect(devPortOf('https://notes.example.com')).toBe('3007');
 		expect(devPortOf('not a url')).toBe('3007');

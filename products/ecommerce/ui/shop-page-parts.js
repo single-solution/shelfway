@@ -436,8 +436,8 @@ export const sizeGuide = ({ doc, t, chart, layer }) => {
 		const sheet = h(
 			doc,
 			'div',
-			{ class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'ss-size-title' },
-			h(doc, 'div', { class: 'sheet-head' }, h(doc, 'h2', { id: 'ss-size-title' }, title), shut),
+			{ class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'shelfway-size-title' },
+			h(doc, 'div', { class: 'sheet-head' }, h(doc, 'h2', { id: 'shelfway-size-title' }, title), shut),
 			source
 				? h(
 						doc,

@@ -4,7 +4,7 @@
  * from its answer. Suggestions are only shown to staff, never saved by themselves. No I/O.
  * @module
  */
-import { isObject } from '@ss/contracts/util';
+import { isObject } from '@shelfway/contracts/util';
 import { LIMITS, cleanText } from './catalog.js';
 import { checkFaqs } from './catalog-content.js';
 

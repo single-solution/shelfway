@@ -82,7 +82,7 @@ describe('catalog admin: size charts', () => {
 		type(labeled(dialog, 'Size of row 3'), 'L');
 		await click(buttonIn(dialog, 'Add a size'));
 		await click(labeled(dialog, 'Remove row 2'));
-		expect(fieldIn(dialog, 'Unit').getAttribute('list')).toBe('ss-chart-units');
+		expect(fieldIn(dialog, 'Unit').getAttribute('list')).toBe('shelfway-chart-units');
 		await change(fieldIn(dialog, 'Unit'), 'cm');
 		await change(fieldIn(dialog, 'Shoppers can switch to'), 'in');
 		type(fieldIn(dialog, 'Unit of column 2 (empty: the table’s)'), 'kg');
@@ -258,10 +258,9 @@ describe('catalog admin: landing pages', () => {
 		expect(statuses(fresh)).toContain('Pick a category, a brand or a facet.');
 		// a field shoppers filter by, offered with its values
 		await change(fieldIn(fresh, 'Facet (a field shoppers filter by)'), 'storage');
-		expect([...fresh.querySelectorAll('datalist#ss-landing-values option')].map((node) => node.getAttribute('value'))).toEqual([
-			'64',
-			'128',
-		]);
+		expect(
+			[...fresh.querySelectorAll('datalist#shelfway-landing-values option')].map((node) => node.getAttribute('value')),
+		).toEqual(['64', '128']);
 		await submitDialog(root);
 		expect(statuses(fresh)).toContain('Give the facet a value.');
 		type(fieldIn(fresh, 'Facet value'), '128');

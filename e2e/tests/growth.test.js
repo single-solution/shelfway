@@ -1,6 +1,6 @@
 /**
  * PLAN 0.12 step 11: Growth against the REAL Portal — connect (manifest and price list), price and feature reports,
- * then the real page script (`@ss/product-growth/page-script`) in a browser window (jsdom) on a local page of the
+ * then the real page script (`@shelfway/product-growth/page-script`) in a browser window (jsdom) on a local page of the
  * website with the Portal-issued browser token: the consent banner asks first and nothing is recorded, the visitor
  * accepts, the page view and Ecommerce's shop events (browser events) are recorded in the merchant database and the
  * daily totals go up; then the analytics dashboard's ticketed read, an old path answered by its redirect rule (one
@@ -10,9 +10,9 @@
  */
 import { JSDOM } from 'jsdom';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createProductInstance, manifest, strings } from '@ss/product-growth/product';
-import { createRoutes } from '@ss/product-growth/routes';
-import { startWidget } from '@ss/product-growth/page-script';
+import { createProductInstance, manifest, strings } from '@shelfway/product-growth/product';
+import { createRoutes } from '@shelfway/product-growth/routes';
+import { startWidget } from '@shelfway/product-growth/page-script';
 import { HOUR, startSystem } from './helpers.js';
 
 const GROWTH = 'https://growth.test';
@@ -129,7 +129,7 @@ const openPage = (consent = null) => {
 		answers.push(`${url.pathname} ${res.status} ${JSON.stringify(res.json).slice(0, 300)}`);
 		return new Response(res.status === 204 ? null : JSON.stringify(res.json), { status: res.status });
 	};
-	if (consent) win.localStorage.setItem('ss-growth-consent', consent);
+	if (consent) win.localStorage.setItem('shelfway-growth-consent', consent);
 	const script = win.document.createElement('script');
 	script.src = `${GROWTH}/widget.js`;
 	script.dataset.token = tokens.browser;
@@ -184,32 +184,32 @@ describe('Growth on the real Portal', () => {
 		const { win, paths, answers, page } = openPage();
 		// Ecommerce's widget announces the product page while the page script loads its config
 		win.dispatchEvent(
-			new win.CustomEvent('ss:view_item', {
+			new win.CustomEvent('shelfway:view_item', {
 				detail: { currency: 'USD', value: 1250, items: [{ id: 'prod_1', name: 'Lamp', price: 1250, quantity: 1 }] },
 			}),
 		);
 		await page.ready;
-		const banner = win.document.querySelector('[data-ss-growth="consent_banner"]');
+		const banner = win.document.querySelector('[data-shelfway-growth="consent_banner"]');
 		const dialog = banner.shadowRoot.querySelector('[role="dialog"]');
 		expect(dialog.hasAttribute('hidden')).toBe(false);
 		win.dispatchEvent(new win.Event('pagehide'));
 		expect(paths).toEqual(['GET /v1/widget/config']);
-		expect(await merchantDb.collection('ss_growth_analytics_events').countDocuments()).toBe(0);
+		expect(await merchantDb.collection('shelfway_growth_analytics_events').countDocuments()).toBe(0);
 
 		const accept = [...banner.shadowRoot.querySelectorAll('button')].find(
 			(b) => b.textContent === strings['consent.acceptAll'],
 		);
 		accept.click();
-		expect(JSON.parse(win.localStorage.getItem('ss-growth-consent'))).toMatchObject({
+		expect(JSON.parse(win.localStorage.getItem('shelfway-growth-consent'))).toMatchObject({
 			categories: { analytics: true, marketing: true },
 		});
 		win.dispatchEvent(
-			new win.CustomEvent('ss:add_to_cart', {
+			new win.CustomEvent('shelfway:add_to_cart', {
 				detail: { currency: 'USD', value: 2500, items: [{ id: 'prod_1', price: 1250, quantity: 2 }] },
 			}),
 		);
 		win.dispatchEvent(
-			new win.CustomEvent('ss:purchase', {
+			new win.CustomEvent('shelfway:purchase', {
 				detail: { orderId: 'ord_1', currency: 'USD', value: 2500, items: [{ id: 'prod_1', price: 1250, quantity: 2 }] },
 			}),
 		);
@@ -218,10 +218,10 @@ describe('Growth on the real Portal', () => {
 		expect(answers.filter((answer) => answer.startsWith('/v1/collect')).every((a) => a.startsWith('/v1/collect 202'))).toBe(
 			true,
 		);
-		const events = await merchantDb.collection('ss_growth_analytics_events').find({}).sort({ type: 1 }).toArray();
+		const events = await merchantDb.collection('shelfway_growth_analytics_events').find({}).sort({ type: 1 }).toArray();
 		expect(events.map((e) => e.type).sort()).toEqual(['add_to_cart', 'page_view', 'purchase', 'search', 'view_item']);
 		expect(events.every((e) => e.websiteId === websiteId && e.expiresAt instanceof Date)).toBe(true);
-		const [day] = await merchantDb.collection('ss_growth_totals').find({}).toArray();
+		const [day] = await merchantDb.collection('shelfway_growth_totals').find({}).toArray();
 		/** @param {string} metric @param {string} key */
 		const total = (metric, key) => day?.totals?.[metric]?.[`_${key}`];
 		expect(total('visits', '')?.c).toBe(1);
@@ -231,13 +231,13 @@ describe('Growth on the real Portal', () => {
 		expect(total('revenue', 'USD')).toMatchObject({ c: 1, s: 2500 });
 
 		// the same visitor back later (a new visit): the kept choice holds, no banner, the totals go up
-		const next = openPage(win.localStorage.getItem('ss-growth-consent'));
+		const next = openPage(win.localStorage.getItem('shelfway-growth-consent'));
 		await next.page.ready;
-		const again = next.win.document.querySelector('[data-ss-growth="consent_banner"]');
+		const again = next.win.document.querySelector('[data-shelfway-growth="consent_banner"]');
 		expect(again.shadowRoot.querySelector('[role="dialog"]').hasAttribute('hidden')).toBe(true);
 		next.win.dispatchEvent(new next.win.Event('pagehide'));
 		await until(() => next.answers.some((answer) => answer.startsWith('/v1/collect 202')));
-		const after = await merchantDb.collection('ss_growth_totals').findOne({});
+		const after = await merchantDb.collection('shelfway_growth_totals').findOne({});
 		expect(after?.totals.page_views._.c).toBe(2);
 	});
 
@@ -302,7 +302,7 @@ describe('Growth on the real Portal', () => {
 		const etag = String(list.headers.get('etag'));
 		const again = await sys.call('GET', '/v1/redirects/all', { token: tokens.server, headers: { 'if-none-match': etag } });
 		expect(again.status).toBe(304);
-		expect(await merchantDb.collection('ss_growth_redirects').countDocuments({ websiteId })).toBe(1);
+		expect(await merchantDb.collection('shelfway_growth_redirects').countDocuments({ websiteId })).toBe(1);
 	});
 
 	it('the SEO checklist reads the live website: samples of each kind, the rule applied, the kept report', async () => {
@@ -365,7 +365,7 @@ describe('Growth on the real Portal', () => {
 		});
 		const kept = await sys.call('GET', '/v1/admin/seo/report', { token: ticket.json.ticket, origin: ADMIN_ORIGIN });
 		expect(kept.json.checkedAt).toBe(run.json.checkedAt);
-		expect(await merchantDb.collection('ss_growth_seo_reports').countDocuments({ websiteId })).toBe(1);
+		expect(await merchantDb.collection('shelfway_growth_seo_reports').countDocuments({ websiteId })).toBe(1);
 	});
 
 	it('charges the switched-on features by the hour', async () => {

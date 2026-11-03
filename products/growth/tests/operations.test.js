@@ -45,9 +45,13 @@ describe('database operations per page view (RT-2)', () => {
 
 	it('a landing page view with every detail costs one insert and one update (and, the first of the day, one read of its counts)', async () => {
 		const first = await env.operationsDuring(landing);
-		expect(first.names).toEqual(['aggregate ss_growth_totals', 'insert ss_growth_analytics_events', 'update ss_growth_totals']);
+		expect(first.names).toEqual([
+			'aggregate shelfway_growth_totals',
+			'insert shelfway_growth_analytics_events',
+			'update shelfway_growth_totals',
+		]);
 		const ops = await env.operationsDuring(landing);
-		expect(ops.names).toEqual(['insert ss_growth_analytics_events', 'update ss_growth_totals']);
+		expect(ops.names).toEqual(['insert shelfway_growth_analytics_events', 'update shelfway_growth_totals']);
 		expect(ops.total).toBe(2);
 	});
 
@@ -109,17 +113,17 @@ describe('the day’s totals (RT-2)', () => {
 			updatedAt: new Date(),
 		};
 		const room = 16 * 1024 * 1024 - BSON.calculateObjectSize(full) - 10 - 40;
-		await db.collection('ss_growth_totals').insertOne({ ...full, pad: 'x'.repeat(room) });
+		await db.collection('shelfway_growth_totals').insertOne({ ...full, pad: 'x'.repeat(room) });
 		const ops = await env.operationsDuring(() =>
 			env.collect([{ type: 'page_view', path: `/${'long-path-'.repeat(20)}`, visit: true }]),
 		);
 		expect(ops.names).toEqual([
-			'aggregate ss_growth_totals',
-			'insert ss_growth_analytics_events',
-			'update ss_growth_totals',
-			'update ss_growth_totals',
+			'aggregate shelfway_growth_totals',
+			'insert shelfway_growth_analytics_events',
+			'update shelfway_growth_totals',
+			'update shelfway_growth_totals',
 		]);
-		expect(await db.collection('ss_growth_totals').countDocuments({ day: '2026-10-03' })).toBe(2);
+		expect(await db.collection('shelfway_growth_totals').countDocuments({ day: '2026-10-03' })).toBe(2);
 		const report = await (await env.call('GET', '/v1/analytics?from=2026-10-03&to=2026-10-03', { token: env.server })).json();
 		expect(report.totals).toEqual({ visits: 3, pageViews: 6 });
 		expect(report.days).toEqual([{ day: '2026-10-03', visits: 3, pageViews: 6 }]);
@@ -130,10 +134,10 @@ describe('the day’s totals (RT-2)', () => {
 		env.advance(86_400_000);
 		const db = await env.merchantDb();
 		await db
-			.collection('ss_growth_totals')
+			.collection('shelfway_growth_totals')
 			.insertOne({ websiteId: env.websiteId, day: '2026-10-04', part: 0, totals: { page_views: 'broken' } });
 		const answer = await env.collect([{ type: 'page_view', path: '/', visit: false }]);
 		expect(answer.status).toBe(500);
-		expect(await db.collection('ss_growth_totals').countDocuments({ day: '2026-10-04' })).toBe(1);
+		expect(await db.collection('shelfway_growth_totals').countDocuments({ day: '2026-10-04' })).toBe(1);
 	});
 });

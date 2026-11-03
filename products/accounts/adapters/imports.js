@@ -6,11 +6,11 @@
  * refused in the dry run too; a two-step secret is sealed at once (A8) and the phone's reversed national number derived
  * as the store does. A user or role request without a `createdAt` from the source keeps the stored one, else gets the
  * import's time; a user's `roleSince` is the source's, else its `createdAt`. `finish` derives nothing (every derived
- * value is set per record) and reports what points nowhere; the sums are what `ss-import verify` compares. Nothing is
+ * value is set per record) and reports what points nowhere; the sums are what `shelfway-import verify` compares. Nothing is
  * sent: no message, event, alert or activity copy, no timer.
  * @module
  */
-import { websiteCallingCode } from '@ss/contracts/phone';
+import { websiteCallingCode } from '@shelfway/contracts/phone';
 import {
 	checkImportedCopy,
 	checkImportedField,
@@ -23,8 +23,8 @@ import { OWNER_ROLE, ROLE_TEMPLATES, SIGN_UP_TEMPLATE } from '../core/roles.js';
 import { isPasswordHash } from './crypto.js';
 import { createStore, phoneReversedOf } from './store.js';
 
-/** @typedef {import('@ss/app-kit').ImportCollection} ImportCollection */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').ImportCollection} ImportCollection */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {Parameters<ImportCollection['check']>[1]} CheckContext */
 /** @typedef {import('../core/imports.js').ImportError} ImportError */
 
@@ -33,7 +33,7 @@ import { createStore, phoneReversedOf } from './store.js';
  * @typedef {object} ImportDeps
  * @property {(websiteId: string, feature: string) => Promise<Record<string, unknown>>} settings a feature's settings
  *   (or a shared group's, such as `phone`)
- * @property {(websiteId: string) => Promise<import('@ss/contracts').WebsiteSettings>} website the website's settings from the
+ * @property {(websiteId: string) => Promise<import('@shelfway/contracts').WebsiteSettings>} website the website's settings from the
  *   Portal (its phone rules)
  * @property {(websiteId: string, userId: string, input: { secret: string, recoveryHashes: string[] }) => unknown} twoStepFromImport
  *   two-step sign-in with the secret sealed (A8)
@@ -182,7 +182,7 @@ const createdAtOf = async (ctx, collection, id) => {
 /**
  * The kit's `imports` option.
  * @param {ImportDeps} deps
- * @returns {import('@ss/app-kit').ImportOptions}
+ * @returns {import('@shelfway/app-kit').ImportOptions}
  */
 export const createImportOptions = (deps) => ({
 	collections: {
@@ -272,7 +272,7 @@ export const createImportOptions = (deps) => ({
 	},
 
 	/**
-	 * The sums `ss-import verify` compares with the source: staff (users whose role grants a permission), users with a
+	 * The sums `shelfway-import verify` compares with the source: staff (users whose role grants a permission), users with a
 	 * password and with two-step, users per role, and open role requests.
 	 * @param {any} ctx
 	 */

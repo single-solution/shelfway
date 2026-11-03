@@ -11,8 +11,8 @@
  * media route's image addresses change once, and search engines read the new ones from the sitemap).
  * @module
  */
-import { createSealer as createKitSealer, resealEach } from '@ss/app-kit';
-import { randomToken } from '@ss/protocol';
+import { createSealer as createKitSealer, resealEach } from '@shelfway/app-kit';
+import { randomToken } from '@shelfway/protocol';
 
 /**
  * The sealer of Ecommerce's own secrets.
@@ -22,10 +22,10 @@ import { randomToken } from '@ss/protocol';
 export const createSealer = (encryptionKey, previousKey = null) =>
 	createKitSealer({ encryptionKey, previousKey, label: 'ecommerce' });
 
-/** @typedef {import('@ss/app-kit').Sealer} Sealer */
+/** @typedef {import('@shelfway/app-kit').Sealer} Sealer */
 
 /**
- * @param {{ store: import('@ss/app-kit').Store, sealer: Sealer, now: () => number }} options
+ * @param {{ store: import('@shelfway/app-kit').Store, sealer: Sealer, now: () => number }} options
  */
 export const createSiteSecrets = ({ store, sealer, now }) => {
 	/** @param {string} websiteId */
@@ -76,7 +76,7 @@ export const createSiteSecrets = ({ store, sealer, now }) => {
 		},
 		/**
 		 * The Owner's Re-seal (RT-14): every website's lock secret sealed again with the current key.
-		 * @returns {Promise<import('@ss/app-kit').ResealCounts>}
+		 * @returns {Promise<import('@shelfway/app-kit').ResealCounts>}
 		 */
 		reseal: async () => {
 			const docs = await store.list('settings', { kind: 'ecommerce', key: 'secret.locks' }, { limit: 100_000 });

@@ -1,6 +1,6 @@
 'use client';
 /**
- * `@ss/ui/seo-preview` — the search result and share card preview of a page (R7 #105), framework-free so the product
+ * `@shelfway/ui/seo-preview` — the search result and share card preview of a page (R7 #105), framework-free so the product
  * widgets (plain DOM in a Shadow DOM) and the React dashboards (`<SeoPreview>`) draw the same part.
  *
  * The title and description are measured by their width in pixels, never by counting characters, so the preview holds
@@ -278,47 +278,50 @@ export const seoPreview = (doc, input, options = {}) => {
 		for (const [name, value] of Object.entries(attributes)) node.setAttribute(name, value);
 		return node;
 	};
-	const node = h('div', 'ss-seo');
+	const node = h('div', 'shelfway-seo');
 	/** @param {SeoPreviewInput} next */
 	const draw = (next) => {
 		const model = seoPreviewModel(next, measure);
-		const result = h('section', 'ss-seo-result', undefined, { 'data-part': 'result', 'aria-label': words.result });
-		const site = h('div', 'ss-seo-site');
+		const result = h('section', 'shelfway-seo-result', undefined, { 'data-part': 'result', 'aria-label': words.result });
+		const site = h('div', 'shelfway-seo-site');
 		const names = h('span');
-		names.append(h('span', 'ss-seo-name', model.site), h('span', 'ss-seo-trail', model.trail));
-		site.append(h('span', 'ss-seo-icon', charactersOf(model.site)[0]?.toUpperCase() ?? '', { 'aria-hidden': 'true' }), names);
+		names.append(h('span', 'shelfway-seo-name', model.site), h('span', 'shelfway-seo-trail', model.trail));
+		site.append(
+			h('span', 'shelfway-seo-icon', charactersOf(model.site)[0]?.toUpperCase() ?? '', { 'aria-hidden': 'true' }),
+			names,
+		);
 		const meter = h(
 			'p',
-			'ss-seo-meter',
+			'shelfway-seo-meter',
 			[
 				fill(words.titleWidth, { width: Math.round(model.title.width), limit: model.title.limit }),
 				fill(words.descriptionWidth, { width: Math.round(model.description.width), limit: model.description.limit }),
 			].join(' · '),
 		);
 		result.append(
-			h('p', 'ss-seo-head', words.result),
+			h('p', 'shelfway-seo-head', words.result),
 			site,
 			model.title.empty
-				? h('p', 'ss-seo-title ss-seo-empty', words.noTitle)
-				: h('p', 'ss-seo-title', model.title.text, { dir: 'auto' }),
+				? h('p', 'shelfway-seo-title shelfway-seo-empty', words.noTitle)
+				: h('p', 'shelfway-seo-title', model.title.text, { dir: 'auto' }),
 			model.description.empty
-				? h('p', 'ss-seo-text ss-seo-empty', words.noDescription)
-				: h('p', 'ss-seo-text', model.description.text, { dir: 'auto' }),
+				? h('p', 'shelfway-seo-text shelfway-seo-empty', words.noDescription)
+				: h('p', 'shelfway-seo-text', model.description.text, { dir: 'auto' }),
 			meter,
 		);
 		const warnings = [model.title.cut ? words.titleCut : '', model.description.cut ? words.descriptionCut : ''].filter(Boolean);
 		if (warnings.length > 0) {
-			const warn = h('p', 'ss-seo-warn', undefined, { role: 'status' });
+			const warn = h('p', 'shelfway-seo-warn', undefined, { role: 'status' });
 			warn.append(...warnings.map((text) => h('span', '', text)));
 			result.append(warn);
 		}
-		const card = h('section', 'ss-seo-card', undefined, { 'data-part': 'card', 'aria-label': words.card });
-		const frame = h('div', 'ss-seo-frame');
-		const body = h('div', 'ss-seo-body');
+		const card = h('section', 'shelfway-seo-card', undefined, { 'data-part': 'card', 'aria-label': words.card });
+		const frame = h('div', 'shelfway-seo-frame');
+		const body = h('div', 'shelfway-seo-body');
 		body.append(
-			h('span', 'ss-seo-domain', model.card.domain),
-			h('strong', 'ss-seo-ctitle', model.card.title || model.site, { dir: 'auto' }),
-			h('span', 'ss-seo-cdesc', model.card.description, { dir: 'auto' }),
+			h('span', 'shelfway-seo-domain', model.card.domain),
+			h('strong', 'shelfway-seo-ctitle', model.card.title || model.site, { dir: 'auto' }),
+			h('span', 'shelfway-seo-cdesc', model.card.description, { dir: 'auto' }),
 		);
 		frame.append(
 			model.card.image
@@ -329,57 +332,57 @@ export const seoPreview = (doc, input, options = {}) => {
 						decoding: 'async',
 						referrerpolicy: 'no-referrer',
 					})
-				: h('div', 'ss-seo-noimage', words.noImage),
+				: h('div', 'shelfway-seo-noimage', words.noImage),
 			body,
 		);
-		card.append(h('p', 'ss-seo-head', words.card), frame);
+		card.append(h('p', 'shelfway-seo-head', words.card), frame);
 		node.replaceChildren(result, card);
 	};
 	draw(input);
 	return { node, update: draw };
 };
 
-const DARK = '--ss-seo-link: #99c3ff; --ss-seo-muted: #bdc1c6; --ss-seo-warn: #fbbf24;';
+const DARK = '--shelfway-seo-link: #99c3ff; --shelfway-seo-muted: #bdc1c6; --shelfway-seo-warn: #fbbf24;';
 
 /** The preview's styles: Google's colors in light and dark (a widget's mode, the dashboard theme or the device). */
 export const SEO_PREVIEW_CSS = `
-.ss-seo { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); margin: 12px 0 0;
-  --ss-seo-link: #1a0dab; --ss-seo-muted: #4d5156; --ss-seo-warn: #b45309; --ss-seo-line: rgba(127, 127, 127, 0.3);
-  --ss-seo-panel: rgba(127, 127, 127, 0.08); }
-:host([data-ss-mode='dark']) .ss-seo { ${DARK} }
-:root[data-theme='dark'] .ss-seo { ${DARK} }
-@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .ss-seo { ${DARK} } }
-.ss-seo > section { min-width: 0; border: 1px solid var(--ss-seo-line); border-radius: var(--ss-radius, 0.35rem); padding: 12px; }
-.ss-seo p { margin: 0; }
-.ss-seo .ss-seo-head { margin: 0 0 8px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ss-seo-muted); }
-.ss-seo-result { font-family: arial, sans-serif; }
-.ss-seo-site { display: flex; gap: 8px; align-items: center; min-width: 0; }
-.ss-seo-site > span:last-child { display: grid; min-width: 0; }
-.ss-seo-icon { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--ss-seo-panel); font-size: 12px; font-weight: 700; }
-.ss-seo-name, .ss-seo-trail, .ss-seo-domain { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ss-seo-name { font-size: 14px; }
-.ss-seo-trail { font-size: 12px; color: var(--ss-seo-muted); }
-.ss-seo .ss-seo-title { margin: 6px 0 2px; font-size: 20px; line-height: 1.3; color: var(--ss-seo-link); overflow-wrap: anywhere; }
-.ss-seo-text { font-size: 14px; line-height: 1.58; color: var(--ss-seo-muted); overflow-wrap: anywhere; }
-.ss-seo-empty { font-style: italic; }
-.ss-seo .ss-seo-meter { margin: 8px 0 0; font-size: 12px; color: var(--ss-seo-muted); }
-.ss-seo .ss-seo-warn { margin: 4px 0 0; font-size: 12px; color: var(--ss-seo-warn); }
-.ss-seo-warn span { display: block; }
-.ss-seo-frame { overflow: hidden; border: 1px solid var(--ss-seo-line); border-radius: var(--ss-radius, 0.35rem); }
-.ss-seo-frame img, .ss-seo-noimage { display: block; width: 100%; aspect-ratio: 1.91 / 1; object-fit: cover; background: var(--ss-seo-panel); }
-.ss-seo-noimage { display: grid; place-items: center; font-size: 12px; color: var(--ss-seo-muted); }
-.ss-seo-body { display: grid; gap: 2px; padding: 8px 12px; background: var(--ss-seo-panel); }
-.ss-seo-domain { font-size: 12px; text-transform: uppercase; color: var(--ss-seo-muted); }
-.ss-seo-ctitle, .ss-seo-cdesc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
-.ss-seo-ctitle { font-size: 15px; }
-.ss-seo-cdesc { font-size: 13px; color: var(--ss-seo-muted); }
+.shelfway-seo { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); margin: 12px 0 0;
+  --shelfway-seo-link: #1a0dab; --shelfway-seo-muted: #4d5156; --shelfway-seo-warn: #b45309; --shelfway-seo-line: rgba(127, 127, 127, 0.3);
+  --shelfway-seo-panel: rgba(127, 127, 127, 0.08); }
+:host([data-shelfway-mode='dark']) .shelfway-seo { ${DARK} }
+:root[data-theme='dark'] .shelfway-seo { ${DARK} }
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .shelfway-seo { ${DARK} } }
+.shelfway-seo > section { min-width: 0; border: 1px solid var(--shelfway-seo-line); border-radius: var(--shelfway-radius, 0.35rem); padding: 12px; }
+.shelfway-seo p { margin: 0; }
+.shelfway-seo .shelfway-seo-head { margin: 0 0 8px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--shelfway-seo-muted); }
+.shelfway-seo-result { font-family: arial, sans-serif; }
+.shelfway-seo-site { display: flex; gap: 8px; align-items: center; min-width: 0; }
+.shelfway-seo-site > span:last-child { display: grid; min-width: 0; }
+.shelfway-seo-icon { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--shelfway-seo-panel); font-size: 12px; font-weight: 700; }
+.shelfway-seo-name, .shelfway-seo-trail, .shelfway-seo-domain { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.shelfway-seo-name { font-size: 14px; }
+.shelfway-seo-trail { font-size: 12px; color: var(--shelfway-seo-muted); }
+.shelfway-seo .shelfway-seo-title { margin: 6px 0 2px; font-size: 20px; line-height: 1.3; color: var(--shelfway-seo-link); overflow-wrap: anywhere; }
+.shelfway-seo-text { font-size: 14px; line-height: 1.58; color: var(--shelfway-seo-muted); overflow-wrap: anywhere; }
+.shelfway-seo-empty { font-style: italic; }
+.shelfway-seo .shelfway-seo-meter { margin: 8px 0 0; font-size: 12px; color: var(--shelfway-seo-muted); }
+.shelfway-seo .shelfway-seo-warn { margin: 4px 0 0; font-size: 12px; color: var(--shelfway-seo-warn); }
+.shelfway-seo-warn span { display: block; }
+.shelfway-seo-frame { overflow: hidden; border: 1px solid var(--shelfway-seo-line); border-radius: var(--shelfway-radius, 0.35rem); }
+.shelfway-seo-frame img, .shelfway-seo-noimage { display: block; width: 100%; aspect-ratio: 1.91 / 1; object-fit: cover; background: var(--shelfway-seo-panel); }
+.shelfway-seo-noimage { display: grid; place-items: center; font-size: 12px; color: var(--shelfway-seo-muted); }
+.shelfway-seo-body { display: grid; gap: 2px; padding: 8px 12px; background: var(--shelfway-seo-panel); }
+.shelfway-seo-domain { font-size: 12px; text-transform: uppercase; color: var(--shelfway-seo-muted); }
+.shelfway-seo-ctitle, .shelfway-seo-cdesc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
+.shelfway-seo-ctitle { font-size: 15px; }
+.shelfway-seo-cdesc { font-size: 13px; color: var(--shelfway-seo-muted); }
 `;
 
 /** @param {Document} doc */
 const addStyles = (doc) => {
-	if (doc.head.querySelector('style[data-ss-seo-preview]')) return;
+	if (doc.head.querySelector('style[data-shelfway-seo-preview]')) return;
 	const style = doc.createElement('style');
-	style.setAttribute('data-ss-seo-preview', '');
+	style.setAttribute('data-shelfway-seo-preview', '');
 	style.textContent = SEO_PREVIEW_CSS;
 	doc.head.append(style);
 };

@@ -5,13 +5,13 @@
  * degrade to empty values. Loaders never throw for API failures. Query-string inputs are validated here; anything malformed is ignored.
  * @module
  */
-import { isId } from '@ss/contracts';
+import { isId } from '@shelfway/contracts';
 import { firstFailure, itemsOf, loadSetup, loadWebsiteRows, loadWebsiteSettings, orElse } from '../loaders.js';
 import { adminApi as paths, merchantFilter } from './paths.js';
 import { adminCan } from '../../infra/rbac.js';
 
 /** @typedef {import('../api.js').ConsoleApi} ConsoleApi */
-/** @typedef {import('@ss/ui/problems').Problem} Problem */
+/** @typedef {import('@shelfway/ui/problems').Problem} Problem */
 /** @typedef {{ ok: false, status: number, problem: Problem }} LoadFailure */
 /**
  * @template T

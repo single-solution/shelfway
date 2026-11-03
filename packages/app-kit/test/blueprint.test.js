@@ -1,8 +1,8 @@
-import { validateManifest, validateProductBlueprint } from '@ss/contracts';
+import { validateManifest, validateProductBlueprint } from '@shelfway/contracts';
 import { describe, expect, it } from 'vitest';
 import { HIDDEN, SECRET_MIN_LENGTH, checkAdditions, hideSecrets, summarizeList, withDependencies } from '../src/blueprint.js';
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
-import { createSigner, generateSigningKey, signPortalCall } from '@ss/protocol';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
+import { createSigner, generateSigningKey, signPlatformCall } from '@shelfway/protocol';
 import { createProduct } from '../src/index.js';
 import { BASE, DOMAIN, ENCRYPTION_KEY, SECRET, manifest, setup } from './helpers.js';
 
@@ -344,7 +344,7 @@ describe('GET /v1/blueprint (Portal call)', () => {
 		expect((await s.call('GET', target)).status).toBe(401);
 		expect((await s.call('GET', target, { token: s.server.token })).status).toBe(401);
 		expect((await s.call('GET', target, { headers: await s.portal.signCall('other', 'GET', target) })).status).toBe(401);
-		const forged = await signPortalCall({
+		const forged = await signPlatformCall({
 			signer: createSigner((await generateSigningKey({ kid: 'portal-1' })).privateJwk),
 			audience: 'notes',
 			method: 'GET',

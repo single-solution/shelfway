@@ -21,13 +21,13 @@ Three variables, and one optional while the encryption key is changed (`.env.exa
 Each deployable has its own port, so all run at once: the Portal 3000, Accounts 3001, Notifications 3002, Chat 3003,
 Payments 3004, Ecommerce 3005, Growth 3006. This product runs on **3001**.
 
-1. One local MongoDB for everything (keep it running): `pnpm --filter @ss/platform db:local` (kept in
+1. One local MongoDB for everything (keep it running): `pnpm --filter @shelfway/platform db:local` (kept in
    `platform/.mongo-data`) or `db:memory` (lost on stop). Start the Portal as its README says.
 2. `products/accounts/.env.local` (git-ignored), each secret random and different (make one with
    `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`):
 
    ```bash
-   MONGODB_URI=mongodb://127.0.0.1:27999/ss_accounts?replicaSet=testset
+   MONGODB_URI=mongodb://127.0.0.1:27999/shelfway_accounts?replicaSet=testset
    CONNECT_SECRET=<random>
    ENCRYPTION_KEY=<random>
    ```
@@ -53,13 +53,13 @@ Feature `import` (PLAN.md 0.8.10 K10; switched on by our admins for a migration,
 `POST /v1/import/finish` and `GET /v1/import/status`. Checks are strict (an unknown field, `websiteId` included, is
 refused by name; text over a limit is refused, never cut); times are ISO-8601 with their zone. Nothing is sent. Order:
 
-| Collection | Key   | Stored in              | Example record                                                                                                                                                                                                             |
-| ---------- | ----- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `roles`    | `key` | `ss_accounts_roles`    | `{"key":"member","name":"Member","permissions":[],"rank":800}`                                                                                                                                                             |
-| `fields`   | `key` | `ss_accounts_fields`   | `{"key":"birthday","label":"Birthday","type":"date"}`                                                                                                                                                                      |
-| `users`    | `id`  | `ss_accounts_users`    | `{"id":"usr_65f0000000000000000000a3","name":"Mina Member","phone":"+447700900123","phoneVerified":true,"role":"member","roleSince":"2024-02-01T00:00:00Z","passwordHash":"$2b$12$…","createdAt":"2023-12-01T00:00:00Z"}`  |
-| `requests` | `id`  | `ss_accounts_requests` | `{"id":"rrq_65f0000000000000000000b1","role":"member","name":"Nora New","phone":"+447700900456","status":"pending","createdAt":"2024-07-01T00:00:00Z"}`                                                                    |
-| `copies`   | `id`  | `ss_accounts_copies`   | `{"id":"act_65f0000000000000000000c1","productId":"ecommerce","actor":{"kind":"user","id":"usr_…","name":"Sara Staff"},"action":"order.status_changed","target":"ord_…","label":"Order 1042","at":"2024-05-02T10:00:00Z"}` |
+| Collection | Key   | Stored in                    | Example record                                                                                                                                                                                                             |
+| ---------- | ----- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `roles`    | `key` | `shelfway_accounts_roles`    | `{"key":"member","name":"Member","permissions":[],"rank":800}`                                                                                                                                                             |
+| `fields`   | `key` | `shelfway_accounts_fields`   | `{"key":"birthday","label":"Birthday","type":"date"}`                                                                                                                                                                      |
+| `users`    | `id`  | `shelfway_accounts_users`    | `{"id":"usr_65f0000000000000000000a3","name":"Mina Member","phone":"+447700900123","phoneVerified":true,"role":"member","roleSince":"2024-02-01T00:00:00Z","passwordHash":"$2b$12$…","createdAt":"2023-12-01T00:00:00Z"}`  |
+| `requests` | `id`  | `shelfway_accounts_requests` | `{"id":"rrq_65f0000000000000000000b1","role":"member","name":"Nora New","phone":"+447700900456","status":"pending","createdAt":"2024-07-01T00:00:00Z"}`                                                                    |
+| `copies`   | `id`  | `shelfway_accounts_copies`   | `{"id":"act_65f0000000000000000000c1","productId":"ecommerce","actor":{"kind":"user","id":"usr_…","name":"Sara Staff"},"action":"order.status_changed","target":"ord_…","label":"Order 1042","at":"2024-05-02T10:00:00Z"}` |
 
 - Roles first: a user's or request's role must exist (a ready-made template not deleted, or imported before), so a dry
   run of users needs the roles imported. A template key may be imported with the merchant's changes; Owner keeps rank
@@ -79,4 +79,4 @@ at } }` and `tags` the merchant's labels; `passwordHash` is kept as given in a f
 ## Scripts
 
 `pnpm dev` and `pnpm build` regenerate `openapi.json` and `server/widget-script.js` first; `pnpm check` runs format, lint,
-typecheck and tests with coverage; `pnpm validate` runs `ss app validate`.
+typecheck and tests with coverage; `pnpm validate` runs `shelfway app validate`.

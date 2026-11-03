@@ -4,7 +4,7 @@ import { DATABASE_DEADLINES, connectBeforeUse, databaseClientOptions, isDatabase
 describe('databaseClientOptions', () => {
 	it('is a small pool with the deadlines, and the app name when given', () => {
 		expect(databaseClientOptions()).toEqual({ maxPoolSize: 5, minPoolSize: 0, maxIdleTimeMS: 60_000, ...DATABASE_DEADLINES });
-		expect(databaseClientOptions({ maxPoolSize: 2, appName: 'ss-portal' })).toEqual({
+		expect(databaseClientOptions({ maxPoolSize: 2, appName: 'shelfway-platform' })).toEqual({
 			maxPoolSize: 2,
 			minPoolSize: 0,
 			maxIdleTimeMS: 60_000,
@@ -12,7 +12,7 @@ describe('databaseClientOptions', () => {
 			connectTimeoutMS: 5_000,
 			waitQueueTimeoutMS: 10_000,
 			socketTimeoutMS: 10_000,
-			appName: 'ss-portal',
+			appName: 'shelfway-platform',
 		});
 		expect(databaseClientOptions()).not.toBe(databaseClientOptions());
 	});

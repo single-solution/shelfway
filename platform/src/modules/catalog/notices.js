@@ -1,19 +1,19 @@
 /**
  * Notices (PLAN 0.4.12): signed Portal → product messages `{ type, websiteId?, subject? }` posted to
- * `<base>/.well-known/ss-events` with `@ss/protocol` `signNotice` (the Portal key). Each notice is queued in
+ * `<base>/.well-known/shelfway-events` with `@shelfway/protocol` `signNotice` (the Portal key). Each notice is queued in
  * `catalog_notices` and sent right after the request that caused it (outside a request: at once). A product that does
  * not answer 2xx keeps its notices; they are sent again, oldest first, right after that product's next call to any
  * `/v1/product/*` route, and dropped once it answers 2xx. An identical notice already waiting is not queued twice.
  * @module
  */
-import { createId } from '@ss/contracts';
-import { isNetError, safeFetch as netFetch } from '@ss/net';
-import { NOTICE_PATH, signNotice } from '@ss/protocol';
+import { createId } from '@shelfway/contracts';
+import { isNetError, safeFetch as netFetch } from '@shelfway/net';
+import { NOTICE_PATH, signNotice } from '@shelfway/protocol';
 import { afterResponse } from '../../infra/request-scope.js';
 import { NOTICES, PRODUCTS } from './schema.js';
 
 /** @typedef {import('../../infra/modules.js').ModuleContext} ModuleContext */
-/** @typedef {import('@ss/net').OutboundPolicy} OutboundPolicy */
+/** @typedef {import('@shelfway/net').OutboundPolicy} OutboundPolicy */
 /** @typedef {import('./service.js').SafeFetch} SafeFetch */
 /**
  * @typedef {{ type: 'status.changed' | 'token.revoked' | 'website.deleted', websiteId: string }

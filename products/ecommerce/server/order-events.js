@@ -19,7 +19,7 @@
  * A failing message, event or alert never fails what triggered it (hooks never throw).
  * @module
  */
-import { defineRoute } from '@ss/app-kit';
+import { defineRoute } from '@shelfway/app-kit';
 import { productTypes } from '../adapters/catalog-store.js';
 import { countsForStock, stockEventOf } from '../core/catalog-query.js';
 import { STAFF_ALERT_MAX_RECIPIENTS } from '../core/limits.js';
@@ -96,7 +96,7 @@ export const createOrderEvents = (product, service) => {
 		const prepared = await product.staffAlerts.prepare(
 			{ websiteId: s.websiteId },
 			{
-				feature: 'checkout',
+				feature: 'staff_alerts',
 				event,
 				values,
 				allStaff: byEvent[event] ?? ALL_STAFF_PERMISSIONS.placed,
@@ -214,7 +214,7 @@ export const createOrderEvents = (product, service) => {
 	/**
 	 * The products sold in a unit of their own among some (their stock counts thousandths of their unit, so the
 	 * low-stock level is compared in their units).
-	 * @param {Site} s @param {import('@ss/app-kit').WebsiteData} data
+	 * @param {Site} s @param {import('@shelfway/app-kit').WebsiteData} data
 	 * @param {Array<{ id: string, kind: string, typeKey?: string | null, categoryIds: string[] }>} rows
 	 * @returns {Promise<Set<string>>}
 	 */
@@ -321,7 +321,7 @@ export const createOrderEvents = (product, service) => {
 				path: '/v1/events',
 				auth: 'server',
 				permission: 'orders.read',
-				feature: 'catalog',
+				feature: 'events',
 				rateLimit: SERVER_LIMITS,
 				handler: (ctx) => product.events.list(ctx),
 			}),
@@ -330,7 +330,7 @@ export const createOrderEvents = (product, service) => {
 				path: '/v1/events/count',
 				auth: 'server',
 				permission: 'orders.read',
-				feature: 'catalog',
+				feature: 'events',
 				rateLimit: SERVER_LIMITS,
 				handler: (ctx) => product.events.count(ctx),
 			}),
@@ -339,7 +339,7 @@ export const createOrderEvents = (product, service) => {
 				path: '/v1/events/counts',
 				auth: 'server',
 				permission: 'orders.read',
-				feature: 'catalog',
+				feature: 'events',
 				rateLimit: SERVER_LIMITS,
 				handler: (ctx) => product.events.counts(ctx),
 			}),

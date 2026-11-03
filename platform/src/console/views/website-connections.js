@@ -28,14 +28,14 @@ import {
 	SettingsCard,
 	Switch,
 	useToast,
-} from '@ss/ui';
-import { AI_PROVIDERS } from '@ss/contracts';
+} from '@shelfway/ui';
+import { AI_PROVIDERS } from '@shelfway/contracts';
 import { WEBSITE_SETTINGS as T } from '../../texts/console.js';
 import { apiConfirm } from '../client.js';
 import { api } from '../paths.js';
 import { ConfirmOtp, confirmationErrors } from './common.js';
 
-/** @typedef {import('@ss/ui/problems').Problem} Problem */
+/** @typedef {import('@shelfway/ui/problems').Problem} Problem */
 /**
  * What the page shows of the website's connections (`GET …/connections`): never a value.
  * @typedef {object} ConnectionsView

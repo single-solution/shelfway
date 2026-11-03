@@ -1,5 +1,5 @@
 /**
- * Pure helpers behind {@link SchemaForm}: read a feature's settings schema (the `@ss/contracts` settings subset: an object
+ * Pure helpers behind {@link SchemaForm}: read a feature's settings schema (the `@shelfway/contracts` settings subset: an object
  * schema whose top-level properties are the settings, each a string, integer, number, boolean or list) with its `x-ui`
  * hints, and turn it into grouped field descriptors in the schema's order. The product checks every value when it is
  * saved; its field errors are passed to the form.

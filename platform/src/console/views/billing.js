@@ -5,7 +5,7 @@
  * are UTC and labeled so; single timestamps show in the viewer's local time.
  * @module
  */
-import { Badge, BarChart, Callout, Card, EmptyState, FiguresTable, LocalTime, Stat, StatGrid, formatCredits } from '@ss/ui';
+import { Badge, BarChart, Callout, Card, EmptyState, FiguresTable, LocalTime, Stat, StatGrid, formatCredits } from '@shelfway/ui';
 import { BILLING } from '../../texts/console.js';
 
 /** @typedef {Array<{ key: string, header: string, kind?: 'number' | 'money' | 'date' | 'status', sortable?: boolean, low?: boolean, render?: (row: any) => import('react').ReactNode }>} Columns */

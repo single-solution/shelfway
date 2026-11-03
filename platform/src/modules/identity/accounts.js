@@ -162,7 +162,7 @@ export const createAccounts = (deps) => {
 		await repo.dropTokens('setup', `${kind}:${id}`);
 		const ttlMs = SETUP_TTL_MS[kind];
 		const token = await repo.issueToken('setup', { subject: `${kind}:${id}`, ttlMs });
-		return { link: linkFor(ctx.config.portalUrl, 'setup', token), expiresAt: new Date(ctx.now() + ttlMs).toISOString() };
+		return { link: linkFor(ctx.config.platformUrl, 'setup', token), expiresAt: new Date(ctx.now() + ttlMs).toISOString() };
 	};
 
 	/**
@@ -388,7 +388,7 @@ export const createAccounts = (deps) => {
 				await sendLater(deps, {
 					to: email,
 					template: 'password_reset',
-					data: { link: linkFor(ctx.config.portalUrl, 'password_reset', token) },
+					data: { link: linkFor(ctx.config.platformUrl, 'password_reset', token) },
 				});
 			}
 			return { status: 'reset_sent' };
@@ -517,7 +517,7 @@ export const createAccounts = (deps) => {
 			await sendLater(deps, {
 				to: email,
 				template: 'email_change_confirm',
-				data: { link: linkFor(ctx.config.portalUrl, 'email_change', token) },
+				data: { link: linkFor(ctx.config.platformUrl, 'email_change', token) },
 			});
 			await sendLater(deps, { to: doc.email, template: 'email_change_notice', data: { newEmail: email } });
 			await audit(actorOf(kind, doc), 'login.email_change_requested', targetOf(kind, doc), { meta });

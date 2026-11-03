@@ -8,7 +8,7 @@
  * (`record-section.js`); a click on a row opens its fields in place.
  * @module
  */
-import { Checkbox, Input, Select, TextArea } from '@ss/ui';
+import { Checkbox, Input, Select, TextArea } from '@shelfway/ui';
 import { RecordSection } from './record-section.js';
 import { TEXTS } from './texts.js';
 

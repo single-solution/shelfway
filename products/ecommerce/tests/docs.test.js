@@ -1,8 +1,8 @@
 import { readFile } from 'node:fs/promises';
-import { KIT_GUIDE, apiAnchor, docsOperations } from '@ss/app-kit';
-import { createMemoryStore } from '@ss/app-kit/testing';
-import { createId } from '@ss/contracts';
-import { escapeHtml as escape } from '@ss/contracts/text';
+import { KIT_GUIDE, apiAnchor, docsOperations } from '@shelfway/app-kit';
+import { createMemoryStore } from '@shelfway/app-kit/testing';
+import { createId } from '@shelfway/contracts';
+import { escapeHtml as escape } from '@shelfway/contracts/text';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import manifest from '../manifest.json' with { type: 'json' };
 import guide from '../docs/guide.json' with { type: 'json' };
@@ -41,14 +41,14 @@ describe('createSnippets', () => {
 	it('places the script and every visitor widget with its data attributes', () => {
 		expect(snippets.visitor).toContain(`<script src="${BASE}/widget.js" data-token="YOUR_BROWSER_TOKEN" async></script>`);
 		for (const widget of manifest.widgets.filter((w) => w.kind === 'visitor'))
-			expect(snippets.visitor).toContain(`data-ss-ecommerce="${widget.key}"`);
+			expect(snippets.visitor).toContain(`data-shelfway-ecommerce="${widget.key}"`);
 		expect(snippets.visitor).toContain(
-			'<div data-ss-ecommerce="product_grid" data-category="accessories" data-brand="acme" data-grade="" data-featured="" data-deal="" data-sort="newest" data-query="" data-limit="24"></div>',
+			'<div data-shelfway-ecommerce="product_grid" data-category="accessories" data-brand="acme" data-grade="" data-featured="" data-deal="" data-sort="newest" data-query="" data-limit="24"></div>',
 		);
 		expect(snippets.visitor).toContain(
-			'<div data-ss-ecommerce="product_page" data-product="blue-kettle" data-heading="h1"></div>',
+			'<div data-shelfway-ecommerce="product_page" data-product="blue-kettle" data-heading="h1"></div>',
 		);
-		expect(snippets.visitor).toContain('<div data-ss-ecommerce="cart"></div>');
+		expect(snippets.visitor).toContain('<div data-shelfway-ecommerce="cart"></div>');
 		expect(snippets.visitor).not.toContain('catalog_admin');
 	});
 
@@ -68,11 +68,11 @@ describe('createSnippets', () => {
 	it('places the admin widgets without a token and asks for tickets with the permissions', () => {
 		expect(snippets.admin).toContain(`<script src="${BASE}/widget.js"></script>`);
 		for (const key of ['catalog_admin', 'orders_admin', 'promotions_admin', 'customers_admin'])
-			expect(snippets.admin).toContain(`<div data-ss-ecommerce="${key}"></div>`);
+			expect(snippets.admin).toContain(`<div data-shelfway-ecommerce="${key}"></div>`);
 		expect(snippets.admin).toContain(`window.${WIDGET_GLOBAL}.admin({`);
 		expect(snippets.ticketNode).toContain(`fetch('${BASE}/v1/tickets'`);
 		expect(snippets.ticketNode).toContain(JSON.stringify(permissions));
-		expect(snippets.ticketNode).toContain('process.env.SS_SERVER_TOKEN');
+		expect(snippets.ticketNode).toContain('process.env.SHELFWAY_SERVER_TOKEN');
 		expect(snippets.ticketCurl).toContain(`curl -X POST '${BASE}/v1/tickets'`);
 		expect(JSON.parse(/** @type {string} */ (/-d '(.*)'$/m.exec(snippets.ticketCurl)?.[1])).permissions).toEqual(permissions);
 	});
@@ -83,7 +83,7 @@ describe('createSnippets', () => {
 			expect(code).toBe(proxyRoute(BASE, entry));
 			expect(code).toContain(`fetch('${BASE}${entry.route}'`);
 			expect(code).toContain(entry.file);
-			expect(code).toContain('SS_SERVER_TOKEN');
+			expect(code).toContain('SHELFWAY_SERVER_TOKEN');
 		}
 		expect(SITE_ROUTES.map((entry) => entry.name)).toEqual(['sitemap', 'media', 'feedXml', 'feedCsv', 'llms', 'llmsFull']);
 		expect(snippets.site.llmsFull).toContain(`'${BASE}/v1/llms-full.txt'`);
@@ -98,7 +98,7 @@ describe('createSnippets', () => {
 		expect(code).toContain('`/v1/seo/sitemaps/${encodeURIComponent(file)}`');
 		expect(code).toContain("'/v1/seo/sitemap.xml'");
 		expect(code).toContain(`fetch(\`${BASE}\${path}\``);
-		expect(code).toContain('SS_SERVER_TOKEN');
+		expect(code).toContain('SHELFWAY_SERVER_TOKEN');
 	});
 
 	it('serves images at addresses that never change through the media route (G1)', () => {
@@ -106,7 +106,7 @@ describe('createSnippets', () => {
 		expect(code).toBe(mediaRoute(BASE));
 		expect(code).toContain('app/media/[...key]/route.js');
 		expect(code).toContain(`fetch(\`${BASE}/v1/media?\${query}\``);
-		expect(code).toContain('SS_SERVER_TOKEN');
+		expect(code).toContain('SHELFWAY_SERVER_TOKEN');
 		expect(code).toContain("'cache-control': 'public, max-age=31536000, immutable'");
 	});
 
@@ -120,7 +120,7 @@ describe('createSnippets', () => {
 			'if (new URL(seo.url).pathname !== `/products/${encodeURIComponent(slug)}`) permanentRedirect(seo.url);',
 		);
 		expect(snippets.productMeta).toContain('robots: seo.robots');
-		expect(snippets.productMeta).toContain('SS_SERVER_TOKEN');
+		expect(snippets.productMeta).toContain('SHELFWAY_SERVER_TOKEN');
 	});
 
 	it('gives a listing page with its head from /v1/seo/listing (E15)', () => {
@@ -128,9 +128,9 @@ describe('createSnippets', () => {
 		expect(snippets.listingPage).toContain('robots: head.robots');
 		expect(snippets.listingPage).toContain('if (head.moved) permanentRedirect(head.moved.url);');
 		expect(snippets.listingPage).toContain('if (head.status === 404) notFound();');
-		expect(snippets.listingPage).toContain('data-ss-ecommerce="product_grid" data-category={slug}');
+		expect(snippets.listingPage).toContain('data-shelfway-ecommerce="product_grid" data-category={slug}');
 		expect(snippets.listingPage).toContain('head.faqs.map(');
-		expect(snippets.listingPage).toContain('SS_SERVER_TOKEN');
+		expect(snippets.listingPage).toContain('SHELFWAY_SERVER_TOKEN');
 	});
 
 	it('gives policy pages in cleaned HTML (E3)', () => {
@@ -157,7 +157,7 @@ describe('createSnippets', () => {
 
 	it('works without widgets', () => {
 		const bare = createSnippets({ base: BASE, widgets: [], permissions: [] });
-		expect(bare.visitor).not.toContain('data-ss-ecommerce');
+		expect(bare.visitor).not.toContain('data-shelfway-ecommerce');
 		expect(bare.admin).toContain('getTicket');
 		expect(Object.keys(WIDGET_ATTRIBUTES)).toEqual(['product_grid', 'product_page']);
 	});
@@ -172,7 +172,7 @@ describe('renderDocs', () => {
 		expect(html).toContain(`<title>${guide.title}</title>`);
 		expect(html).toContain(escape(`<script src="${BASE}/widget.js" data-token="YOUR_BROWSER_TOKEN" async></script>`));
 		expect(html).toContain(escape(`'${BASE}/v1/tickets'`));
-		expect(html).toContain('SS_SERVER_TOKEN');
+		expect(html).toContain('SHELFWAY_SERVER_TOKEN');
 		expect(html).toContain(escape(guide.localhost));
 		expect(html).toContain(escape(guide.growthEvents));
 		for (const name of Object.values(GROWTH_EVENTS)) expect(html).toContain(name);
@@ -185,7 +185,7 @@ describe('renderDocs', () => {
 			expect(html).toContain(`id="feature-${feature.key}"`);
 			expect(html).toContain(escape(feature.name));
 		}
-		for (const widget of manifest.widgets) expect(html).toContain(escape(`data-ss-ecommerce="${widget.key}"`));
+		for (const widget of manifest.widgets) expect(html).toContain(escape(`data-shelfway-ecommerce="${widget.key}"`));
 		for (const key of permissions) expect(html).toContain(`<code>${key}</code>`);
 		for (const key of Object.keys(guide.templates)) expect(html).toContain(`<code>${key}</code>`);
 		for (const key of Object.values(ORDER_TEMPLATES)) expect(html).toContain(`<code>${key}</code>`);
@@ -306,11 +306,17 @@ describe('renderDocs', () => {
 
 	it('lists the API reference from openapi.json, with one feature or a list', () => {
 		const paths = {
-			'/v1/shop/products': { get: { 'x-ss-auth': 'browser', 'x-ss-feature': 'catalog', summary: 'List <products>' } },
-			'/v1/admin/customers': {
-				get: { 'x-ss-auth': 'ticket', 'x-ss-feature': ['checkout', 'reviews'], 'x-ss-permission': 'customers.manage' },
+			'/v1/shop/products': {
+				get: { 'x-shelfway-auth': 'browser', 'x-shelfway-feature': 'catalog', summary: 'List <products>' },
 			},
-			'/v1/tickets': { post: { 'x-ss-auth': 'server' } },
+			'/v1/admin/customers': {
+				get: {
+					'x-shelfway-auth': 'ticket',
+					'x-shelfway-feature': ['checkout', 'reviews'],
+					'x-shelfway-permission': 'customers.manage',
+				},
+			},
+			'/v1/tickets': { post: { 'x-shelfway-auth': 'server' } },
 			'/v1/odd': { get: {} },
 		};
 		const page = renderDocs({ base: BASE, openapi: { paths } });
@@ -330,9 +336,9 @@ describe('renderDocs', () => {
 		expect(at).toBeGreaterThan(0);
 		const apiPart = html.slice(at);
 		for (const [method, path] of KNOWN)
-			expect(apiPart, `${method} ${path}`).toContain(`<section class="ss-api-op" id="${apiAnchor(method, path)}">`);
+			expect(apiPart, `${method} ${path}`).toContain(`<section class="shelfway-api-op" id="${apiAnchor(method, path)}">`);
 		expect(apiPart).toContain(
-			'<section class="ss-api-op" id="op-post-v1-orders-id-move"><h3><code>POST /v1/orders/{id}/move</code>',
+			'<section class="shelfway-api-op" id="op-post-v1-orders-id-move"><h3><code>POST /v1/orders/{id}/move</code>',
 		);
 		expect(apiPart).toContain('<a href="#op-post-v1-shop-orders"><code>POST /v1/shop/orders</code></a>');
 		const targets = new Set([...html.matchAll(/ id="(op-[^"]+)"/g)].map((match) => match[1]));
@@ -436,7 +442,7 @@ describe('the messages, staff alerts and events the code sends', () => {
 				headers: {
 					'x-forwarded-for': `10.77.${Math.floor(visits / 250)}.${visits % 250}`,
 					'idempotency-key': createId('key'),
-					...(signIn ? { 'ss-sign-in': signIn } : {}),
+					...(signIn ? { 'shelfway-sign-in': signIn } : {}),
 				},
 			});
 		};

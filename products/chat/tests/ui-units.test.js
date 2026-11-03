@@ -500,7 +500,7 @@ describe('proactive', () => {
 describe('entry', () => {
 	it('starts the widget from the script tag', async () => {
 		await import('../ui/entry.js');
-		expect(typeof (/** @type {any} */ (window).SSChat?.identify)).toBe('function');
+		expect(typeof (/** @type {any} */ (window).ShelfwayChat?.identify)).toBe('function');
 	});
 });
 

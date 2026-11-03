@@ -28,7 +28,7 @@ const server = (method, path, body, as = null) =>
 	env.call(method, path, {
 		token: env.server,
 		...(body === undefined ? {} : { body }),
-		headers: as ? { 'ss-actor-id': as, 'ss-actor-name': 'Staff' } : {},
+		headers: as ? { 'shelfway-actor-id': as, 'shelfway-actor-name': 'Staff' } : {},
 	});
 /** A visitor asks for the member role. @param {Record<string, unknown>} body */
 const ask = (body) => env.visitor('POST', '/v1/role-requests', { role: 'member', ...body });
@@ -47,7 +47,7 @@ const askTracked = async (body) => {
 	return { status: answer.status, json: { ...answer.json, ...(made ? { id: made.id } : {}) } };
 };
 /** The code of a setup link. @param {string} url */
-const codeOf = (url) => String(new URL(url).searchParams.get('ss_setup'));
+const codeOf = (url) => String(new URL(url).searchParams.get('shelfway_setup'));
 /** @param {unknown} linkCode */
 const lookup = (linkCode) => env.visitor('POST', '/v1/setup-links/lookup', { code: linkCode });
 /** @param {string} linkCode @param {string} password */
@@ -445,7 +445,7 @@ describe('the setup-link lookup', () => {
 		const viaServer = await env.call('POST', '/v1/setup-links/lookup', {
 			token: env.server,
 			body: { code: linkCode },
-			headers: { 'ss-visitor-ip': '198.51.100.7' },
+			headers: { 'shelfway-visitor-ip': '198.51.100.7' },
 		});
 		expect(viaServer.json).toMatchObject({ status: 'valid', name: 'Gus Hale', phoneLast4: '0590' });
 		expect(code(await env.call('POST', '/v1/setup-links/lookup', { token: env.server, body: { code: linkCode } }))).toBe(

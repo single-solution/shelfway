@@ -3,15 +3,15 @@
  * API and widgets answer, and the CSV the Payments admin widget exports. No I/O.
  * @module
  */
-import { toCsv } from '@ss/contracts/csv';
-import { normalizeEmail } from '@ss/contracts/email';
-import { isCurrency, isPositiveAmount, toDecimal } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
+import { toCsv } from '@shelfway/contracts/csv';
+import { normalizeEmail } from '@shelfway/contracts/email';
+import { isCurrency, isPositiveAmount, toDecimal } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
 import { isGateway, SUBSCRIPTION_GATEWAYS } from './gateways.js';
 import { isMethodKey } from './methods.js';
 
-// the decimal amounts the admin widgets take and show (widgets reach @ss/contracts through core/)
-export { fromDecimal, toDecimal } from '@ss/contracts/format';
+// the decimal amounts the admin widgets take and show (widgets reach @shelfway/contracts through core/)
+export { fromDecimal, toDecimal } from '@shelfway/contracts/format';
 
 /**
  * Payment statuses. `pending`: waiting for the payer or the gateway; `canceled`: the payer canceled at the gateway
@@ -554,7 +554,7 @@ export const mirrorStatus = (gateway, status) => {
 };
 
 /**
- * Payments as CSV (the Payments admin widget's export, `@ss/contracts/csv`, P8): one row per payment with the given
+ * Payments as CSV (the Payments admin widget's export, `@shelfway/contracts/csv`, P8): one row per payment with the given
  * column titles; the status and the gateway are the website's words for them (a manual payment method's own name as the
  * payment took it); the amount and the refunded amount are plain decimals with the payment's currency beside them.
  * @param {ReadonlyArray<any>} payments views

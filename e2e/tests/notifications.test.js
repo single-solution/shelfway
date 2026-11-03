@@ -6,8 +6,8 @@
  * with optional sections, written by the merchant's server, are sent.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createProductInstance, manifest, strings } from '@ss/product-notifications/product';
-import { createRoutes } from '@ss/product-notifications/routes';
+import { createProductInstance, manifest, strings } from '@shelfway/product-notifications/product';
+import { createRoutes } from '@shelfway/product-notifications/routes';
 import { HOUR, startSystem } from './helpers.js';
 
 const URL_ = 'https://notifications.test';
@@ -156,7 +156,7 @@ describe('Notifications on the real Portal', () => {
 		});
 		expect(connected.json).toMatchObject({ status: 'connected' });
 		const { server } = await sys.tokens(m.merchantId, websiteId);
-		const actor = { 'ss-actor-id': 'usr_1', 'ss-actor-name': encodeURIComponent('Alex Morgan') };
+		const actor = { 'shelfway-actor-id': 'usr_1', 'shelfway-actor-name': encodeURIComponent('Alex Morgan') };
 		// the merchant's server writes both templates (PLAN 0.8.10 N4)
 		const code = await sys.call('PUT', '/v1/templates', {
 			token: server,

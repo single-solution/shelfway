@@ -6,7 +6,7 @@
  * and the delayed-send horizon are rolling spans of time, not calendar days. No I/O.
  * @module
  */
-import { zonedParts } from '@ss/contracts/format';
+import { zonedParts } from '@shelfway/contracts/format';
 
 /** @typedef {import('./channels.js').Channel} Channel */
 

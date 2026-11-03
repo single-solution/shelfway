@@ -7,7 +7,7 @@
  * braces stays as typed. Policies without text are left out. No I/O.
  * @module
  */
-import { escapeHtml } from '@ss/contracts/text';
+import { escapeHtml } from '@shelfway/contracts/text';
 import { cleanHtml } from './catalog-content.js';
 import { durationText } from './durations.js';
 

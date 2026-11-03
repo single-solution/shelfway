@@ -1,6 +1,6 @@
 # Sisters Boutique mapping (`sisters-boutique`)
 
-`ss-import read --mapping sisters-boutique` (this folder; PLAN 0.8.10 Migration, "Per store" SB;
+`shelfway-import read --mapping sisters-boutique` (this folder; PLAN 0.8.10 Migration, "Per store" SB;
 owner go of 2026-10-14) reads SB's MongoDB as its Mongoose models keep it (`packages/db/src/models` at 8f809d8) into
 Accounts and Ecommerce, and SB's settings for Accounts, Ecommerce, Notifications, Payments and Growth. SB has no chat,
 reviews, returns, stock alerts, wishlists or analytics collection, so nothing goes to Chat or Growth records.
@@ -72,9 +72,9 @@ settings written before their PLAN item is built (E39): until then the products 
 
 **Entered by hand** (the per-store table, `send --settings <file>`): the feature switches (`FEATURES`, and `import`);
 the website's settings in the Portal (Website settings: business facts, brand, region and format, pages, alert team; set once
-for every product, so the plan writes none of them: `PORTAL_BY_HAND` lists SB's values, such as country PK, currency PKR,
+for every product, so the plan writes none of them: `PLATFORM_BY_HAND` lists SB's values, such as country PK, currency PKR,
 calling code +92, `timeZone: Asia/Karachi`, the Format and the alert team); the website's database and storage in the Portal
-(Website settings › Data and files; `PORTAL_CONNECTIONS_BY_HAND`: one string and one bucket for every product, and the bucket's public address `AWS_S3_PUBLIC_URL_BASE`); every secret; and, when SB has no saved row for them
+(Website settings › Data and files; `PLATFORM_CONNECTIONS_BY_HAND`: one string and one bucket for every product, and the bucket's public address `AWS_S3_PUBLIC_URL_BASE`); every secret; and, when SB has no saved row for them
 (`BY_HAND`), the values only its deployment holds:
 `staff_alerts.adminUrl` (`ADMIN_SITE_URL`), and the public site address for `staff_links.setupPageUrl` and
 `robots_verification.sitemaps`. After E47 is built: `loyalty.memberFlag: first_order`

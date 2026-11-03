@@ -48,7 +48,7 @@
 		"LookSource": {
 			"type": "string",
 			"enum": ["built-in", "portal"],
-			"description": "Where a theme or Format value comes from: the website's settings in the Portal, or built in while the Portal holds none yet. It cannot be saved in a product (409 managed_by_portal)."
+			"description": "Where a theme or Format value comes from: the website's settings in the Portal, or built in while the Portal holds none yet. It cannot be saved in a product (409 managed_by_platform)."
 		},
 		"Text": {
 			"type": "object",
@@ -432,7 +432,7 @@
 	},
 	"POST /v1/tickets": {
 		"summary": "Ticket for an admin widget (15 minutes)",
-		"description": "Your server asks for a ticket for the signed-in member of your staff who opens an admin widget: send their Accounts sign-in in SS-Sign-In next to the server token. The ticket is for that person and carries only the permissions of their role out of those asked for (and of switched-on features); the server token alone gets 403 needs_signed_in_staff.",
+		"description": "Your server asks for a ticket for the signed-in member of your staff who opens an admin widget: send their Accounts sign-in in Shelfway-Sign-In next to the server token. The ticket is for that person and carries only the permissions of their role out of those asked for (and of switched-on features); the server token alone gets 403 needs_signed_in_staff.",
 		"body": {
 			"type": "object",
 			"required": ["permissions", "origin"],
@@ -778,7 +778,7 @@
 	},
 	"PUT /v1/theme": {
 		"summary": "The theme is set in the Portal",
-		"description": "Always answers 409 managed_by_portal: the theme is set once for every product, in the Portal (Website settings › Brand and look).",
+		"description": "Always answers 409 managed_by_platform: the theme is set once for every product, in the Portal (Website settings › Brand and look).",
 		"body": {
 			"type": "object",
 			"additionalProperties": false,
@@ -817,7 +817,7 @@
 	},
 	"PUT /v1/format": {
 		"summary": "The Format is set in the Portal",
-		"description": "Always answers 409 managed_by_portal: the Format is set once for every product, in the Portal (Website settings › Region and format).",
+		"description": "Always answers 409 managed_by_platform: the Format is set once for every product, in the Portal (Website settings › Region and format).",
 		"body": {
 			"type": "object",
 			"additionalProperties": false,
@@ -905,7 +905,7 @@
 		}
 	},
 	"PUT /v1/connections/:name": {
-		"summary": "Save a provider key ({ value }), tested live. The database, the storage and the links are the Portal's: 409 managed_by_portal",
+		"summary": "Save a provider key ({ value }), tested live. The database, the storage and the links are the Portal's: 409 managed_by_platform",
 		"body": {
 			"type": "object",
 			"required": ["value"],
@@ -921,7 +921,7 @@
 		}
 	},
 	"DELETE /v1/connections/:name": {
-		"summary": "Remove a provider key. The database, the storage and the links are the Portal's: 409 managed_by_portal",
+		"summary": "Remove a provider key. The database, the storage and the links are the Portal's: 409 managed_by_platform",
 		"status": 204
 	},
 	"POST /v1/connections/:name/test": {

@@ -4,14 +4,14 @@
  * A website's server token runs the website; it cannot change anything by itself. A route that changes configuration
  * (settings, texts, theme, Format, lists, connections, templates, roles …) or works with business data (orders,
  * products, customers …) is called with the server token **and** the Accounts sign-in of a staff member
- * (`SS-Sign-In`), which the kit verifies for the request's own website (`ctx.signIn()`, see `identity.js`) and whose
+ * (`Shelfway-Sign-In`), which the kit verifies for the request's own website (`ctx.signIn()`, see `identity.js`) and whose
  * role must grant the route's permission. Otherwise:
  *
  * - no sign-in: 403 `needs_signed_in_staff`;
  * - a sign-in that is not valid for this website (another website's, expired, wrong signature): 401 `invalid_sign_in`;
  * - a valid sign-in whose role lacks the permission: 403 `forbidden`.
  *
- * The acting person is the one the verified sign-in names, never a header the caller wrote (the old `SS-Actor-*`
+ * The acting person is the one the verified sign-in names, never a header the caller wrote (the old `Shelfway-Actor-*`
  * headers are ignored). Changes are recorded in the activity log and in Recent changes with that person.
  *
  * A permission in a role is `<product>:<key>` (`*`: every permission, the Owner role). The kit adds the permissions
@@ -83,7 +83,7 @@ export const SIGN_IN_DETAIL = Object.freeze({
 	issuer: 'The sign-in was not issued by this website’s Accounts.',
 	algorithm: 'The sign-in uses a signature algorithm that is not accepted.',
 	subject: 'The sign-in does not name a user.',
-	malformed: 'SS-Sign-In must be the Accounts sign-in of the signed-in person.',
+	malformed: 'Shelfway-Sign-In must be the Accounts sign-in of the signed-in person.',
 });
 
 /**
@@ -101,7 +101,7 @@ export const checkStaff = async (ctx, { productId, permission, headers }) => {
 	if (found === null)
 		return problem(
 			'needs_signed_in_staff',
-			'This needs the signed-in staff member: send their Accounts sign-in in SS-Sign-In next to the server token. The server token alone cannot do it.',
+			'This needs the signed-in staff member: send their Accounts sign-in in Shelfway-Sign-In next to the server token. The server token alone cannot do it.',
 		);
 	if (!found.ok) {
 		if (found.code === 'accounts_unavailable') {

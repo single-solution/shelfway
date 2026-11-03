@@ -4,22 +4,22 @@
  * through the merchant's own provider), staff sign-in codes and setup links, role requests (repeat asks, a new link,
  * a decline, the role given at completion, the setup-link lookup), the guards, paused roles and the remember options
  * (`never` too) work through the widget (Accounts' real `widget.js` code in a browser window, jsdom) and through the
- * merchant's server (server token, `SS-Visitor-IP`, `SS-Actor-*`); an old recovery code works once.
+ * merchant's server (server token, `Shelfway-Visitor-IP`, `Shelfway-Actor-*`); an old recovery code works once.
  */
 import { createHash, pbkdf2Sync, randomBytes } from 'node:crypto';
 import bcrypt from 'bcryptjs';
 import { JSDOM } from 'jsdom';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createProductInstance, manifest, strings } from '@ss/product-accounts/product';
-import { createRoutes } from '@ss/product-accounts/routes';
+import { createProductInstance, manifest, strings } from '@shelfway/product-accounts/product';
+import { createRoutes } from '@shelfway/product-accounts/routes';
 import {
 	createProductInstance as createNotifications,
 	manifest as notifyManifest,
 	strings as notifyStrings,
-} from '@ss/product-notifications/product';
-import { createRoutes as notifyRoutes } from '@ss/product-notifications/routes';
-import { staffSignIns } from '@ss/product-accounts/testing';
-import { startWidget } from '@ss/product-accounts/widget';
+} from '@shelfway/product-notifications/product';
+import { createRoutes as notifyRoutes } from '@shelfway/product-notifications/routes';
+import { staffSignIns } from '@shelfway/product-accounts/testing';
+import { startWidget } from '@shelfway/product-accounts/widget';
 import { codeOf, savePortalSettings, startSystem } from './helpers.js';
 
 const ACCOUNTS = 'https://accounts.test';
@@ -27,7 +27,7 @@ const NOTIFY = 'https://notifications.test';
 const DOMAIN = 'members.example.com';
 const ORIGIN = `https://${DOMAIN}`;
 const ADMIN_ORIGIN = 'https://admin.members.example.com';
-const VISITOR = { 'ss-visitor-ip': '198.51.100.9' };
+const VISITOR = { 'shelfway-visitor-ip': '198.51.100.9' };
 
 /** The texts the merchant's SMS provider (Twilio) received. @type {string[]} */
 const texts = [];
@@ -51,10 +51,10 @@ let tokens;
  * A visitor's browser on a page of the website running Accounts' widget script: its fetch reaches Accounts through the
  * system with the page's Origin and every header the widget sends.
  * @param {string} key the widget to place (`sign_in`, `role_request`)
- * @param {string} [path] the page (a setup link carries `?ss_setup=`)
+ * @param {string} [path] the page (a setup link carries `?shelfway_setup=`)
  */
 const openPage = async (key, path = '/account') => {
-	const dom = new JSDOM(`<!doctype html><html><body><div data-ss-accounts="${key}"></div></body></html>`, {
+	const dom = new JSDOM(`<!doctype html><html><body><div data-shelfway-accounts="${key}"></div></body></html>`, {
 		url: `${ORIGIN}${path}`,
 		pretendToBeVisual: true,
 	});
@@ -79,7 +79,7 @@ const openPage = async (key, path = '/account') => {
 	const widget = startWidget({ window: win, script, now: sys.clock.now });
 	await widget.ready;
 	await settle();
-	const root = /** @type {ShadowRoot} */ (win.document.querySelector(`[data-ss-accounts="${key}"]`).shadowRoot);
+	const root = /** @type {ShadowRoot} */ (win.document.querySelector(`[data-shelfway-accounts="${key}"]`).shadowRoot);
 	return { win, widget, root };
 };
 
@@ -125,10 +125,15 @@ const server = {
 			token: tokens.server,
 			...(body === undefined ? {} : { body }),
 			headers:
-				headers['ss-visitor-ip'] || headers['ss-sign-in']
+				headers['shelfway-visitor-ip'] || headers['shelfway-sign-in']
 					? headers
-					: // (a user an older test named by `ss-actor-id` is signed in as themselves)
-						{ ...headers, 'ss-sign-in': await staffSignIn(headers['ss-actor-id'] ? { id: headers['ss-actor-id'] } : {}) },
+					: // (a user an older test named by `shelfway-actor-id` is signed in as themselves)
+						{
+							...headers,
+							'shelfway-sign-in': await staffSignIn(
+								headers['shelfway-actor-id'] ? { id: headers['shelfway-actor-id'] } : {},
+							),
+						},
 		}),
 };
 
@@ -164,7 +169,7 @@ beforeAll(async () => {
 	await sys.addCredits(m.merchantId, 100);
 	tokens = await sys.tokens(m.merchantId, websiteId, 'accounts');
 	const cookie = await sys.adminSession(await sys.owner(), websiteId);
-	await sys.switchFeatures(cookie, websiteId, ['sign_in', 'roles', 'two_step', 'role_requests']);
+	await sys.switchFeatures(cookie, websiteId, ['sign_in', 'roles', 'two_step', 'role_requests', 'staff_links']);
 	expect(
 		(
 			await sys.dashboard(cookie, 'PUT', `/v1/dashboard/websites/${websiteId}/settings/sign_in.methods`, {
@@ -280,7 +285,7 @@ describe('Accounts sign-in methods, staff and roles on the real Portal', () => {
 		const owner = (await server.call('GET', '/v1/users?roles=owner')).json.items.find(
 			(/** @type {any} */ user) => user.email === 'olivia@members.example.com',
 		);
-		const actor = { 'ss-actor-id': owner.id, 'ss-actor-name': 'Olivia' };
+		const actor = { 'shelfway-actor-id': owner.id, 'shelfway-actor-name': 'Olivia' };
 		const customer = await server.call('POST', '/v1/users', { name: 'Kai', phone: '07700 900233' }, actor);
 		const issued = await server.call('POST', `/v1/users/${customer.json.id}/sign-in-code`, undefined, actor);
 		expect(issued.json.code).toMatch(/^\d{6}$/);
@@ -332,7 +337,7 @@ describe('Accounts sign-in methods, staff and roles on the real Portal', () => {
 		await ask(strings['request.received']);
 		const ticket = await sys.call('POST', '/v1/tickets', {
 			token: tokens.server,
-			headers: { 'ss-sign-in': await staffSignIn({ id: 'staff_1', name: 'Sam', email: 'sam@members.example.com' }) },
+			headers: { 'shelfway-sign-in': await staffSignIn({ id: 'staff_1', name: 'Sam', email: 'sam@members.example.com' }) },
 			body: { permissions: ['users.manage'], origin: ADMIN_ORIGIN },
 		});
 		const invited = await sys.call('POST', `/v1/admin/role-requests/${pending.json.items[0].id}/invite`, {
@@ -352,7 +357,7 @@ describe('Accounts sign-in methods, staff and roles on the real Portal', () => {
 		expect(page.widget.user()?.role).toBe('member');
 		expect((await server.call('GET', '/v1/role-requests/count?status=completed')).json.count).toBe(1);
 		// the merchant's own setup page asks from its server: the link is used now
-		const linkCode = String(url.searchParams.get('ss_setup'));
+		const linkCode = String(url.searchParams.get('shelfway_setup'));
 		const used = await server.call('POST', '/v1/setup-links/lookup', { code: linkCode }, VISITOR);
 		expect(used.json).toEqual({ status: 'used' });
 		const usedPage = await openPage('sign_in', `${url.pathname}${url.search}`);
@@ -367,7 +372,7 @@ describe('Accounts sign-in methods, staff and roles on the real Portal', () => {
 		expect(saved.status).toBe(200);
 		const ticket = await sys.call('POST', '/v1/tickets', {
 			token: tokens.server,
-			headers: { 'ss-sign-in': await staffSignIn({ id: 'staff_2', name: 'Sam', email: 'sam@members.example.com' }) },
+			headers: { 'shelfway-sign-in': await staffSignIn({ id: 'staff_2', name: 'Sam', email: 'sam@members.example.com' }) },
 			body: { permissions: ['users.manage'], origin: ADMIN_ORIGIN },
 		});
 		/** @param {string} method @param {string} path */
@@ -382,7 +387,7 @@ describe('Accounts sign-in methods, staff and roles on the real Portal', () => {
 		/** @param {string} linkCode */
 		const lookup = async (linkCode) => (await server.call('POST', '/v1/setup-links/lookup', { code: linkCode }, VISITOR)).json;
 		/** @param {{ json: any }} answer */
-		const codeOfLink = (answer) => String(new URL(answer.json.setupLink.url).searchParams.get('ss_setup'));
+		const codeOfLink = (answer) => String(new URL(answer.json.setupLink.url).searchParams.get('shelfway_setup'));
 
 		const ivy = await askFromServer('Ivy Stone', '07700 900888');
 		expect(ivy.outcome).toBe('requested');
@@ -419,15 +424,15 @@ describe('Accounts sign-in methods, staff and roles on the real Portal', () => {
 			email: 'mia@members.example.com',
 			role: 'business_manager',
 		});
-		const asManager = { 'ss-actor-id': manager.json.id, 'ss-actor-name': 'Mia' };
+		const asManager = { 'shelfway-actor-id': manager.json.id, 'shelfway-actor-name': 'Mia' };
 		expect(codeOf(await server.call('PATCH', `/v1/users/${owner.id}`, { notes: 'x' }, asManager))).toBe('forbidden');
 		expect(codeOf(await server.call('PATCH', `/v1/users/${manager.json.id}`, { role: 'owner' }, asManager))).toBe('forbidden');
-		const asOwner = { 'ss-actor-id': owner.id, 'ss-actor-name': 'Olivia' };
+		const asOwner = { 'shelfway-actor-id': owner.id, 'shelfway-actor-name': 'Olivia' };
 		const last = await server.call('PATCH', `/v1/users/${owner.id}`, { blocked: true }, asOwner);
 		expect(codeOf(last)).toBe('forbidden');
 		const ticket = await sys.call('POST', '/v1/tickets', {
 			token: tokens.server,
-			headers: { 'ss-sign-in': await staffSignIn({ id: manager.json.id }) },
+			headers: { 'shelfway-sign-in': await staffSignIn({ id: manager.json.id }) },
 			body: { permissions: ['users.manage'], origin: ADMIN_ORIGIN },
 		});
 		const viaTicket = await sys.call('DELETE', `/v1/admin/users/${owner.id}`, {
@@ -513,7 +518,7 @@ describe('Accounts sign-in methods, staff and roles on the real Portal', () => {
 			{ websiteId, id: owner.id },
 			{
 				$set: {
-					twoStep: /** @type {import('@ss/product-accounts/product').Product} */ (
+					twoStep: /** @type {import('@shelfway/product-accounts/product').Product} */ (
 						/** @type {unknown} */ (sys.product)
 					).twoStepFromImport(websiteId, owner.id, {
 						secret: 'JBSWY3DPEHPK3PXP',

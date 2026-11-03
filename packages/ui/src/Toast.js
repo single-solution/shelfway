@@ -114,7 +114,7 @@ function ToastCard({ toast, words, onDismiss, onGone }) {
 			data-state={presence.closing ? 'closed' : 'open'}
 			className={cx(
 				'pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-card border border-line bg-surface px-3.5 py-3 text-sm text-fg shadow-overlay',
-				'animate-ss-toast data-[state=closed]:pointer-events-none data-[state=closed]:animate-ss-toast-out',
+				'animate-shelfway-toast data-[state=closed]:pointer-events-none data-[state=closed]:animate-shelfway-toast-out',
 			)}>
 			<Icon
 				name={toast.tone === 'danger' ? 'alert' : toast.tone === 'info' ? 'info' : 'check'}
@@ -132,7 +132,7 @@ function ToastCard({ toast, words, onDismiss, onGone }) {
 						toast.action?.onClick();
 						onDismiss(toast.id);
 					}}
-					className="ss-motion ss-press shrink-0 rounded px-1.5 py-0.5 text-label font-medium text-primary hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-focus">
+					className="shelfway-motion shelfway-press shrink-0 rounded px-1.5 py-0.5 text-label font-medium text-primary hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-focus">
 					{toast.action.label}
 				</button>
 			) : null}
@@ -140,7 +140,7 @@ function ToastCard({ toast, words, onDismiss, onGone }) {
 				type="button"
 				onClick={() => onDismiss(toast.id)}
 				aria-label={words.dismiss}
-				className="ss-motion ss-press rounded p-0.5 text-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-focus">
+				className="shelfway-motion shelfway-press rounded p-0.5 text-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-focus">
 				<Icon name="close" size={14} />
 			</button>
 		</div>

@@ -23,11 +23,11 @@
  * `message.shortened`. A waiting message keeps their names for its fallback channel.
  * @module
  */
-import { createId } from '@ss/contracts';
-import { normalizeEmail } from '@ss/contracts/email';
-import { isNetError } from '@ss/net';
-import { problem } from '@ss/app-kit';
-import { signWebhook } from '@ss/protocol';
+import { createId } from '@shelfway/contracts';
+import { normalizeEmail } from '@shelfway/contracts/email';
+import { isNetError } from '@shelfway/net';
+import { problem } from '@shelfway/app-kit';
+import { signWebhook } from '@shelfway/protocol';
 import { CHANNEL_CONNECTIONS, CHANNEL_FEATURES, addressFor, isChannelActive } from '../core/channels.js';
 import { fallbackChainOf } from '../core/choices.js';
 import {

@@ -1,12 +1,12 @@
 /**
  * The visitor's consent in the page (PLAN 0.8.9): the choice kept in their own browser (localStorage), whoever made it
- * (the banner, or the merchant's own consent tool through `SSGrowth.consent.set()`), and the consent banner (visitor
+ * (the banner, or the merchant's own consent tool through `ShelfwayGrowth.consent.set()`), and the consent banner (visitor
  * widget `consent_banner`): the merchant's categories (G3, each with its own name and description), Accept all, Only
  * necessary, or Choose and Save; at the bottom, the top, in the middle of the page (a dialog over it) or in a corner
  * (G7). The banner's other words are widget texts.
  * @module
  */
-import { element, mountWidget, toggle } from '@ss/app-kit/widget';
+import { element, mountWidget, toggle } from '@shelfway/app-kit/widget';
 import { BANNER_POSITIONS, CONSENT_STORAGE_KEY } from '../core/widgets.js';
 import { grantedOf, makeChoice, readChoice } from '../core/consent.js';
 import { WIDGET_CSS } from './styles.js';
@@ -23,7 +23,7 @@ import { WIDGET_CSS } from './styles.js';
 export const storageOf = (win, name) => {
 	try {
 		const storage = win[name];
-		storage.getItem('ss-growth-probe');
+		storage.getItem('shelfway-growth-probe');
 		return storage;
 	} catch {
 		return { getItem: () => null, setItem: () => {} };

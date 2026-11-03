@@ -14,9 +14,9 @@ import {
 	radioGroup,
 	toggle,
 	viewerOf,
-} from '@ss/app-kit/widget';
+} from '@shelfway/app-kit/widget';
 
-/** @typedef {import('@ss/app-kit/widget').Answer} Answer status 0 when signed out or unreachable */
+/** @typedef {import('@shelfway/app-kit/widget').Answer} Answer status 0 when signed out or unreachable */
 /** @typedef {(key: string) => string} Texts */
 /** @typedef {Parameters<typeof formatDate>[1]} Format how money and dates look (the widget config's `format`) */
 /**

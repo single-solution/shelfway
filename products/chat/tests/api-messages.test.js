@@ -4,7 +4,7 @@
  * carries them; `staffPermission: all_staff` alerts every unblocked Accounts user whose role may see the inbox; a
  * transcript goes whole in its one long value.
  */
-import { validateMessageDefaults } from '@ss/contracts';
+import { validateMessageDefaults } from '@shelfway/contracts';
 import { afterAll, describe, expect, it } from 'vitest';
 import declaration from '../schemas/messages.json' with { type: 'json' };
 import { ALL_STAFF_PERMISSION } from '../server/service.js';

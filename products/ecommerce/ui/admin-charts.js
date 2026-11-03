@@ -32,13 +32,13 @@ const unitName = (kit, unit) => (unitOf(unit) ? kit.t(`catalogAdmin.unit.${unit}
  * A unit field: any text, with the known units offered (`list` names the page's list of them).
  * @param {Kit} kit @param {string} value
  */
-const unitInput = (kit, value) => kit.input(value, { maxlength: '20', list: 'ss-chart-units' });
+const unitInput = (kit, value) => kit.input(value, { maxlength: '20', list: 'shelfway-chart-units' });
 
 /** The known units offered by unit fields. @param {Kit} kit */
 const unitList = (kit) =>
 	kit.h(
 		'datalist',
-		{ id: 'ss-chart-units' },
+		{ id: 'shelfway-chart-units' },
 		UNIT_KEYS.map((key) => kit.h('option', { value: key }, [kit.t(`catalogAdmin.unit.${key}`)])),
 	);
 

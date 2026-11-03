@@ -1,7 +1,7 @@
 /**
- * The website Setup sheet, `ss.blueprint/1` (owner request 2026-10-14; design `audit/design/website-blueprint.md`).
+ * The website Setup sheet, `shelfway.blueprint/1` (owner request 2026-10-14; design `audit/design/website-blueprint.md`).
  *
- * - **Product blueprint** (each product's `GET /v1/blueprint?websiteId=`, a Portal call answered by `@ss/app-kit`):
+ * - **Product blueprint** (each product's `GET /v1/blueprint?websiteId=`, a Portal call answered by `@shelfway/app-kit`):
  *   the product's part for one website: `{ productId, name, version, status, docs, install, features,
  *   shared, connections, widgets, staffPermissions, events, checklist, summaries, build }`. Features carry the
  *   business profile answers they suit (`recommendFor`, from the manifest) and their settings with values
@@ -10,7 +10,7 @@
  *   while the feature is on. Connections show their state only: `set` and `state`, never a value, its last characters
  *   or a test message. `build` says, per feature that is on, what the merchant's website builds for it (pages, routes, script
  *   tags, server calls) with the guide's section.
- * - **Blueprint** (the Portal's sheet): `{ schema: 'ss.blueprint/1', generatedAt, website, access, products, share? }`.
+ * - **Blueprint** (the Portal's sheet): `{ schema: 'shelfway.blueprint/1', generatedAt, website, access, products, share? }`.
  *   `website.status` is the status the website's products have (`active`, `grace`, `stopped` or `suspended`, PLAN
  *   0.5.5) and `website.profile` its business profile (null until someone fills it in). Each product is its blueprint
  *   plus `reachable: true`, `apiBase` (the address its API paths go after), the browser token and install snippet in
@@ -29,7 +29,7 @@ import { SCHEMA_IDS } from './schema-ids.js';
 const draft = 'https://json-schema.org/draft/2020-12/schema';
 
 /** The `schema` member of every Setup sheet. */
-export const BLUEPRINT_SCHEMA = 'ss.blueprint/1';
+export const BLUEPRINT_SCHEMA = 'shelfway.blueprint/1';
 
 /** Why a product is missing from a sheet. */
 export const BLUEPRINT_UNREACHABLE_REASONS = Object.freeze(
@@ -277,7 +277,7 @@ export const productBlueprintSchema = deepFreeze({
 	properties: productProperties,
 });
 
-/** The Setup sheet of a website, `ss.blueprint/1`. */
+/** The Setup sheet of a website, `shelfway.blueprint/1`. */
 export const blueprintSchema = deepFreeze({
 	$schema: draft,
 	$id: SCHEMA_IDS.blueprint,

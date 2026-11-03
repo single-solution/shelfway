@@ -94,7 +94,7 @@ export const api = Object.freeze({
 		`/v1/merchants/${e(m)}/websites/${e(w)}/tokens/${e(p)}/reveal`,
 	regenerate: (/** @type {string} */ m, /** @type {string} */ w, /** @type {string} */ p) =>
 		`/v1/merchants/${e(m)}/websites/${e(w)}/tokens/${e(p)}/regenerate`,
-	/** the Setup sheet (`ss.blueprint/1`); `fresh` gathers it again, `download` answers it as a file */
+	/** the Setup sheet (`shelfway.blueprint/1`); `fresh` gathers it again, `download` answers it as a file */
 	setup: (/** @type {string} */ m, /** @type {string} */ w, /** @type {{ fresh?: boolean, download?: boolean }} */ q = {}) =>
 		`/v1/merchants/${e(m)}/websites/${e(w)}/setup${query({ fresh: q.fresh ? '1' : null, download: q.download ? '1' : null })}`,
 	/** share links of the Setup sheet; `POST { days?, values?, install? }` → `{ link, url }` */

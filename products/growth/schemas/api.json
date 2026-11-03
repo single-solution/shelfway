@@ -249,7 +249,7 @@
 				"not_found",
 				"vital"
 			],
-			"description": "page_view: Visitor analytics; view_item, add_to_cart, begin_checkout, purchase, contact and custom (your own events, SSGrowth.track): Goals and funnels; search, not_found: Searches and 404s; vital: Web Vitals."
+			"description": "page_view: Visitor analytics; view_item, add_to_cart, begin_checkout, purchase, contact and custom (your own events, ShelfwayGrowth.track): Goals and funnels; search, not_found: Searches and 404s; vital: Web Vitals."
 		},
 		"FunnelData": {
 			"type": "object",
@@ -1698,7 +1698,7 @@
 		},
 		"CustomData": {
 			"type": "object",
-			"description": "custom: your own event (SSGrowth.track).",
+			"description": "custom: your own event (ShelfwayGrowth.track).",
 			"required": ["name", "props"],
 			"additionalProperties": false,
 			"properties": {
@@ -1818,7 +1818,7 @@
 	},
 	"POST /v1/collect": {
 		"summary": "Record the page script's events",
-		"description": "The page script sends these itself. Your server may send a visitor's events too: the server token without an Origin, naming the visitor's IP address in SS-Visitor-IP. Nothing answers an error for a bad event: invalid events, events of features that are off and any after the first 25 are dropped, and nothing is kept while Visitor analytics is off; accepted says how many were kept. At most 64 KB; 3,000 calls a minute per website and 120 per visitor. Safety ceilings per website and day: a figure (pages, search terms, sources, event names …) holds at most 5,000 different values, and later new ones are counted together as (other); at most 100,000 raw events are stored, and later events are still counted in the totals.",
+		"description": "The page script sends these itself. Your server may send a visitor's events too: the server token without an Origin, naming the visitor's IP address in Shelfway-Visitor-IP. Nothing answers an error for a bad event: invalid events, events of features that are off and any after the first 25 are dropped, and nothing is kept while Visitor analytics is off; accepted says how many were kept. At most 64 KB; 3,000 calls a minute per website and 120 per visitor. Safety ceilings per website and day: a figure (pages, search terms, sources, event names …) holds at most 5,000 different values, and later new ones are counted together as (other); at most 100,000 raw events are stored, and later events are still counted in the totals.",
 		"body": {
 			"type": "object",
 			"properties": {
@@ -2004,7 +2004,7 @@
 	},
 	"GET /v1/analytics/products": {
 		"summary": "How each product does in the shop funnel",
-		"description": "Each product of the shop events (ss:view_item, ss:add_to_cart, ss:begin_checkout, ss:purchase, from Ecommerce's widgets or your own pages) over a range of days of your business time zone: the events that named it (views, add-to-carts, checkouts, purchases: orders naming it), the units bought, the revenue per currency (price × quantity of its purchased items that had a price), add-to-carts and purchases per 100 views, and the name the events gave it most. Counted in the daily totals as the events arrive (raw events keep only ids and quantities). While the conversion funnel is on. 422 validation_failed for a range as GET /v1/analytics refuses, an unknown sort or order, or a limit out of range.",
+		"description": "Each product of the shop events (shelfway:view_item, shelfway:add_to_cart, shelfway:begin_checkout, shelfway:purchase, from Ecommerce's widgets or your own pages) over a range of days of your business time zone: the events that named it (views, add-to-carts, checkouts, purchases: orders naming it), the units bought, the revenue per currency (price × quantity of its purchased items that had a price), add-to-carts and purchases per 100 views, and the name the events gave it most. Counted in the daily totals as the events arrive (raw events keep only ids and quantities). While the conversion funnel is on. 422 validation_failed for a range as GET /v1/analytics refuses, an unknown sort or order, or a limit out of range.",
 		"query": {
 			"type": "object",
 			"properties": {
@@ -2789,7 +2789,7 @@
 		}
 	},
 	"POST /v1/import/:collection": {
-		"summary": "Import days of daily totals (ss-import)",
+		"summary": "Import days of daily totals (shelfway-import)",
 		"description": "collection is totals. The body is NDJSON (Content-Type application/x-ndjson), not JSON: one day per line, { \"day\": \"YYYY-MM-DD\", \"part\": 0, \"totals\": { \"<metric>\": { \"<key>\": { \"c\": <count>, \"s\": <sum> } } } }, the day in your business time zone and the keys as readable text; at most 1,000 lines or 4 MB. Each metric must be one Growth counts, with keys of the form it writes, a whole count of 0 or more and a finite sum (only revenue, duration, vital_value, vital_page, item_cart, item_purchase and item_revenue keep sums); unknown fields are refused by name. A day replaces the day's document, so totals counted live that day are replaced too. Nothing is sent and no raw events are made. 404 not_found for another collection; 415 unsupported_media_type without NDJSON.",
 		"query": {
 			"type": "object",
@@ -2950,7 +2950,7 @@
 		}
 	},
 	"GET /v1/import/status": {
-		"summary": "What is stored, for ss-import verify",
+		"summary": "What is stored, for shelfway-import verify",
 		"response": {
 			"type": "object",
 			"required": ["collections", "imported", "totals"],
@@ -2982,7 +2982,7 @@
 				},
 				"totals": {
 					"type": "object",
-					"description": "The sums ss-import verify compares.",
+					"description": "The sums shelfway-import verify compares.",
 					"required": ["days", "visits", "page_views"],
 					"additionalProperties": false,
 					"properties": {

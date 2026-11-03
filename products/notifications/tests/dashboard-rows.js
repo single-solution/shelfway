@@ -5,7 +5,7 @@
  */
 /* global document */
 import { act } from 'react';
-import { click } from '@ss/ui/testing';
+import { click } from '@shelfway/ui/testing';
 
 /** The open drawer: a drawer is drawn on the page body, outside the container a test renders into. */
 export const drawerOf = () => /** @type {HTMLElement} */ (document.querySelector('[role="dialog"]'));
@@ -14,7 +14,7 @@ export const drawerOf = () => /** @type {HTMLElement} */ (document.querySelector
  * The rows of a list, in order.
  * @param {HTMLElement} root
  */
-export const rowsOf = (root) => /** @type {HTMLElement[]} */ ([...root.querySelectorAll('[data-ss-row]')]);
+export const rowsOf = (root) => /** @type {HTMLElement[]} */ ([...root.querySelectorAll('[data-shelfway-row]')]);
 
 /** @param {Element} row the name of a row (its title) */
 const titleOf = (row) => row.querySelector('span.truncate')?.textContent ?? '';

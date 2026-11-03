@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import { BASE, DOMAIN, manifest, setup } from './helpers.js';
 
 describe('sso and sessions', () => {
@@ -11,7 +11,7 @@ describe('sso and sessions', () => {
 		expect(response.headers.get('location')).toBe(`/dashboard?websiteId=${websiteId}`);
 		const cookie = /** @type {string} */ (response.headers.get('set-cookie'));
 		// the __Host- prefix: only a Secure, Path=/ cookie without a Domain is ever accepted, so a sibling subdomain cannot plant one
-		expect(cookie).toMatch(/^__Host-ss_session=[\w-]{43}; Path=\/; HttpOnly; Secure; SameSite=Lax; Expires=/);
+		expect(cookie).toMatch(/^__Host-shelfway_session=[\w-]{43}; Path=\/; HttpOnly; Secure; SameSite=Lax; Expires=/);
 		expect(cookie).not.toMatch(/Domain=/i);
 		const pair = /** @type {string} */ (cookie.split(';')[0]);
 		expect((await call('GET', '/v1/dashboard/session', { cookie: pair })).status).toBe(200);
@@ -62,7 +62,7 @@ describe('sso and sessions', () => {
 		portal.addWebsite({ domain: 'gone.example.org', status: 'removed' });
 		const admin = await (await dash(await session(), 'GET', '/v1/dashboard/session')).json();
 		expect(admin.who).toEqual({ kind: 'admin', id: 'adm_0123456789abcdefghjkmnpq', name: 'Ada Admin', role: 'portal_owner' });
-		expect(admin.portalUrl).toBe(portal.url);
+		expect(admin.platformUrl).toBe(portal.url);
 		expect(admin.switcher).toEqual([
 			{
 				merchantId: 'mer_0123456789abcdefghjkmnpq',

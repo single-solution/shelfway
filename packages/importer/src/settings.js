@@ -2,7 +2,7 @@
  * The website's settings and lists (PLAN 0.8.10 Migration, order step 2): written through each product's settings API
  * for the merchant's server (K1) before the records, from the settings `read` took from the store (`settings.json`)
  * and the per-store settings table entered by hand. The **Format** is not sent: it is the website's, set once in the
- * Portal (Website settings › Region and format), and a product answers `PUT /v1/format` with 409 `managed_by_portal`; a plan
+ * Portal (Website settings › Region and format), and a product answers `PUT /v1/format` with 409 `managed_by_platform`; a plan
  * that still carries one is listed as refused, never lost silently. Every value is written explicitly, so a later change of a product
  * default never changes a moved website (RT-15): a setting counts as unchanged only when the website already holds
  * this exact value itself. A dry run writes nothing and lists the differences with the product's current values

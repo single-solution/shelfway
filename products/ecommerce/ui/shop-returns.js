@@ -119,7 +119,7 @@ export const renderClaimForm = async (input) => {
 						doc,
 						'div',
 						{},
-						field(doc, `ss-claim-${line.lineId}`, t('returns.quantity', { name, max: label(line.claimable) }), count),
+						field(doc, `shelfway-claim-${line.lineId}`, t('returns.quantity', { name, max: label(line.claimable) }), count),
 						h(doc, 'span', { class: 'meta' }, t('returns.until', { date: dateText(line[chosen].until, { time: false }) })),
 					);
 				}),
@@ -147,7 +147,7 @@ export const renderClaimForm = async (input) => {
 				)
 			: null;
 	const reason = /** @type {HTMLTextAreaElement} */ (h(doc, 'textarea', { maxlength: '1000', rows: '3' }));
-	const reasonField = field(doc, 'ss-claim-reason', t(picked ? 'returns.reasonOtherText' : 'returns.reason'), reason);
+	const reasonField = field(doc, 'shelfway-claim-reason', t(picked ? 'returns.reasonOtherText' : 'returns.reason'), reason);
 	const showOther = () => {
 		reasonField.hidden = picked !== null && picked.value !== OTHER;
 	};
@@ -166,11 +166,11 @@ export const renderClaimForm = async (input) => {
 		'form',
 		{ class: 'box' },
 		h(doc, 'h2', {}, t('returns.formTitle')),
-		field(doc, 'ss-claim-kind', t('returns.kind'), kind),
+		field(doc, 'shelfway-claim-kind', t('returns.kind'), kind),
 		linesBox,
-		picked ? field(doc, 'ss-claim-reason-pick', t('returns.reason'), picked) : null,
+		picked ? field(doc, 'shelfway-claim-reason-pick', t('returns.reason'), picked) : null,
 		reasonField,
-		maxPhotos > 0 ? field(doc, 'ss-claim-photos', t('returns.photos', { max: maxPhotos, mb: photoMaxMb }), photos) : null,
+		maxPhotos > 0 ? field(doc, 'shelfway-claim-photos', t('returns.photos', { max: maxPhotos, mb: photoMaxMb }), photos) : null,
 		submit,
 		status,
 	);

@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 /* global window */
 /**
- * Growth's browser events from the shopper widgets (PLAN 0.8.9): `ss:view_item` and `ss:add_to_cart` on the product
- * page, `ss:add_to_cart` from the wishlist, `ss:begin_checkout` and `ss:purchase` from the cart widget, `ss:search`
+ * Growth's browser events from the shopper widgets (PLAN 0.8.9): `shelfway:view_item` and `shelfway:add_to_cart` on the product
+ * page, `shelfway:add_to_cart` from the wishlist, `shelfway:begin_checkout` and `shelfway:purchase` from the cart widget, `shelfway:search`
  * from the product grid's search box.
  */
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -98,13 +98,13 @@ describe('product page', () => {
 		await mountProductPage({ host, config: configOf(['catalog']), shop: fake.shop, win: window });
 		await flush();
 		const viewed = { id: 'prd_1', variantId: 'var_1', name: 'Phone One', price: 100000, quantity: 1 };
-		expect(events.of('ss:view_item')).toEqual([{ currency: 'USD', value: 100000, items: [viewed] }]);
+		expect(events.of('shelfway:view_item')).toEqual([{ currency: 'USD', value: 100000, items: [viewed] }]);
 		await click(buttonOf(host, text('page.addToCart')));
-		await setValue($(host, '#ss-page-option-0'), '256 GB');
-		await setValue($(host, '#ss-page-qty'), '2');
+		await setValue($(host, '#shelfway-page-option-0'), '256 GB');
+		await setValue($(host, '#shelfway-page-qty'), '2');
 		await click(buttonOf(host, text('page.addToCart')));
-		expect(events.of('ss:view_item')).toHaveLength(1);
-		expect(events.of('ss:add_to_cart')).toEqual([
+		expect(events.of('shelfway:view_item')).toHaveLength(1);
+		expect(events.of('shelfway:add_to_cart')).toEqual([
 			{ currency: 'USD', value: 100000, items: [viewed] },
 			{
 				currency: 'USD',
@@ -122,7 +122,7 @@ describe('product page', () => {
 		const host = place('product_page', { product: 'phone' });
 		await mountProductPage({ host, config: configOf(['catalog']), shop: fake.shop, win: window });
 		await flush();
-		expect(events.of('ss:view_item')).toEqual([
+		expect(events.of('shelfway:view_item')).toEqual([
 			{
 				currency: 'USD',
 				value: 100000,
@@ -149,7 +149,7 @@ describe('wishlist', () => {
 		await mountWishlist({ host, config: configOf(['wishlist', 'checkout']), shop: fake.shop, win: window });
 		await flush();
 		await click(buttonOf(host, text('wishlist.addToCartLabel', { name: 'Phone One' })));
-		expect(events.of('ss:add_to_cart')).toEqual([
+		expect(events.of('shelfway:add_to_cart')).toEqual([
 			{
 				currency: 'USD',
 				value: 5000,
@@ -226,22 +226,22 @@ describe('cart', () => {
 			{ id: 'prd_1', variantId: 'var_1', name: 'Phone', price: 100000, quantity: 2 },
 			{ id: 'prd_2', variantId: null, name: 'Case', price: 1000, quantity: 1 },
 		];
-		expect(events.of('ss:begin_checkout')).toEqual([{ currency: 'USD', value: 201000, items }]);
-		$(host, '#ss-cart-name').value = 'Ana';
-		$(host, '#ss-cart-phone').value = '+1 202 555 0143';
-		$(host, '#ss-cart-line1').value = '1 Road';
-		await setValue($(host, '#ss-cart-city'), 'Chicago');
+		expect(events.of('shelfway:begin_checkout')).toEqual([{ currency: 'USD', value: 201000, items }]);
+		$(host, '#shelfway-cart-name').value = 'Ana';
+		$(host, '#shelfway-cart-phone').value = '+1 202 555 0143';
+		$(host, '#shelfway-cart-line1').value = '1 Road';
+		await setValue($(host, '#shelfway-cart-city'), 'Chicago');
 		await timers.run();
 		// the server failed: no order, no purchase
 		await click(buttonOf(host, text('checkout.place')));
-		expect(events.of('ss:purchase')).toEqual([]);
+		expect(events.of('shelfway:purchase')).toEqual([]);
 		placed = ok({ order: ORDER, next: { kind: 'done' } }, 201);
 		await click(buttonOf(host, text('checkout.place')));
-		expect(events.of('ss:begin_checkout')).toHaveLength(1);
-		expect(events.of('ss:purchase')).toEqual([
+		expect(events.of('shelfway:begin_checkout')).toHaveLength(1);
+		expect(events.of('shelfway:purchase')).toEqual([
 			{ orderId: 'ord_1', orderNumber: 'SO2026-1', currency: 'USD', value: 221000, items },
 		]);
-		expect(events.seen.map((entry) => entry.name)).toEqual(['ss:begin_checkout', 'ss:purchase']);
+		expect(events.seen.map((entry) => entry.name)).toEqual(['shelfway:begin_checkout', 'shelfway:purchase']);
 	});
 });
 
@@ -270,7 +270,7 @@ describe('product grid', () => {
 		await mountProductGrid({ host, config: configOf(['catalog']), shop: fake.shop, win: window });
 		await flush();
 		// a search in the page's own address or data is Growth's to find: nothing sent for it
-		expect(events.of('ss:search')).toEqual([]);
+		expect(events.of('shelfway:search')).toEqual([]);
 		const box = /** @type {HTMLInputElement} */ ($(host, 'input[type="search"]'));
 		await setValue(box, ' lamp ');
 		await click(buttonOf(host, text('grid.searchButton')));
@@ -280,7 +280,7 @@ describe('product grid', () => {
 		await setValue(box, '');
 		await click(buttonOf(host, text('grid.searchButton')));
 		expect(asked).toEqual(['phone', 'lamp', 'none', '']);
-		expect(events.of('ss:search')).toEqual([
+		expect(events.of('shelfway:search')).toEqual([
 			{ term: 'lamp', results: 7 },
 			{ term: 'none', results: 0 },
 		]);

@@ -1,11 +1,11 @@
 /**
  * Starts the widgets on a page (PLAN 0.4.10). `widget.js` is the same for every website. With `data-token` on its
  * script tag (the website's browser token) it fetches the website's widget config and mounts the visitor widgets of
- * switched-on features into the elements the merchant placed (`<div data-ss-ecommerce="product_grid"></div>`, …),
- * and offers `window.SSEcommerce`:
+ * switched-on features into the elements the merchant placed (`<div data-shelfway-ecommerce="product_grid"></div>`, …),
+ * and offers `window.ShelfwayEcommerce`:
  *
- * - `identify(signIn | null)`: the shopper's Accounts sign-in (PLAN 0.4.6), sent in `SS-Sign-In` on visitor calls;
- *   a guest's order keys (E21) are kept in the browser and each goes in `SS-Order-Key` with the calls about its order;
+ * - `identify(signIn | null)`: the shopper's Accounts sign-in (PLAN 0.4.6), sent in `Shelfway-Sign-In` on visitor calls;
+ *   a guest's order keys (E21) are kept in the browser and each goes in `Shelfway-Order-Key` with the calls about its order;
  * - `addToCart({ productId, variantId?, quantity?, measured? })`: adds to the cart kept in the browser (an item sold in
  *   a unit of its own: `quantity` in thousandths of its unit with `measured: true`);
  * - `cart.count()`, `cart.onChange(listener)`: the cart for the merchant's own header;
@@ -15,14 +15,14 @@
  * still runs: K-14) is sent again with the same key after its `Retry-After`, a few times, so a shopper whose first press
  * of Place order lost its answer gets that order, never a second one.
  *
- * It also handles the `ss-ecommerce:add-to-cart` window event (Chat's product cards, PLAN 0.8.4). Both ways of adding
- * dispatch Growth's `ss:add_to_cart` (PLAN 0.8.9) once the product's name and price are read from the catalog (an
+ * It also handles the `shelfway-ecommerce:add-to-cart` window event (Chat's product cards, PLAN 0.8.4). Both ways of adding
+ * dispatch Growth's `shelfway:add_to_cart` (PLAN 0.8.9) once the product's name and price are read from the catalog (an
  * unreadable product still dispatches it, with an empty name and price 0). Widgets render nothing while the product
  * is stopped, their feature is off or the merchant database is not connected.
  * @module
  */
 import { GROWTH_EVENTS, growthItem, itemsDetail } from '../core/growth-events.js';
-import { isCurrency } from '@ss/app-kit/widget';
+import { isCurrency } from '@shelfway/app-kit/widget';
 import { ADD_TO_CART_EVENT, WIDGET_ATTRIBUTE, WIDGET_GLOBAL } from '../core/widgets.js';
 import { mountAlertsStop } from './alerts-stop.js';
 import { mountCart } from './cart.js';
@@ -37,7 +37,7 @@ import { mountProductPage } from './product-page.js';
 import { mountPromotionsAdmin } from './promotions-admin.js';
 import { announce } from './shop-common.js';
 import { createOrderKeys } from './order-keys.js';
-import { createTicketSource } from '@ss/app-kit/widget';
+import { createTicketSource } from '@shelfway/app-kit/widget';
 import { mountWishlist } from './wishlist.js';
 
 /** The kit's widget config routes (browser token; ticket). */
@@ -63,9 +63,9 @@ const retryAfterSeconds = (header) => {
  * The website's widget config, from the kit.
  * @typedef {object} WidgetConfig
  * @property {Record<string, string>} texts the widget texts (the website's own, else the defaults)
- * @property {import('@ss/app-kit/widget').WidgetTheme} theme
+ * @property {import('@shelfway/app-kit/widget').WidgetTheme} theme
  * @property {string} customCss
- * @property {typeof import('@ss/app-kit/widget').DEFAULT_FORMAT} [format] how money and dates look (PLAN 0.8.10 K7)
+ * @property {typeof import('@shelfway/app-kit/widget').DEFAULT_FORMAT} [format] how money and dates look (PLAN 0.8.10 K7)
  * @property {string} [timeZone] the business time zone (UTC when missing)
  * @property {string[]} features the switched-on features
  * @property {string[]} widgets the keys of the widgets whose feature is on
@@ -84,7 +84,7 @@ const retryAfterSeconds = (header) => {
  * @property {import('./cart-store.js').CartStore} cart
  * @property {(feature: string) => boolean} has whether a feature is on
  * @property {(url: string) => void} go send the browser to an address (the payment page, a product page)
- * @property {() => URL} location the page's address (the success page reads `ss_order`)
+ * @property {() => URL} location the page's address (the success page reads `shelfway_order`)
  * @property {() => string} newKey a fresh Idempotency-Key
  * @property {(path: string) => Promise<{ ok: boolean, status: number, text: string }>} document a visitor route that
  *   answers a document (the invoice's HTML), with the same headers as `call`; status 0 when unreachable
@@ -98,8 +98,8 @@ const retryAfterSeconds = (header) => {
  */
 
 /**
- * What an admin widget's mount function receives (`adminCall(api, method, path, body)` from `@ss/app-kit/widget`).
- * @typedef {{ host: HTMLElement, config: WidgetConfig, api: import('@ss/app-kit/widget').AdminApi,
+ * What an admin widget's mount function receives (`adminCall(api, method, path, body)` from `@shelfway/app-kit/widget`).
+ * @typedef {{ host: HTMLElement, config: WidgetConfig, api: import('@shelfway/app-kit/widget').AdminApi,
  *   win: Window & typeof globalThis, save: (name: string, text: string, type?: string) => void,
  *   open: (url: string) => void }} AdminMount
  */
@@ -168,7 +168,7 @@ export const startWidget = ({ window: win, script }) => {
 	const cart = createCartStore({ storage: storageOf(win) });
 	const orderKeys = createOrderKeys({ storage: storageOf(win) });
 	/**
-	 * The `SS-Order-Key` header of a call about a guest order whose key the browser keeps: its path names the order
+	 * The `Shelfway-Order-Key` header of a call about a guest order whose key the browser keeps: its path names the order
 	 * (`/v1/shop/orders/<id>…`) or its body does (`orderId`, a review of an item).
 	 * @param {string} path @param {unknown} [body]
 	 * @returns {Record<string, string>}
@@ -177,7 +177,7 @@ export const startWidget = ({ window: win, script }) => {
 		const named = /^\/v1\/shop\/orders\/(ord_[A-Za-z0-9_-]{1,64})(?:[/?]|$)/.exec(path)?.[1];
 		const id = named ?? (typeof (/** @type {any} */ (body)?.orderId) === 'string' ? /** @type {any} */ (body).orderId : null);
 		const key = id ? orderKeys.keyOf(id) : null;
-		return key ? { 'ss-order-key': key } : {};
+		return key ? { 'shelfway-order-key': key } : {};
 	};
 	/** @type {string | null} */
 	let signIn = null;
@@ -197,7 +197,7 @@ export const startWidget = ({ window: win, script }) => {
 					method: init.method ?? 'GET',
 					headers: {
 						authorization: `Bearer ${token}`,
-						...(signIn ? { 'ss-sign-in': signIn } : {}),
+						...(signIn ? { 'shelfway-sign-in': signIn } : {}),
 						...orderKeyHeader(path, init.body),
 						...(init.idempotencyKey ? { 'idempotency-key': init.idempotencyKey } : {}),
 						...(init.body === undefined ? {} : { 'content-type': 'application/json' }),
@@ -224,7 +224,7 @@ export const startWidget = ({ window: win, script }) => {
 			const response = await request(`${base}${path}`, {
 				headers: {
 					authorization: `Bearer ${token}`,
-					...(signIn ? { 'ss-sign-in': signIn } : {}),
+					...(signIn ? { 'shelfway-sign-in': signIn } : {}),
 					...orderKeyHeader(path),
 				},
 			});
@@ -235,7 +235,7 @@ export const startWidget = ({ window: win, script }) => {
 	};
 
 	/**
-	 * Growth's `ss:add_to_cart` for a line added here, with the product's name and price from the catalog.
+	 * Growth's `shelfway:add_to_cart` for a line added here, with the product's name and price from the catalog.
 	 * @param {import('./cart-store.js').CartLine} line
 	 * @param {string} fallback the shop's currency
 	 */
@@ -308,9 +308,9 @@ export const startWidget = ({ window: win, script }) => {
 		);
 	})();
 
-	/** @param {{ getTicket: import('@ss/app-kit/widget').GetTicket }} options */
+	/** @param {{ getTicket: import('@shelfway/app-kit/widget').GetTicket }} options */
 	const admin = async ({ getTicket }) => {
-		/** @type {import('@ss/app-kit/widget').Ticket} */
+		/** @type {import('@shelfway/app-kit/widget').Ticket} */
 		let first;
 		try {
 			first = await getTicket();

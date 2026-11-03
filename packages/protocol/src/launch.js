@@ -1,5 +1,5 @@
 /**
- * Launches (PLAN 0.4.3): Portal → product, single use, 60 seconds by default, EdDSA JWT with `typ: ss-launch+jwt`.
+ * Launches (PLAN 0.4.3): Portal → product, single use, 60 seconds by default, EdDSA JWT with `typ: shelfway-launch+jwt`.
  *
  * A launch opens a product dashboard. The product exchanges it once for its own session, after checking the signature
  * (pinned Portal keys), issuer, audience (= the product id), time, lifetime cap, the launch claims and single use
@@ -11,10 +11,10 @@
  *   Defaults). Finance launches are refused.
  *
  * Both carry `sessionExpiresAt` (ISO-8601 UTC, when the launching Portal session ends), the branding and the support
- * contact (`support: { channels: [{ type, label, url }] }`, `@ss/contracts/text` support channels). `sub` is the
+ * contact (`support: { channels: [{ type, label, url }] }`, `@shelfway/contracts/text` support channels). `sub` is the
  * merchant id or the admin id.
  */
-import { SUPPORT_CHANNELS_MAX, supportChannelProblem } from '@ss/contracts/text';
+import { SUPPORT_CHANNELS_MAX, supportChannelProblem } from '@shelfway/contracts/text';
 import { createProtocolError } from './errors.js';
 import { defaultRandomBytes, randomId } from './encoding.js';
 import { checkTimeClaims, isObject, isText, nowSeconds, requireString, signCompact, verifyCompact } from './jws.js';
@@ -28,7 +28,7 @@ const LAUNCH_KINDS = Object.freeze(/** @type {const} */ (['merchant', 'admin']))
 const LAUNCH_ADMIN_ROLES = Object.freeze(/** @type {const} */ (['owner', 'support']));
 
 /** JOSE `typ` of launches. */
-const LAUNCH_TYP = 'ss-launch+jwt';
+const LAUNCH_TYP = 'shelfway-launch+jwt';
 
 /** Default and maximum launch lifetime (seconds). */
 const DEFAULT_LAUNCH_TTL_SECONDS = 60;
@@ -41,7 +41,7 @@ const ACCENT = /^#[0-9a-fA-F]{6}$/;
 /** @typedef {typeof LAUNCH_KINDS[number]} LaunchKind */
 /** @typedef {typeof LAUNCH_ADMIN_ROLES[number]} LaunchAdminRole */
 /** @typedef {{ name: string, accent: string, logoUrl: string | null }} LaunchBranding */
-/** @typedef {{ channels: import('@ss/contracts/text').SupportChannel[] }} LaunchSupport */
+/** @typedef {{ channels: import('@shelfway/contracts/text').SupportChannel[] }} LaunchSupport */
 /** @typedef {{ websiteId: string, domain: string }} LaunchWebsite */
 /** @typedef {{ id: string, name: string, websites: LaunchWebsite[], websiteId: string }} LaunchMerchant */
 /** @typedef {{ id: string, name: string, role: LaunchAdminRole, websiteId: string | null }} LaunchAdmin */
@@ -156,7 +156,7 @@ export const launchViolation = (claims) => {
  *   signer: Signer, issuer: string, audience: string, kind: LaunchKind, sessionExpiresAt: string,
  *   branding: LaunchBranding, support: LaunchSupport, merchant?: LaunchMerchant, admin?: LaunchAdmin,
  *   ttlSeconds?: number, jti?: string, now?: () => number, randomBytes?: (length: number) => Uint8Array,
- * }} params `audience` is the product id; `issuer` the Portal's `PORTAL_URL`.
+ * }} params `audience` is the product id; `issuer` the Portal's `PLATFORM_URL`.
  * @returns {Promise<{ token: string, claims: LaunchClaims }>}
  */
 export const issueLaunch = async ({
@@ -212,7 +212,7 @@ export const issueLaunch = async ({
  *   token: unknown, keyResolver: KeyResolver, audience: string, issuer: string,
  *   consume: (jti: string, expiresAtMs: number) => boolean | Promise<boolean>,
  *   now?: () => number, skewSeconds?: number, maxTtlSeconds?: number,
- * }} params `consume` must atomically mark the jti used and return `true` only on first use (`consumeWith` of `@ss/protocol/testing` adapts a replay store in tests).
+ * }} params `consume` must atomically mark the jti used and return `true` only on first use (`consumeWith` of `@shelfway/protocol/testing` adapts a replay store in tests).
  * @returns {Promise<LaunchClaims>}
  */
 export const verifyLaunch = async ({

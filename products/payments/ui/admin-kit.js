@@ -1,10 +1,10 @@
 /**
- * What Payments' admin widgets share besides the kit's admin blocks (`@ss/app-kit/widget`: badges, dots, value grids,
+ * What Payments' admin widgets share besides the kit's admin blocks (`@shelfway/app-kit/widget`: badges, dots, value grids,
  * list and detail, the More menu, dialogs): a labeled form control and a small section of the detail. Text is always
  * set as text, never as HTML.
  * @module
  */
-import { element, field as kitField } from '@ss/app-kit/widget';
+import { element, field as kitField } from '@shelfway/app-kit/widget';
 
 /**
  * A labeled form control (the kit's field: the label linked to the control).

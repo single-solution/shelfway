@@ -3,14 +3,14 @@
  * settings › Business, Brand and look, Region and format; nothing is saved in Ecommerce) — its name and tagline, its
  * pictures (the logo and its dark-mode version, the icon, the favicon and its dark-mode version: https addresses), contact
  * email, phone, more phones with a name each (a landline next to the mobile) and WhatsApp number, postal address
- * (`@ss/contracts/address`), opening hours (the weekly windows and dated exceptions: `{ day 1–7, start, end }` and
+ * (`@shelfway/contracts/address`), opening hours (the weekly windows and dated exceptions: `{ day 1–7, start, end }` and
  * `{ date, name, hours }`), social links, and the time zone and language its hours and texts follow. Every field is
  * public: a website shows them in its header, footer and contact page, and serves `/.well-known/business.json` from them
  * (`businessJsonOf`). No I/O.
  * @module
  */
-import { buildBusinessJson } from '@ss/contracts';
-import { addressLines, countryName } from '@ss/contracts/address';
+import { buildBusinessJson } from '@shelfway/contracts';
+import { addressLines, countryName } from '@shelfway/contracts/address';
 
 /**
  * A picture of the store: its https address (`url`) from the Portal's Brand and look, with its alternative text.
@@ -101,7 +101,7 @@ export const publicStoreDetails = (
 });
 
 /**
- * The business.json document (`@ss/contracts` business.json version 1) the store details make, for a headless website
+ * The business.json document (`@shelfway/contracts` business.json version 1) the store details make, for a headless website
  * to serve at `/.well-known/business.json`: the name (the business name while none is set), the logo (its public https
  * address), email, phone (the main one, else the first of the phone list), the address as text, its country, the time zone, the shop currency and the currencies taken
  * and the language. The members with no value are left out. business.json has one logo and one phone: the dark logo,
@@ -127,7 +127,7 @@ export const businessJsonOf = (details, context = {}) =>
 /**
  * The store details the Portal's website settings make (settings-ownership design 8.1). The facts are the Business section, the time zone and language the Region section; the pictures are
  * the https addresses of Brand and look, which have no key in the merchant's storage (`url`).
- * @param {import('@ss/contracts').WebsiteSettings} website
+ * @param {import('@shelfway/contracts').WebsiteSettings} website
  * @returns {StoreDetails}
  */
 export const storeDetailsFromWebsite = (website) => {

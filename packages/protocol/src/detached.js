@@ -1,8 +1,8 @@
 /**
- * Internal: detached Ed25519 signatures carried in `SS-Timestamp` / `SS-Signature` headers, used by notices
+ * Internal: detached Ed25519 signatures carried in `Shelfway-Timestamp` / `Shelfway-Signature` headers, used by notices
  * (`notices.js`), which supply their own domain-separated message builder.
  *
- * `SS-Signature: v1;kid=<kid>;sig=<base64url>[, v1;kid=<kid2>;sig=<...>]` — up to four entries for dual-signing.
+ * `Shelfway-Signature: v1;kid=<kid>;sig=<base64url>[, v1;kid=<kid2>;sig=<...>]` — up to four entries for dual-signing.
  */
 import { createProtocolError, isProtocolError } from './errors.js';
 import { b64url, fromB64url, getHeader } from './encoding.js';
@@ -12,7 +12,11 @@ import { b64url, fromB64url, getHeader } from './encoding.js';
 /** @typedef {Record<string, string | string[] | undefined> | Headers} HeaderBag */
 
 /** Header names. */
-const SIGNATURE_HEADERS = Object.freeze({ timestamp: 'SS-Timestamp', signature: 'SS-Signature', keyId: 'SS-Key-Id' });
+const SIGNATURE_HEADERS = Object.freeze({
+	timestamp: 'Shelfway-Timestamp',
+	signature: 'Shelfway-Signature',
+	keyId: 'Shelfway-Key-Id',
+});
 const MAX_SIGNATURES = 4;
 
 /**
@@ -35,28 +39,28 @@ export const checkSigningInputs = ({ signer, signers, timestamp }) => {
  * @param {Signer[]} signers
  * @param {number} timestamp
  * @param {Uint8Array} message
- * @returns {Promise<{ 'SS-Timestamp': string, 'SS-Signature': string, 'SS-Key-Id': string }>}
+ * @returns {Promise<{ 'Shelfway-Timestamp': string, 'Shelfway-Signature': string, 'Shelfway-Key-Id': string }>}
  */
 export const signDetached = async (signers, timestamp, message) => {
 	const entries = await Promise.all(signers.map(async (s) => `v1;kid=${s.kid};sig=${b64url(await s.sign(message))}`));
 	return {
-		'SS-Timestamp': String(timestamp),
-		'SS-Signature': entries.join(', '),
-		'SS-Key-Id': /** @type {Signer} */ (signers[0]).kid,
+		'Shelfway-Timestamp': String(timestamp),
+		'Shelfway-Signature': entries.join(', '),
+		'Shelfway-Key-Id': /** @type {Signer} */ (signers[0]).kid,
 	};
 };
 
 /**
- * Parse the SS-Signature header strictly.
+ * Parse the Shelfway-Signature header strictly.
  * @param {string} header
  * @returns {{ kid: string, sig: Uint8Array }[]}
  */
 const parseSignatureHeader = (header) => {
 	const items = header.split(',').map((item) => item.trim());
-	if (items.length > MAX_SIGNATURES) throw createProtocolError('malformed', 'bad SS-Signature header');
+	if (items.length > MAX_SIGNATURES) throw createProtocolError('malformed', 'bad Shelfway-Signature header');
 	return items.map((item) => {
 		const match = /^v1;kid=([A-Za-z0-9._:-]{1,128});sig=([A-Za-z0-9_-]{86})$/.exec(item);
-		if (!match) throw createProtocolError('malformed', 'bad SS-Signature entry');
+		if (!match) throw createProtocolError('malformed', 'bad Shelfway-Signature entry');
 		return { kid: /** @type {string} */ (match[1]), sig: fromB64url(/** @type {string} */ (match[2])) };
 	});
 };
@@ -70,7 +74,7 @@ const parseSignatureHeader = (header) => {
  */
 export const readTimestamp = (headers, now, toleranceSec) => {
 	const raw = getHeader(headers, SIGNATURE_HEADERS.timestamp);
-	if (!raw || !/^\d{1,12}$/.test(raw)) throw createProtocolError('malformed', 'SS-Timestamp is missing or invalid');
+	if (!raw || !/^\d{1,12}$/.test(raw)) throw createProtocolError('malformed', 'Shelfway-Timestamp is missing or invalid');
 	const timestamp = Number(raw);
 	const age = now() / 1000 - timestamp;
 	if (age > toleranceSec) throw createProtocolError('expired', 'timestamp is outside the tolerance');
@@ -79,7 +83,7 @@ export const readTimestamp = (headers, now, toleranceSec) => {
 };
 
 /**
- * Verify the SS-Signature header over `message`; returns the kid that verified.
+ * Verify the Shelfway-Signature header over `message`; returns the kid that verified.
  * @param {HeaderBag} headers
  * @param {Uint8Array} message
  * @param {KeyResolver} keyResolver
@@ -87,7 +91,7 @@ export const readTimestamp = (headers, now, toleranceSec) => {
  */
 export const verifyDetached = async (headers, message, keyResolver) => {
 	const raw = getHeader(headers, SIGNATURE_HEADERS.signature);
-	if (!raw) throw createProtocolError('malformed', 'SS-Signature is missing');
+	if (!raw) throw createProtocolError('malformed', 'Shelfway-Signature is missing');
 	const entries = parseSignatureHeader(raw);
 	/** @type {import('./errors.js').ProtocolError | undefined} */
 	let keyError;

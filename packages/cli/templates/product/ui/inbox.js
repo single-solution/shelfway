@@ -5,7 +5,7 @@
  * `Signed out` when the page cannot give one.
  * @module
  */
-import { adminCall, createTicketSource, element, formatText, mountWidget } from '@ss/app-kit/widget';
+import { adminCall, createTicketSource, element, formatText, mountWidget } from '@shelfway/app-kit/widget';
 import { WIDGET_CSS } from './styles.js';
 
 /** @typedef {{ id: string, text: string, email: string | null, createdAt: string }} Note */

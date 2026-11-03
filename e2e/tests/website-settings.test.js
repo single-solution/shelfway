@@ -5,10 +5,14 @@
  * not a product's own signed call.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createProductInstance as createChat, manifest as chatManifest, strings as chatStrings } from '@ss/product-chat/product';
-import { createRoutes as chatRoutes } from '@ss/product-chat/routes';
-import { createProductInstance, manifest, strings } from '@ss/product-ecommerce/product';
-import { createRoutes } from '@ss/product-ecommerce/routes';
+import {
+	createProductInstance as createChat,
+	manifest as chatManifest,
+	strings as chatStrings,
+} from '@shelfway/product-chat/product';
+import { createRoutes as chatRoutes } from '@shelfway/product-chat/routes';
+import { createProductInstance, manifest, strings } from '@shelfway/product-ecommerce/product';
+import { createRoutes } from '@shelfway/product-ecommerce/routes';
 import { codeOf, startSystem } from './helpers.js';
 
 const SHOP = 'https://ecommerce.test';
@@ -169,7 +173,7 @@ describe('the merchant sets the time zone once, in the Portal', () => {
 		// the website's server reads the same, and Ecommerce has no list of its own for them any more
 		const fromServer = await sys.call('GET', '/v1/shop/store', {
 			token: tokens.ecommerce?.server,
-			headers: { 'ss-visitor-ip': '203.0.113.7' },
+			headers: { 'shelfway-visitor-ip': '203.0.113.7' },
 		});
 		expect(fromServer.json).toEqual(shop.json);
 		expect((await sys.call('GET', '/v1/lists/store_details', { token: tokens.ecommerce?.server })).status).toBe(404);
@@ -206,11 +210,11 @@ describe('nothing but a signed-in person changes website settings', () => {
 			const bare = await sys.call('PUT', path, { token: server, bare: true, body: change });
 			expect([bare.status, codeOf(bare)]).toEqual([403, 'needs_signed_in_staff']);
 			const staff = await sys.call('PUT', path, { token: server, body: change });
-			expect([staff.status, codeOf(staff)]).toEqual([409, 'managed_by_portal']);
+			expect([staff.status, codeOf(staff)]).toEqual([409, 'managed_by_platform']);
 			const chatBare = await sys.call('PUT', path, { token: tokens.chat?.server, bare: true, base: CHAT, body: change });
 			expect(chatBare.status).toBe(403);
 			const chatStaff = await sys.call('PUT', path, { token: tokens.chat?.server, base: CHAT, body: change });
-			expect([chatStaff.status, codeOf(chatStaff)]).toEqual([409, 'managed_by_portal']);
+			expect([chatStaff.status, codeOf(chatStaff)]).toEqual([409, 'managed_by_platform']);
 		}
 		// Ecommerce keeps no copy of the Portal's facts to change: there is no such list, and no such setting
 		const store = await sys.call('PUT', '/v1/lists/store_details', { token: server, body: { value: { name: 'Mine' } } });

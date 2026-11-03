@@ -18,11 +18,11 @@
  * - AI token counts per day and month window, the caps and the monthly cost alert.
  * @module
  */
-import { formatText, problem } from '@ss/app-kit';
-import { createId } from '@ss/contracts';
-import { callingCodeOf } from '@ss/contracts/phone';
-import { LONG_VALUE_LIMIT } from '@ss/contracts/templates';
-import { randomToken, sha256Hex } from '@ss/protocol';
+import { formatText, problem } from '@shelfway/app-kit';
+import { createId } from '@shelfway/contracts';
+import { callingCodeOf } from '@shelfway/contracts/phone';
+import { LONG_VALUE_LIMIT } from '@shelfway/contracts/templates';
+import { randomToken, sha256Hex } from '@shelfway/protocol';
 import { capReached, windowKeys, alertCrossed } from '../core/caps.js';
 import {
 	AI_COST_ALERT_PERCENT,

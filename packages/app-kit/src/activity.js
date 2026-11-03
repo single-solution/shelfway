@@ -1,6 +1,6 @@
 /**
  * The activity log and its copies to Accounts (PLAN 0.4.11, 0.8.10 K9). Each product keeps a log of actions done
- * through its widgets or API in the merchant database (`ss_<product id>_activity`): who (`actor`: kind, id, name and
+ * through its widgets or API in the merchant database (`shelfway_<product id>_activity`): who (`actor`: kind, id, name and
  * the acting user's role), what (`action`), on what (`target`, and its `label`, for example an order number), when, and
  * what changed: `values` (codes, numbers and yes/no that the product's texts put into words, A8: no sentence in one
  * language is stored) or an optional plain-text `detail` (never message contents, secrets or addresses). When
@@ -16,8 +16,8 @@
  * (`settings.changed`, written by the kit's `settingsChanged`).
  * @module
  */
-import { createId, validateActivityCopy } from '@ss/contracts';
-import { zonedDayStart } from '@ss/contracts/format';
+import { createId, validateActivityCopy } from '@shelfway/contracts';
+import { zonedDayStart } from '@shelfway/contracts/format';
 import { ObjectId } from 'mongodb';
 import { kitError } from './util.js';
 
@@ -154,7 +154,7 @@ export const activityView = (entry) => ({
 
 /**
  * @param {{ productId: string, data: import('./data.js').Data, connections: import('./connections.js').Connections,
- *   now: () => number, logger: import('@ss/net').Logger }} options
+ *   now: () => number, logger: import('@shelfway/net').Logger }} options
  */
 export const createActivity = ({ productId, data, connections, now, logger }) => {
 	/** Per instance: websites known to have no unsent copies. @type {Set<string>} */

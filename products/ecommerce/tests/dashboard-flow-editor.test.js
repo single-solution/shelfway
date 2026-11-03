@@ -6,7 +6,7 @@
  */
 import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { byLabel, byText, cleanup, click, render, type } from '@ss/ui/testing';
+import { byLabel, byText, cleanup, click, render, type } from '@shelfway/ui/testing';
 import { OrderFlowEditor } from '../app/dashboard/flow-editor.js';
 import { DEFAULT_FLOW, checkOrderFlow } from '../core/flow.js';
 import { defaultPaymentMethods } from '../core/payment-methods.js';

@@ -2,7 +2,7 @@
  * Ecommerce's data model: the records every part of the shop shares in the merchant database (PLAN 0.8.8), as JSDoc
  * types plus the collection names, id prefixes and the order-status roles. This file is the contract between the
  * catalog, checkout and orders, promotions, returns and the shopper extras: each part keeps its own queries, but every
- * record has exactly this shape. Collections are `ss_ecommerce_<name>` (the kit adds the prefix and the tenant guard:
+ * record has exactly this shape. Collections are `shelfway_ecommerce_<name>` (the kit adds the prefix and the tenant guard:
  * every query carries `websiteId`; inserts are stamped with `websiteId`, `merchantId`, `createdAt` and `updatedAt`).
  * Money is integer minor units of the shop's currency (the `catalog` setting `currency`); times are `Date`s, ISO-8601
  * UTC on the wire. No I/O.
@@ -81,7 +81,7 @@ export const COLLECTIONS = Object.freeze({
 	outbox: 'outbox',
 });
 
-/** Id prefixes (`createId(prefix)` from `@ss/contracts`). */
+/** Id prefixes (`createId(prefix)` from `@shelfway/contracts`). */
 export const ID_PREFIX = Object.freeze({
 	product: 'prd',
 	variant: 'var',

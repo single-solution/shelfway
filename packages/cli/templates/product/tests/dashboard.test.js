@@ -7,7 +7,7 @@
  */
 import { act } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { byText, cleanup, click, render } from '@ss/ui/testing';
+import { byText, cleanup, click, render } from '@shelfway/ui/testing';
 import Dashboard from '../app/dashboard/page.js';
 import { TEXTS } from '../app/dashboard/texts.js';
 
@@ -38,7 +38,7 @@ const OVERVIEW = {
 /** The signed-in merchant's session, from the Portal's `/sso`. */
 const SESSION = {
 	who: { kind: 'merchant', id: 'mer_1', name: 'Acme' },
-	portalUrl: 'https://portal.example.com',
+	platformUrl: 'https://portal.example.com',
 	branding: { name: 'Shelfway' },
 	support: { channels: [{ type: /** @type {const} */ ('email'), label: 'Email', url: 'mailto:help@example.com' }] },
 	switcher: [{ merchantName: 'Acme', websites: [{ websiteId: WEBSITE, domain: 'shop.example.com' }] }],

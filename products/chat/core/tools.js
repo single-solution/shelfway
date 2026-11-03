@@ -6,7 +6,7 @@
  * The shop tools are in shop.js.
  * @module
  */
-import { isObject } from '@ss/contracts/util';
+import { isObject } from '@shelfway/contracts/util';
 import { bookingParameters, serviceParameter } from './booking.js';
 import { SHOP_TOOL_NAMES } from './shop.js';
 import { isHttpsUrl } from './text.js';
@@ -19,7 +19,7 @@ export const BUILTIN = Object.freeze({
 });
 
 /** The header carrying the signature of every tool and booking call: `t=<unix seconds>,v1=<hex HMAC-SHA256>`. */
-export const TOOL_SIGNATURE_HEADER = 'ss-chat-signature';
+export const TOOL_SIGNATURE_HEADER = 'shelfway-chat-signature';
 
 /** Call timeout of every tool and booking call (ms). */
 export const TOOL_TIMEOUT_MS = 8000;
@@ -55,7 +55,7 @@ export const PARAMETER_TYPES = Object.freeze(/** @type {const} */ (['string', 'n
  * @property {ToolParameter[]} parameters
  * @property {boolean} includeVisitor send the signed-in visitor with each call: the id and name of the verified sign-in, its email and phone only when Accounts verified them (never what the visitor typed in the chat)
  */
-/** @typedef {import('@ss/app-kit').AiToolSchema} AiToolSchema */
+/** @typedef {import('@shelfway/app-kit').AiToolSchema} AiToolSchema */
 
 /** @param {unknown} value @param {number} max */
 const text = (value, max) => (typeof value === 'string' && value.trim().length > 0 && value.length <= max ? value.trim() : null);

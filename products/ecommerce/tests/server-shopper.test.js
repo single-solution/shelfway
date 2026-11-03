@@ -1,10 +1,10 @@
 /**
  * The shopper routes (`/v1/shop/…`) called from the website's own server with the server token, for a shopper who
- * signed in through Accounts: the call carries the shopper's Accounts sign-in in `SS-Sign-In` (with `SS-Visitor-IP`),
+ * signed in through Accounts: the call carries the shopper's Accounts sign-in in `Shelfway-Sign-In` (with `Shelfway-Visitor-IP`),
  * the kit verifies it for the website of the token, and the call acts as that shopper only. A sign-in for another
  * website, an expired one, one signed by another key and a bare user id are all refused; staff acting is unchanged.
  */
-import { createAccountsDouble } from '@ss/app-kit/testing';
+import { createAccountsDouble } from '@shelfway/app-kit/testing';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { ACCOUNTS, readyShop } from './helpers.js';
 
@@ -24,7 +24,7 @@ const codeOf = (response) =>
 		.pop();
 /** A server-token shopper call. @param {string} method @param {string} path @param {string | null} signIn @param {unknown} [body] @param {Record<string, string>} [more] */
 const asShopper = (method, path, signIn, body, more = {}) =>
-	shop.api(method, path, body, { 'ss-visitor-ip': IP, ...(signIn ? { 'ss-sign-in': signIn } : {}), ...more });
+	shop.api(method, path, body, { 'shelfway-visitor-ip': IP, ...(signIn ? { 'shelfway-sign-in': signIn } : {}), ...more });
 
 describe('shopper routes called from the website’s server', () => {
 	it('act as the shopper of a valid sign-in: my orders, loyalty and wishlist are theirs alone', async () => {
@@ -49,9 +49,9 @@ describe('shopper routes called from the website’s server', () => {
 		expect([missing.status, codeOf(missing)]).toEqual([403, 'sign_in_required']);
 		// a user id alone never names the shopper
 		const bare = await asShopper('GET', '/v1/shop/orders', null, undefined, {
-			'ss-user-id': 'usr_serversara001',
-			'ss-actor-id': 'usr_serversara001',
-			'ss-actor-name': 'Sara',
+			'shelfway-user-id': 'usr_serversara001',
+			'shelfway-actor-id': 'usr_serversara001',
+			'shelfway-actor-name': 'Sara',
 		});
 		expect([bare.status, codeOf(bare)]).toEqual([403, 'sign_in_required']);
 	});
@@ -122,16 +122,27 @@ describe('shopper routes called from the website’s server', () => {
 		const forged = await shop.call('GET', '/v1/orders', {
 			token: shop.server,
 			bare: true,
-			headers: { 'ss-actor-id': 'usr_ali0001', 'ss-actor-name': 'Ali' },
+			headers: { 'shelfway-actor-id': 'usr_ali0001', 'shelfway-actor-name': 'Ali' },
 		});
 		expect([forged.status, codeOf(forged)]).toEqual([403, 'needs_signed_in_staff']);
-		const staff = await shop.api('GET', '/v1/orders', undefined, { 'ss-actor-id': 'usr_ali0001', 'ss-actor-name': 'Ali' });
+		const staff = await shop.api('GET', '/v1/orders', undefined, {
+			'shelfway-actor-id': 'usr_ali0001',
+			'shelfway-actor-name': 'Ali',
+		});
 		expect(staff.status).toBe(200);
 		// a shopper's sign-in is no staff: the staff routes refuse it, whatever else is sent
 		const sara = await shop.signIn({ id: 'usr_serversara003', name: 'Sara Server' });
-		const asShopper = await shop.call('GET', '/v1/orders', { token: shop.server, bare: true, headers: { 'ss-sign-in': sara } });
+		const asShopper = await shop.call('GET', '/v1/orders', {
+			token: shop.server,
+			bare: true,
+			headers: { 'shelfway-sign-in': sara },
+		});
 		expect([asShopper.status, codeOf(asShopper)]).toEqual([403, 'forbidden']);
-		const junk = await shop.call('GET', '/v1/orders', { token: shop.server, bare: true, headers: { 'ss-sign-in': 'junk' } });
+		const junk = await shop.call('GET', '/v1/orders', {
+			token: shop.server,
+			bare: true,
+			headers: { 'shelfway-sign-in': 'junk' },
+		});
 		expect(junk.status).toBe(401);
 	});
 });

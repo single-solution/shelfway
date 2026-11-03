@@ -12,7 +12,7 @@ import { totpCode } from '../../src/infra/auth.js';
 import { closeMongoClients } from '../../src/testing.js';
 import { browserOf, pressMenu, settle, until } from './merchant-harness.js';
 import { createSystemStore } from '../../src/infra/system.js';
-import { createPortal } from '../../src/portal.js';
+import { createPlatform } from '../../src/platform.js';
 import { modules as defaultModules } from '../../src/modules/index.js';
 import { createIdentityModule } from '../../src/modules/identity/index.js';
 import * as admin from '../../src/console/admin/loaders.js';
@@ -26,9 +26,9 @@ import { OverviewView } from '../../src/console/admin/views/overview.js';
 import { MerchantsView } from '../../src/console/admin/views/merchants.js';
 import { AddCreditsDialog, FinanceView } from '../../src/console/admin/views/finance.js';
 import { SettingsView } from '../../src/console/admin/views/settings.js';
-import { ToastProvider } from '@ss/ui';
+import { ToastProvider } from '@shelfway/ui';
 import { testRouter } from './router.js';
-import { act, byLabel, cleanup, render, type } from '@ss/ui/testing';
+import { act, byLabel, cleanup, render, type } from '@shelfway/ui/testing';
 import { ENCRYPTION_KEY, createTestLogger, startMongo, testConfig } from '../helpers.js';
 
 vi.mock('next/navigation.js', async (importOriginal) => {
@@ -150,7 +150,7 @@ describe('admin console interactions (jsdom)', () => {
 		const mail = [];
 		const mailer = { available: true, send: async (/** @type {any} */ m) => void mail.push(m) };
 		const modules = defaultModules.map((m) => (m.name === 'identity' ? createIdentityModule({ mailer }) : m));
-		const portal = createPortal({
+		const portal = createPlatform({
 			config: await testConfig(),
 			db: mongo.db('admin_ui'),
 			system: createSystemStore(mongo.db('admin_ui'), { encryptionKey: ENCRYPTION_KEY }),
@@ -173,7 +173,7 @@ describe('admin console interactions (jsdom)', () => {
 		ownerBrowser.use();
 		const created = await ownerBrowser.api.post('/v1/auth/first-admin', {
 			name: 'Rita Root',
-			email: 'root@ss.test',
+			email: 'root@shelfway.test',
 			password: OWNER_PASSWORD,
 		});
 		expect(created.ok).toBe(true);
@@ -567,7 +567,7 @@ describe('admin console interactions (jsdom)', () => {
 			</ToastProvider>,
 		);
 		await press('Invite');
-		fillDialog('Email', 'help@ss.test');
+		fillDialog('Email', 'help@shelfway.test');
 		await act(async () => {
 			byLabel(/** @type {HTMLElement} */ (document.querySelector('[role="dialog"]')), 'Support').click();
 		});
@@ -576,7 +576,7 @@ describe('admin console interactions (jsdom)', () => {
 		const invited = /** @type {any} */ (
 			await until(
 				() =>
-					shows('help@ss.test') &&
+					shows('help@shelfway.test') &&
 					ownerBrowser.calls.find((c) => c.method === 'POST' && c.path === adminApi.admins() && c.status === 201)?.body,
 			)
 		);
@@ -600,10 +600,10 @@ describe('admin console interactions (jsdom)', () => {
 		});
 		await press('Resend invite');
 		await choose('Correct invite email');
-		fillDialog('Email', 'helpdesk@ss.test');
+		fillDialog('Email', 'helpdesk@shelfway.test');
 		await pressInDialog('Correct invite email');
 		await confirmWithPassword('Correct invite email');
-		await until(() => shows('helpdesk@ss.test'));
+		await until(() => shows('helpdesk@shelfway.test'));
 		await choose('Change role');
 		await act(async () => {
 			byLabel(/** @type {HTMLElement} */ (document.querySelector('[role="dialog"]')), 'Finance').click();

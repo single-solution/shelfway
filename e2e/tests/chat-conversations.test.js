@@ -11,36 +11,36 @@
  * and reassures after 3 minutes (C4); staff alerts go through the kit and the real Notifications to email addresses,
  * a phone (WhatsApp) and the Accounts staff whose role may reply, on every message and on handoff (C5); a staff reply
  * sends `chat.staff_reply` by WhatsApp to a visitor who left, once until they check again (C6); a store's own guest
- * cookie imported as a hash works as `SS-Guest`, a guest chat merges by time into the account's own conversation at
+ * cookie imported as a hash works as `Shelfway-Guest`, a guest chat merges by time into the account's own conversation at
  * sign-in and guest chats with the verified phone move with `claimByPhone` (C7); older messages page back by sequence
  * for the visitor, the merchant's server and staff (C8); the staff list has every Accounts user who may answer chats
  * and alerts reach the assignee's phone from Accounts (CH-6, CH-12); a transcript goes whole by email through the real
  * Notifications, and merchants delete one lead or every lead. The AI provider (OpenAI), the email provider (Resend) and the
  * WhatsApp Cloud API (Meta) are fakes in this process; no real network call is made.
  */
-import { staffSignIns } from '@ss/product-accounts/testing';
+import { staffSignIns } from '@shelfway/product-accounts/testing';
 import { createHash } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
 	createProductInstance as createAccounts,
 	manifest as accountsManifest,
 	strings as accountsStrings,
-} from '@ss/product-accounts/product';
-import { createRoutes as accountsRoutes } from '@ss/product-accounts/routes';
-import { createProductInstance, manifest, strings } from '@ss/product-chat/product';
-import { createRoutes } from '@ss/product-chat/routes';
+} from '@shelfway/product-accounts/product';
+import { createRoutes as accountsRoutes } from '@shelfway/product-accounts/routes';
+import { createProductInstance, manifest, strings } from '@shelfway/product-chat/product';
+import { createRoutes } from '@shelfway/product-chat/routes';
 import {
 	createProductInstance as createEcommerce,
 	manifest as shopManifest,
 	strings as shopStrings,
-} from '@ss/product-ecommerce/product';
-import { createRoutes as shopRoutes } from '@ss/product-ecommerce/routes';
+} from '@shelfway/product-ecommerce/product';
+import { createRoutes as shopRoutes } from '@shelfway/product-ecommerce/routes';
 import {
 	createProductInstance as createNotifications,
 	manifest as notifyManifest,
 	strings as notifyStrings,
-} from '@ss/product-notifications/product';
-import { createRoutes as notifyRoutes } from '@ss/product-notifications/routes';
+} from '@shelfway/product-notifications/product';
+import { createRoutes as notifyRoutes } from '@shelfway/product-notifications/routes';
 import { DAY, savePortalSettings, splitPortal, startSystem } from './helpers.js';
 
 const CHAT = 'https://chat-conversations.test';
@@ -57,7 +57,7 @@ const PAGE_URL = `${ORIGIN}/products/lamp-max`;
 const TEAM_PHONE = '+44 20 7946 0958';
 const TEAM_DIGITS = '442079460958';
 /** Server calls as a named member of staff (K2). */
-const STAFF = { 'ss-actor-id': 'usr_staff_42', 'ss-actor-name': encodeURIComponent('Alex Morgan') };
+const STAFF = { 'shelfway-actor-id': 'usr_staff_42', 'shelfway-actor-name': encodeURIComponent('Alex Morgan') };
 
 /** Emails the merchant's provider (Resend) received. @type {any[]} */
 const mails = [];
@@ -168,14 +168,14 @@ const setUp = async (productKey, path, body) => {
  */
 const server = async (productKey, method, path, body, headers = {}) => {
 	// Accounts takes the sign-in of a real staff user of its own (the other products take the harness's staff member)
-	if (productKey === 'accounts' && !headers['ss-sign-in'] && !headers['ss-visitor-ip']) {
+	if (productKey === 'accounts' && !headers['shelfway-sign-in'] && !headers['shelfway-visitor-ip']) {
 		accountsStaff ??= staffSignIns(/** @type {any} */ (sys.others.accounts), {
 			websiteId,
 			merchantId,
 			domain: DOMAIN,
 			base: ACCOUNTS,
 		});
-		headers = { ...headers, 'ss-sign-in': await accountsStaff() };
+		headers = { ...headers, 'shelfway-sign-in': await accountsStaff() };
 	}
 	return sys.call(method, path, {
 		base: BASES[productKey],
@@ -196,6 +196,7 @@ const shipping = async (text) => {
 	expect(saved.status, JSON.stringify(saved.json)).toBe(200);
 };
 
+/** @type {Record<string, string>} */
 const CHAT_SETTING_MAP = {
 	'ai_instructions.instructions': 'ai_replies.instructions',
 	'staff_alerts.adminUrl': 'inbox.adminUrl',
@@ -232,7 +233,7 @@ const device = ({ guestKey = '', signIn = '' } = {}) => {
 			token: tokens.chat?.browser,
 			origin: ORIGIN,
 			...(body === undefined ? {} : { body }),
-			headers: { ...(key ? { 'ss-guest': key } : {}), ...(signIn ? { 'ss-sign-in': signIn } : {}) },
+			headers: { ...(key ? { 'shelfway-guest': key } : {}), ...(signIn ? { 'shelfway-sign-in': signIn } : {}) },
 		});
 		if (typeof res.json?.guestKey === 'string') key = res.json.guestKey;
 		return res;

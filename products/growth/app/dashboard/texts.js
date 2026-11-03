@@ -1,9 +1,9 @@
 /**
  * The dashboard's words (US English, kept in this file; the dashboard is not translated, PLAN 0.6): Growth's title and
- * its own words over the words every product dashboard shares (`@ss/ui`).
+ * its own words over the words every product dashboard shares (`@shelfway/ui`).
  * @module
  */
-import { dashboardTexts } from '@ss/ui';
+import { dashboardTexts } from '@shelfway/ui';
 
 export const TEXTS = dashboardTexts({
 	title: 'Growth',
@@ -57,7 +57,7 @@ export const TEXTS = dashboardTexts({
 		},
 		goals: {
 			title: 'Goals',
-			help: 'What you count as a success: an event (a shop event, contact, or your own event sent with SSGrowth.track) or a page (a path; * is one segment, ** any). The analytics dashboard counts each one.',
+			help: 'What you count as a success: an event (a shop event, contact, or your own event sent with ShelfwayGrowth.track) or a page (a path; * is one segment, ** any). The analytics dashboard counts each one.',
 		},
 		funnels: {
 			title: 'Funnels',

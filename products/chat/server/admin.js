@@ -5,7 +5,7 @@
  * dashboard session.
  * @module
  */
-import { problem } from '@ss/app-kit';
+import { problem } from '@shelfway/app-kit';
 import { ratingScale } from '../core/conversation.js';
 import { labelCounts } from '../core/labels.js';
 import { reportRange, summarize } from '../core/reports.js';
@@ -112,7 +112,7 @@ export const createAdmin = (product, service) => {
 		return { store, conversations, leads };
 	};
 
-	/** @type {NonNullable<import('@ss/app-kit').ProductOptions['hooks']>['exportUser']} */
+	/** @type {NonNullable<import('@shelfway/app-kit').ProductOptions['hooks']>['exportUser']} */
 	const exportUser = async (ctx, user) => {
 		const { store, conversations, leads } = await personOf(ctx, user);
 		const messages = (await store.messages.ofConversations(conversations.map((c) => c.id))).filter((m) => !m.internal);
@@ -142,7 +142,7 @@ export const createAdmin = (product, service) => {
 		};
 	};
 
-	/** @type {NonNullable<import('@ss/app-kit').ProductOptions['hooks']>['deleteUser']} */
+	/** @type {NonNullable<import('@shelfway/app-kit').ProductOptions['hooks']>['deleteUser']} */
 	const deleteUser = async (ctx, user) => {
 		const { store, conversations, leads } = await personOf(ctx, user);
 		const site = { websiteId: String(ctx.websiteId), merchantId: ctx.merchantId ?? null };
@@ -162,7 +162,7 @@ export const createAdmin = (product, service) => {
 
 	// --------------------------------------------------------------------------------------------- widget config
 
-	/** @type {NonNullable<import('@ss/app-kit').ProductOptions['hooks']>['widgetConfig']} */
+	/** @type {NonNullable<import('@shelfway/app-kit').ProductOptions['hooks']>['widgetConfig']} */
 	const widgetConfig = async (ctx) => {
 		const websiteId = String(ctx.websiteId);
 		const on = await product.featuresOn(websiteId);

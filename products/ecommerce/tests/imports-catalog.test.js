@@ -575,7 +575,7 @@ describe('finish', () => {
 		expect((await stored('categories', ID.evening))?.path).toEqual([ID.clothes, ID.dresses, gowns]);
 	});
 
-	it('answers the sums ss-import verify compares', async () => {
+	it('answers the sums shelfway-import verify compares', async () => {
 		const status = await api('GET', '/v1/import/status');
 		expect(status.totals).toMatchObject({
 			products: 2,

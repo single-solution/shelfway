@@ -14,7 +14,7 @@
  *   defineRoute({ method: 'GET', path: '/v1/orders/count', auth: 'server', feature: 'checkout', handler: orderCounts.count })
  * @module
  */
-import { isObject } from '@ss/contracts/util';
+import { isObject } from '@shelfway/contracts/util';
 import { problem } from './http/results.js';
 
 /** Counts are exact up to this many records. */

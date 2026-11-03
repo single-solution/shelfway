@@ -9,8 +9,8 @@
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { validateSettingValue } from '@ss/contracts';
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
+import { validateSettingValue } from '@shelfway/contracts';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import { afterEach, describe, expect, it } from 'vitest';
 import { FEATURES, PENDING } from '../src/mappings/sisters-boutique/index.js';
 import { readSisters } from './sb-helpers.js';
@@ -126,7 +126,7 @@ describe('the Sisters Boutique mapping through the products’ checks', () => {
 		const { records } = await readSisters({ cleanups });
 		const roles = await records('accounts.roles');
 		expect(refusals(roles, accounts.checkImportedRole)).toEqual([]);
-		// the phone format is the website's, entered in the Portal by hand (`PORTAL_BY_HAND`): +92 and the trunk 0
+		// the phone format is the website's, entered in the Portal by hand (`PLATFORM_BY_HAND`): +92 and the trunk 0
 		const phoneFormat = { defaultCallingCode: '+92', trunkPrefix: '0' };
 		const roleKeys = new Set([
 			...ROLE_TEMPLATES.map((/** @type {{ key: string }} */ role) => role.key),
@@ -263,7 +263,7 @@ describe('the Sisters Boutique mapping through the products’ checks', () => {
 					.filter(([key]) => key.startsWith('checkout.'))
 					.map(([key, value]) => [key.slice('checkout.'.length), value]),
 			),
-			// the Portal's Region and format for SB (`PORTAL_BY_HAND`)
+			// the Portal's Region and format for SB (`PLATFORM_BY_HAND`)
 			region: {
 				...emptyWebsiteSettings('web_sample').region,
 				country: 'PK',

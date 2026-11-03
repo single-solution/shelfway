@@ -2,9 +2,9 @@ import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { describe, expect, it } from 'vitest';
 import { PRODUCT_DATABASE_OPTIONS, createMongoStore, createProduct, created, defineRoute } from '../src/index.js';
-import { createPortalClient } from '../src/portal-client.js';
+import { createPlatformClient } from '../src/platform-client.js';
 import { OFFLINE_GRACE_MS, WAITED_FETCH_MS, createStatus } from '../src/status.js';
-import { noopLogger } from '@ss/net';
+import { noopLogger } from '@shelfway/net';
 import { createMemoryStore } from '../src/testing.js';
 import { BASE, DOMAIN, ENCRYPTION_KEY, SECRET, T0, createClock, manifest, productRoutes, setup } from './helpers.js';
 
@@ -128,7 +128,7 @@ describe('status on use', () => {
 		clock.advance(60_000);
 		const response = await call('GET', '/v1/server/open', { token: server.token });
 		expect(response.status).toBe(503);
-		expect(await response.json()).toMatchObject({ type: 'https://notes.example.dev/problems/portal_unreachable' });
+		expect(await response.json()).toMatchObject({ type: 'https://notes.example.dev/problems/platform_unreachable' });
 		// back as soon as the Portal answers
 		portal.setReachable(true);
 		expect((await call('GET', '/v1/server/open', { token: server.token })).status).toBe(200);
@@ -265,23 +265,23 @@ describe('status copies never hold a request for the Portal (K-19)', () => {
 		await flush();
 		expect(portal.calls.map((c) => c.what).slice(5)).toEqual(['status']);
 		portal.calls[5]?.refuse(
-			Object.assign(new Error('gone'), { name: 'AppKitError', code: 'portal_refused', details: { status: 404 } }),
+			Object.assign(new Error('gone'), { name: 'AppKitError', code: 'platform_refused', details: { status: 404 } }),
 		);
 		await flush();
 		expect(await store.get('status', WEBSITE)).toBeNull();
 	});
 
 	it('give a Portal call the deadline it asks for', async () => {
-		const portal = createPortalClient({
-			portalUrl: 'https://portal.test',
+		const portal = createPlatformClient({
+			platformUrl: 'https://portal.test',
 			productId: 'notes',
 			signer: { kid: 'k1', alg: 'EdDSA', sign: async () => new Uint8Array(64) },
 			fetch: (_url, init) =>
 				new Promise((_resolve, reject) => init?.signal?.addEventListener('abort', () => reject(init.signal?.reason))),
 		});
 		const started = Date.now();
-		await expect(portal.status(WEBSITE, { timeoutMs: 20 })).rejects.toMatchObject({ code: 'portal_unreachable' });
-		await expect(portal.revocations(null, { timeoutMs: 20 })).rejects.toMatchObject({ code: 'portal_unreachable' });
+		await expect(portal.status(WEBSITE, { timeoutMs: 20 })).rejects.toMatchObject({ code: 'platform_unreachable' });
+		await expect(portal.revocations(null, { timeoutMs: 20 })).rejects.toMatchObject({ code: 'platform_unreachable' });
 		expect(Date.now() - started).toBeLessThan(2_000);
 	});
 });
@@ -329,7 +329,7 @@ describe('repeated requests (K-14)', () => {
 				token: browser.token,
 				origin: SITE,
 				body: { text: 'x' },
-				headers: { 'idempotency-key': 'k2', 'ss-sign-in': signIn },
+				headers: { 'idempotency-key': 'k2', 'shelfway-sign-in': signIn },
 			});
 		expect((await post('shopper-a')).status).toBe(200);
 		const other = await post('shopper-b');
@@ -361,13 +361,13 @@ describe('repeated requests (K-14)', () => {
 		expect([same.status, same.headers.get('idempotent-replayed')]).toEqual([200, 'true']);
 		// a signed-in shopper is named by the sign-in, so a changed network is still the same request
 		clock.advance(61_000);
-		expect((await post('198.51.100.1', { 'idempotency-key': 'order-2', 'ss-sign-in': 'shopper-a' })).status).toBe(200);
-		const moved = await post('198.51.100.9', { 'idempotency-key': 'order-2', 'ss-sign-in': 'shopper-a' });
+		expect((await post('198.51.100.1', { 'idempotency-key': 'order-2', 'shelfway-sign-in': 'shopper-a' })).status).toBe(200);
+		const moved = await post('198.51.100.9', { 'idempotency-key': 'order-2', 'shelfway-sign-in': 'shopper-a' });
 		expect([moved.status, moved.headers.get('idempotent-replayed')]).toEqual([200, 'true']);
 		// a visitor with a key of its own is named by it, so a phone that changed networks still gets its replay
 		clock.advance(61_000);
-		expect((await post('198.51.100.1', { 'idempotency-key': 'order-3', 'ss-guest': 'guest-1' })).status).toBe(200);
-		const roamed = await post('198.51.100.7', { 'idempotency-key': 'order-3', 'ss-guest': 'guest-1' });
+		expect((await post('198.51.100.1', { 'idempotency-key': 'order-3', 'shelfway-guest': 'guest-1' })).status).toBe(200);
+		const roamed = await post('198.51.100.7', { 'idempotency-key': 'order-3', 'shelfway-guest': 'guest-1' });
 		expect([roamed.status, roamed.headers.get('idempotent-replayed')]).toEqual([200, 'true']);
 	});
 });
@@ -611,7 +611,7 @@ describe('idempotent routes (K-14)', () => {
 		const otherActor = await call('POST', '/v1/orders', {
 			token: server.token,
 			body: { text: 'a' },
-			headers: { 'idempotency-key': 'k1', 'ss-actor-id': 'usr_1', 'ss-actor-name': 'Ana' },
+			headers: { 'idempotency-key': 'k1', 'shelfway-actor-id': 'usr_1', 'shelfway-actor-name': 'Ana' },
 		});
 		expect(otherActor.status).toBe(409);
 		expect(runs).toBe(1);

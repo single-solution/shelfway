@@ -12,7 +12,7 @@
  *   in a message's text). `channels` names every channel the product sends the message on, with its default words in
  *   US English: `email`, `push` and `staff_push` `{ subject, text }`, `sms` `{ text }`, and `whatsapp: null` (WhatsApp
  *   sends only templates the merchant had approved at Meta, so it never has a default). Notifications uses a default
- *   when the website has no template of its own. The words follow the template rules of `@ss/contracts/templates`
+ *   when the website has no template of its own. The words follow the template rules of `@shelfway/contracts/templates`
  *   (`checkMessageDefaults`).
  * @module
  */

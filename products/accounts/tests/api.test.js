@@ -58,7 +58,7 @@ describe('before setup', () => {
 		// the API reference: what each call takes and answers, from schemas/api.json
 		for (const part of [
 			'<a href="#op-post-v1-sign-up-password"><code>POST /v1/sign-up/password</code></a> Sign up with an email address and a password',
-			'<section class="ss-api-op" id="op-post-v1-sign-up-password"><h3><code>POST /v1/sign-up/password</code> Sign up with an email address and a password</h3>',
+			'<section class="shelfway-api-op" id="op-post-v1-sign-up-password"><h3><code>POST /v1/sign-up/password</code> Sign up with an email address and a password</h3>',
 			'<td><code>email</code></td><td>string (email)</td><td>yes</td><td>Kept in lower case.</td>',
 			'<h4>Answer 200 (JSON)</h4><p><a href="#schema-SignInAnswer">SignInAnswer</a></p>',
 			'<a href="#schema-SignedIn">SignedIn</a> or <a href="#schema-TwoStep">TwoStep</a>',
@@ -198,8 +198,8 @@ describe('email + password', () => {
 		const sent = lastMessage();
 		expect(sent).toMatchObject({ channel: 'email', template: 'accounts.password_reset', to: { email: 'ana@example.com' } });
 		expect(sent.values.business).toBe('shop.example.com');
-		const token = String(sent.values.link).split('#ss_accounts_reset=')[1];
-		expect(String(sent.values.link)).toMatch(/^https:\/\/shop\.example\.com\/reset\?x=1#ss_accounts_reset=/);
+		const token = String(sent.values.link).split('#shelfway_accounts_reset=')[1];
+		expect(String(sent.values.link)).toMatch(/^https:\/\/shop\.example\.com\/reset\?x=1#shelfway_accounts_reset=/);
 		// unknown addresses get the same answer and no message
 		const count = env.messages().length;
 		expect((await env.visitor('POST', '/v1/password/forgot', { email: 'ghost@example.com', returnTo: ORIGIN })).status).toBe(
@@ -239,7 +239,7 @@ describe('email + password', () => {
 		expect(tries('bo@example.com')).toBe(3);
 		await later();
 		expect(tries('bo@example.com')).toBe(3);
-		const token = String(lastMessage().values.link).split('#ss_accounts_reset=')[1];
+		const token = String(lastMessage().values.link).split('#shelfway_accounts_reset=')[1];
 		expect((await env.visitor('POST', '/v1/password/reset', { token, password: 'bo resets later' })).status).toBe(204);
 		expect((await signIn('bo@example.com', 'bo resets later')).json.status).toBe('signed_in');
 
@@ -461,7 +461,7 @@ describe('phone code and email code', () => {
 		await env.visitor('POST', '/v1/sign-in/email/code', { email: 'cy@example.com', returnTo: 'http://localhost:3000/login' });
 		const sent = lastMessage();
 		expect(sent).toMatchObject({ channel: 'email', template: 'accounts.email_code', to: { email: 'cy@example.com' } });
-		const link = String(sent.values.link).split('#ss_accounts_link=')[1];
+		const link = String(sent.values.link).split('#shelfway_accounts_link=')[1];
 		expect(String(sent.values.link)).toMatch(/^http:\/\/localhost:3000\/login#/);
 		const viaLink = await env.visitor('POST', '/v1/sign-in/email', { link, name: 'Cy' });
 		expect(viaLink.json).toMatchObject({ status: 'signed_in', user: { email: 'cy@example.com', emailVerified: true } });
@@ -502,7 +502,7 @@ describe('phone code and email code', () => {
 			name: 'Eve',
 		});
 		expect(code(byCode)).toBe('already_exists');
-		const link = String(sent.values.link).split('#ss_accounts_link=')[1];
+		const link = String(sent.values.link).split('#shelfway_accounts_link=')[1];
 		expect(code(await env.visitor('POST', '/v1/sign-in/email', { link }))).toBe('already_exists');
 		const me = await env.visitor('GET', '/v1/me', undefined, pam.json.signIn);
 		expect(me.json).toMatchObject({ phone: '+447700900001', email: 'pam@example.com', emailVerified: false });
@@ -564,8 +564,8 @@ describe('Google, Apple and Facebook', () => {
 		const back = await env.call('GET', `/oauth/google/callback?state=${params.get('state')}&code=abc`);
 		expect(back.status).toBe(303);
 		const location = String(back.headers.get('location'));
-		expect(location.startsWith(`${ORIGIN}/account#ss_accounts_code=`)).toBe(true);
-		const handoff = location.split('#ss_accounts_code=')[1];
+		expect(location.startsWith(`${ORIGIN}/account#shelfway_accounts_code=`)).toBe(true);
+		const handoff = location.split('#shelfway_accounts_code=')[1];
 		// the state works once
 		expect((await env.call('GET', `/oauth/google/callback?state=${params.get('state')}&code=abc`)).status).toBe(400);
 		const done = await env.visitor('POST', '/v1/sign-in/exchange', { code: handoff, binding: BROWSER });
@@ -593,7 +593,7 @@ describe('Google, Apple and Facebook', () => {
 		const back2 = await env.call('GET', `/oauth/google/callback?state=${p2.get('state')}&code=abc`);
 		const done2 = await env.visitor('POST', '/v1/sign-in/exchange', {
 			binding: BROWSER,
-			code: String(back2.headers.get('location')).split('#ss_accounts_code=')[1],
+			code: String(back2.headers.get('location')).split('#shelfway_accounts_code=')[1],
 		});
 		expect(done2.json.user.id).toBe(done.json.user.id);
 	});
@@ -603,10 +603,10 @@ describe('Google, Apple and Facebook', () => {
 		const state = /** @type {URL} */ (url).searchParams.get('state');
 		env.responders.set('https://oauth2.googleapis.com', () => ({ status: 400, body: {} }));
 		const back = await env.call('GET', `/oauth/google/callback?state=${state}&code=abc`);
-		expect(back.headers.get('location')).toBe(`${ORIGIN}/account#ss_accounts_error=provider_failed`);
+		expect(back.headers.get('location')).toBe(`${ORIGIN}/account#shelfway_accounts_error=provider_failed`);
 		const { url: u2 } = await start('google');
 		const back2 = await env.call('GET', `/oauth/google/callback?state=${u2?.searchParams.get('state')}&error=access_denied`);
-		expect(back2.headers.get('location')).toBe(`${ORIGIN}/account#ss_accounts_error=canceled`);
+		expect(back2.headers.get('location')).toBe(`${ORIGIN}/account#shelfway_accounts_error=canceled`);
 		expect((await env.call('GET', '/oauth/google/callback?state=bad&code=abc')).status).toBe(400);
 		expect((await env.call('GET', `/oauth/google/callback?state=web_0000000000zzz.abc&code=abc`)).status).toBe(404);
 		expect((await env.call('GET', `/oauth/google/callback?state=${env.websiteId}.unknown&code=abc`)).status).toBe(400);
@@ -642,7 +642,7 @@ describe('Google, Apple and Facebook', () => {
 		const back = await env.call('POST', '/oauth/apple/callback', { raw });
 		const done = await env.visitor('POST', '/v1/sign-in/exchange', {
 			binding: BROWSER,
-			code: String(back.headers.get('location')).split('#ss_accounts_code=')[1],
+			code: String(back.headers.get('location')).split('#shelfway_accounts_code=')[1],
 		});
 		expect(done.json.user).toMatchObject({ name: 'Al Apple', email: 'al@privaterelay.appleid.com' });
 	});
@@ -662,7 +662,7 @@ describe('Google, Apple and Facebook', () => {
 		const back = await env.call('GET', `/oauth/facebook/callback?state=${params.get('state')}&code=fb`);
 		const done = await env.visitor('POST', '/v1/sign-in/exchange', {
 			binding: BROWSER,
-			code: String(back.headers.get('location')).split('#ss_accounts_code=')[1],
+			code: String(back.headers.get('location')).split('#shelfway_accounts_code=')[1],
 		});
 		expect(done.json.user).toMatchObject({ name: 'Fay', email: 'fay@example.com', providers: ['facebook'] });
 		// an existing email user gets linked
@@ -674,7 +674,7 @@ describe('Google, Apple and Facebook', () => {
 		const back2 = await env.call('GET', `/oauth/facebook/callback?state=${u2?.searchParams.get('state')}&code=fb`);
 		const done2 = await env.visitor('POST', '/v1/sign-in/exchange', {
 			binding: BROWSER,
-			code: String(back2.headers.get('location')).split('#ss_accounts_code=')[1],
+			code: String(back2.headers.get('location')).split('#shelfway_accounts_code=')[1],
 		});
 		expect(done2.json.user).toMatchObject({ email: 'ana@example.com', providers: ['facebook'] });
 		// an account that holds the address without ever proving it is not linked: the sign-up finds the address taken
@@ -684,11 +684,11 @@ describe('Google, Apple and Facebook', () => {
 			body: { id: 'fb-3', name: 'Eve', email: 'pam@example.com' },
 		}));
 		const refused = await env.call('GET', `/oauth/facebook/callback?state=${taken?.searchParams.get('state')}&code=fb`);
-		expect(refused.headers.get('location')).toBe(`${ORIGIN}/account#ss_accounts_error=already_exists`);
+		expect(refused.headers.get('location')).toBe(`${ORIGIN}/account#shelfway_accounts_error=already_exists`);
 		env.responders.set('https://graph.facebook.com/v21.0/oauth/access_token', () => ({ status: 400, body: {} }));
 		const { url: u3 } = await start('facebook');
 		const back3 = await env.call('GET', `/oauth/facebook/callback?state=${u3?.searchParams.get('state')}&code=fb`);
-		expect(back3.headers.get('location')).toContain('ss_accounts_error=provider_failed');
+		expect(back3.headers.get('location')).toContain('shelfway_accounts_error=provider_failed');
 		env.responders.delete('https://graph.facebook.com/v21.0/oauth/access_token');
 		env.responders.delete('https://graph.facebook.com/v21.0/me');
 	});
@@ -952,7 +952,7 @@ describe('roles, two-step, consents, approval and risk checks', () => {
 		);
 		const message = lastMessage();
 		expect(message).toMatchObject({ template: 'accounts.invite', to: { email: 'inv@example.com' } });
-		const token = String(message.values.link).split('#ss_accounts_invite=')[1];
+		const token = String(message.values.link).split('#shelfway_accounts_invite=')[1];
 		expect(code(await env.visitor('POST', '/v1/invites/accept', { token: 'x' }))).toBe('code_invalid');
 		const joined = await env.visitor('POST', '/v1/invites/accept', {
 			token,

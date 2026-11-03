@@ -4,17 +4,17 @@
  * counts. Stock, offer uses, points and slots are changed only by the ledger (`adapters/ledger.js`).
  * @module
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { phoneDigitsOf } from '../core/guests.js';
 import { COLLECTIONS, ID_PREFIX, NO_ID } from '../core/model.js';
 import { VIA_PAYMENTS } from '../core/payment-methods.js';
 
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/model.js').OrderRecord} OrderRecord */
 /** @typedef {import('../core/model.js').ProductRecord} ProductRecord */
 /** @typedef {import('../core/model.js').CustomerRecord} CustomerRecord */
 
-/** Merchant database indexes of checkout. @type {import('@ss/app-kit').IndexDefinition[]} */
+/** Merchant database indexes of checkout. @type {import('@shelfway/app-kit').IndexDefinition[]} */
 export const INDEXES = [
 	{
 		collection: COLLECTIONS.orders,

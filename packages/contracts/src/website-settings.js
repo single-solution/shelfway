@@ -1,5 +1,5 @@
 /**
- * Website settings (`ss.website-settings/1`): the facts that are the same for every product of one website, kept once in
+ * Website settings (`shelfway.website-settings/1`): the facts that are the same for every product of one website, kept once in
  * the Portal and delivered to every product on it — business facts, brand and theme, region (country, time zone,
  * currencies, languages, units, Format, phone and address rules), pages and legal texts, and the team that gets alerts.
  * The document holds no secret, so it may be logged and shown in the Setup sheet. Unset text is `''`, an unset list is
@@ -24,7 +24,7 @@ import { isObject } from './util.js';
 /** @typedef {'business' | 'brand' | 'region' | 'pages' | 'team'} WebsiteSection */
 
 /** The schema name stamped on every document. */
-export const WEBSITE_SETTINGS_SCHEMA = 'ss.website-settings/1';
+export const WEBSITE_SETTINGS_SCHEMA = 'shelfway.website-settings/1';
 
 /** The sections of the document: a form of the Portal saves one of them. */
 export const WEBSITE_SETTINGS_SECTIONS = Object.freeze(

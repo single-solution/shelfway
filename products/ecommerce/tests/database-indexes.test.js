@@ -10,7 +10,7 @@ import { INDEXES } from '../adapters/product.js';
 import { ALL, setup } from './helpers.js';
 
 /** The shop's collections in the merchant database. */
-const PREFIX = 'ss_ecommerce_';
+const PREFIX = 'shelfway_ecommerce_';
 
 let databases = 0;
 /** A new database on the shared MongoDB. */
@@ -49,7 +49,9 @@ describe('a merchant database made before E45', () => {
 				{ name: 'by_slug', unique: true, partialFilterExpression: { slug: { $type: 'string' } } },
 			);
 			// a collection the shop does not have keeps its indexes
-			await db.collection('ss_other_attributes').createIndex({ websiteId: 1, slug: 1 }, { name: 'by_slug', unique: true });
+			await db
+				.collection('shelfway_other_attributes')
+				.createIndex({ websiteId: 1, slug: 1 }, { name: 'by_slug', unique: true });
 			await shop.switchOn(ALL);
 			await shop.connect('database', uri);
 			const shoes = await shop.api('POST', '/v1/categories', { name: 'Shoes' });
@@ -61,7 +63,7 @@ describe('a merchant database made before E45', () => {
 			expect(await indexNames(db, 'attributes')).toEqual(
 				['_id_', ...INDEXES.filter((index) => index.collection === 'attributes').map((index) => index.name)].sort(),
 			);
-			expect((await db.collection('ss_other_attributes').listIndexes().toArray()).map((index) => index.name)).toContain(
+			expect((await db.collection('shelfway_other_attributes').listIndexes().toArray()).map((index) => index.name)).toContain(
 				'by_slug',
 			);
 			// the same slug twice in one category is still refused

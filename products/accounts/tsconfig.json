@@ -1,5 +1,5 @@
 {
-	"extends": "@ss/config/tsconfig.base.json",
+	"extends": "@shelfway/config/tsconfig.base.json",
 	"compilerOptions": {
 		"paths": { "next/font/google": ["./node_modules/next/font/google/index.d.ts"] }
 	},

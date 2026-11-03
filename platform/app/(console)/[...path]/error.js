@@ -1,5 +1,5 @@
 'use client';
-import { Button, Page } from '@ss/ui';
+import { Button, Page } from '@shelfway/ui';
 import { CONSOLE } from '../../../src/texts/console.js';
 
 /** A page that crashed: a Page of the console frame with the message and a try-again button. */

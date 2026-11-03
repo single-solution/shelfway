@@ -4,7 +4,7 @@
  * Download my data and Delete my account (Data rights) and the orders (Orders tab). Each part shows only while its feature is on.
  * @module
  */
-import { badge, element, formatText, loadingState, mountWidget } from '@ss/app-kit/widget';
+import { badge, element, formatText, loadingState, mountWidget } from '@shelfway/app-kit/widget';
 import {
 	customInputs,
 	datesOf,
@@ -54,7 +54,7 @@ export const mountMyAccount = ({ host, win, config, session }) => {
 		css: WIDGET_CSS,
 		render: (root) => {
 			const doc = /** @type {Document} */ (root.ownerDocument);
-			const make = fieldMaker(doc, 'ss-account');
+			const make = fieldMaker(doc, 'shelfway-account');
 			const box = element(doc, 'section', { class: 'box' });
 			root.append(box);
 			let generation = 0;

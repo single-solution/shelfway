@@ -16,8 +16,8 @@ import {
 	sign,
 	verify,
 } from 'node:crypto';
-import { isNetError } from '@ss/net';
-import { isObject } from '@ss/contracts/util';
+import { isNetError } from '@shelfway/net';
+import { isObject } from '@shelfway/contracts/util';
 import { detailOf, failed } from '../core/gateway.js';
 
 /** @typedef {import('./providers.js').OutboundSend} OutboundSend */
@@ -65,7 +65,7 @@ export const pushKeysOf = (value) => {
 			key: { kty: 'EC', crv: 'P-256', x: b64url(point.subarray(1, 33)), y: b64url(point.subarray(33)), d: b64url(scalar) },
 			format: 'jwk',
 		});
-		const probe = Buffer.from('ss-push-keys');
+		const probe = Buffer.from('shelfway-push-keys');
 		const signature = sign('sha256', probe, { key, dsaEncoding: 'ieee-p1363' });
 		const pub = createPublicKey({
 			key: { kty: 'EC', crv: 'P-256', x: b64url(point.subarray(1, 33)), y: b64url(point.subarray(33)) },

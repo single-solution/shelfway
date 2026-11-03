@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PRODUCT_UNAVAILABLE_REASONS } from '@ss/contracts';
+import { PRODUCT_UNAVAILABLE_REASONS } from '@shelfway/contracts';
 import { KIT_ROUTES, checkApiRoutes, kitImportRoutesOf } from '../src/api.js';
 import { renderOpenapi } from '../src/openapi.js';
 
@@ -21,11 +21,11 @@ describe('the kit routes', () => {
 		expect(auth['GET /v1/lists/:list']).toBe('server');
 		const doc = /** @type {any} */ (renderOpenapi({ manifest: null, routes: [] }));
 		expect(doc.paths['/v1/widget/config'].get).toMatchObject({
-			'x-ss-auth': 'browser',
+			'x-shelfway-auth': 'browser',
 			security: [{ browserToken: [] }, { serverToken: [] }],
 			summary: 'Widget config (visitor widgets)',
 		});
-		expect(doc.paths['/v1/widget/admin/config'].get).toMatchObject({ 'x-ss-auth': 'ticket', security: [{ ticket: [] }] });
+		expect(doc.paths['/v1/widget/admin/config'].get).toMatchObject({ 'x-shelfway-auth': 'ticket', security: [{ ticket: [] }] });
 		expect(doc.components.schemas.WidgetConfig.required).toContain('widgets');
 		expect(doc.components.schemas.Problem.properties.reason.enum).toEqual([...PRODUCT_UNAVAILABLE_REASONS]);
 	});
@@ -38,10 +38,10 @@ describe('the kit routes', () => {
 		const doc = /** @type {any} */ (renderOpenapi({ manifest: IMPORTING, routes: [], api: described('Import') }));
 		expect(doc.paths['/v1/import/{collection}'].post).toMatchObject({
 			summary: 'Import',
-			'x-ss-auth': 'server',
-			'x-ss-feature': 'import',
+			'x-shelfway-auth': 'server',
+			'x-shelfway-feature': 'import',
 		});
-		expect(doc.paths['/v1/import/status'].get['x-ss-feature']).toBe('import');
+		expect(doc.paths['/v1/import/status'].get['x-shelfway-feature']).toBe('import');
 		expect(/** @type {any} */ (renderOpenapi({ manifest: null, routes: [] })).paths['/v1/import/status']).toBeUndefined();
 	});
 
@@ -50,7 +50,7 @@ describe('the kit routes', () => {
 		const doc = /** @type {any} */ (
 			renderOpenapi({ manifest: IMPORTING, routes: [{ ...own, feature: 'notes', idempotent: false }] })
 		);
-		expect(doc.paths['/v1/import/status'].get['x-ss-feature']).toBe('notes');
+		expect(doc.paths['/v1/import/status'].get['x-shelfway-feature']).toBe('notes');
 		expect(
 			checkApiRoutes({}, [{ ...own, idempotent: false }], IMPORTING).filter((p) =>
 				p.message.startsWith('GET /v1/import/status'),

@@ -42,7 +42,7 @@ const placeOrder = async ({ guest = false, item: given, quantity = 1 } = {}) => 
 		headers: {
 			'x-forwarded-for': `10.7.0.${visits}`,
 			'idempotency-key': `api-orders-${visits}`,
-			...(signIn ? { 'ss-sign-in': signIn } : {}),
+			...(signIn ? { 'shelfway-sign-in': signIn } : {}),
 		},
 	});
 	expect(placed.status).toBe(201);

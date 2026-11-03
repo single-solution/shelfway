@@ -1,14 +1,14 @@
 /**
  * Starts the widgets on a page (PLAN 0.4.10). `widget.js` is the same for every website. With `data-token` on its
  * script tag (the website's browser token) it fetches the website's widget config and mounts the pay buttons
- * (`data-ss-payments="pay_button"` with `data-link` or `data-payment`) while payment links or the payment API is on.
- * Without it (the merchant's admin pages) it only offers `window.SSPayments.admin({ getTicket })`, which fetches the
+ * (`data-shelfway-payments="pay_button"` with `data-link` or `data-payment`) while payment links or the payment API is on.
+ * Without it (the merchant's admin pages) it only offers `window.ShelfwayPayments.admin({ getTicket })`, which fetches the
  * config with a ticket and mounts the admin widgets of switched-on features: `payments_admin`, `links_admin` and
  * `subscriptions_admin`. Widgets render nothing while the product is stopped, their feature is off or the merchant
  * database is not connected.
  * @module
  */
-import { createTicketSource, requestJson } from '@ss/app-kit/widget';
+import { createTicketSource, requestJson } from '@shelfway/app-kit/widget';
 import { WIDGET_ATTRIBUTE, WIDGET_GLOBAL } from '../core/widgets.js';
 import { mountLinksAdmin } from './links-admin.js';
 import { mountPayButton } from './pay-button.js';
@@ -23,9 +23,9 @@ export const ADMIN_CONFIG_PATH = '/v1/widget/admin/config';
  * The website's widget config, from the kit.
  * @typedef {object} WidgetConfig
  * @property {Record<string, string>} texts the widget texts (the website's own, else the defaults)
- * @property {import('@ss/app-kit/widget').WidgetTheme} theme
+ * @property {import('@shelfway/app-kit/widget').WidgetTheme} theme
  * @property {string} customCss
- * @property {Parameters<typeof import('@ss/app-kit/widget').formatMoney>[2]} format how money and dates look (Settings →
+ * @property {Parameters<typeof import('@shelfway/app-kit/widget').formatMoney>[2]} format how money and dates look (Settings →
  *   Format, PLAN 0.8.10 K7)
  * @property {string} timeZone the business time zone (UTC when missing)
  * @property {string[]} features the switched-on features
@@ -49,8 +49,8 @@ const loadConfig = async (request, url, credential) => {
 
 /**
  * @param {{ window: Window & typeof globalThis, script: HTMLScriptElement | null }} input
- * @returns {{ admin: (options: { getTicket: import('@ss/app-kit/widget').GetTicket }) => Promise<void>, ready: Promise<void> }}
- *   `admin` is the page's API (`window.SSPayments.admin`); `ready` settles once the visitor widgets are mounted
+ * @returns {{ admin: (options: { getTicket: import('@shelfway/app-kit/widget').GetTicket }) => Promise<void>, ready: Promise<void> }}
+ *   `admin` is the page's API (`window.ShelfwayPayments.admin`); `ready` settles once the visitor widgets are mounted
  */
 export const startWidget = ({ window: win, script }) => {
 	const doc = win.document;
@@ -73,9 +73,9 @@ export const startWidget = ({ window: win, script }) => {
 		);
 	})();
 
-	/** @param {{ getTicket: import('@ss/app-kit/widget').GetTicket }} options */
+	/** @param {{ getTicket: import('@shelfway/app-kit/widget').GetTicket }} options */
 	const admin = async ({ getTicket }) => {
-		/** @type {import('@ss/app-kit/widget').Ticket} */
+		/** @type {import('@shelfway/app-kit/widget').Ticket} */
 		let first;
 		try {
 			first = await getTicket();

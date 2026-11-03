@@ -1,7 +1,7 @@
 /**
  * Product ↔ Portal wire shapes (PLAN 0.4.12): price report, feature report, status response, websites page,
  * revocations and directory (one product, or every connected product). The validators in `validate.js` add the semantic
- * rules (unique keys, dependencies, real timestamps, grace consistency). Notice bodies are checked by `@ss/protocol`
+ * rules (unique keys, dependencies, real timestamps, grace consistency). Notice bodies are checked by `@shelfway/protocol`
  * (`verifyNotice`).
  * @module
  */

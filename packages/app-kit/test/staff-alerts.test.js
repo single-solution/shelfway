@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import { defineRoute } from '../src/index.js';
-import { noopLogger } from '@ss/net';
+import { noopLogger } from '@shelfway/net';
 import {
 	ALERT_KEEP_MS,
 	MAX_RECIPIENTS,
@@ -314,7 +314,7 @@ describe('staff alerts (K6)', () => {
 			await settle();
 		};
 		const { client, db } = await openDb(dbName);
-		const saved = db.collection('ss_notes_staff_alerts');
+		const saved = db.collection('shelfway_notes_staff_alerts');
 		try {
 			notifications.setFailing(true);
 			expect(await alert()).toBe(2);
@@ -369,7 +369,7 @@ describe('staff alerts (K6)', () => {
 		const dbName = await connectDatabase();
 		await set('recipients', ['ops@shop.example.com', '+44 7700 900123']);
 		const { client, db } = await openDb(dbName);
-		const saved = db.collection('ss_notes_staff_alerts');
+		const saved = db.collection('shelfway_notes_staff_alerts');
 		/** @param {{ email?: string, phone?: string }} user */
 		const remove = async (user) => {
 			const response = await call('POST', '/v1/data-rights/delete', { token: server.token, body: { user } });

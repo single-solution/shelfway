@@ -3,13 +3,13 @@
  * visitor widgets and their data attributes, the JS API (`identify`, `addToCart`, `cart.count`, `cart.onChange`) and
  * the add-to-cart event, the admin widgets with their ticket function, the ticket request (Node.js and cURL), what the
  * merchant's site serves from the API as Next.js route handlers and pages fetching with the server token
- * (`SS_SERVER_TOKEN`): the sitemap index and its files, the media route (stable image addresses, SEO audit G1),
+ * (`SHELFWAY_SERVER_TOKEN`): the sitemap index and its files, the media route (stable image addresses, SEO audit G1),
  * feeds, llms.txt and llms-full.txt, the home page (the business and website, E49), the product page (meta,
  * structured data and the 308 of a `moved` answer, PLAN 0.8.10 E13), a listing page with `/v1/seo/listing` (E15) and
  * the policy pages; the Accounts Orders lookup, the courier connection and the storage CORS rule. Plain text; no I/O.
  * @module
  */
-import { widgetScriptTag } from '@ss/contracts/text';
+import { widgetScriptTag } from '@shelfway/contracts/text';
 import { ADD_TO_CART_EVENT, WIDGET_ATTRIBUTE, WIDGET_GLOBAL } from './widgets.js';
 
 /**
@@ -90,8 +90,8 @@ export const proxyRoute = (base, { file, route, type }) =>
 		`// ${file} (Next.js App Router): served from your own domain, fetched with the server token`,
 		'export async function GET() {',
 		`  const response = await fetch('${base}${route}', {`,
-		'    headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}` },',
-		"    next: { revalidate: 3600, tags: ['ss-ecommerce'] }, // cache it for an hour",
+		'    headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}` },',
+		"    next: { revalidate: 3600, tags: ['shelfway-ecommerce'] }, // cache it for an hour",
 		'  });',
 		'  return new Response(await response.text(), {',
 		'    status: response.status,',
@@ -113,8 +113,8 @@ export const sitemapRoute = (base) =>
 		"  const file = new URL(request.url).searchParams.get('file');",
 		"  const path = file ? `/v1/seo/sitemaps/${encodeURIComponent(file)}` : '/v1/seo/sitemap.xml';",
 		`  const response = await fetch(\`${base}\${path}\`, {`,
-		'    headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}` },',
-		"    next: { revalidate: 3600, tags: ['ss-ecommerce'] }, // cache it for an hour",
+		'    headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}` },',
+		"    next: { revalidate: 3600, tags: ['shelfway-ecommerce'] }, // cache it for an hour",
 		'  });',
 		'  return new Response(await response.text(), {',
 		'    status: response.status,',
@@ -138,7 +138,7 @@ export const mediaRoute = (base) =>
 		"  const [signature = '', ...parts] = (await params).key;",
 		"  const query = new URLSearchParams({ key: parts.join('/'), signature });",
 		`  const answer = await fetch(\`${base}/v1/media?\${query}\`, {`,
-		'    headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}` },',
+		'    headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}` },',
 		"    cache: 'no-store', // a fresh link each time",
 		'  });',
 		"  if (!answer.ok) return new Response('Not found', { status: 404 });",
@@ -155,26 +155,26 @@ export const mediaRoute = (base) =>
 
 /**
  * The webhook route on the merchant's site that clears its cached Ecommerce answers (SEO audit G10): every snippet
- * fetches with the tag `ss-ecommerce`, and this route, the URL of an outgoing webhook in Notifications (with Events on),
- * clears it when the catalog or the settings change, for an event whose SS-Signature checks out only.
+ * fetches with the tag `shelfway-ecommerce`, and this route, the URL of an outgoing webhook in Notifications (with Events on),
+ * clears it when the catalog or the settings change, for an event whose Shelfway-Signature checks out only.
  */
 const CACHE_ROUTE = [
-	'// app/api/ss-ecommerce-events/route.js (Next.js App Router): clears your cached Ecommerce answers when the catalog',
+	'// app/api/shelfway-ecommerce-events/route.js (Next.js App Router): clears your cached Ecommerce answers when the catalog',
 	'// or the settings change (Events on; this address is an outgoing webhook URL in Notifications)',
 	"import { createHmac, timingSafeEqual } from 'node:crypto';",
 	"import { revalidateTag } from 'next/cache';",
 	'',
 	'export async function POST(request) {',
 	'  const body = await request.text();',
-	'  // SS-Signature: t=<unix seconds>,v1=<hex HMAC-SHA256 of "<t>.<body>"> with your Notifications signing secret',
-	"  const parts = Object.fromEntries((request.headers.get('ss-signature') ?? '').split(',').map((part) => part.split('=')));",
-	"  const expected = createHmac('sha256', process.env.SS_WEBHOOK_SECRET).update(`${parts.t}.${body}`).digest('hex');",
+	'  // Shelfway-Signature: t=<unix seconds>,v1=<hex HMAC-SHA256 of "<t>.<body>"> with your Notifications signing secret',
+	"  const parts = Object.fromEntries((request.headers.get('shelfway-signature') ?? '').split(',').map((part) => part.split('=')));",
+	"  const expected = createHmac('sha256', process.env.SHELFWAY_WEBHOOK_SECRET).update(`${parts.t}.${body}`).digest('hex');",
 	'  const recent = Math.abs(Date.now() / 1000 - Number(parts.t)) <= 300;',
 	"  const signed = /^[0-9a-f]{64}$/.test(parts.v1 ?? '');",
 	'  if (!recent || !signed || !timingSafeEqual(Buffer.from(parts.v1), Buffer.from(expected)))',
 	"    return new Response('Bad signature', { status: 401 });",
 	'  const { type } = JSON.parse(body);',
-	"  if (type === 'ecommerce.catalog.changed' || type === 'ecommerce.settings.changed') revalidateTag('ss-ecommerce');",
+	"  if (type === 'ecommerce.catalog.changed' || type === 'ecommerce.settings.changed') revalidateTag('shelfway-ecommerce');",
 	'  return new Response(null, { status: 204 });',
 	'}',
 ].join('\n');
@@ -202,7 +202,7 @@ export const createSnippets = ({ base, widgets, permissions, browserToken = 'YOU
 		"  window.addEventListener('load', () => {",
 		`    const shop = window.${WIDGET_GLOBAL};`,
 		'    // the shopper signed in with Accounts (needed to order, review, keep a wishlist and set alerts); null on sign-out',
-		'    window.SSAccounts.getSignIn().then((signIn) => shop.identify(signIn));',
+		'    window.ShelfwayAccounts.getSignIn().then((signIn) => shop.identify(signIn));',
 		'    // your own Add to cart button (variantId and quantity are optional)',
 		"    document.querySelector('#add').addEventListener('click', () =>",
 		"      shop.addToCart({ productId: 'prd_…', variantId: 'var_…', quantity: 1 }),",
@@ -230,7 +230,7 @@ export const createSnippets = ({ base, widgets, permissions, browserToken = 'YOU
 		'<script>',
 		`  window.${WIDGET_GLOBAL}.admin({`,
 		'    // your own server route (below): it checks the signed-in user and their role, then asks for a ticket',
-		"    getTicket: () => fetch('/api/ss-ecommerce-ticket', { method: 'POST' }).then((response) => response.json()),",
+		"    getTicket: () => fetch('/api/shelfway-ticket', { method: 'POST' }).then((response) => response.json()),",
 		'  });',
 		'</script>',
 	].join('\n');
@@ -243,7 +243,7 @@ export const createSnippets = ({ base, widgets, permissions, browserToken = 'YOU
 		"// your server, after checking the user's sign-in and role (Node.js 18+, also inside a Next.js route handler)",
 		`const response = await fetch('${base}/v1/tickets', {`,
 		"  method: 'POST',",
-		"  headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}`, 'content-type': 'application/json' },",
+		"  headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}`, 'content-type': 'application/json' },",
 		'  body: JSON.stringify({',
 		'    user: { id: user.id, name: user.name, email: user.email },',
 		`    permissions: ${JSON.stringify(permissions)}, // only what this user may do`,
@@ -254,7 +254,7 @@ export const createSnippets = ({ base, widgets, permissions, browserToken = 'YOU
 	].join('\n');
 	const ticketCurl = [
 		`curl -X POST '${base}/v1/tickets' \\`,
-		'  -H "Authorization: Bearer $SS_SERVER_TOKEN" \\',
+		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN" \\',
 		"  -H 'Content-Type: application/json' \\",
 		`  -d '${JSON.stringify(ticketBody)}'`,
 	].join('\n');
@@ -262,8 +262,8 @@ export const createSnippets = ({ base, widgets, permissions, browserToken = 'YOU
 		'// app/page.js (Next.js App Router): your home page head, with your business and website for search engines',
 		'const siteOf = async () => {',
 		`  const response = await fetch('${base}/v1/seo/site', {`,
-		'    headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}` },',
-		"    next: { revalidate: 300, tags: ['ss-ecommerce'] },",
+		'    headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}` },',
+		"    next: { revalidate: 300, tags: ['shelfway-ecommerce'] },",
 		'  });',
 		'  return response.ok ? response.json() : null;',
 		'};',
@@ -304,8 +304,8 @@ export const createSnippets = ({ base, widgets, permissions, browserToken = 'YOU
 		'const seoOf = async (slug) => {',
 		"  // html=1: the page core as plain HTML, printed into the widget's place (search engines read it before any script)",
 		`  const response = await fetch(\`${base}/v1/seo/products/\${encodeURIComponent(slug)}?html=1\`, {`,
-		'    headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}` },',
-		"    next: { revalidate: 300, tags: ['ss-ecommerce'] },",
+		'    headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}` },',
+		"    next: { revalidate: 300, tags: ['shelfway-ecommerce'] },",
 		'  });',
 		'  return response.ok ? response.json() : null;',
 		'};',
@@ -357,8 +357,8 @@ export const createSnippets = ({ base, widgets, permissions, browserToken = 'YOU
 		"  // html=1: the grid's core as plain HTML (the products as links and the page links), printed into the grid's place",
 		"  const query = new URLSearchParams({ ...filters, category: slug, html: '1' });",
 		`  const response = await fetch(\`${base}/v1/seo/listing?\${query}\`, {`,
-		'    headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}` },',
-		"    next: { revalidate: 300, tags: ['ss-ecommerce'] },",
+		'    headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}` },',
+		"    next: { revalidate: 300, tags: ['shelfway-ecommerce'] },",
 		'  });',
 		'  return response.ok ? response.json() : null;',
 		'};',
@@ -415,8 +415,8 @@ export const createSnippets = ({ base, widgets, permissions, browserToken = 'YOU
 		'export default async function PolicyPage({ params }) {',
 		'  const { name } = await params; // a policy key: shipping, returns, warranty, privacy, terms or one you added',
 		`  const response = await fetch('${base}/v1/policies', {`,
-		'    headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}` },',
-		"    next: { revalidate: 3600, tags: ['ss-ecommerce'] },",
+		'    headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}` },',
+		"    next: { revalidate: 3600, tags: ['shelfway-ecommerce'] },",
 		'  });',
 		'  const found = response.ok ? await response.json() : { policies: [] };',
 		'  const policy = found.policies.find((each) => each.key === name);',
@@ -428,7 +428,7 @@ export const createSnippets = ({ base, widgets, permissions, browserToken = 'YOU
 	const customerOrders = [
 		'// your server: the last orders of an Accounts user (Accounts shows them in its Orders tab)',
 		`const response = await fetch(\`${base}/v1/customers/\${encodeURIComponent(userId)}/orders?limit=5\`, {`,
-		'  headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}` },',
+		'  headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}` },',
 		'});',
 		'const { items, loyaltyPoints } = await response.json();',
 		'// items: [{ id, number, status, statusLabel, total, totalText, currency, createdAt }]',

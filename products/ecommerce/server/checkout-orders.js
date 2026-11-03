@@ -26,11 +26,11 @@
  *   transfer proof (E24).
  * @module
  */
-import { created, paginate, problem } from '@ss/app-kit';
-import { createId } from '@ss/contracts';
-import { isEmailAddress } from '@ss/contracts/email';
-import { normalizePhone } from '@ss/contracts/phone';
-import { originAllowed } from '@ss/protocol';
+import { created, paginate, problem } from '@shelfway/app-kit';
+import { createId } from '@shelfway/contracts';
+import { isEmailAddress } from '@shelfway/contracts/email';
+import { normalizePhone } from '@shelfway/contracts/phone';
+import { originAllowed } from '@shelfway/protocol';
 import { fieldsOn, unitsOfOrders } from '../adapters/catalog-store.js';
 import { keyOpens, newOrderKey, orderKeyHash } from '../adapters/crypto.js';
 import { heldStockBefore, placeOrder, swapOrderStock } from '../adapters/ledger.js';
@@ -72,7 +72,7 @@ import { createTransitions, rulesOf } from './transitions.js';
 /** @typedef {import('../core/model.js').StatusRole} StatusRole */
 
 /** The header a guest sends their order's key in (the kit's CORS allows it). */
-const ORDER_KEY_HEADER = 'ss-order-key';
+const ORDER_KEY_HEADER = 'shelfway-order-key';
 /** Who ends a waiting order whose window passed (the activity log). */
 const SYSTEM_ACTOR = Object.freeze({ kind: 'system', id: 'checkout', name: 'System' });
 const PROOF_SECONDS = 600;
@@ -152,12 +152,12 @@ export const createOrdering = (product, service, { quoting, digital }) => {
 
 	/**
 	 * Where the shopper goes back after paying or leaving the payment (E22): the address the widget sent (with
-	 * `ss_order`), else the `successUrl` and `cancelUrl` templates (when on the website), else nowhere.
+	 * `shelfway_order`), else the `successUrl` and `cancelUrl` templates (when on the website), else nowhere.
 	 * @param {Site} s @param {OrderRecord} order @param {string | null} returnUrl
 	 */
 	const backOf = async (s, order, returnUrl) => {
 		if (returnUrl) {
-			const back = withParam(returnUrl, 'ss_order', order.id);
+			const back = withParam(returnUrl, 'shelfway_order', order.id);
 			return { success: back, cancel: back };
 		}
 		const { successUrl, cancelUrl } = await s.values('checkout');
@@ -171,12 +171,12 @@ export const createOrdering = (product, service, { quoting, digital }) => {
 
 	/**
 	 * Where Payments sends the shopper back (it needs an address): the order's own return, else the website's home with
-	 * `ss_order`.
+	 * `shelfway_order`.
 	 * @param {Site} s @param {OrderRecord} order @param {string | null} returnUrl
 	 */
 	const paymentBackOf = async (s, order, returnUrl) => {
 		const back = await backOf(s, order, returnUrl);
-		const home = withParam(`https://${s.domain}/`, 'ss_order', order.id);
+		const home = withParam(`https://${s.domain}/`, 'shelfway_order', order.id);
 		return { success: back.success ?? home, cancel: back.cancel ?? back.success ?? home };
 	};
 

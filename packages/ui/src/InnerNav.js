@@ -92,8 +92,8 @@ export function InnerNav({
 		const box = marker.current;
 		const root = list.current;
 		if (!box || !root) return;
-		const row = /** @type {HTMLElement[]} */ ([...root.querySelectorAll('[data-ss-nav-item]')]).find(
-			(el) => el.dataset.ssNavItem === current?.id,
+		const row = /** @type {HTMLElement[]} */ ([...root.querySelectorAll('[data-shelfway-nav-item]')]).find(
+			(el) => el.dataset.shelfwayNavItem === current?.id,
 		);
 		if (!row) {
 			box.style.opacity = '0';
@@ -131,18 +131,18 @@ export function InnerNav({
 		return (
 			<Tag
 				{...(item.href ? { href: item.href } : { type: 'button' })}
-				data-ss-nav-item={item.id}
+				data-shelfway-nav-item={item.id}
 				aria-current={on ? (item.href ? 'page' : 'true') : undefined}
 				onClick={() => choose(item)}
 				className={cx(
-					'ss-motion ss-press flex w-full items-center gap-2 rounded-control px-2 text-left text-label focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus',
+					'shelfway-motion shelfway-press flex w-full items-center gap-2 rounded-control px-2 text-left text-label focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus',
 					METRICS.navItem,
 					on
-						? cx('font-medium text-fg', placed ? 'bg-transparent' : 'border border-line bg-surface ss-hard')
+						? cx('font-medium text-fg', placed ? 'bg-transparent' : 'border border-line bg-surface shelfway-hard')
 						: 'font-medium text-muted hover:bg-surface/70 hover:text-fg',
 				)}>
 				{item.icon ? (
-					<span aria-hidden="true" className={cx('ss-motion shrink-0', on ? 'text-primary' : 'text-muted')}>
+					<span aria-hidden="true" className={cx('shelfway-motion shrink-0', on ? 'text-primary' : 'text-muted')}>
 						<Icon name={item.icon} size={15} />
 					</span>
 				) : null}
@@ -155,7 +155,7 @@ export function InnerNav({
 				) : null}
 				{item.changed ? (
 					<span
-						data-ss-changed=""
+						data-shelfway-changed=""
 						className="shrink-0 rounded-control border border-line bg-attention-soft px-1.5 text-micro font-medium text-on-attention-soft">
 						{words.changed}
 					</span>
@@ -214,22 +214,22 @@ export function InnerNav({
 					aria-expanded={open}
 					aria-controls={menuId}
 					onClick={() => setOpen((o) => !o)}
-					className="ss-motion ss-press flex h-10 w-full items-center gap-2.5 rounded-control border border-line bg-surface px-3 text-sm font-medium text-fg">
+					className="shelfway-motion shelfway-press flex h-10 w-full items-center gap-2.5 rounded-control border border-line bg-surface px-3 text-sm font-medium text-fg">
 					{current?.icon ? (
 						<span aria-hidden="true" className="text-primary">
 							<Icon name={current.icon} size={16} />
 						</span>
 					) : null}
 					<span className="min-w-0 flex-1 truncate text-left">{current?.label}</span>
-					<span aria-hidden="true" className={cx('ss-motion text-muted', open && 'rotate-180')}>
+					<span aria-hidden="true" className={cx('shelfway-motion text-muted', open && 'rotate-180')}>
 						<Icon name="chevronDown" size={16} />
 					</span>
 				</button>
 				{open ? (
 					<div
 						id={menuId}
-						data-ss-inner-menu=""
-						className="ss-scroll absolute inset-x-0 top-full z-30 mt-2 max-h-[60vh] animate-ss-pop space-y-2 rounded-card border border-line bg-surface p-2 shadow-overlay">
+						data-shelfway-inner-menu=""
+						className="shelfway-scroll absolute inset-x-0 top-full z-30 mt-2 max-h-[60vh] animate-shelfway-pop space-y-2 rounded-card border border-line bg-surface p-2 shadow-overlay">
 						<nav aria-label={label} className="space-y-3">
 							{search}
 							{groupsView}
@@ -240,15 +240,15 @@ export function InnerNav({
 			</div>
 			<div className={cx(NAV_PANEL, className)}>
 				{search ? <div className="shrink-0 p-2 pb-0">{search}</div> : null}
-				<nav aria-label={label} className="ss-scroll min-h-0 flex-1 p-2">
+				<nav aria-label={label} className="shelfway-scroll min-h-0 flex-1 p-2">
 					<div ref={list} className="relative isolate space-y-3">
 						<span
 							ref={marker}
-							data-ss-indicator=""
+							data-shelfway-indicator=""
 							aria-hidden="true"
 							className={cx(
-								'pointer-events-none absolute inset-x-0 top-0 -z-10 rounded-control border border-line bg-surface ss-hard opacity-0',
-								placed && 'transition-[transform,height,opacity] duration-(--dur) ease-ss',
+								'pointer-events-none absolute inset-x-0 top-0 -z-10 rounded-control border border-line bg-surface shelfway-hard opacity-0',
+								placed && 'transition-[transform,height,opacity] duration-(--dur) ease-shelfway',
 							)}
 						/>
 						{groupsView}

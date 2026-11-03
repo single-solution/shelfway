@@ -8,10 +8,10 @@
  * @module
  */
 import { createElement, useEffect, useMemo, useState } from 'react';
-import { addressLines, countryChoices } from '@ss/contracts/address';
-import { formatDate, formatMoney } from '@ss/contracts/format';
-import { callingCodeOf } from '@ss/contracts/phone';
-import { ADDRESS_REQUIRED_PARTS, WEBSITE_UNITS } from '@ss/contracts/website-settings';
+import { addressLines, countryChoices } from '@shelfway/contracts/address';
+import { formatDate, formatMoney } from '@shelfway/contracts/format';
+import { callingCodeOf } from '@shelfway/contracts/phone';
+import { ADDRESS_REQUIRED_PARTS, WEBSITE_UNITS } from '@shelfway/contracts/website-settings';
 import {
 	ActionMenu,
 	Button,
@@ -38,13 +38,13 @@ import {
 	describeProblem,
 	fieldErrors,
 	useToast,
-} from '@ss/ui';
+} from '@shelfway/ui';
 import { WEBSITE_SETTINGS as T } from '../../texts/console.js';
 import { apiFetch } from '../client.js';
 import { api } from '../paths.js';
 
-/** @typedef {import('@ss/contracts').WebsiteSettings} WebsiteSettings */
-/** @typedef {import('@ss/ui/problems').Problem} Problem */
+/** @typedef {import('@shelfway/contracts').WebsiteSettings} WebsiteSettings */
+/** @typedef {import('@shelfway/ui/problems').Problem} Problem */
 
 /**
  * The same value with `value` at `path` (objects and arrays are copied along the way, never changed).
@@ -558,14 +558,22 @@ export function BusinessSection(props) {
 						description={B.addressRowHelp}
 						summary={addressText || T.none}
 						onEdit={() => setDrawer('address')}
-						error={form.error(['address', 'country']) ?? form.error(['address', 'postalCode'])}
+						error={
+							form.error(['address', 'country']) ??
+							form.error(['address', 'postalCode']) ??
+							Object.entries(form.errors).find(([k]) => k.startsWith('address.') || k.startsWith('business.address.'))?.[1]
+						}
 					/>
 					<SummaryRow
 						label={B.hoursRow}
 						description={B.hoursHelp}
 						summary={hoursSummary(d.hours)}
 						onEdit={() => setDrawer('hours')}
-						error={form.error(['hours', 'weekly']) ?? form.error(['hours', 'exceptions'])}
+						error={
+							form.error(['hours', 'weekly']) ??
+							form.error(['hours', 'exceptions']) ??
+							Object.entries(form.errors).find(([k]) => k.startsWith('hours.') || k.startsWith('business.hours.'))?.[1]
+						}
 					/>
 				</SettingList>
 			</SettingsCard>

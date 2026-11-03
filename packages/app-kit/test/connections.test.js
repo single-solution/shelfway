@@ -131,7 +131,7 @@ describe('connections', () => {
 		for (const name of ['database', 'storage', 'link_accounts', 'link_notifications']) {
 			const put = await dash(cookie, 'PUT', `${path}/${name}`, { value: 'mongodb://x/y' });
 			expect(put.status, name).toBe(409);
-			expect((await put.json()).type).toMatch(/managed_by_portal$/);
+			expect((await put.json()).type).toMatch(/managed_by_platform$/);
 			expect((await dash(cookie, 'DELETE', `${path}/${name}`)).status, name).toBe(409);
 		}
 		expect((await dash(cookie, 'PUT', `${path}/nope`, { value: 'x' })).status).toBe(404);
@@ -277,7 +277,7 @@ describe('storage', () => {
 		);
 		expect(saved).toMatchObject({ status: 'connected', set: true, managed: true });
 		expect(JSON.stringify(saved)).not.toContain('5678');
-		expect(seen[0]).toMatch(/^HEAD \/shop\/notes\/.+\/ss-connection-test AWS4-HMAC-SHA256/);
+		expect(seen[0]).toMatch(/^HEAD \/shop\/notes\/.+\/shelfway-connection-test AWS4-HMAC-SHA256/);
 		// the Portal was told how it worked
 		expect(portal.health(websiteId, 'notes', 'storage')).toMatchObject({ version: 1, ok: true });
 		status = 403;
@@ -328,7 +328,7 @@ describe('the website’s AI provider key (SO-5b)', () => {
 		// the Portal's: nothing is saved or removed in the product
 		const put = await dash(cookie, 'PUT', `${path}/ai`, { value: { ...AI, apiKey: 'sk-other-1234567' } });
 		expect(put.status).toBe(409);
-		expect((await put.json()).type).toMatch(/managed_by_portal$/);
+		expect((await put.json()).type).toMatch(/managed_by_platform$/);
 		expect((await dash(cookie, 'DELETE', `${path}/ai`)).status).toBe(409);
 		// a refused key is stored as failing and the Portal is told why; testing it again reports it too
 		clock.advance(1000);
@@ -531,9 +531,9 @@ describe('links to other products', () => {
 		// never read: it throws, and the Portal is asked again only after a minute
 		const fresh = await setup();
 		fresh.portal.setReachable(false);
-		await expect(fresh.product.products()).rejects.toMatchObject({ code: 'portal_unreachable' });
+		await expect(fresh.product.products()).rejects.toMatchObject({ code: 'platform_unreachable' });
 		fresh.portal.setReachable(true);
-		await expect(fresh.product.products()).rejects.toMatchObject({ code: 'portal_unreachable' });
+		await expect(fresh.product.products()).rejects.toMatchObject({ code: 'platform_unreachable' });
 		fresh.clock.advance(60_000);
 		expect((await fresh.product.products()).length).toBe(3);
 	});
@@ -576,7 +576,7 @@ describe('activity log and data rights', () => {
 		await call('POST', '/v1/actions', { token: server.token, bare: true });
 		await settle();
 		const { client, db } = await openDb(dbName);
-		const log = db.collection('ss_notes_activity');
+		const log = db.collection('shelfway_notes_activity');
 		expect(await log.countDocuments({ copy: 'pending' })).toBe(1);
 		expect(await log.countDocuments({ copy: 'none' })).toBe(1);
 		accounts.setFailing(false);
@@ -637,7 +637,7 @@ describe('activity log and data rights', () => {
 		await act();
 		expect(asked).toBe(1);
 		const { client, db } = await openDb(dbName);
-		const log = db.collection('ss_notes_activity');
+		const log = db.collection('shelfway_notes_activity');
 		const state = async () =>
 			(await log.find({}, { sort: { at: 1, _id: 1 } }).toArray()).map((e) => [e.copy, e.copyTries ?? 0]);
 		expect(await state()).toEqual([
@@ -776,14 +776,14 @@ describe('merchant database connection', () => {
 		expect(await store.get('connections', `${websiteId}|database`)).toBeNull();
 		expect(portal.health(websiteId, 'notes', 'database')).toMatchObject({ version: 1, ok: false });
 		expect(portal.health(websiteId, 'notes', 'database')?.message).toMatch(/not allowed/);
-		// a good one connects; the product's database is the one the Portal named: ss_notes unless the Owner named another
+		// a good one connects; the product's database is the one the Platform named: shelfway_notes unless the Owner named another
 		clock.advance(1000);
 		await portal.saveConnections(websiteId, { database: mongoUri(freshDb('conn')) });
 		await settle();
 		expect(await row()).toMatchObject({ status: 'connected', set: true });
 		expect(portal.health(websiteId, 'notes', 'database')).toMatchObject({ version: 2, ok: true });
 		expect((await product.connections.value(websiteId, 'database')) ?? '').toMatch(/^mongodb:/);
-		expect((await store.get('connections', `${websiteId}|database`))?.dbName).toBe('ss_notes');
+		expect((await store.get('connections', `${websiteId}|database`))?.dbName).toBe('shelfway_notes');
 		clock.advance(1000);
 		const named = freshDb('named');
 		await portal.saveConnections(websiteId, { dbNames: { notes: named } });
@@ -791,7 +791,7 @@ describe('merchant database connection', () => {
 		const data = await product.data.forWebsite(websiteId);
 		await data.collection('probe').insertOne({ ok: true });
 		const { client, db } = await openDb(named);
-		expect(await db.collection('ss_notes_probe').countDocuments({ websiteId })).toBe(1);
+		expect(await db.collection('shelfway_notes_probe').countDocuments({ websiteId })).toBe(1);
 		await client.close();
 	});
 });

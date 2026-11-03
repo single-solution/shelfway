@@ -22,10 +22,10 @@ const SLOT_DAYS = 7;
  */
 export const renderSlots = ({ box, t, formats, shop, productId, now, onChoose }) => {
 	const doc = /** @type {Document} */ (box.ownerDocument);
-	const picker = /** @type {HTMLSelectElement} */ (h(doc, 'select', { id: 'ss-page-slot' }));
+	const picker = /** @type {HTMLSelectElement} */ (h(doc, 'select', { id: 'shelfway-page-slot' }));
 	const status = h(doc, 'p', { class: 'status', role: 'status' });
 	const later = button(doc, t('page.laterSlots'), () => void load(), { class: 'secondary' });
-	box.append(h(doc, 'label', { for: 'ss-page-slot' }, t('page.slot')), picker, later, status);
+	box.append(h(doc, 'label', { for: 'shelfway-page-slot' }, t('page.slot')), picker, later, status);
 	let from = now();
 	/** @type {string[]} */
 	let shown = [];

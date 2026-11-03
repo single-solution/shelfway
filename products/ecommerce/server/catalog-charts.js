@@ -5,8 +5,8 @@
  * name cannot be deleted (409 `conflict`). Shoppers get the resolved chart on the product page.
  * @module
  */
-import { createId } from '@ss/contracts';
-import { created, defineRoute, problem } from '@ss/app-kit';
+import { createId } from '@shelfway/contracts';
+import { created, defineRoute, problem } from '@shelfway/app-kit';
 import { NO_KEYS } from '../adapters/catalog-store.js';
 import { COLLECTIONS, ID_PREFIX } from '../core/model.js';
 import { withoutStamps } from '../core/catalog-taxonomy.js';
@@ -17,7 +17,7 @@ import { SERVER_LIMITS } from './service.js';
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./catalog-common.js').CatalogCommon} CatalogCommon */
 /** @typedef {import('../core/model.js').SizeChartRecord} SizeChartRecord */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 
 /** At most this many charts per website. */
 const MAX_CHARTS = 1000;
@@ -109,8 +109,7 @@ export const createCatalogCharts = (service, common) => {
 		const uses = await usesOf(data, existing.id);
 		if (uses.products + uses.brands + uses.categories > 0)
 			throw problem('conflict', 'Products, brands or categories use this size chart: change them first.');
-		const defaultChartId = (await s.values('size_charts'))?.defaultChartId || (await s.values('catalog'))?.defaultChartId;
-		if (defaultChartId === existing.id)
+		if ((await s.values('size_charts')).defaultChartId === existing.id)
 			throw problem('conflict', 'This is the default size chart (Settings → Size charts): change it first.');
 		await data.collection(COLLECTIONS.sizeCharts).deleteOne({ websiteId: data.websiteId, id: existing.id });
 		await service.log(ctx, 'size_chart.deleted', existing.id, { label: existing.name });
@@ -123,7 +122,7 @@ export const createCatalogCharts = (service, common) => {
 			path: '/v1/size-charts',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'size_charts',
 			rateLimit: SERVER_LIMITS,
 			handler: list,
 		}),
@@ -132,7 +131,7 @@ export const createCatalogCharts = (service, common) => {
 			path: '/v1/size-charts',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'size_charts',
 			idempotent: true,
 			rateLimit: SERVER_LIMITS,
 			handler: create,
@@ -142,7 +141,7 @@ export const createCatalogCharts = (service, common) => {
 			path: '/v1/size-charts/:id',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'size_charts',
 			rateLimit: SERVER_LIMITS,
 			handler: read,
 		}),
@@ -151,7 +150,7 @@ export const createCatalogCharts = (service, common) => {
 			path: '/v1/size-charts/:id',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'size_charts',
 			rateLimit: SERVER_LIMITS,
 			handler: update,
 		}),
@@ -160,7 +159,7 @@ export const createCatalogCharts = (service, common) => {
 			path: '/v1/size-charts/:id',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'size_charts',
 			rateLimit: SERVER_LIMITS,
 			handler: remove,
 		}),
@@ -169,7 +168,7 @@ export const createCatalogCharts = (service, common) => {
 			path: '/v1/admin/size-charts',
 			auth: 'ticket',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'size_charts',
 			rateLimit: SERVER_LIMITS,
 			handler: list,
 		}),
@@ -178,7 +177,7 @@ export const createCatalogCharts = (service, common) => {
 			path: '/v1/admin/size-charts',
 			auth: 'ticket',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'size_charts',
 			idempotent: true,
 			rateLimit: SERVER_LIMITS,
 			handler: create,
@@ -188,7 +187,7 @@ export const createCatalogCharts = (service, common) => {
 			path: '/v1/admin/size-charts/:id',
 			auth: 'ticket',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'size_charts',
 			rateLimit: SERVER_LIMITS,
 			handler: read,
 		}),
@@ -197,7 +196,7 @@ export const createCatalogCharts = (service, common) => {
 			path: '/v1/admin/size-charts/:id',
 			auth: 'ticket',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'size_charts',
 			rateLimit: SERVER_LIMITS,
 			handler: update,
 		}),
@@ -206,7 +205,7 @@ export const createCatalogCharts = (service, common) => {
 			path: '/v1/admin/size-charts/:id',
 			auth: 'ticket',
 			permission: 'catalog.edit',
-			feature: 'catalog',
+			feature: 'size_charts',
 			rateLimit: SERVER_LIMITS,
 			handler: remove,
 		}),

@@ -2,5 +2,5 @@ node_modules/
 coverage/
 *.tsbuildinfo
 .DS_Store
-# what ss-import read writes (store data: never commit it)
+# what shelfway-import read writes (store data: never commit it)
 import-out/

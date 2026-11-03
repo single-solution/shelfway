@@ -12,10 +12,10 @@ import {
 	createProductInstance as createNotifications,
 	manifest as notifyManifest,
 	strings as notifyStrings,
-} from '@ss/product-notifications/product';
-import { createRoutes as notifyRoutes } from '@ss/product-notifications/routes';
-import { createProductInstance, manifest, strings } from '@ss/product-payments/product';
-import { createRoutes } from '@ss/product-payments/routes';
+} from '@shelfway/product-notifications/product';
+import { createRoutes as notifyRoutes } from '@shelfway/product-notifications/routes';
+import { createProductInstance, manifest, strings } from '@shelfway/product-payments/product';
+import { createRoutes } from '@shelfway/product-payments/routes';
 import { HOUR, startSystem } from './helpers.js';
 
 const PAYMENTS = 'https://payments.test';
@@ -45,7 +45,7 @@ const stripe = async (request) => {
 };
 /** @param {Request} request */
 const merchantHooks = async (request) => {
-	hooks.push({ body: await request.text(), signature: request.headers.get('ss-signature') });
+	hooks.push({ body: await request.text(), signature: request.headers.get('shelfway-signature') });
 	return new Response(null, { status: 204 });
 };
 
@@ -261,9 +261,9 @@ describe('Payments on the real Portal', () => {
 			body: { amount: 1000, reason: 'Goodwill' },
 			headers: {
 				'idempotency-key': 'refund-inv-42-2',
-				'ss-actor-id': 'usr_finance_1',
-				'ss-actor-name': 'Sam%20Lee',
-				'ss-actor-role': 'Finance',
+				'shelfway-actor-id': 'usr_finance_1',
+				'shelfway-actor-name': 'Sam%20Lee',
+				'shelfway-actor-role': 'Finance',
 			},
 		});
 		expect(refund.json.refunds.at(-1)).toMatchObject({ amount: 1000, by: 'Sam Lee' });

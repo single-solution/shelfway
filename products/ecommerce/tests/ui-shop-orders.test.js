@@ -437,9 +437,9 @@ describe('my orders', () => {
 		await click(buttonOf(host, text('orders.reviewLabel', { name: 'Phone (Blue)' })));
 		const form = () => $(host, 'form.review-form');
 		expect(form()).not.toBeNull();
-		$(host, '#ss-review-oln_1-rating').value = '4';
-		$(host, '#ss-review-oln_1-title').value = ' Solid ';
-		$(host, '#ss-review-oln_1-body').value = 'Works well ';
+		$(host, '#shelfway-review-oln_1-rating').value = '4';
+		$(host, '#shelfway-review-oln_1-title').value = ' Solid ';
+		$(host, '#shelfway-review-oln_1-body').value = 'Works well ';
 		await submit(form());
 		expect(textOf(host)).toContain(text('reviews.failed'));
 		expect(fake.last('POST /v1/shop/reviews')?.body).toEqual({
@@ -825,11 +825,11 @@ describe('returns', () => {
 		expect($$(host, 'form.box select')).toHaveLength(2);
 		await submit(form());
 		expect(textOf(host)).toContain(text('returns.chooseItems'));
-		await setValue($(host, '#ss-claim-oln_1'), '2');
+		await setValue($(host, '#shelfway-claim-oln_1'), '2');
 		await submit(form());
 		expect(textOf(host)).toContain(text('returns.reasonNeeded'));
-		$(host, '#ss-claim-reason').value = ' Screen broken ';
-		const photos = $(host, '#ss-claim-photos');
+		$(host, '#shelfway-claim-reason').value = ' Screen broken ';
+		const photos = $(host, '#shelfway-claim-photos');
 		const png = new window.File(['x'], 'a.png', { type: 'image/png' });
 		const gif = new window.File(['x'], 'a.gif', { type: 'image/gif' });
 		Object.defineProperty(photos, 'files', { configurable: true, value: [png, png] });
@@ -878,9 +878,9 @@ describe('returns', () => {
 		await submit(form());
 		expect(fake.all('POST /v1/shop/returns').at(-1)?.key).toBe(running);
 		// warranty lists the case too
-		await setValue($(host, '#ss-claim-kind'), 'warranty');
-		expect($(host, '#ss-claim-oln_3')).not.toBeNull();
-		await setValue($(host, '#ss-claim-oln_3'), '1');
+		await setValue($(host, '#shelfway-claim-kind'), 'warranty');
+		expect($(host, '#shelfway-claim-oln_3')).not.toBeNull();
+		await setValue($(host, '#shelfway-claim-oln_3'), '1');
 		Object.defineProperty(photos, 'files', { configurable: true, value: [] });
 		claimAnswer = ok(claim('9'), 201);
 		await submit(form());
@@ -906,28 +906,28 @@ describe('returns', () => {
 		const host = await mountOrders(fake);
 		await click(buttonOf(host, text('orders.open', { number: 'SO-1' })));
 		await click(buttonOf(host, text('orders.claim')));
-		const kinds = /** @type {HTMLSelectElement} */ ($(host, '#ss-claim-kind'));
+		const kinds = /** @type {HTMLSelectElement} */ ($(host, '#shelfway-claim-kind'));
 		expect([...kinds.options].map((option) => option.textContent)).toEqual(['Swap for another size', 'Repair']);
-		const pick = /** @type {HTMLSelectElement} */ ($(host, '#ss-claim-reason-pick'));
+		const pick = /** @type {HTMLSelectElement} */ ($(host, '#shelfway-claim-reason-pick'));
 		expect([...pick.options].map((option) => option.textContent)).toEqual([
 			'Too small',
 			'Damaged',
 			text('returns.reasonOther'),
 		]);
 		// a listed reason hides the text box; Other shows it
-		const box = /** @type {HTMLElement} */ ($(host, '#ss-claim-reason').closest('.field'));
+		const box = /** @type {HTMLElement} */ ($(host, '#shelfway-claim-reason').closest('.field'));
 		expect(box.hidden).toBe(true);
-		await setValue($(host, '#ss-claim-oln_1'), '1');
+		await setValue($(host, '#shelfway-claim-oln_1'), '1');
 		await setValue(pick, 'Damaged');
 		await submit($(host, 'form.box'));
 		expect(fake.all('POST /v1/shop/returns').at(-1)?.body).toMatchObject({ kind: 'swap', reason: 'Damaged' });
 		await click(buttonOf(host, text('orders.claim')));
-		await setValue($(host, '#ss-claim-oln_1'), '1');
-		await setValue($(host, '#ss-claim-reason-pick'), '');
-		expect(/** @type {HTMLElement} */ ($(host, '#ss-claim-reason').closest('.field')).hidden).toBe(false);
+		await setValue($(host, '#shelfway-claim-oln_1'), '1');
+		await setValue($(host, '#shelfway-claim-reason-pick'), '');
+		expect(/** @type {HTMLElement} */ ($(host, '#shelfway-claim-reason').closest('.field')).hidden).toBe(false);
 		await submit($(host, 'form.box'));
 		expect(textOf(host)).toContain(text('returns.reasonNeeded'));
-		$(host, '#ss-claim-reason').value = 'Wrong color';
+		$(host, '#shelfway-claim-reason').value = 'Wrong color';
 		await submit($(host, 'form.box'));
 		expect(fake.all('POST /v1/shop/returns').at(-1)?.body).toMatchObject({ kind: 'swap', reason: 'Wrong color' });
 	});
@@ -939,7 +939,7 @@ describe('returns', () => {
 		});
 		const host = await mountOrders(fake);
 		await click(buttonOf(host, text('orders.open', { number: 'SO-1' })));
-		expect($(host, '#ss-claim-photos')).toBeNull();
+		expect($(host, '#shelfway-claim-photos')).toBeNull();
 		await click(buttonOf(host, text('orders.claim')));
 		expect(textOf(host)).toContain(text('returns.none'));
 		fake.routes['GET /v1/shop/orders/ord_1/returnable'] = () => fail(500, 'internal_error');
@@ -948,8 +948,8 @@ describe('returns', () => {
 		fake.routes['GET /v1/shop/orders/ord_1/returnable'] = () => ok(RETURNABLE);
 		fake.routes['POST /v1/shop/returns'] = () => fail(500, 'internal_error');
 		await click(buttonOf(host, text('orders.claim')));
-		await setValue($(host, '#ss-claim-oln_1'), '1');
-		$(host, '#ss-claim-reason').value = 'Bad';
+		await setValue($(host, '#shelfway-claim-oln_1'), '1');
+		$(host, '#shelfway-claim-reason').value = 'Bad';
 		await submit($(host, 'form.box'));
 		expect(textOf(host)).toContain(text('returns.failed'));
 	});

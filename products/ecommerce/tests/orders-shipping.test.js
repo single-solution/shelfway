@@ -40,7 +40,7 @@ const confirmedOrder = async () => {
 		token: shop.browser,
 		origin: ORIGIN,
 		body: { lines: [{ productId: item.id }], payment: 'cod', address: ADDRESS },
-		headers: { 'x-forwarded-for': `10.8.0.${users}`, 'ss-sign-in': token, 'idempotency-key': `ship-${users}` },
+		headers: { 'x-forwarded-for': `10.8.0.${users}`, 'shelfway-sign-in': token, 'idempotency-key': `ship-${users}` },
 	});
 	expect(placed.status).toBe(201);
 	const id = placed.json.order.id;
@@ -87,7 +87,7 @@ describe('shipping and packing options (E28)', () => {
 		const mine = await shop.call('GET', `/v1/shop/orders/${id}`, {
 			token: shop.browser,
 			origin: ORIGIN,
-			headers: { 'ss-sign-in': token, 'x-forwarded-for': '10.8.1.1' },
+			headers: { 'shelfway-sign-in': token, 'x-forwarded-for': '10.8.1.1' },
 		});
 		expect(mine.json.shipment).toMatchObject({
 			trackingUrl: 'https://new.example/TN9',
@@ -131,7 +131,7 @@ describe('shipping and packing options (E28)', () => {
 			const mine = await shop.call('GET', `/v1/shop/orders/${id}`, {
 				token: shop.browser,
 				origin: ORIGIN,
-				headers: { 'ss-sign-in': token, 'x-forwarded-for': '10.8.1.2' },
+				headers: { 'shelfway-sign-in': token, 'x-forwarded-for': '10.8.1.2' },
 			});
 			// shoppers see only the kinds marked for them
 			expect(mine.json.attachments).toEqual([
@@ -187,7 +187,7 @@ describe('order editing and numbers (E29, E30)', () => {
 			token: shop.browser,
 			origin: ORIGIN,
 			body: { lines: [{ productId: a.id, quantity: 2 }], payment: 'cod', address: ADDRESS },
-			headers: { 'x-forwarded-for': `10.8.2.${users}`, 'ss-sign-in': token, 'idempotency-key': `edit-${users}` },
+			headers: { 'x-forwarded-for': `10.8.2.${users}`, 'shelfway-sign-in': token, 'idempotency-key': `edit-${users}` },
 		});
 		const id = placed.json.order.id;
 		const bVariant = /** @type {any} */ (b.variants[0]).id;
@@ -232,7 +232,7 @@ describe('order editing and numbers (E29, E30)', () => {
 			token: shop.browser,
 			origin: ORIGIN,
 			body: { lines: [{ productId: item.id, quantity: 1 }], payment: 'cod', address: ADDRESS },
-			headers: { 'x-forwarded-for': `10.8.2.${users}`, 'ss-sign-in': token, 'idempotency-key': `edit-${users}` },
+			headers: { 'x-forwarded-for': `10.8.2.${users}`, 'shelfway-sign-in': token, 'idempotency-key': `edit-${users}` },
 		});
 		expect(placed.json.order.totals.discount).toBe(1000);
 		// this order took the deal's last use; then the deal is switched off

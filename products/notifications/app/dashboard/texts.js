@@ -1,9 +1,9 @@
 /**
  * The dashboard's own texts (US English, kept in this file; the dashboard is not translated, PLAN 0.6), laid over the
- * words every product dashboard shares (`@ss/ui` `DASHBOARD_TEXTS`).
+ * words every product dashboard shares (`@shelfway/ui` `DASHBOARD_TEXTS`).
  * @module
  */
-import { dashboardTexts } from '@ss/ui';
+import { dashboardTexts } from '@shelfway/ui';
 
 export const TEXTS = dashboardTexts({
 	title: 'Notifications',
@@ -219,7 +219,7 @@ export const TEXTS = dashboardTexts({
 		ticket: 'Ticket snippet',
 		ticketHelp: 'Your server asks for a ticket for the admin widgets after checking its user.',
 		webhook: 'Webhook signature check',
-		webhookHelp: 'Check the SS-Signature header of every event before trusting it.',
+		webhookHelp: 'Check the Shelfway-Signature header of every event before trusting it.',
 		replies: 'Reply addresses',
 		repliesHelp:
 			"Point your provider's incoming-message webhook here for unsubscribe keywords. For any other gateway, add ?token= and its reply token from Developers.",

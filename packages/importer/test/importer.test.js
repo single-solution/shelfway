@@ -2,7 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { ObjectId } from 'mongodb';
 import { afterEach, describe, expect, it } from 'vitest';
-import { IMPORT_LIMITS } from '@ss/contracts';
+import { IMPORT_LIMITS } from '@shelfway/contracts';
 import { defineMapping, read, send, verify } from '../src/index.js';
 import { main, USAGE } from '../src/cli.js';
 import { hexOf, legacyId } from '../src/mapping.js';
@@ -99,7 +99,7 @@ describe('NDJSON', () => {
 	});
 });
 
-describe('ss-import read', () => {
+describe('shelfway-import read', () => {
 	it('reads the fixture store read only into NDJSON, the id map and the manifest', async () => {
 		const { source, dir } = await prepare();
 		const manifest = await read({
@@ -199,7 +199,7 @@ describe('ss-import read', () => {
 	});
 });
 
-describe('ss-import send and verify', () => {
+describe('shelfway-import send and verify', () => {
 	it('dry-runs the fixture, imports it, finishes, re-runs safely and verifies the counts', async () => {
 		const { source, dir } = await prepare();
 		await read({ mapping: FIXTURE_MAPPING, db: source.db, dir });
@@ -284,7 +284,7 @@ describe('ss-import send and verify', () => {
 	});
 });
 
-describe('the ss-import command', () => {
+describe('the shelfway-import command', () => {
 	/** @param {string[]} argv @param {Partial<import('../src/cli.js').CliDeps>} [deps] */
 	const run = async (argv, deps = {}) => {
 		let out = '';
@@ -309,10 +309,12 @@ describe('the ss-import command', () => {
 		expect((await run(['read', '--what'])).code).toBe(2);
 		expect((await run(['read', '--mapping', 'nope', '--out', 'x'])).err).toMatch(/--mapping is one of: fixture/);
 		expect((await run(['read', '--mapping', 'fixture'])).err).toMatch(/--out/);
-		expect((await run(['read', '--mapping', 'fixture', '--out', 'x'])).err).toMatch(/SS_IMPORT_SOURCE_URI/);
+		expect((await run(['read', '--mapping', 'fixture', '--out', 'x'])).err).toMatch(/SHELFWAY_IMPORT_SOURCE_URI/);
 		expect((await run(['send'])).err).toMatch(/--dir/);
 		expect((await run(['send', '--dir', 'x', '--product', 'notes'])).err).toMatch(/<id>=<url>/);
-		expect((await run(['verify', '--dir', 'x', '--product', 'notes=https://notes.test'])).err).toMatch(/SS_IMPORT_TOKEN_NOTES/);
+		expect((await run(['verify', '--dir', 'x', '--product', 'notes=https://notes.test'])).err).toMatch(
+			/SHELFWAY_IMPORT_TOKEN_NOTES/,
+		);
 	});
 
 	it('reads, dry-runs, sends and verifies the fixture with tokens from the environment', async () => {
@@ -323,13 +325,13 @@ describe('the ss-import command', () => {
 			return { db: source.db, close: async () => void (closed = true) };
 		};
 		const readRun = await run(['read', '--mapping', 'fixture', '--out', dir], {
-			env: { SS_IMPORT_SOURCE_URI: 'mongodb://store.example/shop' },
+			env: { SHELFWAY_IMPORT_SOURCE_URI: 'mongodb://store.example/shop' },
 			connect,
 		});
 		expect(readRun).toEqual({ code: 0, out: '01-notes.notes.ndjson: 3 records (5 read, 1 merged, 1 left out)\n', err: '' });
 		expect(closed).toBe(true);
 		const product = fakeProduct();
-		const env = { SS_IMPORT_TOKEN_NOTES: product.token };
+		const env = { SHELFWAY_IMPORT_TOKEN_NOTES: product.token };
 		const args = ['--dir', dir, '--product', 'notes=https://notes.test'];
 		expect(await run(['send', ...args, '--dry-run'], { env, fetch: product.fetch })).toEqual({
 			code: 0,
@@ -351,7 +353,7 @@ describe('the ss-import command', () => {
 		const failed = await run(['send', ...args], { env, fetch: product.fetch });
 		expect(failed.code).toBe(1);
 		expect(failed.out).toContain('01-notes.notes.ndjson:1 note_64b0c0ffee00000000000009 /text text is 1–40 characters');
-		const refused = await run(['send', ...args], { env: { SS_IMPORT_TOKEN_NOTES: 'wrong' }, fetch: product.fetch });
+		const refused = await run(['send', ...args], { env: { SHELFWAY_IMPORT_TOKEN_NOTES: 'wrong' }, fetch: product.fetch });
 		expect(refused).toMatchObject({ code: 1, err: expect.stringMatching(/answered 401/) });
 		expect((await run(['read', '--mapping', 'fixture', '--out', dir, '--source', 'mongodb://x/y'])).err).toMatch(/no database/);
 	});

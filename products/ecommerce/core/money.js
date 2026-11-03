@@ -1,12 +1,12 @@
 /**
  * Money (PLAN 0.4.13): amounts are integer minor units plus an ISO 4217 currency code. The shop's currency is the
  * `catalog` setting `currency`; no currency, language or country is assumed in code. The checks and the decimal text
- * (`isAmount`, `isCurrency`, `toDecimal`, `fromDecimal`, `currencyDigits`) come from `@ss/contracts/format`, and the
+ * (`isAmount`, `isCurrency`, `toDecimal`, `fromDecimal`, `currencyDigits`) come from `@shelfway/contracts/format`, and the
  * text for people from the kit's `formatMoney` and the website's Format (PLAN 0.8.10 K7). This file keeps Ecommerce's
  * own sums: percentages, splitting a total over lines, rounding to whole units. No I/O.
  * @module
  */
-import { currencyDigits } from '@ss/contracts/format';
+import { currencyDigits } from '@shelfway/contracts/format';
 
 /**
  * `percent` % of an amount, not rounded (deals rounded once per order, `deals.rounding: total_half_up`).

@@ -7,37 +7,38 @@ import { createIo, removeDir, tempDir } from './helpers/util.js';
 /** @type {string} */
 let root;
 beforeAll(async () => {
-	root = await tempDir('ss-cli-main-');
+	root = await tempDir('shelfway-cli-main-');
 });
 afterAll(async () => {
 	await removeDir(root);
 });
 
 /** @param {string[]} argv */
-const ss = async (argv) => {
+const shelfway = async (argv) => {
 	const io = createIo();
 	const code = await main(argv, { io: io.io, cwd: root });
 	return { code, out: io.out(), err: io.err() };
 };
 
-describe('ss (main)', () => {
+describe('shelfway (main)', () => {
 	it('prints help and version, rejects unknown commands and options', async () => {
-		expect(await ss([])).toMatchObject({ code: 0, out: USAGE });
-		for (const help of ['help', '--help', '-h']) expect(await ss([help])).toMatchObject({ code: 0, out: USAGE });
-		expect(USAGE).toContain('ss --version, ss -v');
-		for (const version of ['--version', '-v']) expect(await ss([version])).toMatchObject({ code: 0, out: `${VERSION}\n` });
+		expect(await shelfway([])).toMatchObject({ code: 0, out: USAGE });
+		for (const help of ['help', '--help', '-h']) expect(await shelfway([help])).toMatchObject({ code: 0, out: USAGE });
+		expect(USAGE).toContain('shelfway --version, shelfway -v');
+		for (const version of ['--version', '-v'])
+			expect(await shelfway([version])).toMatchObject({ code: 0, out: `${VERSION}\n` });
 		// the version is the package's own, not a copy kept by hand
 		expect(VERSION).toBe(JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8')).version);
-		expect((await ss(['nope'])).code).toBe(2);
-		expect((await ss(['app'])).code).toBe(2);
-		expect((await ss(['app', 'nope'])).code).toBe(2);
-		expect((await ss(['app', 'validate', '--bogus'])).code).toBe(2);
-		expect((await ss(['app', 'init'])).code).toBe(2);
-		expect((await ss(['app', 'init', 'x', '--id', 'x1'])).err).toContain('needs --id and --name');
+		expect((await shelfway(['nope'])).code).toBe(2);
+		expect((await shelfway(['app'])).code).toBe(2);
+		expect((await shelfway(['app', 'nope'])).code).toBe(2);
+		expect((await shelfway(['app', 'validate', '--bogus'])).code).toBe(2);
+		expect((await shelfway(['app', 'init'])).code).toBe(2);
+		expect((await shelfway(['app', 'init', 'x', '--id', 'x1'])).err).toContain('needs --id and --name');
 	});
 
 	it('inits, validates and regenerates assets with exit codes', async () => {
-		const created = await ss([
+		const created = await shelfway([
 			'app',
 			'init',
 			'demo',
@@ -49,25 +50,25 @@ describe('ss (main)', () => {
 			'https://demo.example.com',
 		]);
 		expect(created).toMatchObject({ code: 0, out: expect.stringContaining("Created product 'demo' in demo") });
-		expect(await ss(['app', 'validate', 'demo'])).toMatchObject({ code: 0, out: expect.stringContaining('✔ valid') });
-		expect(JSON.parse((await ss(['app', 'validate', 'demo', '--json'])).out).ok).toBe(true);
-		expect(await ss(['app', 'assets', 'demo', '--check'])).toMatchObject({
+		expect(await shelfway(['app', 'validate', 'demo'])).toMatchObject({ code: 0, out: expect.stringContaining('✔ valid') });
+		expect(JSON.parse((await shelfway(['app', 'validate', 'demo', '--json'])).out).ok).toBe(true);
+		expect(await shelfway(['app', 'assets', 'demo', '--check'])).toMatchObject({
 			code: 0,
 			out: 'openapi.json is up to date\nserver/widget-script.js is up to date\n',
 		});
 		await writeFile(path.join(root, 'demo/server/widget-script.js'), '// stale\n');
-		expect(await ss(['app', 'assets', 'demo', '--check'])).toMatchObject({
+		expect(await shelfway(['app', 'assets', 'demo', '--check'])).toMatchObject({
 			code: 1,
-			err: 'server/widget-script.js out of date: run ss app assets\n',
+			err: 'server/widget-script.js out of date: run shelfway app assets\n',
 		});
-		expect(await ss(['app', 'assets', 'demo'])).toMatchObject({
+		expect(await shelfway(['app', 'assets', 'demo'])).toMatchObject({
 			code: 0,
 			out: expect.stringContaining('server/widget-script.js written'),
 		});
-		expect((await ss(['app', 'init', 'demo', '--id', 'demo', '--name', 'Demo'])).code).toBe(1);
-		expect((await ss(['app', 'init', 'other', '--id', 'Bad', '--name', 'Demo'])).err).toContain('--id must be');
+		expect((await shelfway(['app', 'init', 'demo', '--id', 'demo', '--name', 'Demo'])).code).toBe(1);
+		expect((await shelfway(['app', 'init', 'other', '--id', 'Bad', '--name', 'Demo'])).err).toContain('--id must be');
 		await writeFile(path.join(root, 'demo/core/extra.js'), "import '../ui/inbox.js';\n");
-		const invalid = await ss(['app', 'validate', 'demo']);
+		const invalid = await shelfway(['app', 'validate', 'demo']);
 		expect(invalid).toMatchObject({ code: 1, out: expect.stringContaining('imports.direction') });
 	}, 60_000);
 });

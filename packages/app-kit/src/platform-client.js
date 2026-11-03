@@ -1,8 +1,8 @@
 /**
  * The product → Portal client (PLAN 0.4.12). Every call except `jwks()` carries a fresh client assertion signed with
- * the product key pinned at connect (`@ss/protocol` `signAssertion`, audience = the pinned Portal URL). Answers are
- * checked with `@ss/contracts`. Failures throw a kit error: `portal_unreachable` (network, timeout, 5xx or an answer
- * that does not match the contract) or `portal_refused` (4xx, with `details.status` and `details.problem`, the
+ * the product key pinned at connect (`@shelfway/protocol` `signAssertion`, audience = the pinned Portal URL). Answers are
+ * checked with `@shelfway/contracts`. Failures throw a kit error: `platform_unreachable` (network, timeout, 5xx or an answer
+ * that does not match the contract) or `platform_refused` (4xx, with `details.status` and `details.problem`, the
  * Portal's problem code).
  * @module
  */
@@ -15,34 +15,41 @@ import {
 	validateWebsiteConnections,
 	validateWebsiteSettings,
 	validateWebsitesPage,
-} from '@ss/contracts';
-import { signAssertion } from '@ss/protocol';
-import { isObject } from '@ss/contracts/util';
+} from '@shelfway/contracts';
+import { signAssertion } from '@shelfway/protocol';
+import { isObject } from '@shelfway/contracts/util';
 import { kitError } from './util.js';
 
-/** @typedef {import('@ss/protocol').Signer} Signer */
-/** @typedef {import('@ss/contracts').PriceList} PriceList */
-/** @typedef {import('@ss/contracts').StatusResponse} StatusResponse */
-/** @typedef {import('@ss/contracts').WebsitesPage} WebsitesPage */
-/** @typedef {import('@ss/contracts').Revocations} Revocations */
-/** @typedef {import('@ss/contracts').WebsiteSettings} WebsiteSettings */
-/** @typedef {import('@ss/contracts').WebsiteConnections} WebsiteConnections */
+/** @typedef {import('@shelfway/protocol').Signer} Signer */
+/** @typedef {import('@shelfway/contracts').PriceList} PriceList */
+/** @typedef {import('@shelfway/contracts').StatusResponse} StatusResponse */
+/** @typedef {import('@shelfway/contracts').WebsitesPage} WebsitesPage */
+/** @typedef {import('@shelfway/contracts').Revocations} Revocations */
+/** @typedef {import('@shelfway/contracts').WebsiteSettings} WebsiteSettings */
+/** @typedef {import('@shelfway/contracts').WebsiteConnections} WebsiteConnections */
 
 /** Deadline of one Portal call (a call may ask for a shorter one). */
-const PORTAL_TIMEOUT_MS = 10_000;
+const PLATFORM_TIMEOUT_MS = 10_000;
 
 /**
- * @param {{ portalUrl: string, productId: string, signer: Signer, fetch?: typeof globalThis.fetch, now?: () => number,
- *   randomBytes?: (length: number) => Uint8Array }} options `portalUrl` is the pinned, canonical Portal URL
+ * @param {{ platformUrl: string, productId: string, signer: Signer, fetch?: typeof globalThis.fetch, now?: () => number,
+ *   randomBytes?: (length: number) => Uint8Array }} options `platformUrl` is the pinned, canonical Portal URL
  */
-export const createPortalClient = ({ portalUrl, productId, signer, fetch = globalThis.fetch, now = Date.now, randomBytes }) => {
+export const createPlatformClient = ({
+	platformUrl,
+	productId,
+	signer,
+	fetch = globalThis.fetch,
+	now = Date.now,
+	randomBytes,
+}) => {
 	/**
 	 * @param {'GET' | 'POST' | 'PUT'} method
 	 * @param {string} path
 	 * @param {{ body?: unknown, signed?: boolean, timeoutMs?: number }} [options]
 	 * @returns {Promise<any>}
 	 */
-	const call = async (method, path, { body, signed = true, timeoutMs = PORTAL_TIMEOUT_MS } = {}) => {
+	const call = async (method, path, { body, signed = true, timeoutMs = PLATFORM_TIMEOUT_MS } = {}) => {
 		const route = path.split('?')[0];
 		/** @type {Record<string, string>} */
 		const headers = { accept: 'application/json' };
@@ -50,7 +57,7 @@ export const createPortalClient = ({ portalUrl, productId, signer, fetch = globa
 			const assertion = await signAssertion({
 				signer,
 				productId,
-				audience: portalUrl,
+				audience: platformUrl,
 				now,
 				...(randomBytes ? { randomBytes } : {}),
 			});
@@ -62,7 +69,7 @@ export const createPortalClient = ({ portalUrl, productId, signer, fetch = globa
 		/** @type {unknown} */
 		let json = null;
 		try {
-			response = await fetch(`${portalUrl}${path}`, {
+			response = await fetch(`${platformUrl}${path}`, {
 				method,
 				headers,
 				...(body === undefined ? {} : { body: JSON.stringify(body) }),
@@ -72,12 +79,12 @@ export const createPortalClient = ({ portalUrl, productId, signer, fetch = globa
 			const text = await response.text();
 			json = text.length > 0 ? JSON.parse(text) : null;
 		} catch {
-			throw kitError('portal_unreachable', `Portal ${method} ${route} failed`);
+			throw kitError('platform_unreachable', `Portal ${method} ${route} failed`);
 		}
-		if (response.status >= 500) throw kitError('portal_unreachable', `Portal ${method} ${route} answered ${response.status}`);
+		if (response.status >= 500) throw kitError('platform_unreachable', `Portal ${method} ${route} answered ${response.status}`);
 		if (!response.ok) {
 			const type = isObject(json) && typeof json.type === 'string' ? json.type : '';
-			throw kitError('portal_refused', `Portal ${method} ${route} answered ${response.status}`, {
+			throw kitError('platform_refused', `Portal ${method} ${route} answered ${response.status}`, {
 				status: response.status,
 				problem: type.split('/').pop() ?? '',
 			});
@@ -92,13 +99,13 @@ export const createPortalClient = ({ portalUrl, productId, signer, fetch = globa
 	 * @returns {T}
 	 */
 	const checked = (result, what) => {
-		if (!result.ok) throw kitError('portal_unreachable', `Portal ${what} answer does not match the contract`);
+		if (!result.ok) throw kitError('platform_unreachable', `Portal ${what} answer does not match the contract`);
 		return result.value;
 	};
 	/** @param {unknown} json @param {string} what @returns {number} */
 	const versionOf = (json, what) => {
 		if (!isObject(json) || !Number.isSafeInteger(json.version))
-			throw kitError('portal_unreachable', `Portal ${what} answer has no version`);
+			throw kitError('platform_unreachable', `Portal ${what} answer has no version`);
 		return /** @type {number} */ (json.version);
 	};
 
@@ -148,7 +155,7 @@ export const createPortalClient = ({ portalUrl, productId, signer, fetch = globa
 			if (settings === null || settings === undefined) return { version, settings: null };
 			const document = checked(validateWebsiteSettings(settings), 'website settings');
 			if (document.websiteId !== websiteId || document.version !== version)
-				throw kitError('portal_unreachable', 'Portal website settings answer names another website or version');
+				throw kitError('platform_unreachable', 'Portal website settings answer names another website or version');
 			return { version, settings: document };
 		},
 		/**
@@ -211,7 +218,7 @@ export const createPortalClient = ({ portalUrl, productId, signer, fetch = globa
 		/** @param {string} id @returns {Promise<{ baseUrl: string }>} */
 		directory: async (id) =>
 			checked(validateDirectory(await call('GET', `/v1/product/directory/${encodeURIComponent(id)}`)), 'directory'),
-		/** Every connected product with its name and address, by id. @returns {Promise<import('@ss/contracts').DirectoryList>} */
+		/** Every connected product with its name and address, by id. @returns {Promise<import('@shelfway/contracts').DirectoryList>} */
 		directoryList: async () => checked(validateDirectoryList(await call('GET', '/v1/product/directory')), 'directory'),
 		/** @param {string} jti @returns {Promise<{ consumed: boolean }>} */
 		consumeLaunch: async (jti) => {
@@ -221,4 +228,4 @@ export const createPortalClient = ({ portalUrl, productId, signer, fetch = globa
 	});
 };
 
-/** @typedef {ReturnType<typeof createPortalClient>} PortalClient */
+/** @typedef {ReturnType<typeof createPlatformClient>} PortalClient */

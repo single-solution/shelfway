@@ -1,8 +1,8 @@
 // Docker-free local database for development: a single-node replica set on this machine (port 27999, or MONGO_PORT).
-// `pnpm --filter @ss/platform db:memory` keeps the data in memory (lost on exit); `pnpm --filter @ss/platform db:local`
+// `pnpm --filter @shelfway/platform db:memory` keeps the data in memory (lost on exit); `pnpm --filter @shelfway/platform db:local`
 // keeps it in platform/.mongo-data (git-ignored), so the Portal, the products and their merchant databases survive a
 // restart. It prints MONGODB_URI for the Portal; every product uses the same server with its own database name
-// (mongodb://127.0.0.1:27999/ss_<product>?replicaSet=testset). Keep it running while `next dev` runs.
+// (mongodb://127.0.0.1:27999/shelfway_<product>?replicaSet=testset). Keep it running while `next dev` runs.
 import { spawn } from 'node:child_process';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
@@ -17,7 +17,7 @@ const SET = 'testset';
 /** @param {() => Promise<unknown>} stop */
 const ready = (stop) => {
 	process.stdout.write(
-		`MONGODB_URI=mongodb://127.0.0.1:${port}/ss_portal?replicaSet=${SET}\n` +
+		`MONGODB_URI=mongodb://127.0.0.1:${port}/shelfway_platform?replicaSet=${SET}\n` +
 			`${keep ? `(data kept in ${path.join('platform', '.mongo-data')}; ` : '(data lost on exit; '}ctrl-c to stop)\n`,
 	);
 	const end = async () => {

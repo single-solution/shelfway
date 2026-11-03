@@ -4,7 +4,7 @@
  * returned or refunded), refunds without a move, edits, bulk moves and the data-rights answers. Orders are placed with
  * the ledger directly, so this part is tested on its own.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { placeOrder } from '../adapters/ledger.js';
 import { createOrdersStore } from '../adapters/orders-store.js';
@@ -19,7 +19,7 @@ const KIND_OF = { cod: 'on_delivery', online: 'gateway', bank_transfer: 'pay_fir
 
 /** @type {Awaited<ReturnType<typeof readyShop>>} */
 let shop;
-/** @type {import('@ss/app-kit').WebsiteData} */
+/** @type {import('@shelfway/app-kit').WebsiteData} */
 let data;
 /** @type {string} */
 let ticket;
@@ -706,7 +706,7 @@ describe('data rights', () => {
 		const shopperSees = await shop.call('GET', `/v1/shop/orders/${order.id}`, {
 			token: shop.browser,
 			origin: `https://${DOMAIN}`,
-			headers: { 'ss-sign-in': await shop.signIn({ id: userId, email: 'rights@example.com', phone: '+15550002222' }) },
+			headers: { 'shelfway-sign-in': await shop.signIn({ id: userId, email: 'rights@example.com', phone: '+15550002222' }) },
 		});
 		expect(Object.keys(first).sort()).toEqual(Object.keys(shopperSees.json).sort());
 		expect(first).toMatchObject({ number: order.number, address: { line1: '1 Main Street' } });

@@ -1,6 +1,6 @@
 /**
  * The product's routes as written in `server/` (every `defineRoute({ … })` call, read statically): the source of
- * `openapi.json` and of the route checks of `ss app validate`.
+ * `openapi.json` and of the route checks of `shelfway app validate`.
  * @module
  */
 import { problemOf } from './manifest.js';
@@ -23,7 +23,7 @@ import { findRoutes, lex } from './validate/scan.js';
  * @property {boolean} idempotent
  */
 
-/** The generated widget module (`ss app assets`): it holds no route definitions. */
+/** The generated widget module (`shelfway app assets`): it holds no route definitions. */
 export const WIDGET_MODULE = 'server/widget-script.js';
 
 /** Members that must be plain string literals so the route can be checked and documented. */

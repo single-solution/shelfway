@@ -19,7 +19,7 @@ const KEPT = 2_000;
 /** @typedef {import('../core/lists.js').ListName} ListName */
 
 /**
- * @param {{ store: import('@ss/app-kit').Store, now: () => number }} options
+ * @param {{ store: import('@shelfway/app-kit').Store, now: () => number }} options
  */
 export const createLists = ({ store, now }) => {
 	/** @param {string} websiteId @param {string} name */

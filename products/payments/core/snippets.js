@@ -5,7 +5,7 @@
  * I/O.
  * @module
  */
-import { widgetScriptTag } from '@ss/contracts/text';
+import { widgetScriptTag } from '@shelfway/contracts/text';
 import { WIDGET_ATTRIBUTE, WIDGET_GLOBAL } from './widgets.js';
 
 /**
@@ -50,7 +50,7 @@ export const createSnippets = ({ base, widgets, permissions }) => {
 		'<script>',
 		`  window.${WIDGET_GLOBAL}.admin({`,
 		'    // your own server route (below): it checks the signed-in user, then asks for a ticket',
-		"    getTicket: () => fetch('/api/ss-ticket', { method: 'POST' }).then((response) => response.json()),",
+		"    getTicket: () => fetch('/api/shelfway-ticket', { method: 'POST' }).then((response) => response.json()),",
 		'  });',
 		'</script>',
 	].join('\n');
@@ -58,7 +58,7 @@ export const createSnippets = ({ base, widgets, permissions }) => {
 		"// your server, after checking the user's sign-in and role (Node.js 18+, also inside a Next.js route handler)",
 		`const response = await fetch('${base}/v1/tickets', {`,
 		"  method: 'POST',",
-		"  headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}`, 'content-type': 'application/json' },",
+		"  headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}`, 'content-type': 'application/json' },",
 		'  body: JSON.stringify({',
 		'    user: { id: user.id, name: user.name, email: user.email },',
 		`    permissions: ${JSON.stringify(permissions)},`,
@@ -69,7 +69,7 @@ export const createSnippets = ({ base, widgets, permissions }) => {
 	].join('\n');
 	const ticketCurl = [
 		`curl -X POST '${base}/v1/tickets' \\`,
-		'  -H "Authorization: Bearer $SS_SERVER_TOKEN" \\',
+		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN" \\',
 		"  -H 'Content-Type: application/json' \\",
 		`  -d '${JSON.stringify({ user: { id: 'u_1', name: 'Sam Staff', email: 'sam@example.com' }, permissions, origin: 'https://admin.example.com' })}'`,
 	].join('\n');
@@ -78,7 +78,7 @@ export const createSnippets = ({ base, widgets, permissions }) => {
 		`const response = await fetch('${base}/v1/payments', {`,
 		"  method: 'POST',",
 		'  headers: {',
-		'    authorization: `Bearer ${process.env.SS_SERVER_TOKEN}`,',
+		'    authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}`,',
 		"    'content-type': 'application/json',",
 		"    'idempotency-key': `order-${order.id}`,",
 		'  },',
@@ -99,27 +99,27 @@ export const createSnippets = ({ base, widgets, permissions }) => {
 		'// before you mark the order paid: ask Payments, never trust what the browser brings back',
 		`const response = await fetch(\`${base}/v1/payments/\${paymentId}/verify\`, {`,
 		"  method: 'POST',",
-		"  headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}`, 'content-type': 'application/json' },",
+		"  headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}`, 'content-type': 'application/json' },",
 		"  body: JSON.stringify({ amount: 250000, currency: 'USD' }),",
 		'});',
 		'const { verified } = await response.json(); // true only when it was paid for exactly that amount',
 	].join('\n');
 	const refund = [
 		`curl -X POST '${base}/v1/payments/pay_…/refunds' \\`,
-		'  -H "Authorization: Bearer $SS_SERVER_TOKEN" \\',
+		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN" \\',
 		"  -H 'Content-Type: application/json' -H 'Idempotency-Key: refund-1042-1' \\",
 		`  -d '${JSON.stringify({ amount: 50000, reason: 'One item returned' })}'`,
 	].join('\n');
 	const link = [
 		`curl -X POST '${base}/v1/links' \\`,
-		'  -H "Authorization: Bearer $SS_SERVER_TOKEN" \\',
+		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN" \\',
 		"  -H 'Content-Type: application/json' \\",
 		`  -d '${JSON.stringify({ title: 'Donation', currency: 'USD', amount: null, minAmount: 500 })}'`,
 	].join('\n');
 	const methods = [
 		'// your server: your manual payment methods as payers of a currency see them, for checkout and order pages',
 		`const response = await fetch('${base}/v1/manual-methods?currency=USD', {`,
-		'  headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}` },',
+		'  headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}` },',
 		'});',
 		'// { methods: [{ key, name, kind, details, instructions, proof, ready, missing, accounts: [{ label, currency,',
 		'// rows: [{ label, value }] }] }] }: show the ready ones; each account has only the rows you filled in',
@@ -127,14 +127,14 @@ export const createSnippets = ({ base, widgets, permissions }) => {
 	].join('\n');
 	const subscription = [
 		`curl -X POST '${base}/v1/subscriptions' \\`,
-		'  -H "Authorization: Bearer $SS_SERVER_TOKEN" \\',
+		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN" \\',
 		"  -H 'Content-Type: application/json' \\",
 		`  -d '${JSON.stringify({ gateway: 'stripe', plan: 'price_…', customer: { email: 'sam@example.com' }, returnUrl: 'https://shop.example.com/account' })}'`,
 	].join('\n');
 	const webhook = [
 		"import { createHmac, timingSafeEqual } from 'node:crypto';",
 		'',
-		'// body: the raw request body (text); header: the SS-Signature header Notifications adds',
+		'// body: the raw request body (text); header: the Shelfway-Signature header Notifications adds',
 		'export const verify = (body, header, secret) => {',
 		"  const parts = Object.fromEntries(header.split(',').map((part) => part.split('=')));",
 		'  if (Math.abs(Date.now() / 1000 - Number(parts.t)) > 300) return false;',

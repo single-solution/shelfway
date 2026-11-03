@@ -25,8 +25,8 @@ import {
 	fieldErrors,
 	problemCode,
 	useToast,
-} from '@ss/ui';
-import { widgetScriptTag } from '@ss/contracts/text';
+} from '@shelfway/ui';
+import { widgetScriptTag } from '@shelfway/contracts/text';
 import { BILLING, WEBSITE } from '../../texts/console.js';
 import { apiConfirm, apiFetch } from '../client.js';
 import { api } from '../paths.js';
@@ -34,7 +34,7 @@ import { productTone, UsageView } from './billing.js';
 import { factorOf } from './common.js';
 import { confirmationErrors } from './common.js';
 
-/** @typedef {import('@ss/ui/problems').Problem} Problem */
+/** @typedef {import('@shelfway/ui/problems').Problem} Problem */
 /**
  * A product on a website (card).
  * @typedef {{ productId: string, name: string, status: string, featuresOn: string[], dailyCost: number }} ProductCard

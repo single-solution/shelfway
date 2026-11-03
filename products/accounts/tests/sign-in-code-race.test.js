@@ -36,7 +36,7 @@ const askEmail = async (email) => {
 	env.advance(61_000);
 	const asked = await env.visitor('POST', '/v1/sign-in/email/code', { email, returnTo: 'http://localhost:3000/login' });
 	expect(asked.status).toBe(202);
-	return { code: String(lastValues()?.code), link: String(lastValues()?.link).split('#ss_accounts_link=')[1] };
+	return { code: String(lastValues()?.code), link: String(lastValues()?.link).split('#shelfway_accounts_link=')[1] };
 };
 /** The same request twice at the same moment. @param {string} path @param {unknown} body */
 const twice = (path, body) => Promise.all([env.visitor('POST', path, body), env.visitor('POST', path, body)]);

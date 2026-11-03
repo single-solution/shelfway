@@ -2,17 +2,17 @@
  * Starts the widgets on a page (PLAN 0.4.10, 0.8.6). `widget.js` is the same for every website. With `data-token` on
  * its script tag (the website's browser token) it fetches the website's widget config and, while any sign-in method is
  * on, runs the visitor's session (kept from the last visit, renewed before it expires), handles the links Accounts
- * sends people to (`#ss_accounts_code=`, `#ss_accounts_link=`, `#ss_accounts_reset=`, `#ss_accounts_invite=`, removed
- * from the address bar at once, and a setup link's `?ss_setup=`) and mounts `sign_in` and `my_account`; `role_request`
- * mounts while Role requests is on. `window.SSAccounts` offers `getSignIn()`, `user()`, `signOut()`, `ready` and
+ * sends people to (`#shelfway_accounts_code=`, `#shelfway_accounts_link=`, `#shelfway_accounts_reset=`, `#shelfway_accounts_invite=`, removed
+ * from the address bar at once, and a setup link's `?shelfway_setup=`) and mounts `sign_in` and `my_account`; `role_request`
+ * mounts while Role requests is on. `window.ShelfwayAccounts` offers `getSignIn()`, `user()`, `signOut()`, `ready` and
  * `admin({ getTicket })`, which fetches the config with a ticket and mounts the admin widgets `users_admin` and
  * `roles_admin` while Roles is on, and `activity_admin` while Activity log copy is on (each widget while the config
  * lists it in `widgets`, the kit's keys of the widgets whose feature is on). Widgets mount only into the elements the
- * merchant placed (`data-ss-accounts="<widget key>"`), and render nothing while the product is stopped or their
+ * merchant placed (`data-shelfway-accounts="<widget key>"`), and render nothing while the product is stopped or their
  * features are off.
  * @module
  */
-import { createTicketSource, requestJson } from '@ss/app-kit/widget';
+import { createTicketSource, requestJson } from '@shelfway/app-kit/widget';
 import { LINK_PARAMS, SETUP_PARAM, WIDGET_ATTRIBUTE, WIDGET_GLOBAL } from '../core/widgets.js';
 import { mountActivityAdmin } from './activity-admin.js';
 import { mountMyAccount } from './my-account.js';
@@ -32,7 +32,7 @@ const ERROR_PARAM = LINK_PARAMS.error;
  * The website's widget config, from the kit.
  * @typedef {object} WidgetConfig
  * @property {Record<string, string>} texts the widget texts (the website's own, else the defaults)
- * @property {import('@ss/app-kit/widget').WidgetTheme} theme
+ * @property {import('@shelfway/app-kit/widget').WidgetTheme} theme
  * @property {string} customCss
  * @property {import('./common.js').Format} format how money and dates look (Settings → Format, PLAN 0.8.10 K7)
  * @property {string} timeZone the business time zone (UTC when missing, K8)
@@ -162,9 +162,9 @@ export const startWidget = ({
 		await session?.signOut();
 	};
 
-	/** @param {{ getTicket: import('@ss/app-kit/widget').GetTicket }} options */
+	/** @param {{ getTicket: import('@shelfway/app-kit/widget').GetTicket }} options */
 	const admin = async ({ getTicket }) => {
-		/** @type {import('@ss/app-kit/widget').Ticket} */
+		/** @type {import('@shelfway/app-kit/widget').Ticket} */
 		let first;
 		try {
 			first = await getTicket();

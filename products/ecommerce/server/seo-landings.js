@@ -18,8 +18,8 @@
  * attribute address is set, every active attribute's page is (SG-20).
  * @module
  */
-import { createId } from '@ss/contracts';
-import { created, defineRoute, problem } from '@ss/app-kit';
+import { createId } from '@shelfway/contracts';
+import { created, defineRoute, problem } from '@shelfway/app-kit';
 import { NO_KEYS, attributesOf, brandsOf, categoriesOf, findBySlugHistory } from '../adapters/catalog-store.js';
 import { checkLandingAiRequest, landingPrompt, readSuggestions } from '../core/catalog-ai.js';
 import { siteAddress } from '../core/catalog-content.js';
@@ -89,7 +89,7 @@ import { defaultImageOf, newestOf, seoSettingsOf, storeNameOf, trailOf } from '.
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./catalog-media.js').Media} Media */
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/model.js').LandingRecord} LandingRecord */
 /** @typedef {import('../core/model.js').LandingFacet} LandingFacet */
 /** @typedef {import('../core/model.js').AttributeRecord} AttributeRecord */
@@ -1386,7 +1386,7 @@ export const createLandings = (product, service, media) => {
 			path: '/v1/landings',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'seo',
+			feature: 'landing_pages',
 			rateLimit: SEO_LIMITS,
 			handler: landings.list,
 		}),
@@ -1395,7 +1395,7 @@ export const createLandings = (product, service, media) => {
 			path: '/v1/landings',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'seo',
+			feature: 'landing_pages',
 			idempotent: true,
 			rateLimit: SERVER_LIMITS,
 			handler: landings.create,
@@ -1405,7 +1405,7 @@ export const createLandings = (product, service, media) => {
 			path: '/v1/landings/:id',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'seo',
+			feature: 'landing_pages',
 			rateLimit: SEO_LIMITS,
 			handler: landings.read,
 		}),
@@ -1414,7 +1414,7 @@ export const createLandings = (product, service, media) => {
 			path: '/v1/landings/:id',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'seo',
+			feature: 'landing_pages',
 			rateLimit: SERVER_LIMITS,
 			handler: landings.update,
 		}),
@@ -1423,7 +1423,7 @@ export const createLandings = (product, service, media) => {
 			path: '/v1/landings/:id',
 			auth: 'server',
 			permission: 'catalog.edit',
-			feature: 'seo',
+			feature: 'landing_pages',
 			rateLimit: SERVER_LIMITS,
 			handler: landings.remove,
 		}),
@@ -1441,7 +1441,7 @@ export const createLandings = (product, service, media) => {
 			path: '/v1/admin/landings',
 			auth: 'ticket',
 			permission: 'catalog.edit',
-			feature: 'seo',
+			feature: 'landing_pages',
 			rateLimit: SERVER_LIMITS,
 			handler: landings.list,
 		}),
@@ -1450,7 +1450,7 @@ export const createLandings = (product, service, media) => {
 			path: '/v1/admin/landings',
 			auth: 'ticket',
 			permission: 'catalog.edit',
-			feature: 'seo',
+			feature: 'landing_pages',
 			idempotent: true,
 			rateLimit: SERVER_LIMITS,
 			handler: landings.create,
@@ -1460,7 +1460,7 @@ export const createLandings = (product, service, media) => {
 			path: '/v1/admin/landings/:id',
 			auth: 'ticket',
 			permission: 'catalog.edit',
-			feature: 'seo',
+			feature: 'landing_pages',
 			rateLimit: SERVER_LIMITS,
 			handler: landings.read,
 		}),
@@ -1469,7 +1469,7 @@ export const createLandings = (product, service, media) => {
 			path: '/v1/admin/landings/:id',
 			auth: 'ticket',
 			permission: 'catalog.edit',
-			feature: 'seo',
+			feature: 'landing_pages',
 			rateLimit: SERVER_LIMITS,
 			handler: landings.update,
 		}),
@@ -1478,7 +1478,7 @@ export const createLandings = (product, service, media) => {
 			path: '/v1/admin/landings/:id',
 			auth: 'ticket',
 			permission: 'catalog.edit',
-			feature: 'seo',
+			feature: 'landing_pages',
 			rateLimit: SERVER_LIMITS,
 			handler: landings.remove,
 		}),
@@ -1505,7 +1505,7 @@ export const createLandings = (product, service, media) => {
 			path: '/v1/seo/attributes/:slug',
 			auth: 'server',
 			runtime: true,
-			feature: 'seo',
+			feature: 'landing_pages',
 			rateLimit: SEO_LIMITS,
 			handler: conditional(attributeGlossary, service.now),
 		}),
@@ -1514,7 +1514,7 @@ export const createLandings = (product, service, media) => {
 			path: '/v1/seo/attributes/:category/:slug',
 			auth: 'server',
 			runtime: true,
-			feature: 'seo',
+			feature: 'landing_pages',
 			rateLimit: SEO_LIMITS,
 			handler: conditional(attributeGlossary, service.now),
 		}),
@@ -1523,7 +1523,7 @@ export const createLandings = (product, service, media) => {
 			path: '/v1/seo/grades/:key',
 			auth: 'server',
 			runtime: true,
-			feature: 'seo',
+			feature: 'landing_pages',
 			rateLimit: SEO_LIMITS,
 			handler: conditional(gradeGlossary, service.now),
 		}),
@@ -1532,7 +1532,7 @@ export const createLandings = (product, service, media) => {
 			path: '/v1/seo/grades/:category/:key',
 			auth: 'server',
 			runtime: true,
-			feature: 'seo',
+			feature: 'landing_pages',
 			rateLimit: SEO_LIMITS,
 			handler: conditional(gradeGlossary, service.now),
 		}),

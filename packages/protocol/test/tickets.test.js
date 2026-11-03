@@ -61,7 +61,7 @@ const verify = (clock, ticket, overrides = {}) =>
 	});
 
 /** @param {Record<string, unknown>} payload */
-const signRaw = (payload) => signCompact({ signer: ticketKey.signer, typ: 'ss-ticket+jws', payload });
+const signRaw = (payload) => signCompact({ signer: ticketKey.signer, typ: 'shelfway-ticket+jws', payload });
 
 describe('tickets', () => {
 	it('issues a 15-minute ticket bound to product, website, user, origin and server token', async () => {
@@ -80,7 +80,7 @@ describe('tickets', () => {
 		});
 		expect(claims.exp - claims.iat).toBe(900);
 		expect(claims.nbf).toBe(claims.iat);
-		expect(decodeSegment(ticket, 0)).toEqual({ alg: 'EdDSA', kid: 'chat-ticket-1', typ: 'ss-ticket+jws' });
+		expect(decodeSegment(ticket, 0)).toEqual({ alg: 'EdDSA', kid: 'chat-ticket-1', typ: 'shelfway-ticket+jws' });
 		expect(await verify(clock, ticket)).toEqual(claims);
 		expect(await verify(clock, ticket, { origin: 'https://ADMIN.shop.com', isRevoked: async () => false })).toEqual(claims);
 		const local = await issue(clock, { origin: 'http://localhost:3000', permissions: [] });
@@ -103,7 +103,7 @@ describe('tickets', () => {
 			() =>
 				verify(
 					clock,
-					tamperSegment(ticket, 0, (h) => ({ ...h, typ: 'ss-token+jws' })),
+					tamperSegment(ticket, 0, (h) => ({ ...h, typ: 'shelfway-token+jws' })),
 				),
 			() => verify(clock, 'x.y.z'),
 			async () => verify(clock, await signRaw({ ...claims, exp: claims.iat + 901 })),

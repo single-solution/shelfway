@@ -13,9 +13,9 @@
 		"/v1/activity": {
 			"get": {
 				"summary": "The activity log, newest first",
-				"x-ss-auth": "server",
-				"x-ss-permission": "audit.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "audit.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -106,7 +106,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -159,9 +159,9 @@
 		"/v1/activity/count": {
 			"get": {
 				"summary": "Count the activity log",
-				"x-ss-auth": "server",
-				"x-ss-permission": "audit.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "audit.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -219,7 +219,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -249,9 +249,9 @@
 		"/v1/activity/counts": {
 			"get": {
 				"summary": "Count the activity log by action, actor or kind",
-				"x-ss-auth": "server",
-				"x-ss-permission": "audit.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "audit.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -322,7 +322,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -352,9 +352,9 @@
 		"/v1/admin/links": {
 			"get": {
 				"summary": "The payment links, newest first (Payment links admin widget)",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "payment_links",
-				"x-ss-permission": "links.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "payment_links",
+				"x-shelfway-permission": "links.read",
 				"security": [
 					{
 						"ticket": []
@@ -409,9 +409,9 @@
 			"post": {
 				"summary": "Create a payment link (Payment links admin widget)",
 				"description": "Share its url. A fixed amount, or null to let the payer enter one (at least minAmount).",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "payment_links",
-				"x-ss-permission": "links.manage",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "payment_links",
+				"x-shelfway-permission": "links.manage",
 				"security": [
 					{
 						"ticket": []
@@ -564,9 +564,9 @@
 		"/v1/admin/links/{id}": {
 			"get": {
 				"summary": "Read a payment link (Payment links admin widget)",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "payment_links",
-				"x-ss-permission": "links.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "payment_links",
+				"x-shelfway-permission": "links.read",
 				"security": [
 					{
 						"ticket": []
@@ -607,9 +607,9 @@
 			},
 			"patch": {
 				"summary": "Turn a payment link off or on (Payment links admin widget)",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "payment_links",
-				"x-ss-permission": "links.manage",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "payment_links",
+				"x-shelfway-permission": "links.manage",
 				"security": [
 					{
 						"ticket": []
@@ -671,9 +671,9 @@
 		"/v1/admin/manual-methods": {
 			"get": {
 				"summary": "The manual payment methods a new link may offer",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "payment_links",
-				"x-ss-permission": "links.manage",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "payment_links",
+				"x-shelfway-permission": "links.manage",
 				"security": [
 					{
 						"ticket": []
@@ -741,9 +741,9 @@
 		"/v1/admin/payments": {
 			"get": {
 				"summary": "The payments, newest first (Payments admin widget)",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "payment_api",
-				"x-ss-permission": "payments.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "payment_api",
+				"x-shelfway-permission": "payments.read",
 				"security": [
 					{
 						"ticket": []
@@ -828,9 +828,9 @@
 		"/v1/admin/payments/count": {
 			"get": {
 				"summary": "Count the payments (Payments admin widget)",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "payment_api",
-				"x-ss-permission": "payments.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "payment_api",
+				"x-shelfway-permission": "payments.read",
 				"security": [
 					{
 						"ticket": []
@@ -895,9 +895,9 @@
 			"get": {
 				"summary": "Count the payments by status or gateway (Payments admin widget)",
 				"description": "by=state counts by status; by=gateway by gateway (none: no gateway picked yet).",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "payment_api",
-				"x-ss-permission": "payments.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "payment_api",
+				"x-shelfway-permission": "payments.read",
 				"security": [
 					{
 						"ticket": []
@@ -974,9 +974,9 @@
 			"get": {
 				"summary": "Read a payment (Payments admin widget)",
 				"description": "A pending payment is asked of its gateway again (at most every 30 seconds) when you read it.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "payment_api",
-				"x-ss-permission": "payments.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "payment_api",
+				"x-shelfway-permission": "payments.read",
 				"security": [
 					{
 						"ticket": []
@@ -1020,9 +1020,9 @@
 			"post": {
 				"summary": "Confirm the money of a manual payment arrived",
 				"description": "Only a pending payment of a manual payment method (409 conflict otherwise): a transfer, cash on delivery, payment at pickup. One you canceled is confirmed too, and is then to be refunded (refundDue).",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "manual_payments",
-				"x-ss-permission": "payments.confirm",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "manual_payments",
+				"x-shelfway-permission": "payments.confirm",
 				"security": [
 					{
 						"ticket": []
@@ -1087,9 +1087,9 @@
 			"get": {
 				"summary": "A link to the proof of a manual payment (Payments admin widget)",
 				"description": "404 not_found when the payment has no proof; 503 storage_not_connected without Storage.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "manual_payments",
-				"x-ss-permission": "payments.confirm",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "manual_payments",
+				"x-shelfway-permission": "payments.confirm",
 				"security": [
 					{
 						"ticket": []
@@ -1133,9 +1133,12 @@
 			"post": {
 				"summary": "Refund a payment, all or part (Payments admin widget)",
 				"description": "Only a paid payment (409 not_refundable). Stripe, PayPal, PayFast (South Africa) and the generic adapter with a refund address refund at the gateway (502 gateway_failed when it refuses); the others are recorded (manual) and you return the money yourself. Send an Idempotency-Key.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "payment_api",
-				"x-ss-permission": "payments.refund",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": [
+					"refunds",
+					"payment_api"
+				],
+				"x-shelfway-permission": "payments.refund",
 				"security": [
 					{
 						"ticket": []
@@ -1209,9 +1212,9 @@
 		"/v1/admin/subscriptions": {
 			"get": {
 				"summary": "The subscriptions, newest first (Subscriptions admin widget)",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "subscriptions",
-				"x-ss-permission": "subscriptions.read",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "subscriptions",
+				"x-shelfway-permission": "subscriptions.read",
 				"security": [
 					{
 						"ticket": []
@@ -1286,9 +1289,9 @@
 			"post": {
 				"summary": "Cancel a subscription at its gateway (Subscriptions admin widget)",
 				"description": "409 conflict when it has already ended; 502 gateway_failed when the gateway refuses.",
-				"x-ss-auth": "ticket",
-				"x-ss-feature": "subscriptions",
-				"x-ss-permission": "subscriptions.cancel",
+				"x-shelfway-auth": "ticket",
+				"x-shelfway-feature": "subscriptions",
+				"x-shelfway-permission": "subscriptions.cancel",
 				"security": [
 					{
 						"ticket": []
@@ -1349,8 +1352,8 @@
 			"get": {
 				"summary": "A payment link for the pay button",
 				"description": "404 not_found while the link is off.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "payment_links",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": "payment_links",
 				"security": [
 					{
 						"browserToken": []
@@ -1369,10 +1372,10 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -1499,8 +1502,8 @@
 			"post": {
 				"summary": "Pay a payment link",
 				"description": "Makes the payment; send the payer to checkoutUrl. A wrong amount, email address or gateway answers 422 validation_failed for that field.",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "payment_links",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": "payment_links",
 				"security": [
 					{
 						"browserToken": []
@@ -1519,10 +1522,10 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -1619,8 +1622,8 @@
 		"/v1/checkout/payments/{id}": {
 			"get": {
 				"summary": "A payment for the pay button",
-				"x-ss-auth": "browser",
-				"x-ss-feature": "payment_api",
+				"x-shelfway-auth": "browser",
+				"x-shelfway-feature": "payment_api",
 				"security": [
 					{
 						"browserToken": []
@@ -1639,10 +1642,10 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -1716,9 +1719,9 @@
 		"/v1/connections": {
 			"get": {
 				"summary": "Connections (whether set, and how the last test went; never a value)",
-				"x-ss-auth": "server",
-				"x-ss-permission": "connections.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "connections.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -1726,7 +1729,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -1767,10 +1770,10 @@
 		},
 		"/v1/connections/{name}": {
 			"delete": {
-				"summary": "Remove a provider key. The database, the storage and the links are the Portal's: 409 managed_by_portal",
-				"x-ss-auth": "server",
-				"x-ss-permission": "connections.manage",
-				"x-ss-access": "staff",
+				"summary": "Remove a provider key. The database, the storage and the links are the Portal's: 409 managed_by_platform",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "connections.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -1786,7 +1789,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -1806,10 +1809,10 @@
 				}
 			},
 			"put": {
-				"summary": "Save a provider key ({ value }), tested live. The database, the storage and the links are the Portal's: 409 managed_by_portal",
-				"x-ss-auth": "server",
-				"x-ss-permission": "connections.manage",
-				"x-ss-access": "staff",
+				"summary": "Save a provider key ({ value }), tested live. The database, the storage and the links are the Portal's: 409 managed_by_platform",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "connections.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -1825,7 +1828,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -1877,9 +1880,9 @@
 		"/v1/connections/{name}/test": {
 			"post": {
 				"summary": "Test a connection again",
-				"x-ss-auth": "server",
-				"x-ss-permission": "connections.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "connections.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -1895,7 +1898,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -1925,8 +1928,8 @@
 		"/v1/data-rights/delete": {
 			"post": {
 				"summary": "Delete one user's records",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -1934,7 +1937,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -2017,8 +2020,8 @@
 		"/v1/data-rights/export": {
 			"post": {
 				"summary": "Export one user's records",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -2026,7 +2029,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -2107,10 +2110,10 @@
 			"get": {
 				"summary": "Payment events, newest first",
 				"description": "Also sent to your webhook URLs through Notifications when it is on the website.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "payment_api",
-				"x-ss-permission": "payments.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "payment_api",
+				"x-shelfway-permission": "payments.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -2160,7 +2163,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -2190,10 +2193,10 @@
 		"/v1/events/count": {
 			"get": {
 				"summary": "Count the events",
-				"x-ss-auth": "server",
-				"x-ss-feature": "payment_api",
-				"x-ss-permission": "payments.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "payment_api",
+				"x-shelfway-permission": "payments.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -2222,7 +2225,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -2252,10 +2255,10 @@
 		"/v1/events/counts": {
 			"get": {
 				"summary": "Count the events by type or delivery",
-				"x-ss-auth": "server",
-				"x-ss-feature": "payment_api",
-				"x-ss-permission": "payments.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "payment_api",
+				"x-shelfway-permission": "payments.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -2296,7 +2299,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -2326,8 +2329,8 @@
 		"/v1/features": {
 			"get": {
 				"summary": "Features with on/off and hourly price",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -2335,7 +2338,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -2404,8 +2407,8 @@
 			"get": {
 				"summary": "The Format of money and dates",
 				"description": "The website's Format from the Portal (sources `portal`: Website settings › Region and format); the built-in Format (sources `built-in`) while the Portal holds no settings yet.",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -2413,7 +2416,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -2441,10 +2444,10 @@
 			},
 			"put": {
 				"summary": "The Format is set in the Portal",
-				"description": "Always answers 409 managed_by_portal: the Format is set once for every product, in the Portal (Website settings › Region and format).",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"description": "Always answers 409 managed_by_platform: the Format is set once for every product, in the Portal (Website settings › Region and format).",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -2452,7 +2455,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -2545,10 +2548,10 @@
 		"/v1/links": {
 			"get": {
 				"summary": "The payment links, newest first",
-				"x-ss-auth": "server",
-				"x-ss-feature": "payment_links",
-				"x-ss-permission": "links.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "payment_links",
+				"x-shelfway-permission": "links.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -2577,7 +2580,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -2606,10 +2609,10 @@
 			"post": {
 				"summary": "Create a payment link",
 				"description": "Share its url. A fixed amount, or null to let the payer enter one (at least minAmount).",
-				"x-ss-auth": "server",
-				"x-ss-feature": "payment_links",
-				"x-ss-permission": "links.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "payment_links",
+				"x-shelfway-permission": "links.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -2627,7 +2630,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -2765,10 +2768,10 @@
 		"/v1/links/{id}": {
 			"get": {
 				"summary": "Read a payment link",
-				"x-ss-auth": "server",
-				"x-ss-feature": "payment_links",
-				"x-ss-permission": "links.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "payment_links",
+				"x-shelfway-permission": "links.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -2784,7 +2787,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -2812,10 +2815,10 @@
 			},
 			"patch": {
 				"summary": "Turn a payment link off or on",
-				"x-ss-auth": "server",
-				"x-ss-feature": "payment_links",
-				"x-ss-permission": "links.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "payment_links",
+				"x-shelfway-permission": "links.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -2831,7 +2834,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -2880,8 +2883,8 @@
 		"/v1/lists/{list}": {
 			"get": {
 				"summary": "A list setting ({ value })",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -2897,7 +2900,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -2934,9 +2937,9 @@
 			},
 			"put": {
 				"summary": "Save a whole list setting ({ value })",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -2952,7 +2955,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -3008,9 +3011,9 @@
 			"get": {
 				"summary": "Your manual payment methods as payers see them",
 				"description": "Each method's words, whether it is offered and its accounts; with currency, readiness and accounts for that currency (else every account with a value). Kept with GET and PUT /v1/lists/manual_methods.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "manual_payments",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "manual_payments",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -3029,7 +3032,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -3071,10 +3074,10 @@
 		"/v1/payments": {
 			"get": {
 				"summary": "The payments, newest first",
-				"x-ss-auth": "server",
-				"x-ss-feature": "payment_api",
-				"x-ss-permission": "payments.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "payment_api",
+				"x-shelfway-permission": "payments.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3132,7 +3135,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -3161,9 +3164,9 @@
 			"post": {
 				"summary": "Create a payment",
 				"description": "Send the payer to checkoutUrl. Without a gateway the payer picks one on that page. expiresAt (optional) is when an unpaid gateway checkout ends, for example your order's payment window; without it the Merchant payment API setting decides, and each gateway keeps within its own shortest and longest. 422 gateway_not_ready when the gateway (or every gateway, without one) is off or not connected for the currency; 422 currency_not_supported. Send an Idempotency-Key so a retried request makes one payment.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "payment_api",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "payment_api",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -3181,7 +3184,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -3245,7 +3248,7 @@
 									"returnUrl": {
 										"type": "string",
 										"maxLength": 2048,
-										"description": "Where the payer comes back to (with ?ss_payment=<id>); on https://<your domain> (or a local address while testing)."
+										"description": "Where the payer comes back to (with ?shelfway_payment=<id>); on https://<your domain> (or a local address while testing)."
 									},
 									"cancelUrl": {
 										"type": "string",
@@ -3292,10 +3295,10 @@
 		"/v1/payments/count": {
 			"get": {
 				"summary": "Count the payments (the list's filters)",
-				"x-ss-auth": "server",
-				"x-ss-feature": "payment_api",
-				"x-ss-permission": "payments.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "payment_api",
+				"x-shelfway-permission": "payments.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3332,7 +3335,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -3363,10 +3366,10 @@
 			"get": {
 				"summary": "Count the payments by status or gateway",
 				"description": "by=state counts by status; by=gateway by gateway (none: no gateway picked yet).",
-				"x-ss-auth": "server",
-				"x-ss-feature": "payment_api",
-				"x-ss-permission": "payments.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "payment_api",
+				"x-shelfway-permission": "payments.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3415,7 +3418,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -3446,9 +3449,9 @@
 			"get": {
 				"summary": "Read a payment",
 				"description": "A pending payment is asked of its gateway again (at most every 30 seconds) when you read it.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "payment_api",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "payment_api",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -3464,7 +3467,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -3495,9 +3498,9 @@
 			"post": {
 				"summary": "Cancel a payment nobody should pay any more",
 				"description": "For example when its order was canceled or expired: the payment becomes voided and its page closes. A paid payment answers 409 already_paid (with the payment): refund it instead. Canceling it again changes nothing.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "payment_api",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "payment_api",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -3513,7 +3516,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -3561,10 +3564,10 @@
 			"post": {
 				"summary": "Confirm the money of a manual payment arrived",
 				"description": "Only a pending payment of a manual payment method (409 conflict otherwise): a transfer, cash on delivery, payment at pickup. One you canceled is confirmed too, and is then to be refunded (refundDue).",
-				"x-ss-auth": "server",
-				"x-ss-feature": "manual_payments",
-				"x-ss-permission": "payments.confirm",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "manual_payments",
+				"x-shelfway-permission": "payments.confirm",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3580,7 +3583,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -3632,10 +3635,10 @@
 			"get": {
 				"summary": "A link to the payer's proof of a manual payment (5 minutes)",
 				"description": "404 not_found when the payment has no proof; 503 storage_not_connected without Storage.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "manual_payments",
-				"x-ss-permission": "payments.confirm",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "manual_payments",
+				"x-shelfway-permission": "payments.confirm",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3651,7 +3654,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -3682,10 +3685,13 @@
 			"post": {
 				"summary": "Refund a payment, all or part",
 				"description": "Only a paid payment (409 not_refundable). Stripe, PayPal, PayFast (South Africa) and the generic adapter with a refund address refund at the gateway (502 gateway_failed when it refuses); the others are recorded (manual) and you return the money yourself. Send an Idempotency-Key.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "payment_api",
-				"x-ss-permission": "payments.refund",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": [
+					"refunds",
+					"payment_api"
+				],
+				"x-shelfway-permission": "payments.refund",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -3711,7 +3717,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -3763,9 +3769,9 @@
 			"post": {
 				"summary": "Is the payment confirmed for this exact amount?",
 				"description": "Use it before marking an order paid: verified is true only for a payment confirmed by the gateway (refunded later included) with the same amount and currency, never for one you canceled.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "payment_api",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "payment_api",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -3781,7 +3787,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -3851,8 +3857,8 @@
 		"/v1/permissions": {
 			"get": {
 				"summary": "This product's permissions and the kit's own (for Accounts roles)",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -3860,7 +3866,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -3919,8 +3925,8 @@
 		"/v1/settings": {
 			"get": {
 				"summary": "Settings schemas, and values of switched-on features",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -3928,7 +3934,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -4018,9 +4024,9 @@
 		"/v1/settings/{key}": {
 			"delete": {
 				"summary": "Reset one setting to the default",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -4036,7 +4042,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -4083,9 +4089,9 @@
 			"put": {
 				"summary": "Save one setting (<feature>.<setting>, { value })",
 				"description": "The feature must be on (else 403 feature_off); an invalid value answers 422 validation_failed with errors.",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -4101,7 +4107,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -4167,10 +4173,10 @@
 		"/v1/subscriptions": {
 			"get": {
 				"summary": "The subscriptions, newest first",
-				"x-ss-auth": "server",
-				"x-ss-feature": "subscriptions",
-				"x-ss-permission": "subscriptions.read",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "subscriptions",
+				"x-shelfway-permission": "subscriptions.read",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -4217,7 +4223,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -4246,9 +4252,9 @@
 			"post": {
 				"summary": "Start a subscription at Stripe or PayPal",
 				"description": "Create the plan at the gateway first (a recurring Stripe price or a PayPal billing plan); send the payer to checkoutUrl. 422 gateway_not_ready; 502 gateway_failed.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "subscriptions",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "subscriptions",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -4266,7 +4272,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"requestBody": {
@@ -4303,7 +4309,7 @@
 									"returnUrl": {
 										"type": "string",
 										"maxLength": 2048,
-										"description": "Where the payer comes back to (with ?ss_subscription=<id>); on https://<your domain>."
+										"description": "Where the payer comes back to (with ?shelfway_subscription=<id>); on https://<your domain>."
 									},
 									"cancelUrl": {
 										"type": "string",
@@ -4342,9 +4348,9 @@
 		"/v1/subscriptions/{id}": {
 			"get": {
 				"summary": "Read a subscription",
-				"x-ss-auth": "server",
-				"x-ss-feature": "subscriptions",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "subscriptions",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -4360,7 +4366,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -4391,10 +4397,10 @@
 			"post": {
 				"summary": "Cancel a subscription at its gateway",
 				"description": "409 conflict when it has already ended; 502 gateway_failed when the gateway refuses.",
-				"x-ss-auth": "server",
-				"x-ss-feature": "subscriptions",
-				"x-ss-permission": "subscriptions.cancel",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-feature": "subscriptions",
+				"x-shelfway-permission": "subscriptions.cancel",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -4410,7 +4416,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -4457,8 +4463,8 @@
 		"/v1/texts": {
 			"get": {
 				"summary": "Widget texts",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -4466,7 +4472,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -4508,9 +4514,9 @@
 		"/v1/texts/{key}": {
 			"delete": {
 				"summary": "Reset one widget text to English",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -4526,7 +4532,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"responses": {
@@ -4555,9 +4561,9 @@
 			"put": {
 				"summary": "Save one widget text ({ value })",
 				"description": "1–2000 characters with the same {placeholders} as the English text.",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -4573,7 +4579,7 @@
 						}
 					},
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -4624,8 +4630,8 @@
 			"get": {
 				"summary": "The widgets' theme",
 				"description": "The website's theme from the Portal (sources `portal`: Website settings › Brand and look); the built-in look (sources `built-in`) while the Portal holds no settings yet.",
-				"x-ss-auth": "server",
-				"x-ss-access": "runtime",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "runtime",
 				"security": [
 					{
 						"serverToken": []
@@ -4633,7 +4639,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -4661,10 +4667,10 @@
 			},
 			"put": {
 				"summary": "The theme is set in the Portal",
-				"description": "Always answers 409 managed_by_portal: the theme is set once for every product, in the Portal (Website settings › Brand and look).",
-				"x-ss-auth": "server",
-				"x-ss-permission": "settings.manage",
-				"x-ss-access": "staff",
+				"description": "Always answers 409 managed_by_platform: the theme is set once for every product, in the Portal (Website settings › Brand and look).",
+				"x-shelfway-auth": "server",
+				"x-shelfway-permission": "settings.manage",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -4672,7 +4678,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -4754,9 +4760,9 @@
 		"/v1/tickets": {
 			"post": {
 				"summary": "Ticket for an admin widget (15 minutes)",
-				"description": "Your server asks for a ticket for the signed-in member of your staff who opens an admin widget: send their Accounts sign-in in SS-Sign-In next to the server token. The ticket is for that person and carries only the permissions of their role out of those asked for (and of switched-on features); the server token alone gets 403 needs_signed_in_staff.",
-				"x-ss-auth": "server",
-				"x-ss-access": "staff",
+				"description": "Your server asks for a ticket for the signed-in member of your staff who opens an admin widget: send their Accounts sign-in in Shelfway-Sign-In next to the server token. The ticket is for that person and carries only the permissions of their role out of those asked for (and of switched-on features); the server token alone gets 403 needs_signed_in_staff.",
+				"x-shelfway-auth": "server",
+				"x-shelfway-access": "staff",
 				"security": [
 					{
 						"serverToken": []
@@ -4764,7 +4770,7 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSSignInStaff"
+						"$ref": "#/components/parameters/ShelfwaySignInStaff"
 					}
 				],
 				"requestBody": {
@@ -4837,7 +4843,7 @@
 			"get": {
 				"summary": "Widget config (admin widgets)",
 				"description": "The same for the admin widgets, with a ticket from POST /v1/tickets, from the origin it names.",
-				"x-ss-auth": "ticket",
+				"x-shelfway-auth": "ticket",
 				"security": [
 					{
 						"ticket": []
@@ -4872,7 +4878,7 @@
 			"get": {
 				"summary": "Widget config (visitor widgets)",
 				"description": "With the browser token from the website (an Origin is required; the server token is refused): what the visitor widgets need. No feature of its own: it answers while the product serves the website and its merchant database is connected.",
-				"x-ss-auth": "browser",
+				"x-shelfway-auth": "browser",
 				"security": [
 					{
 						"browserToken": []
@@ -4883,10 +4889,10 @@
 				],
 				"parameters": [
 					{
-						"$ref": "#/components/parameters/SSVisitorIp"
+						"$ref": "#/components/parameters/ShelfwayVisitorIp"
 					},
 					{
-						"$ref": "#/components/parameters/SSSignIn"
+						"$ref": "#/components/parameters/ShelfwaySignIn"
 					}
 				],
 				"responses": {
@@ -4924,7 +4930,7 @@
 			"serverToken": {
 				"type": "http",
 				"scheme": "bearer",
-				"description": "The website's server token: the merchant's server only, never with an Origin header. On its own it runs the shop (x-ss-access: runtime): it also reaches every visitor route, acting for the visitor named by SS-Visitor-IP and, for a signed-in shopper, SS-Sign-In (their Accounts sign-in, checked for this website; a wrong, expired or foreign one is 401 invalid_sign_in). Every change of configuration and every piece of staff work (x-ss-access: staff) also needs the verified Accounts sign-in of a signed-in staff member in SS-Sign-In, whose role has the permission: a stolen server token changes nothing by itself."
+				"description": "The website's server token: the merchant's server only, never with an Origin header. On its own it runs the shop (x-shelfway-access: runtime): it also reaches every visitor route, acting for the visitor named by Shelfway-Visitor-IP and, for a signed-in shopper, Shelfway-Sign-In (their Accounts sign-in, checked for this website; a wrong, expired or foreign one is 401 invalid_sign_in). Every change of configuration and every piece of staff work (x-shelfway-access: staff) also needs the verified Accounts sign-in of a signed-in staff member in Shelfway-Sign-In, whose role has the permission: a stolen server token changes nothing by itself."
 			},
 			"ticket": {
 				"type": "http",
@@ -4933,8 +4939,8 @@
 			}
 		},
 		"parameters": {
-			"SSVisitorIp": {
-				"name": "SS-Visitor-IP",
+			"ShelfwayVisitorIp": {
+				"name": "Shelfway-Visitor-IP",
 				"in": "header",
 				"required": false,
 				"description": "With the server token: the visitor's IP address (required on writes, else 400 visitor_ip_required). These calls count in their own window of 3,000 requests per minute per route per website, plus the per-visitor limits.",
@@ -4943,8 +4949,8 @@
 					"maxLength": 45
 				}
 			},
-			"SSSignIn": {
-				"name": "SS-Sign-In",
+			"ShelfwaySignIn": {
+				"name": "Shelfway-Sign-In",
 				"in": "header",
 				"required": false,
 				"description": "The signed-in shopper's Accounts sign-in, checked for this website (a wrong, expired or foreign one is 401 invalid_sign_in). Only a verified sign-in names the shopper: a user id alone is never taken.",
@@ -4953,8 +4959,8 @@
 					"maxLength": 8192
 				}
 			},
-			"SSSignInStaff": {
-				"name": "SS-Sign-In",
+			"ShelfwaySignInStaff": {
+				"name": "Shelfway-Sign-In",
 				"in": "header",
 				"required": true,
 				"description": "The Accounts sign-in of the signed-in staff member whose role has the permission this call needs, checked for this website. The server token alone changes nothing: without it the call is 403 needs_signed_in_staff, with a role that lacks the permission 403 forbidden, with a sign-in of another website or an expired or forged one 401 invalid_sign_in. The person it names is who the activity log and the histories record.",
@@ -5531,7 +5537,7 @@
 					"built-in",
 					"portal"
 				],
-				"description": "Where a theme or Format value comes from: the website's settings in the Portal, or built in while the Portal holds none yet. It cannot be saved in a product (409 managed_by_portal)."
+				"description": "Where a theme or Format value comes from: the website's settings in the Portal, or built in while the Portal holds none yet. It cannot be saved in a product (409 managed_by_platform)."
 			},
 			"ManualMethod": {
 				"type": "object",

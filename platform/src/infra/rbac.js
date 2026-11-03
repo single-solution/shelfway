@@ -73,7 +73,7 @@ export const PERMISSIONS = Object.freeze({
 	/** Admins: invite, resend (or copy) invite, correct invite email, change role, remove */
 	adminsManage: 'admins.manage',
 	/** Settings (email, billing rules, branding, support contact, security) */
-	settingsPortalWrite: 'portal_settings.write',
+	settingsPlatformWrite: 'platform_settings.write',
 	/** A website's settings (business facts, brand, region, pages, team): see them; change them (Finance: none) */
 	websiteSettingsRead: 'website_settings.read',
 	websiteSettingsWrite: 'website_settings.write',

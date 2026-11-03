@@ -1,11 +1,11 @@
 /**
- * PLAN 0.8.10 Migration: importing with `ss-import` through the real products' import routes (K10, feature `import`)
- * with the Portal-issued server tokens.
+ * PLAN 0.8.10 Migration: importing with `shelfway-import` through the real products' import routes (K10, feature `import`)
+ * with the Platform-issued server tokens.
  *
  * 1. The importer's small fixture into the test product Notes: `read` (read only) into NDJSON files, a dry run that
  *    writes nothing, the real run with the given ids (re-runnable), `finish`, and `verify` against
  *    `GET /v1/import/status` and the count route (K4).
- * 2. The example shop (`@ss/importer/fixture`: people, catalog, orders, chats and analytics) into Accounts, Ecommerce,
+ * 2. The example shop (`@shelfway/importer/fixture`: people, catalog, orders, chats and analytics) into Accounts, Ecommerce,
  *    Chat and Growth: a dry run (nothing written; the settings that would change and every refused record listed by
  *    file and line), the real run (settings first, then every collection in order, each product finished after its
  *    last file), `verify` (counts and sums match), the products' own read routes (a product page, an order by number,
@@ -18,7 +18,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { MongoClient, ObjectId } from 'mongodb';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { read, send, verify } from '@ss/importer';
+import { read, send, verify } from '@shelfway/importer';
 import {
 	EXPECTED,
 	FIXTURE_MAPPING,
@@ -29,20 +29,20 @@ import {
 	seed,
 	seedShop,
 	shopHex,
-} from '@ss/importer/fixture';
-import * as accounts from '@ss/product-accounts/product';
-import * as accountsRoutes from '@ss/product-accounts/routes';
-import * as chat from '@ss/product-chat/product';
-import * as chatRoutes from '@ss/product-chat/routes';
-import * as ecommerce from '@ss/product-ecommerce/product';
-import * as ecommerceRoutes from '@ss/product-ecommerce/routes';
-import * as growth from '@ss/product-growth/product';
-import * as growthRoutes from '@ss/product-growth/routes';
-import { staffSignIns } from '@ss/product-accounts/testing';
+} from '@shelfway/importer/fixture';
+import * as accounts from '@shelfway/product-accounts/product';
+import * as accountsRoutes from '@shelfway/product-accounts/routes';
+import * as chat from '@shelfway/product-chat/product';
+import * as chatRoutes from '@shelfway/product-chat/routes';
+import * as ecommerce from '@shelfway/product-ecommerce/product';
+import * as ecommerceRoutes from '@shelfway/product-ecommerce/routes';
+import * as growth from '@shelfway/product-growth/product';
+import * as growthRoutes from '@shelfway/product-growth/routes';
+import { staffSignIns } from '@shelfway/product-accounts/testing';
 import { PRODUCT_URL, codeOf, savePortalSettings, startSystem } from './helpers.js';
 
 /**
- * The importer's fetch, routed to the products in process (the same requests a real `ss-import` sends over https).
+ * The importer's fetch, routed to the products in process (the same requests a real `shelfway-import` sends over https).
  * @param {import('./helpers.js').System} system
  * @returns {typeof globalThis.fetch}
  */
@@ -61,7 +61,7 @@ const fetchInto = (system) => async (input, init) => {
 const sourceAndFolder = async () => {
 	const client = await new MongoClient(/** @type {string} */ (process.env.TEST_MONGODB_URI)).connect();
 	const db = client.db(`e2e_store_${randomBytes(4).toString('hex')}`);
-	const dir = await mkdtemp(path.join(tmpdir(), 'ss-import-e2e-'));
+	const dir = await mkdtemp(path.join(tmpdir(), 'shelfway-import-e2e-'));
 	return {
 		client,
 		db,
@@ -74,7 +74,7 @@ const sourceAndFolder = async () => {
 	};
 };
 
-describe('importing a store into a product (K10, ss-import)', () => {
+describe('importing a store into a product (K10, shelfway-import)', () => {
 	/** @type {import('./helpers.js').System} */
 	let sys;
 	let websiteId = '';
@@ -143,8 +143,8 @@ describe('importing a store into a product (K10, ss-import)', () => {
 		const dry = await send({ dir, products, dryRun: true, fetch });
 		expect(dry).toMatchObject({ dryRun: true, ok: true, finished: [] });
 		expect(dry.steps[0]).toMatchObject({ inserted: EXPECTED.records, updated: 0, failed: [] });
-		expect(await merchantDb.collection('ss_notes_notes').countDocuments({})).toBe(0);
-		expect(await merchantDb.collection('ss_notes_activity').countDocuments({})).toBe(0);
+		expect(await merchantDb.collection('shelfway_notes_notes').countDocuments({})).toBe(0);
+		expect(await merchantDb.collection('shelfway_notes_activity').countDocuments({})).toBe(0);
 		const before = await verify({ dir, products, fetch });
 		expect(before).toMatchObject({ ok: false, steps: [{ expected: 3, imported: 0, counted: 0, match: false }] });
 	});
@@ -175,7 +175,7 @@ describe('importing a store into a product (K10, ss-import)', () => {
 			{ inserted: 0, updated: 3, failed: 0 },
 			{ inserted: 3, updated: 0, failed: 0 },
 		]);
-		expect(await merchantDb.collection('ss_notes_activity').countDocuments({ copy: { $ne: 'none' } })).toBe(0);
+		expect(await merchantDb.collection('shelfway_notes_activity').countDocuments({ copy: { $ne: 'none' } })).toBe(0);
 	});
 
 	it('reports a record the product refuses, by line', async () => {
@@ -207,7 +207,7 @@ const BASES = Object.freeze({
 const DOMAIN = 'shop.example.com';
 const ORIGIN = `https://${DOMAIN}`;
 /** The merchant's server calls for one shopper (K3). */
-const VISITOR = { 'ss-visitor-ip': '198.51.100.20' };
+const VISITOR = { 'shelfway-visitor-ip': '198.51.100.20' };
 
 /** The features each product has on for the move (`import` among them). @type {Record<ProductKey, string[]>} */
 const FEATURES = {
@@ -225,14 +225,14 @@ const FEATURES = {
 		'returns',
 		'import',
 	],
-	chat: ['visitor_chat', 'guest_chat', 'inbox', 'assignment', 'import'],
+	chat: ['visitor_chat', 'inbox', 'handoff', 'import'],
 	growth: ['visitor_analytics', 'import'],
 };
 
 /** @param {string} prefix @param {string} hex */
 const idOf = (prefix, hex) => `${prefix}_${hex}`;
 
-describe('importing an example shop into Accounts, Ecommerce, Chat and Growth (K10, ss-import)', () => {
+describe('importing an example shop into Accounts, Ecommerce, Chat and Growth (K10, shelfway-import)', () => {
 	/** @type {import('./helpers.js').System} */
 	let sys;
 	let websiteId = '';
@@ -538,7 +538,7 @@ describe('importing an example shop into Accounts, Ecommerce, Chat and Growth (K
 		const tote = await server('ecommerce', 'GET', '/v1/shop/products/canvas-tote');
 		expect(tote.json).toMatchObject({ price: 1500, rating: { average: 4, count: 3 } });
 		const stored = await databases.ecommerce
-			?.collection('ss_ecommerce_products')
+			?.collection('shelfway_ecommerce_products')
 			.find({}, { projection: { _id: 0, slug: 1, sold: 1 } })
 			.sort({ slug: 1 })
 			.toArray();
@@ -584,9 +584,12 @@ describe('importing an example shop into Accounts, Ecommerce, Chat and Growth (K
 	it('re-runs without changing anything', async () => {
 		const before = await snapshot();
 		expect(
-			['accounts:ss_accounts_users', 'ecommerce:ss_ecommerce_orders', 'chat:ss_chat_messages', 'growth:ss_growth_totals'].map(
-				(name) => before[name]?.length,
-			),
+			[
+				'accounts:shelfway_accounts_users',
+				'ecommerce:shelfway_ecommerce_orders',
+				'chat:shelfway_chat_messages',
+				'growth:shelfway_growth_totals',
+			].map((name) => before[name]?.length),
 		).toEqual([4, 3, 2, 2]);
 		// (the fourth user is the staff Owner who runs the migration)
 		await signInStaff();
@@ -607,11 +610,11 @@ describe('importing an example shop into Accounts, Ecommerce, Chat and Growth (K
 		await signInStaff();
 		const dry = await send({ dir: source.dir, products, dryRun: true, prune: true, fetch });
 		expect(pruned(dry)).toEqual([['alerts', { removed: 1, keys: [idOf('alr', SHOP_IDS.alert)] }]]);
-		expect(await databases.ecommerce?.collection('ss_ecommerce_alerts').countDocuments({})).toBe(1);
+		expect(await databases.ecommerce?.collection('shelfway_ecommerce_alerts').countDocuments({})).toBe(1);
 		await signInStaff();
 		const real = await send({ dir: source.dir, products, prune: true, fetch });
 		expect(pruned(real)).toEqual([['alerts', { removed: 1, keys: [idOf('alr', SHOP_IDS.alert)] }]]);
-		expect(await databases.ecommerce?.collection('ss_ecommerce_alerts').countDocuments({})).toBe(0);
+		expect(await databases.ecommerce?.collection('shelfway_ecommerce_alerts').countDocuments({})).toBe(0);
 		await signInStaff();
 		expect(await verify({ dir: source.dir, products, fetch })).toMatchObject({ ok: true });
 	});
@@ -629,7 +632,7 @@ describe('importing an example shop into Accounts, Ecommerce, Chat and Growth (K
 			base: BASES.chat,
 			token: tokens.chat?.browser,
 			origin: ORIGIN,
-			headers: { 'ss-guest': SHOP_GUEST_COOKIE },
+			headers: { 'shelfway-guest': SHOP_GUEST_COOKIE },
 		});
 		expect(chatState.json.messages.map((/** @type {{ text: string }} */ m) => m.text)).toEqual([
 			'Will the blue tee be back?',

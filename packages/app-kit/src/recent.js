@@ -5,7 +5,7 @@
  * global (prices, defaults) and are listed on the Defaults and Prices screens only.
  * @module
  */
-import { randomToken } from '@ss/protocol';
+import { randomToken } from '@shelfway/protocol';
 
 /** @typedef {import('./stores/types.js').Store} Store */
 /**

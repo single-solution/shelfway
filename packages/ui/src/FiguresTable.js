@@ -240,7 +240,7 @@ export function FiguresTable({
 			)}>
 			{/* On phones when stacked = true: clean stacked figure rows so page never scrolls sideways */}
 			{stacked ? (
-				<div className="sm:hidden space-y-3 p-3" data-ss-part="figures-stacked">
+				<div className="sm:hidden space-y-3 p-3" data-shelfway-part="figures-stacked">
 					<p className="sr-only">{caption}</p>
 					{sorted.map((row) => {
 						const key = rowKey(row);
@@ -317,7 +317,7 @@ export function FiguresTable({
 											type="button"
 											title={words.sortBy(typeof column.header === 'string' ? column.header : column.key)}
 											onClick={() => toggleSort(column.key)}
-											className="ss-motion inline-flex items-center gap-1 rounded hover:text-fg focus-visible:outline-2 focus-visible:outline-focus">
+											className="shelfway-motion inline-flex items-center gap-1 rounded hover:text-fg focus-visible:outline-2 focus-visible:outline-focus">
 											{column.header}
 											<Icon
 												name={active && current ? (current.dir === 'asc' ? 'arrowUp' : 'arrowDown') : 'sort'}
@@ -336,7 +336,7 @@ export function FiguresTable({
 					{sorted.map((row) => {
 						const key = rowKey(row);
 						return (
-							<tr key={key} className="hover:bg-surface-2/60 ss-motion relative border-b border-line">
+							<tr key={key} className="hover:bg-surface-2/60 shelfway-motion relative border-b border-line">
 								{columns.map((column) => {
 									const header = column.rowHeader || column === headerColumn;
 									const Cell = header ? 'th' : 'td';

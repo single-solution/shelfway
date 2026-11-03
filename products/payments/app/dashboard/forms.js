@@ -5,7 +5,7 @@
  * @module
  */
 import { useState } from 'react';
-import { Button, Checkbox, FieldGrid, Input } from '@ss/ui';
+import { Button, Checkbox, FieldGrid, Input } from '@shelfway/ui';
 import { CUSTOM_GATEWAY_CONNECTIONS } from '../../core/gateways.js';
 import { TEXTS } from './texts.js';
 

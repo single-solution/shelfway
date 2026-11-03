@@ -7,18 +7,27 @@
  */
 import { notFound, redirect } from 'next/navigation.js';
 import { connection } from 'next/server';
-import { PageTransition } from '@ss/ui';
+import { PageTransition } from '@shelfway/ui';
 import {
 	loadAccount,
 	loadCredits,
 	loadDocsHub,
+	loadDocsProduct,
 	loadOverview,
 	loadWebsitePage,
 	loadWebsites,
 } from '../../../src/console/loaders.js';
 import { ACCOUNT_PARTS, routes } from '../../../src/console/paths.js';
 import { LEGACY_PEER_REDIRECTS, websitePartOf } from '../../../src/console/website-parts.js';
-import { consoleApi, consoleBranding, firstAdminAvailable, merchantContext, one, redirectIfSignedIn } from '../_lib/server.js';
+import {
+	consoleApi,
+	consoleBranding,
+	consoleSession,
+	firstAdminAvailable,
+	merchantContext,
+	one,
+	redirectIfSignedIn,
+} from '../_lib/server.js';
 import { AccountView } from '../../../src/console/views/account.js';
 import { CreditsView } from '../../../src/console/views/credits.js';
 import { DocsHubView } from '../../../src/console/views/docs.js';
@@ -124,20 +133,51 @@ async function SharedSetupPage() {
 	return <SharedSetupView brand={(await consoleBranding()).name} />;
 }
 
-async function DocsPage() {
+async function DocsPage({ searchParams }) {
 	await connection();
+	const q = (await searchParams) || {};
+	const session = await consoleSession();
+	if (!session.ok) {
+		redirect('/login?next=' + encodeURIComponent('/docs'));
+	}
 	const [branding, api] = await Promise.all([consoleBranding(), consoleApi()]);
 	const loaded = await loadDocsHub(api);
-	return <DocsHubView branding={branding} items={loaded.ok ? loaded.items : []} />;
+	const initialProduct = one(q.product) || '';
+	const productDetail = initialProduct ? await loadDocsProduct(api, initialProduct) : null;
+	return (
+		<DocsHubView
+			branding={branding}
+			items={loaded.ok ? loaded.items : []}
+			activeProductDetail={productDetail?.ok ? productDetail.product : null}
+			actor={session.me || session.actor || (session.admin ? { role: 'owner', name: 'Admin' } : null)}
+			initialProductId={initialProduct}
+		/>
+	);
 }
 
-async function DocsProductPage() {
-	redirect(routes.docs());
+async function DocsProductPage({ params }) {
+	await connection();
+	const { productId } = await params;
+	const session = await consoleSession();
+	if (!session.ok) {
+		redirect('/login?next=' + encodeURIComponent(`/docs/${productId}`));
+	}
+	const [branding, api] = await Promise.all([consoleBranding(), consoleApi()]);
+	const [loaded, productDetail] = await Promise.all([loadDocsHub(api), loadDocsProduct(api, productId)]);
+	return (
+		<DocsHubView
+			branding={branding}
+			items={loaded.ok ? loaded.items : []}
+			activeProductDetail={productDetail.ok ? productDetail.product : null}
+			actor={session.me || session.actor || (session.admin ? { role: 'owner', name: 'Admin' } : null)}
+			initialProductId={productId}
+		/>
+	);
 }
 
 /**
  * Path patterns under / (`:name` captures a segment into `params`), views, metadata and the kind of view: a console
- * `page` (wrapped in the page transition), a `screen` (a `Page` of `@ss/ui`: it fades its own body in and keeps its header
+ * `page` (wrapped in the page transition), a `screen` (a `Page` of `@shelfway/ui`: it fades its own body in and keeps its header
  * and inner navigation in place) or a `public` account page.
  * @typedef {'page' | 'screen' | 'public'} ViewKind
  */
@@ -162,10 +202,10 @@ const VIEWS = /** @type {Array<[string[], (props: any) => any, import('next').Me
 		DocsPage,
 		{
 			title: 'Documentation Hub',
-			description: 'Public developer documentation and OpenAPI 3.0 specs for Shelfway products.',
-			robots: { index: true, follow: true },
+			description: 'Developer documentation and OpenAPI 3.0 specs for Shelfway products.',
+			robots: { index: false, follow: false },
 		},
-		'public',
+		'screen',
 	],
 	[
 		['docs', ':productId'],
@@ -173,9 +213,9 @@ const VIEWS = /** @type {Array<[string[], (props: any) => any, import('next').Me
 		{
 			title: 'Product Documentation',
 			description: 'Developer documentation, guides, and OpenAPI spec.',
-			robots: { index: true, follow: true },
+			robots: { index: false, follow: false },
 		},
-		'public',
+		'screen',
 	],
 ]);
 

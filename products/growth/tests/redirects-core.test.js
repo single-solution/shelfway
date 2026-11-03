@@ -318,7 +318,7 @@ describe('temporary redirects and wildcard rules (G14)', () => {
 		const redirectFor = /** @type {(url: URL) => Promise<unknown>} */ (
 			new Function('fetch', 'process', `${code.replace('export async function', 'async function')}\nreturn redirectFor;`)(
 				fetch,
-				{ env: { SS_SERVER_TOKEN: 'token' } },
+				{ env: { SHELFWAY_SERVER_TOKEN: 'token' } },
 			)
 		);
 		const index = createIndex(rules);
@@ -533,7 +533,7 @@ describe('the docs’ middleware example', () => {
 			new Function('fetch', 'process', `${code.replace('export async function', 'async function')}\nreturn redirectFor;`)(
 				fetch,
 				{
-					env: { SS_SERVER_TOKEN: 'token' },
+					env: { SHELFWAY_SERVER_TOKEN: 'token' },
 				},
 			)
 		);

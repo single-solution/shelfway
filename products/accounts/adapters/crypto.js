@@ -14,8 +14,8 @@
  * - **TOTP** (RFC 6238) and recovery codes, ported from the Portal's two-step.
  * @module
  */
-import { createSealer as createKitSealer, resealEach, sumCounts } from '@ss/app-kit';
-import { constantTimeEqual, sha256Hex } from '@ss/protocol';
+import { createSealer as createKitSealer, resealEach, sumCounts } from '@shelfway/app-kit';
+import { constantTimeEqual, sha256Hex } from '@shelfway/protocol';
 import bcrypt from 'bcryptjs';
 import {
 	createHash,
@@ -47,7 +47,7 @@ export const randomBytes = (n) => new Uint8Array(nodeRandomBytes(n));
 export const createSealer = (encryptionKey, previousKey = null) =>
 	createKitSealer({ encryptionKey, previousKey, label: 'accounts' });
 
-/** @typedef {import('@ss/app-kit').Sealer} Sealer */
+/** @typedef {import('@shelfway/app-kit').Sealer} Sealer */
 
 // ----------------------------------------------------------------------------------------------------- passwords
 
@@ -240,7 +240,7 @@ export const totpUri = ({ secret, issuer, account }) =>
 	}).toString()}`;
 
 /** @param {string} code */
-const recoveryHash = (code) => sha256Hex(`ss-accounts-recovery.v1|${code.toLowerCase().replace(/[\s-]/g, '')}`);
+const recoveryHash = (code) => sha256Hex(`shelfway-accounts-recovery.v1|${code.toLowerCase().replace(/[\s-]/g, '')}`);
 
 /** 10 recovery codes `xxxxx-xxxxx` (50 bits each): the codes, shown once, and their hashes, stored. */
 export const generateRecoveryCodes = () => {
@@ -293,8 +293,8 @@ export const outboxAadOf = (websiteId, key) => `accounts-outbox|${websiteId}|${k
  * re-sealed: two-step setup steps (10 minutes) and a session's last refresh secret (read only within seconds of a
  * renewal, sealed again at the next one); both are gone long before the previous key is removed.
  * @param {Sealer} sealer
- * @param {import('@ss/app-kit').WebsiteData} data
- * @returns {Promise<import('@ss/app-kit').ResealCounts>}
+ * @param {import('@shelfway/app-kit').WebsiteData} data
+ * @returns {Promise<import('@shelfway/app-kit').ResealCounts>}
  */
 export const resealWebsite = async (sealer, data) => {
 	const { websiteId } = data;

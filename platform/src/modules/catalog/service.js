@@ -3,8 +3,8 @@
  * notices (0.4.12) and websites' Setup sheets with their share links (`setup.js`).
  *
  * - **Add product** (Owner): the admin gives the product's URL and its `CONNECT_SECRET`; the Portal calls
- *   `<url>/.well-known/ss-connect` (`@ss/protocol` handshake, HMAC both ways; the secret is never stored) sending
- *   `PORTAL_URL`, its published keys and its last accepted price-list version. The product answers its id, public key,
+ *   `<url>/.well-known/shelfway-connect` (`@shelfway/protocol` handshake, HMAC both ways; the secret is never stored) sending
+ *   `PLATFORM_URL`, its published keys and its last accepted price-list version. The product answers its id, public key,
  *   manifest and current price list. The product is stored under its id, inactive; an id already connected is refused
  *   (Reconnect). The price list becomes the product's first accepted one (commerce).
  * - **Reconnect** (Owner): the same handshake with a new URL and/or secret; the product must answer the same id.
@@ -19,8 +19,8 @@
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { validateManifest, validatePriceReport } from '@ss/contracts';
-import { checkUrl, createOutboundPolicy, isNetError, safeFetch as netFetch, textOf } from '@ss/net';
+import { validateManifest, validatePriceReport } from '@shelfway/contracts';
+import { checkUrl, createOutboundPolicy, isNetError, safeFetch as netFetch, textOf } from '@shelfway/net';
 import {
 	canonicalJson,
 	canonicalUrl,
@@ -31,10 +31,10 @@ import {
 	isProtocolError,
 	issueLaunch as protocolIssueLaunch,
 	verifyConnectResponse,
-} from '@ss/protocol';
+} from '@shelfway/protocol';
 import { logoUrlOf } from '../../infra/config.js';
 import { problem } from '../../infra/http.js';
-import { isObject } from '@ss/contracts/util';
+import { isObject } from '@shelfway/contracts/util';
 import { isDuplicateKey } from '../../infra/util.js';
 import { launchUrl } from './core/input.js';
 import { createNotices } from './notices.js';
@@ -43,14 +43,14 @@ import { LAUNCHES, PRODUCTS } from './schema.js';
 
 /** @typedef {import('../../infra/modules.js').ModuleContext} ModuleContext */
 /** @typedef {import('../../infra/rbac.js').Actor} Actor */
-/** @typedef {import('@ss/contracts').Manifest} Manifest */
-/** @typedef {import('@ss/contracts').PriceList} PriceList */
-/** @typedef {import('@ss/protocol').KeyResolver} KeyResolver */
-/** @typedef {import('@ss/net').OutboundPolicy} OutboundPolicy */
+/** @typedef {import('@shelfway/contracts').Manifest} Manifest */
+/** @typedef {import('@shelfway/contracts').PriceList} PriceList */
+/** @typedef {import('@shelfway/protocol').KeyResolver} KeyResolver */
+/** @typedef {import('@shelfway/net').OutboundPolicy} OutboundPolicy */
 /**
- * Outbound HTTP client (the `@ss/net` `safeFetch` signature).
- * @typedef {(url: string, init: import('@ss/net').SafeFetchInit, policy: OutboundPolicy) =>
- *   Promise<import('@ss/net').SafeResponse>} SafeFetch
+ * Outbound HTTP client (the `@shelfway/net` `safeFetch` signature).
+ * @typedef {(url: string, init: import('@shelfway/net').SafeFetchInit, policy: OutboundPolicy) =>
+ *   Promise<import('@shelfway/net').SafeResponse>} SafeFetch
  */
 /** @typedef {{ actor: Actor, requestId?: string | null, ip?: string | null }} Audited */
 /** @typedef {import('../../infra/auth.js').Session} Session */
@@ -63,8 +63,8 @@ const MOST_PRODUCTS = 200;
  * @typedef {object} CatalogOptions
  * @property {ReadonlyArray<string>} [allowHosts] hosts outbound calls may reach although private or plain http;
  *   default `ctx.config.outbound.allowHosts` (the loopback hosts outside production); always empty in production
- * @property {import('@ss/net').Resolver} [resolve] DNS resolver of the outbound policy (tests)
- * @property {SafeFetch} [fetch] outbound HTTP client (default: `@ss/net` `safeFetch`)
+ * @property {import('@shelfway/net').Resolver} [resolve] DNS resolver of the outbound policy (tests)
+ * @property {SafeFetch} [fetch] outbound HTTP client (default: `@shelfway/net` `safeFetch`)
  */
 
 /**
@@ -132,7 +132,7 @@ export const createCatalogService = (ctx, options = {}) => {
 	/** @type {OutboundPolicy} */
 	const policy = createOutboundPolicy({
 		allowHosts: ctx.config.isProduction ? [] : [...(options.allowHosts ?? ctx.config.outbound.allowHosts)],
-		userAgent: 'ss-portal/1',
+		userAgent: 'shelfway-platform/1',
 		...(options.resolve ? { resolve: options.resolve } : {}),
 	});
 	/** @type {SafeFetch} */
@@ -287,11 +287,11 @@ export const createCatalogService = (ctx, options = {}) => {
 	/**
 	 * Extract operations from an OpenAPI spec for route reference.
 	 * @param {Record<string, any>} openapi
-	 * @returns {Array<{ method: string, path: string, summary: string, auth: string, permission: string, feature: string, description: string }>}
+	 * @returns {Array<{ method: string, path: string, summary: string, auth: string, permission: string, feature: string, description: string, parameters: any[], requestBody: any, responses: any, tags: string[] }>}
 	 */
 	const extractOperations = (openapi) => {
 		const paths = isObject(openapi.paths) ? openapi.paths : {};
-		/** @type {Array<{ method: string, path: string, summary: string, auth: string, permission: string, feature: string, description: string }>} */
+		/** @type {Array<{ method: string, path: string, summary: string, auth: string, permission: string, feature: string, description: string, parameters: any[], requestBody: any, responses: any, tags: string[] }>} */
 		const ops = [];
 		for (const [pathStr, methods] of Object.entries(paths)) {
 			if (!isObject(methods)) continue;
@@ -301,15 +301,19 @@ export const createCatalogService = (ctx, options = {}) => {
 					method: method.toUpperCase(),
 					path: pathStr,
 					summary: typeof op.summary === 'string' ? op.summary : '',
-					auth: typeof op['x-ss-auth'] === 'string' ? op['x-ss-auth'] : '',
-					permission: typeof op['x-ss-permission'] === 'string' ? op['x-ss-permission'] : '',
+					auth: typeof op['x-shelfway-auth'] === 'string' ? op['x-shelfway-auth'] : '',
+					permission: typeof op['x-shelfway-permission'] === 'string' ? op['x-shelfway-permission'] : '',
 					feature:
-						typeof op['x-ss-feature'] === 'string'
-							? op['x-ss-feature']
-							: Array.isArray(op['x-ss-feature'])
-								? op['x-ss-feature'].join(', ')
+						typeof op['x-shelfway-feature'] === 'string'
+							? op['x-shelfway-feature']
+							: Array.isArray(op['x-shelfway-feature'])
+								? op['x-shelfway-feature'].join(', ')
 								: 'always',
 					description: typeof op.description === 'string' ? op.description : '',
+					parameters: Array.isArray(op.parameters) ? op.parameters : [],
+					requestBody: op.requestBody ?? null,
+					responses: op.responses ?? {},
+					tags: Array.isArray(op.tags) ? op.tags : [],
 				});
 			}
 		}
@@ -343,7 +347,7 @@ export const createCatalogService = (ctx, options = {}) => {
 		const request = createConnectRequest({
 			secret,
 			productUrl: base,
-			portalUrl: ctx.config.portalUrl,
+			platformUrl: ctx.config.platformUrl,
 			jwks: ctx.keys.publishedJwks(),
 			priceListVersion,
 			now: ctx.now,
@@ -503,7 +507,7 @@ export const createCatalogService = (ctx, options = {}) => {
 			branding: {
 				name: branding.name,
 				accent: branding.accent,
-				logoUrl: logoUrlOf(ctx.config.portalUrl, branding),
+				logoUrl: logoUrlOf(ctx.config.platformUrl, branding),
 			},
 			support: { channels: support.channels.map((channel) => ({ ...channel })) },
 		};
@@ -522,7 +526,7 @@ export const createCatalogService = (ctx, options = {}) => {
 		try {
 			issued = await protocolIssueLaunch({
 				signer: ctx.keys.signer,
-				issuer: ctx.config.portalUrl,
+				issuer: ctx.config.platformUrl,
 				audience: productId,
 				sessionExpiresAt: new Date(session.expiresAt).toISOString(),
 				...launchContext(),
@@ -770,6 +774,7 @@ export const createCatalogService = (ctx, options = {}) => {
 							}
 						: null,
 					operations,
+					components: openapi?.components ?? { schemas: {} },
 				},
 			};
 		},
@@ -787,18 +792,39 @@ export const createCatalogService = (ctx, options = {}) => {
 		 */
 		catalogOpenapi: async () => {
 			const docs = await products.find({ status: 'active' }).sort({ _id: 1 }).limit(MOST_PRODUCTS).toArray();
-			const docsHubUrl = `${ctx.config.portalUrl}/docs`;
-			const activeList = docs.map((doc) => {
+			const docsHubUrl = `${ctx.config.platformUrl}/docs`;
+			/** @type {any[]} */
+			const activeList = [];
+			/** @type {Record<string, any>} */
+			const aggregatedPaths = {};
+			/** @type {{ schemas: Record<string, any> }} */
+			const aggregatedComponents = { schemas: {} };
+
+			for (const doc of docs) {
 				const manifest = manifestOf(doc);
-				return {
+				activeList.push({
 					productId: String(doc._id),
 					name: manifest.name,
 					version: manifest.version,
 					description: /** @type {any} */ (manifest).description ?? `${manifest.name} product`,
 					docsUrl: `${docsHubUrl}/${doc._id}`,
 					openapiUrl: `${docsHubUrl}/${doc._id}/openapi.json`,
-				};
-			});
+				});
+				try {
+					const productSpec = await fetchProductOpenapi(doc);
+					if (productSpec && typeof productSpec.paths === 'object') {
+						for (const [pathKey, pathItem] of Object.entries(productSpec.paths)) {
+							aggregatedPaths[pathKey] = aggregatedPaths[pathKey] ?? pathItem;
+						}
+					}
+					if (productSpec?.components?.schemas) {
+						Object.assign(aggregatedComponents.schemas, productSpec.components.schemas);
+					}
+				} catch {
+					// upstream fetch failed or offline; safe fallback
+				}
+			}
+
 			return {
 				openapi: '3.1.0',
 				info: {
@@ -806,9 +832,10 @@ export const createCatalogService = (ctx, options = {}) => {
 					version: '1.0.0',
 					description: 'Aggregated OpenAPI 3.0 catalog for all active Shelfway products.',
 				},
-				servers: [{ url: ctx.config.portalUrl, description: 'Portal host' }],
+				servers: [{ url: ctx.config.platformUrl, description: 'Portal host' }],
 				'x-products': activeList,
-				paths: {},
+				paths: aggregatedPaths,
+				components: aggregatedComponents,
 			};
 		},
 	};

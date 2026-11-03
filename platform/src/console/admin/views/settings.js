@@ -29,8 +29,8 @@ import {
 	describeProblem,
 	fieldErrors,
 	useToast,
-} from '@ss/ui';
-import { SUPPORT_CHANNELS_MAX, SUPPORT_CHANNEL_TYPES, supportChannelValue } from '@ss/contracts/text';
+} from '@shelfway/ui';
+import { SUPPORT_CHANNELS_MAX, SUPPORT_CHANNEL_TYPES, supportChannelValue } from '@shelfway/contracts/text';
 import { LOGO_MAX_BYTES, LOGO_TYPES } from '../../../infra/branding.js';
 import { ADMIN, LOGIN } from '../../../texts/console.js';
 import { apiFetch } from '../../client.js';
@@ -38,7 +38,7 @@ import { Link } from '../../link.js';
 import { adminApi } from '../paths.js';
 import { AdminProblem } from './shell.js';
 
-/** @typedef {import('@ss/ui').Problem} Problem */
+/** @typedef {import('@shelfway/ui').Problem} Problem */
 
 /**
  * Save a settings group and report the outcome.
@@ -313,7 +313,7 @@ function SupportCard({ settings, onSaved }) {
 		discard,
 	} = useDraft({
 		rows: /** @type {ChannelRow[]} */ (
-			settings.support.channels.map((/** @type {import('@ss/contracts/text').SupportChannel} */ channel) => ({
+			settings.support.channels.map((/** @type {import('@shelfway/contracts/text').SupportChannel} */ channel) => ({
 				type: channel.type,
 				label: channel.label,
 				value: supportChannelValue(channel),
@@ -539,7 +539,7 @@ export function SettingsView(props) {
 			setSettings(next);
 			if (!keepForm) setVersions((v) => ({ ...v, [id]: (v[id] ?? 0) + 1 }));
 		};
-	/** @param {string} id @param {import('@ss/ui').IconName} icon @param {import('react').ReactNode} body */
+	/** @param {string} id @param {import('@shelfway/ui').IconName} icon @param {import('react').ReactNode} body */
 	const part = (id, icon, body) => ({ id, label: S[/** @type {keyof typeof S} */ (id)].title, icon, body });
 	return (
 		<Page

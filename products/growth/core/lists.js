@@ -5,7 +5,7 @@
  * server, the dashboard's editor and the docs.
  *
  * - `goals` and `funnels` (Goals and funnels, G1, G2): what the merchant counts. A goal or a funnel step is an event
- *   (a shop event, `contact`, or a custom event the page sends with `SSGrowth.track(name, props)`) or a page (a path
+ *   (a shop event, `contact`, or a custom event the page sends with `ShelfwayGrowth.track(name, props)`) or a page (a path
  *   pattern: an exact path, `*` one segment, `**` any). The shop funnel is seeded.
  * - `consent_categories` (G3): the consent banner's categories, each `required`, `opt_in` (off until the visitor agrees)
  *   or `opt_out` (on until the visitor says no, such as the US "sale or sharing" of personal data), with the Google
@@ -100,7 +100,7 @@ const RESERVED_META = Object.freeze([
 	'generator',
 	'application-name',
 	'format-detection',
-	'ss-growth-page',
+	'shelfway-growth-page',
 ]);
 
 /** @param {string} kind @param {string} match */

@@ -42,7 +42,7 @@ describe('a City on the member profile (custom fields)', () => {
 		const sam = await server('POST', '/v1/users', { name: 'Sam Lee', phone: '07700 900600', role: 'customer' });
 		const link = await server('POST', `/v1/users/${sam.json.id}/setup-link`);
 		const joined = await env.visitor('POST', '/v1/setup-links/accept', {
-			code: new URL(link.json.url).searchParams.get('ss_setup'),
+			code: new URL(link.json.url).searchParams.get('shelfway_setup'),
 			password: 'sam pass 1234',
 		});
 		const signIn = joined.json.signIn;

@@ -1,9 +1,9 @@
 /**
  * NDJSON files: one JSON record per line. The files `read` writes hold every record of a step; `send` cuts them into
- * calls that fit the products' import routes (`@ss/contracts` `IMPORT_LIMITS`: at most 1,000 records and 4 MB).
+ * calls that fit the products' import routes (`@shelfway/contracts` `IMPORT_LIMITS`: at most 1,000 records and 4 MB).
  * @module
  */
-import { IMPORT_LIMITS } from '@ss/contracts';
+import { IMPORT_LIMITS } from '@shelfway/contracts';
 
 /**
  * NDJSON text of records (with a final newline).

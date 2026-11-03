@@ -38,7 +38,8 @@ const page = (dirty, ids = ['a', 'b', 'c', 'd'], extra = {}) => (
 /** @param {ParentNode} root */
 const status = (root) => /** @type {HTMLElement} */ (root.querySelector('[role="status"]'));
 /** @param {ParentNode} root */
-const marks = (root) => [...root.querySelectorAll('[data-ss-nav-item]')].filter((el) => el.querySelector('[data-ss-changed]'));
+const marks = (root) =>
+	[...root.querySelectorAll('[data-shelfway-nav-item]')].filter((el) => el.querySelector('[data-shelfway-changed]'));
 
 describe('the save bar names every section with changes (115)', () => {
 	it('says "Unsaved changes in B, D", in the order of the page, each name a button', () => {
@@ -71,8 +72,8 @@ describe('the save bar names every section with changes (115)', () => {
 describe('every section with changes carries a "changed" mark (254)', () => {
 	it('marks the changed sections in the inner navigation with a word, not only a colour', () => {
 		const { container, rerender } = render(page(['b', 'd']));
-		expect(marks(container).map((el) => el.getAttribute('data-ss-nav-item'))).toEqual(['b', 'd']);
-		const mark = /** @type {HTMLElement} */ (container.querySelector('[data-ss-nav-item="b"] [data-ss-changed]'));
+		expect(marks(container).map((el) => el.getAttribute('data-shelfway-nav-item'))).toEqual(['b', 'd']);
+		const mark = /** @type {HTMLElement} */ (container.querySelector('[data-shelfway-nav-item="b"] [data-shelfway-changed]'));
 		expect(mark.textContent).toBe('Changed');
 		rerender(page([]));
 		expect(marks(container)).toHaveLength(0);
@@ -80,7 +81,9 @@ describe('every section with changes carries a "changed" mark (254)', () => {
 
 	it('marks the section itself in the body', () => {
 		const { container } = render(page(['c']));
-		const found = [...container.querySelectorAll('section[data-ss-section]')].filter((el) => el.hasAttribute('data-changed'));
+		const found = [...container.querySelectorAll('section[data-shelfway-section]')].filter((el) =>
+			el.hasAttribute('data-changed'),
+		);
 		expect(found.map((el) => el.id)).toEqual(['c']);
 	});
 
@@ -93,7 +96,7 @@ describe('every section with changes carries a "changed" mark (254)', () => {
 			value: 'a',
 		};
 		const { container } = render(page(['b'], ['a', 'b'], { nav }));
-		expect(marks(container).map((el) => el.getAttribute('data-ss-nav-item'))).toEqual(['b']);
+		expect(marks(container).map((el) => el.getAttribute('data-shelfway-nav-item'))).toEqual(['b']);
 	});
 
 	it('an inner navigation item says it has changes by itself, in the words it is given', () => {
@@ -107,8 +110,8 @@ describe('every section with changes carries a "changed" mark (254)', () => {
 				texts={{ changed: 'Edited' }}
 			/>,
 		);
-		expect(marks(container).map((el) => el.getAttribute('data-ss-nav-item'))).toEqual(['a']);
-		expect(container.querySelector('[data-ss-changed]')?.textContent).toBe('Edited');
+		expect(marks(container).map((el) => el.getAttribute('data-shelfway-nav-item'))).toEqual(['a']);
+		expect(container.querySelector('[data-shelfway-changed]')?.textContent).toBe('Edited');
 	});
 
 	it('a row says it has changes with a word beside its title', () => {
@@ -119,7 +122,11 @@ describe('every section with changes carries a "changed" mark (254)', () => {
 				<Row title="Third" changed texts={{ changed: 'Edited' }} />
 			</>,
 		);
-		const rows = [...container.querySelectorAll('[data-ss-row]')];
-		expect(rows.map((row) => row.querySelector('[data-ss-changed]')?.textContent ?? null)).toEqual(['Changed', null, 'Edited']);
+		const rows = [...container.querySelectorAll('[data-shelfway-row]')];
+		expect(rows.map((row) => row.querySelector('[data-shelfway-changed]')?.textContent ?? null)).toEqual([
+			'Changed',
+			null,
+			'Edited',
+		]);
 	});
 });

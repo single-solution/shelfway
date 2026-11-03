@@ -7,9 +7,9 @@
 import { COLLECTIONS } from '../core/model.js';
 import { ratingSummary } from '../core/reviews.js';
 
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 
-/** Merchant database indexes of this part. @type {import('@ss/app-kit').IndexDefinition[]} */
+/** Merchant database indexes of this part. @type {import('@shelfway/app-kit').IndexDefinition[]} */
 export const INDEXES = [
 	{ collection: COLLECTIONS.returns, keys: { websiteId: 1, id: 1 }, name: 'by_id', unique: true },
 	{ collection: COLLECTIONS.returns, keys: { websiteId: 1, createdAt: -1, id: -1 }, name: 'newest' },

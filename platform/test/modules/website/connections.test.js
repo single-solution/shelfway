@@ -4,12 +4,12 @@
  * (the database with the product's own name; the AI key only to a product whose manifest says `needs.ai`).
  */
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { validateWebsiteConnections } from '@ss/contracts';
-import { manifest as notesManifest } from '@ss/contracts/testing';
+import { validateWebsiteConnections } from '@shelfway/contracts';
+import { manifest as notesManifest } from '@shelfway/contracts/testing';
 import { createSecretBox } from '../../../src/infra/crypto.js';
 import { closeMongoClients } from '../../../src/testing.js';
 import { ENCRYPTION_KEY, startMongo } from '../../helpers.js';
-import { PASSWORD, bootPortal, codeOf } from '../catalog/boot.js';
+import { PASSWORD, bootPlatform, codeOf } from '../catalog/boot.js';
 import {
 	FETCHES_PER_HOUR,
 	PRODUCT_FETCHES_PER_HOUR,
@@ -18,7 +18,7 @@ import {
 	checkDatabaseValue,
 	checkStorageValue,
 } from '../../../src/modules/website/connections.js';
-import { createOutboundPolicy } from '@ss/net';
+import { createOutboundPolicy } from '@shelfway/net';
 
 vi.setConfig({ testTimeout: 60_000, hookTimeout: 180_000 });
 
@@ -56,7 +56,7 @@ const STORAGE = {
  * @param {string} name
  */
 const setUp = async (name) => {
-	const h = await bootPortal({ db: mongo.db(name) });
+	const h = await bootPlatform({ db: mongo.db(name) });
 	cleanups.push(h.close);
 	const rawOwner = await h.owner();
 	const notes = await h.connect({ ...notesManifest(), needs: { database: true, storage: 'none' } });
@@ -394,8 +394,8 @@ describe('Data and files: the merchant enters the database once', () => {
 		expect(forNotes.headers.get('cache-control')).toBe('no-store');
 		expect(validateWebsiteConnections(forNotes.json).ok).toBe(true);
 		expect(validateWebsiteConnections(forChat.json).ok).toBe(true);
-		expect(forNotes.json).toMatchObject({ version: 2, database: { uri: DB, dbName: 'ss_notes' }, storage: null });
-		expect(forChat.json).toMatchObject({ version: 2, database: { uri: DB, dbName: 'ss_chat' }, storage: STORAGE });
+		expect(forNotes.json).toMatchObject({ version: 2, database: { uri: DB, dbName: 'shelfway_notes' }, storage: null });
+		expect(forChat.json).toMatchObject({ version: 2, database: { uri: DB, dbName: 'shelfway_chat' }, storage: STORAGE });
 		expect(forPlain.json).toEqual({
 			version: 2,
 			database: null,
@@ -414,14 +414,14 @@ describe('Data and files: the merchant enters the database once', () => {
 			{
 				productId: 'chat',
 				name: 'Chat',
-				database: { name: 'ss_chat', overridden: false, state: 'waiting' },
+				database: { name: 'shelfway_chat', overridden: false, state: 'waiting' },
 				storage: { folder: `chat/${w1}/`, required: false, state: 'waiting' },
 				ai: null,
 			},
 			{
 				productId: 'notes',
 				name: 'Notes',
-				database: { name: 'ss_notes', overridden: false, state: 'waiting' },
+				database: { name: 'shelfway_notes', overridden: false, state: 'waiting' },
 				storage: null,
 				ai: null,
 			},
@@ -490,8 +490,8 @@ describe('Data and files: the merchant enters the database once', () => {
 		expect(second.json.version).toBe(2);
 		expect(notes.notices).toEqual([changed(w1)]);
 		expect(chat.notices).toEqual([changed(w1)]);
-		expect((await fetchAs(notes)).json).toMatchObject({ version: 2, database: { uri: DB_NEW, dbName: 'ss_notes' } });
-		expect((await fetchAs(chat)).json).toMatchObject({ version: 2, database: { uri: DB_NEW, dbName: 'ss_chat' } });
+		expect((await fetchAs(notes)).json).toMatchObject({ version: 2, database: { uri: DB_NEW, dbName: 'shelfway_notes' } });
+		expect((await fetchAs(chat)).json).toMatchObject({ version: 2, database: { uri: DB_NEW, dbName: 'shelfway_chat' } });
 	});
 
 	it('a product added to the website later gets the connection (and the status says there is one)', async () => {
@@ -509,7 +509,7 @@ describe('Data and files: the merchant enters the database once', () => {
 		const status = await h.productCall(later, 'GET', `/v1/product/websites/${w2}/status`);
 		expect(status.json.connectionsVersion).toBe(1);
 		const got = await h.productCall(later, 'GET', `/v1/product/websites/${w2}/connections`);
-		expect(got.json).toMatchObject({ version: 1, database: { uri: DB, dbName: 'ss_growth' } });
+		expect(got.json).toMatchObject({ version: 1, database: { uri: DB, dbName: 'shelfway_growth' } });
 	});
 
 	it('the status answer carries the version of the connections; a change raises it for the website only', async () => {
@@ -626,7 +626,7 @@ describe('Data and files: the merchant enters the database once', () => {
 			).toBe(422);
 		expect((await owner.put(`${site()}/connections/database`, { value: DB, names, ...CONFIRM })).status).toBe(200);
 		expect((await fetchAs(notes)).json.database.dbName).toBe('acme_main');
-		expect((await fetchAs(chat)).json.database.dbName).toBe('ss_chat');
+		expect((await fetchAs(chat)).json.database.dbName).toBe('shelfway_chat');
 		expect(
 			(await m.client.get(`${site()}/connections`)).json.products.find((/** @type {any} */ p) => p.productId === 'notes')
 				.database,
@@ -768,7 +768,7 @@ describe('the Owner re-seals the connections with a new key', () => {
 		await m.client.put(`${site()}/connections/ai`, { value: AI, ...CONFIRM });
 		cleanups.push(h.close);
 		const NEW_KEY = 'new-encryption-key-0123456789abcdef-portal';
-		const changing = await bootPortal({
+		const changing = await bootPlatform({
 			db: mongo.db('conn_rekey'),
 			env: { ENCRYPTION_KEY: NEW_KEY, ENCRYPTION_KEY_PREVIOUS: 'test-encryption-key-0123456789abcdef-portal' },
 		});
@@ -798,7 +798,7 @@ describe('the Owner re-seals the connections with a new key', () => {
 			}),
 		).toBe(JSON.stringify(AI));
 		// a wrong previous key opens nothing: the parts are named with what to do
-		const wrong = await bootPortal({
+		const wrong = await bootPlatform({
 			db: mongo.db('conn_rekey'),
 			env: {
 				ENCRYPTION_KEY: 'third-encryption-key-0123456789abcdef-portal',

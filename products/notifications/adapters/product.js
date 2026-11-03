@@ -1,5 +1,5 @@
 /**
- * The product on the kit: `createProductInstance(options)` wires `@ss/app-kit` `createProduct` with Notifications'
+ * The product on the kit: `createProductInstance(options)` wires `@shelfway/app-kit` `createProduct` with Notifications'
  * manifest (each feature's settings schema from `schemas/` inline), its widget texts, its Connections (providers per
  * channel, push keys, the webhook signing secret and the Accounts token for activity-log copies), the delivery log's
  * shared setting (how long it is kept, PLAN 0.8.10 D11), the merchant database indexes, the data-rights hooks, the
@@ -12,10 +12,10 @@
  * Public entry `./product` of this package, so a system test can compose the product with `./routes`.
  * @module
  */
-import { normalizeEmail } from '@ss/contracts/email';
-import { isObject } from '@ss/contracts/util';
-import { createProduct, createProductBase } from '@ss/app-kit';
-import { noopLogger } from '@ss/net';
+import { normalizeEmail } from '@shelfway/contracts/email';
+import { isObject } from '@shelfway/contracts/util';
+import { createProduct, createProductBase } from '@shelfway/app-kit';
+import { noopLogger } from '@shelfway/net';
 import guide from '../docs/guide.json' with { type: 'json' };
 import manifestFile from '../manifest.json' with { type: 'json' };
 import openapi from '../openapi.json' with { type: 'json' };
@@ -50,7 +50,14 @@ const SETTINGS = {
 	email,
 	sms,
 	push,
+	browser_push: browserPush,
+	staff_push: staffPush,
 	webhooks,
+	fallback,
+	quiet_hours: quietHours,
+	send_limits: sendLimits,
+	delayed_send: delayedSend,
+	multi_language: multiLanguage,
 	send_api: sendApi,
 };
 
@@ -62,18 +69,18 @@ const SETTINGS = {
 const SHARED_SETTINGS = {
 	delivery_log: {
 		name: 'Delivery log',
-		features: ['whatsapp', 'email', 'sms', 'push', 'webhooks', 'send_api'],
+		features: ['whatsapp', 'email', 'sms', 'push', 'browser_push', 'staff_push', 'webhooks', 'send_api'],
 		settings: deliveryLog,
 	},
 	sending_policy: {
 		name: 'Sending policy',
-		features: ['whatsapp', 'email', 'sms', 'push', 'send_api'],
+		features: ['whatsapp', 'email', 'sms', 'push', 'browser_push', 'staff_push', 'send_api'],
 		settings: sendingPolicy,
 	},
 };
 
 /** The manifest as the kit and the Portal take it: settings schemas inline. */
-export const manifest = /** @type {import('@ss/contracts').Manifest} */ (
+export const manifest = /** @type {import('@shelfway/contracts').Manifest} */ (
 	/** @type {unknown} */ ({
 		...manifestFile,
 		features: manifestFile.features.map((feature) => ({ ...feature, settings: SETTINGS[feature.key] })),
@@ -105,7 +112,7 @@ const addressesOf = (user) =>
  * and phone number; delete removes them. Messages are exported as the delivery log keeps them: the values of sensitive
  * messages hidden (PLAN 0.8.10 D11).
  * @param {() => number} now
- * @returns {NonNullable<import('@ss/app-kit').ProductOptions['hooks']>}
+ * @returns {NonNullable<import('@shelfway/app-kit').ProductOptions['hooks']>}
  */
 const dataRights = (now) => ({
 	exportUser: async (ctx, user) => {
@@ -153,7 +160,7 @@ const dataRights = (now) => ({
 });
 
 /**
- * @typedef {Omit<import('@ss/app-kit').ProductOptions, 'manifest' | 'strings' | 'hooks' | 'connections' | 'data' | 'problemCodes' | 'openapi' | 'build'>
+ * @typedef {Omit<import('@shelfway/app-kit').ProductOptions, 'manifest' | 'strings' | 'hooks' | 'connections' | 'data' | 'problemCodes' | 'openapi' | 'build'>
  *   & { createTransport?: import('./smtp.js').CreateSmtpTransport }} InstanceOptions
  */
 

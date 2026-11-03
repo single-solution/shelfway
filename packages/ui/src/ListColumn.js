@@ -133,7 +133,7 @@ export function ListColumn({
 		const root = list.current;
 		if (!box || !root) return;
 		const row = /** @type {HTMLElement[]} */ ([...root.querySelectorAll('[role="option"]')]).find(
-			(el) => el.dataset.ssId === picked,
+			(el) => el.dataset.shelfwayId === picked,
 		);
 		if (!row) {
 			box.style.opacity = '0';
@@ -205,7 +205,7 @@ export function ListColumn({
 	};
 
 	return (
-		<div data-ss-list="" className={cx(LIST.column, className)}>
+		<div data-shelfway-list="" className={cx(LIST.column, className)}>
 			{search || (filters && filters.options.length > 0) || selection ? (
 				<div className={LIST.head}>
 					{search || selection ? (
@@ -246,7 +246,7 @@ export function ListColumn({
 						</div>
 					) : null}
 					{filters && filters.options.length > 0 ? (
-						<div role="group" aria-label={words.filters} className="ss-scroll flex gap-1.5 overflow-x-auto pb-0.5">
+						<div role="group" aria-label={words.filters} className="shelfway-scroll flex gap-1.5 overflow-x-auto pb-0.5">
 							{filters.options.map((option) => {
 								const on = option.id === filters.value;
 								return (
@@ -267,9 +267,9 @@ export function ListColumn({
 					) : null}
 				</div>
 			) : null}
-			<div ref={scroller} data-ss-slide="" className={LIST.scroller}>
+			<div ref={scroller} data-shelfway-slide="" className={LIST.scroller}>
 				{loading ? (
-					<div role="status" aria-label={words.loading} aria-busy="true" className="animate-ss-fade">
+					<div role="status" aria-label={words.loading} aria-busy="true" className="animate-shelfway-fade">
 						{Array.from({ length: SKELETON_ROWS }, (_, i) => (
 							<div key={i} aria-hidden="true" className={cx('flex items-center gap-3 px-2.5', LIST.row)}>
 								<SkeletonBlock className="size-8 shrink-0 rounded-full" />
@@ -319,7 +319,11 @@ export function ListColumn({
 					) : null
 				) : (
 					<div ref={list} role="listbox" aria-label={label} onKeyDown={move} className="relative isolate">
-						<span ref={slide} data-ss-indicator="" aria-hidden="true" className={cx(LIST.slide, placed && LIST.slideMove)}>
+						<span
+							ref={slide}
+							data-shelfway-indicator=""
+							aria-hidden="true"
+							className={cx(LIST.slide, placed && LIST.slideMove)}>
 							<span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-primary" />
 						</span>
 						{items.map((item, index) => {
@@ -344,7 +348,7 @@ export function ListColumn({
 												selection.toggle?.(id);
 											}}
 											className={cx(
-												'ss-motion ss-press flex size-5 items-center justify-center rounded-full border',
+												'shelfway-motion shelfway-press flex size-5 items-center justify-center rounded-full border',
 												chosen
 													? 'border-primary bg-primary text-on-primary'
 													: 'border-line-strong bg-surface text-transparent hover:border-fg',
@@ -353,7 +357,7 @@ export function ListColumn({
 										</button>
 									) : (
 										<div className="group/check relative flex items-center">
-											<div className="ss-motion group-hover/check:opacity-0 group-focus-within/check:opacity-0">
+											<div className="shelfway-motion group-hover/check:opacity-0 group-focus-within/check:opacity-0">
 												{leadOf(look.lead)}
 											</div>
 											<button
@@ -367,7 +371,7 @@ export function ListColumn({
 													event.stopPropagation();
 													selection.start?.(id);
 												}}
-												className="ss-motion ss-press absolute inset-0 flex size-5 items-center justify-center rounded-full border border-line-strong bg-surface text-transparent opacity-0 hover:border-fg group-hover/check:opacity-100 group-focus-within/check:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-focus">
+												className="shelfway-motion shelfway-press absolute inset-0 flex size-5 items-center justify-center rounded-full border border-line-strong bg-surface text-transparent opacity-0 hover:border-fg group-hover/check:opacity-100 group-focus-within/check:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-focus">
 												<Icon name="check" size={12} />
 											</button>
 										</div>
@@ -384,7 +388,7 @@ export function ListColumn({
 									role="option"
 									aria-selected={on}
 									tabIndex={on || (picked === null && index === 0) ? 0 : -1}
-									data-ss-id={id}
+									data-shelfway-id={id}
 									selected={on}
 									href={selection?.mode ? undefined : look.href}
 									onSelect={() =>
@@ -394,8 +398,10 @@ export function ListColumn({
 												? askLeave(() => onSelect?.(id))
 												: onSelect?.(id)
 									}
-									className={cx(look.className, entering && 'ss-stagger')}
-									{...(entering ? { style: /** @type {import('react').CSSProperties} */ ({ '--ss-i': index }) } : {})}
+									className={cx(look.className, entering && 'shelfway-stagger')}
+									{...(entering
+										? { style: /** @type {import('react').CSSProperties} */ ({ '--shelfway-i': index }) }
+										: {})}
 									{...(onPrefetch
 										? {
 												onFocus: (/** @type {import('react').FocusEvent} */ event) => {
@@ -421,8 +427,8 @@ export function ListColumn({
 			</div>
 			{selection?.mode ? (
 				<div
-					data-ss-bulk=""
-					className="animate-ss-enter flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-line bg-surface-2 p-2.5 text-sm">
+					data-shelfway-bulk=""
+					className="animate-shelfway-enter flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-line bg-surface-2 p-2.5 text-sm">
 					<p role="status" className="min-w-0 truncate font-medium">
 						{typeof words.selected === 'function'
 							? words.selected(selection.count ?? 0)

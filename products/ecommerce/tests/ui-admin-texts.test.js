@@ -3,7 +3,7 @@
  * value of the code's lists has its text, so a new status, kind or type without one fails here instead of showing its
  * text key; and a refusal picks the website's words for its field or code, never the server's English.
  */
-import { LABEL_KINDS } from '@ss/contracts/address';
+import { LABEL_KINDS } from '@shelfway/contracts/address';
 import { describe, expect, it } from 'vitest';
 import strings from '../strings/en.json' with { type: 'json' };
 import { SORTS } from '../core/model.js';

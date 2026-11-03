@@ -8,7 +8,7 @@
  * @module
  */
 
-import { connectBeforeUse } from '@ss/net';
+import { connectBeforeUse } from '@shelfway/net';
 import { omit } from '../util.js';
 
 /** @typedef {import('mongodb').Db} Db */
@@ -24,7 +24,7 @@ const COLLECTIONS = Object.freeze([
 	'status',
 	'revoked',
 	'website_settings',
-	'portal_connections',
+	'platform_connections',
 	'widget',
 	'sessions',
 	'idempotency',
@@ -35,7 +35,7 @@ const PER_WEBSITE = Object.freeze([
 	'connections',
 	'status',
 	'website_settings',
-	'portal_connections',
+	'platform_connections',
 	'widget',
 ]);
 

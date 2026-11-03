@@ -106,14 +106,14 @@ describe('a stolen server token alone (403 needs_signed_in_staff)', () => {
 		}
 	});
 
-	it('is not helped by headers that only name a person (SS-Actor-*, a user id, an email, a role)', async () => {
+	it('is not helped by headers that only name a person (Shelfway-Actor-*, a user id, an email, a role)', async () => {
 		const { call, server } = await prepared();
 		const claims = {
-			'ss-actor-id': 'usr_owner',
-			'ss-actor-name': 'The%20Owner',
-			'ss-actor-role': 'owner',
-			'ss-actor-email': 'owner@shop.example.com',
-			'ss-user-id': 'usr_owner',
+			'shelfway-actor-id': 'usr_owner',
+			'shelfway-actor-name': 'The%20Owner',
+			'shelfway-actor-role': 'owner',
+			'shelfway-actor-email': 'owner@shop.example.com',
+			'shelfway-user-id': 'usr_owner',
 			'x-user-role': 'owner',
 		};
 		for (const [method, path, body] of WRITES) {
@@ -228,7 +228,7 @@ describe('every kind of connection: database, storage, provider keys and links',
 					method,
 					name,
 					409,
-					'managed_by_portal',
+					'managed_by_platform',
 				]);
 			}
 		}
@@ -283,7 +283,7 @@ describe('a verified staff sign-in with the permission', () => {
 			token: server.token,
 			bare: true,
 			body: { value: 'Write to us' },
-			headers: { 'ss-sign-in': signIn, 'ss-actor-id': 'usr_boss', 'ss-actor-name': 'The%20Boss' },
+			headers: { 'shelfway-sign-in': signIn, 'shelfway-actor-id': 'usr_boss', 'shelfway-actor-name': 'The%20Boss' },
 		});
 		expect(saved.status).toBe(200);
 		await settle();
@@ -291,7 +291,7 @@ describe('a verified staff sign-in with the permission', () => {
 			await call('GET', '/v1/activity?action=settings.changed', {
 				token: server.token,
 				bare: true,
-				headers: { 'ss-sign-in': signIn },
+				headers: { 'shelfway-sign-in': signIn },
 			})
 		).json();
 		expect(log.items[0].actor).toMatchObject({ id: 'usr_real', name: 'Real Rita' });
@@ -358,7 +358,7 @@ describe('a staff sign-in without the permission (403 forbidden)', () => {
 			token: server.token,
 			bare: true,
 			body: { value: 'Write to us' },
-			headers: { 'ss-sign-in': plain },
+			headers: { 'shelfway-sign-in': plain },
 		});
 		expect(refused.status).toBe(403);
 		expect((await refused.json()).type).toBe(`${PROBLEM}forbidden`);
@@ -372,7 +372,7 @@ describe('a sign-in that is not valid for this website (401 invalid_sign_in)', (
 			token: env.server.token,
 			bare: true,
 			body: { value: 'Write to us' },
-			headers: { 'ss-sign-in': signIn },
+			headers: { 'shelfway-sign-in': signIn },
 		});
 
 	it('is another website’s: it says who they are there, nothing here', async () => {
@@ -386,7 +386,7 @@ describe('a sign-in that is not valid for this website (401 invalid_sign_in)', (
 			const answered = await env.call(method, path, {
 				token: env.server.token,
 				bare: true,
-				headers: { 'ss-sign-in': other },
+				headers: { 'shelfway-sign-in': other },
 				...(body === undefined ? {} : { body }),
 			});
 			expect([method, path, answered.status]).toEqual([method, path, 401]);
@@ -538,7 +538,7 @@ describe('`allows`: one way to read a permission inside a handler, for tickets a
 		const response = await call('GET', '/v1/server/asks', {
 			token: server.token,
 			bare: true,
-			headers: { 'ss-actor-id': 'usr_x', 'ss-actor-role': 'owner' },
+			headers: { 'shelfway-actor-id': 'usr_x', 'shelfway-actor-role': 'owner' },
 		});
 		expect(await response.json()).toEqual({ allowed: false });
 	});

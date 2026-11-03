@@ -1,7 +1,7 @@
 /**
  * Email addresses (PLAN 0.8.10, like phone numbers): one check and one stored form for every product and the Portal, so
  * an address one unit accepts is never refused by another (a user Accounts signs up always gets codes and resets from
- * Notifications). Pure and browser-safe: products' `core/` and widgets use it through `@ss/contracts/email`.
+ * Notifications). Pure and browser-safe: products' `core/` and widgets use it through `@shelfway/contracts/email`.
  *
  * An address is a mailbox `local@domain` that every sending path can deliver to:
  *

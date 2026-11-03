@@ -34,10 +34,10 @@ import {
 	Select,
 	TextArea,
 	cx,
-} from '@ss/ui';
+} from '@shelfway/ui';
 import { DURATION_MAX, DURATION_UNITS } from '../../core/durations.js';
 import { asWritten, fillTitle, metaDescription, patternText } from '../../core/seo-text.js';
-import { Loaded, fill } from '@ss/ui/dashboard';
+import { Loaded, fill } from '@shelfway/ui/dashboard';
 import { GRADE_CONDITIONS, GRADE_LIMITS, blankGrade, cleanGrade, gradeProblems, keyOf, loadGrade, videoOf } from './drafts.js';
 import { IdTags, ListOutcome, ListActions, moved, useList } from './lists.js';
 import { TEXTS } from './texts.js';

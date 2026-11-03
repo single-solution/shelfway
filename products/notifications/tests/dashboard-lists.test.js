@@ -5,7 +5,7 @@
  */
 import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { byLabel, byText, cleanup, click, render, type } from '@ss/ui/testing';
+import { byLabel, byText, cleanup, click, render, type } from '@shelfway/ui/testing';
 import { FallbackChainsCard, MerchantLists, QuietHoursCard, StopKeywordsCard, TopicsCard } from '../app/dashboard/lists.js';
 import { TEXTS } from '../app/dashboard/texts.js';
 

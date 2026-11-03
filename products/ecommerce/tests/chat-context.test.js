@@ -3,7 +3,7 @@
  * payment method (priced like the cart, with delivery and its free-delivery threshold), deals with their display
  * fields, fuller orders and accounts, and the live store context Chat's AI replies add (C1).
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { MAX_CONTEXT, contextText, contextWordsOf, oneLine, timeWords } from '../core/chat-context.js';
 import { chatFilters, filtersGiven, gradePrices, matchingVariant, variantFilter, warrantyOf } from '../core/lookup.js';
@@ -790,7 +790,7 @@ describe('Chat lookups (E37)', () => {
 
 	it('gives fuller orders and the account’s city and area', async () => {
 		const token = await shop.signIn({ id: sara, name: 'Sara Shopper' });
-		const headers = { 'ss-sign-in': token };
+		const headers = { 'shelfway-sign-in': token };
 		const orders = await shop.api('GET', '/v1/chat/me/orders', undefined, headers);
 		expect(orders.json.items).toEqual([
 			expect.objectContaining({
@@ -835,7 +835,7 @@ describe('Chat lookups (E37)', () => {
 			extraFields: [{ label: 'Loyalty points', value: '0' }],
 		});
 		shop.responders.set(`${ACCOUNTS}/v1/lookup/me`, (call) =>
-			call.headers['ss-sign-in'] === token
+			call.headers['shelfway-sign-in'] === token
 				? {
 						status: 200,
 						body: {
@@ -935,13 +935,13 @@ describe('Chat lookups (E37)', () => {
 		])
 			expect(guest.json.text).toContain(part);
 		const token = await shop.signIn({ id: sara, name: 'Sara Shopper' });
-		const signed = await shop.api('GET', '/v1/chat/context', undefined, { 'ss-sign-in': token });
+		const signed = await shop.api('GET', '/v1/chat/context', undefined, { 'shelfway-sign-in': token });
 		expect(signed.json).toMatchObject({ product: null, visitor: { firstName: 'Sara', city: 'Boston', points: 0 } });
 		expect(signed.json.text).toContain('first name Sara; city Boston; 0 loyalty points');
 		expect((await shop.api('GET', '/v1/chat/context?productId=nope')).json.product).toBeNull();
 		expect((await shop.api('GET', '/v1/chat/context?productId=a%20b')).status).toBe(422);
 		await shop.switchOn(['catalog']);
-		const bare = await shop.api('GET', '/v1/chat/context', undefined, { 'ss-sign-in': token });
+		const bare = await shop.api('GET', '/v1/chat/context', undefined, { 'shelfway-sign-in': token });
 		expect(bare.json).toMatchObject({
 			policies: [],
 			deals: [],

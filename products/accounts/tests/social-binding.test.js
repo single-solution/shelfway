@@ -53,7 +53,7 @@ const handoff = async (extra = {}) => {
 	}));
 	const back = await env.call('GET', `/oauth/facebook/callback?state=${state}&code=fb`);
 	expect(back.status).toBe(303);
-	return String(back.headers.get('location')).split('#ss_accounts_code=')[1];
+	return String(back.headers.get('location')).split('#shelfway_accounts_code=')[1];
 };
 
 describe('SR-4-8: a hand-over code signs in once, even when used twice at the same moment', () => {

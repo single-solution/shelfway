@@ -165,7 +165,7 @@ describe('API descriptions', () => {
 				'POST /v1/d': { summary: 1, status: 204, response: {}, extra: true, query: { type: 'string' }, body: { type: 'x' } },
 				'GET /v1/e': { status: 302 },
 				'GET /v1/f': {
-					headers: { type: 'object', properties: { 'SS-Guest': { type: 'string' }, '1x': { type: 'string' } } },
+					headers: { type: 'object', properties: { 'Shelfway-Guest': { type: 'string' }, '1x': { type: 'string' } } },
 				},
 				'GET /v1/g': { headers: { type: 'string' } },
 			},
@@ -250,8 +250,8 @@ describe('the API reference', () => {
 				get: {
 					summary: 'Read a payment',
 					description: 'With its <history>.',
-					'x-ss-auth': 'server',
-					'x-ss-feature': 'payment_api',
+					'x-shelfway-auth': 'server',
+					'x-shelfway-feature': 'payment_api',
 					parameters: [
 						{ name: 'id', in: 'path', required: true, schema: { type: 'string', description: 'x' } },
 						{
@@ -261,7 +261,7 @@ describe('the API reference', () => {
 							description: 'Page size',
 							schema: { type: 'integer', minimum: 1, maximum: 100, default: 25 },
 						},
-						{ $ref: '#/components/parameters/SSActorId' },
+						{ $ref: '#/components/parameters/ShelfwayActorId' },
 						{ $ref: '#/components/parameters/Unknown' },
 					],
 					responses: {
@@ -275,8 +275,8 @@ describe('the API reference', () => {
 			},
 			'/v1/payments': {
 				post: {
-					'x-ss-auth': 'browser',
-					'x-ss-feature': ['a', 'b'],
+					'x-shelfway-auth': 'browser',
+					'x-shelfway-feature': ['a', 'b'],
 					requestBody: {
 						content: {
 							'application/json': {
@@ -313,19 +313,23 @@ describe('the API reference', () => {
 						},
 					},
 				},
-				delete: { 'x-ss-auth': 'ticket', 'x-ss-permission': 'payments.manage', responses: { 204: { description: 'Done' } } },
+				delete: {
+					'x-shelfway-auth': 'ticket',
+					'x-shelfway-permission': 'payments.manage',
+					responses: { 204: { description: 'Done' } },
+				},
 				put: 'x',
 			},
 		},
 		components: {
-			parameters: { SSActorId: { name: 'SS-Actor-Id', in: 'header' } },
+			parameters: { ShelfwayActorId: { name: 'Shelfway-Actor-Id', in: 'header' } },
 			schemas: { Payment: { type: 'object', description: 'A payment.', properties: { id: { type: 'string' } } } },
 		},
 	};
 
 	it('renders each operation with auth, feature, parameters, fields and answers, then the objects, escaped', () => {
 		const html = renderApiReference(openapi);
-		expect(html).toContain(`<section class="ss-api-op" id="${apiAnchor('GET', '/v1/payments/{id}')}">`);
+		expect(html).toContain(`<section class="shelfway-api-op" id="${apiAnchor('GET', '/v1/payments/{id}')}">`);
 		expect(apiAnchor('GET', '/v1/payments/{id}')).toBe('op-get-v1-payments-id');
 		expect(html).toContain('<code>GET /v1/payments/{id}</code> Read a payment');
 		expect(html).toContain('With its &#60;history&#62;.');
@@ -335,7 +339,7 @@ describe('the API reference', () => {
 		expect(html).toContain(
 			'<td><code>limit</code></td><td>query</td><td>integer</td><td>no</td><td>Page size. 1–100. Default 25.</td>',
 		);
-		expect(html).toContain('Optional headers: <code>SS-Actor-Id</code>.');
+		expect(html).toContain('Optional headers: <code>Shelfway-Actor-Id</code>.');
 		expect(html).toContain('<h4>Answer 200 (JSON)</h4><p><a href="#schema-Payment">Payment</a></p>');
 		expect(html).toContain('browser token from the website');
 		expect(html).toContain('<code>a</code> or <code>b</code>');
@@ -357,7 +361,7 @@ describe('the API reference', () => {
 			'ticket (admin widgets) with the permission <code>payments.manage</code>. <strong>Feature:</strong> always on.',
 		);
 		expect(html).toContain('<h4>Answer 204</h4><p>Done</p>');
-		expect(html).toContain('<section class="ss-api-schema" id="schema-Payment"><h4>Payment</h4><p>A payment.</p><table>');
-		expect(renderApiReference(null)).toBe('<div class="ss-api">\n\n</div>');
+		expect(html).toContain('<section class="shelfway-api-schema" id="schema-Payment"><h4>Payment</h4><p>A payment.</p><table>');
+		expect(renderApiReference(null)).toBe('<div class="shelfway-api">\n\n</div>');
 	});
 });

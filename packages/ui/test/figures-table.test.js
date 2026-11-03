@@ -207,7 +207,7 @@ describe('FiguresTable', () => {
 			stacked: true,
 			totals: { count: 1045, credits: '209.00 cr' },
 		});
-		const stackedContainer = container.querySelector('[data-ss-part="figures-stacked"]');
+		const stackedContainer = container.querySelector('[data-shelfway-part="figures-stacked"]');
 		expect(stackedContainer).not.toBeNull();
 		expect(stackedContainer?.className).toContain('sm:hidden');
 		expect(stackedContainer?.textContent).toContain('Cedar Store');
@@ -222,7 +222,7 @@ describe('FiguresTable', () => {
 		const { container } = renderTable();
 		expect(container.querySelectorAll('input[type="checkbox"]')).toHaveLength(0);
 		expect(container.querySelectorAll('[role="checkbox"]')).toHaveLength(0);
-		expect(container.querySelectorAll('[data-ss-menu]')).toHaveLength(0);
+		expect(container.querySelectorAll('[data-shelfway-menu]')).toHaveLength(0);
 		const rows = container.querySelectorAll('tbody tr');
 		for (const tr of rows) {
 			expect(tr.className).not.toContain('cursor-pointer');

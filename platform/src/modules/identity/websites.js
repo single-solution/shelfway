@@ -1,5 +1,5 @@
 /**
- * Websites (PLAN 0.2 Websites, 0.5.9): one exact domain each (normalized with `@ss/contracts` `normalizeDomain`:
+ * Websites (PLAN 0.2 Websites, 0.5.9): one exact domain each (normalized with `@shelfway/contracts` `normalizeDomain`:
  * lowercase, punycode, no scheme, path, port or trailing dot; IP addresses, localhost, single-label names and wildcards
  * refused), added and removed only by Owner and Support. A domain belongs to at most one website platform-wide: it is
  * claimed in `identity_domains` (`_id` = domain, so concurrent claims race on the unique `_id`). A website can be
@@ -7,7 +7,7 @@
  * `website.deleted`, and the domain is free again at once, for any merchant. Every change is written to Activity.
  * @module
  */
-import { normalizeDomain } from '@ss/contracts';
+import { normalizeDomain } from '@shelfway/contracts';
 import { problem } from '../../infra/http.js';
 import { isDuplicateKey } from '../../infra/util.js';
 import { presentWebsite } from './core/present.js';

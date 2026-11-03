@@ -97,4 +97,13 @@ describe('Docs hub views (PLAN §10 B1, B2)', () => {
 		expect(missingLoaded.ok).toBe(false);
 		expect(missingLoaded.status).toBe(404);
 	});
+
+	it('renders with developer role showing Product Developer SDK section', () => {
+		const html = renderToString(
+			<DocsHubView branding={branding} items={[sampleProduct]} actor={{ role: 'owner', name: 'Admin' }} />,
+		);
+		expect(html).toContain('Product Developer SDK');
+		expect(html).toContain('Role:');
+		expect(html).toContain('owner');
+	});
 });

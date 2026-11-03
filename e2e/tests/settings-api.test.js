@@ -1,6 +1,6 @@
 /**
  * PLAN 0.8.10 K1 (with K2 and K7) against the real Portal: a settings round trip per product. The merchant's server,
- * with the Portal-issued server token and an acting user (`SS-Actor-*`), reads the features and settings, saves a
+ * with the Portal-issued server token and an acting user (`Shelfway-Actor-*`), reads the features and settings, saves a
  * setting of a switched-on feature, sees it in the product dashboard and in Recent changes under the acting user's
  * name, resets it, is refused a setting of a switched-off feature, and edits a widget text, the theme, the Format, a
  * list (Chat, Ecommerce) and reads the connections. The theme and the Format are the website's in the Portal: read here,
@@ -8,22 +8,26 @@
  */
 import { afterAll, describe, expect, it } from 'vitest';
 import { savePortalSettings } from './helpers.js';
-import * as accounts from '@ss/product-accounts/product';
-import * as accountsRoutes from '@ss/product-accounts/routes';
-import * as chat from '@ss/product-chat/product';
-import * as chatRoutes from '@ss/product-chat/routes';
-import * as ecommerce from '@ss/product-ecommerce/product';
-import * as ecommerceRoutes from '@ss/product-ecommerce/routes';
-import * as growth from '@ss/product-growth/product';
-import * as growthRoutes from '@ss/product-growth/routes';
-import * as notifications from '@ss/product-notifications/product';
-import * as notificationsRoutes from '@ss/product-notifications/routes';
-import * as payments from '@ss/product-payments/product';
-import * as paymentsRoutes from '@ss/product-payments/routes';
-import { staffSignIns } from '@ss/product-accounts/testing';
+import * as accounts from '@shelfway/product-accounts/product';
+import * as accountsRoutes from '@shelfway/product-accounts/routes';
+import * as chat from '@shelfway/product-chat/product';
+import * as chatRoutes from '@shelfway/product-chat/routes';
+import * as ecommerce from '@shelfway/product-ecommerce/product';
+import * as ecommerceRoutes from '@shelfway/product-ecommerce/routes';
+import * as growth from '@shelfway/product-growth/product';
+import * as growthRoutes from '@shelfway/product-growth/routes';
+import * as notifications from '@shelfway/product-notifications/product';
+import * as notificationsRoutes from '@shelfway/product-notifications/routes';
+import * as payments from '@shelfway/product-payments/product';
+import * as paymentsRoutes from '@shelfway/product-payments/routes';
+import { staffSignIns } from '@shelfway/product-accounts/testing';
 import { codeOf, startSystem } from './helpers.js';
 
-const ACTOR = { 'ss-actor-id': 'usr_settings_1', 'ss-actor-name': encodeURIComponent('Zara Qureshi'), 'ss-actor-role': 'Owner' };
+const ACTOR = {
+	'shelfway-actor-id': 'usr_settings_1',
+	'shelfway-actor-name': encodeURIComponent('Zara Qureshi'),
+	'shelfway-actor-role': 'Owner',
+};
 
 /**
  * @typedef {object} Case
@@ -150,7 +154,7 @@ describe.each(CASES)('settings API of $id (K1)', ({ id, product, routes, on, set
 		const api = async (method, path, body) =>
 			sys.call(method, path, {
 				token: server,
-				headers: accountsStaff ? { 'ss-sign-in': await accountsStaff() } : ACTOR,
+				headers: accountsStaff ? { 'shelfway-sign-in': await accountsStaff() } : ACTOR,
 				...(body === undefined ? {} : { body }),
 			});
 
@@ -220,7 +224,7 @@ describe.each(CASES)('settings API of $id (K1)', ({ id, product, routes, on, set
 			['/v1/format', { wholeUnits: true }],
 		])) {
 			const refused = await api('PUT', path, change);
-			expect([refused.status, codeOf(refused)]).toEqual([409, 'managed_by_portal']);
+			expect([refused.status, codeOf(refused)]).toEqual([409, 'managed_by_platform']);
 		}
 		// what the merchant sets once in the Portal is what this product reads
 		await savePortalSettings(m, `/v1/merchants/${m.merchantId}/websites/${websiteId}/settings`, {

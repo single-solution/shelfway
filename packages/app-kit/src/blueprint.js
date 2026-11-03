@@ -1,5 +1,5 @@
 /**
- * The product's part of a website's Setup sheet (`ss.blueprint/1`, `@ss/contracts` `validateProductBlueprint`):
+ * The product's part of a website's Setup sheet (`shelfway.blueprint/1`, `@shelfway/contracts` `validateProductBlueprint`):
  * `GET /v1/blueprint?websiteId=`, a call signed by the Portal (`auth: 'portal'`), answered from what the kit already
  * keeps; nothing is stored for it.
  *
@@ -29,15 +29,15 @@
  * product, cannot break the answer.
  * @module
  */
-import { isObject } from '@ss/contracts/util';
-import { missingWebsiteSettings } from '@ss/contracts/website-settings';
+import { isObject } from '@shelfway/contracts/util';
+import { missingWebsiteSettings } from '@shelfway/contracts/website-settings';
 import { WIDGET_SEEN_MS } from './dashboard.js';
 import { defineRoute } from './http/routes.js';
 import { problem } from './http/results.js';
 import { effectiveStatus } from './status.js';
 
 /** @typedef {import('./http/handler.js').RequestContext} RequestContext */
-/** @typedef {import('@ss/contracts').ProductBlueprint} ProductBlueprint */
+/** @typedef {import('@shelfway/contracts').ProductBlueprint} ProductBlueprint */
 /**
  * What a product adds to its part of the Setup sheet (its `blueprint` hook): event types it publishes
  * (`<product>.<event>`), list summaries in its own words by list name, and short summaries (each a title and plain
@@ -151,7 +151,7 @@ const ADMIN_ID = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$/;
 
 /**
  * The features a request switches on, with every feature they need (in manifest order), or why it cannot.
- * @param {import('@ss/contracts').Manifest} manifest
+ * @param {import('@shelfway/contracts').Manifest} manifest
  * @param {unknown} asked
  * @returns {{ ok: true, keys: string[] } | { ok: false, message: string }}
  */
@@ -200,10 +200,10 @@ export const createBlueprint = ({ kit, lists, hooks, events, openapi, build: bui
 
 	/**
 	 * Settings of a section with their values; a value holding a secret is never shown (`set: true` instead).
-	 * @param {import('@ss/contracts').ManifestFeature['settings']} schema
+	 * @param {import('@shelfway/contracts').ManifestFeature['settings']} schema
 	 * @param {Record<string, { value: unknown, source: string }>} values
 	 * @param {ReadonlyArray<string>} secrets
-	 * @returns {import('@ss/contracts').BlueprintSetting[]}
+	 * @returns {import('@shelfway/contracts').BlueprintSetting[]}
 	 */
 	const settingsOf = (schema, values, secrets) =>
 		Object.entries(schema.properties).map(([key, node]) => {
@@ -217,7 +217,7 @@ export const createBlueprint = ({ kit, lists, hooks, events, openapi, build: bui
 	/**
 	 * The product's part of the website's Setup sheet.
 	 * @param {RequestContext} ctx
-	 * @param {import('@ss/contracts').StatusResponse} status
+	 * @param {import('@shelfway/contracts').StatusResponse} status
 	 * @returns {Promise<ProductBlueprint>}
 	 */
 	const build = async (ctx, status) => {
@@ -381,7 +381,7 @@ export const createBlueprint = ({ kit, lists, hooks, events, openapi, build: bui
 	/**
 	 * The status of the website a Portal call names, or the problem to answer.
 	 * @param {RequestContext} ctx
-	 * @returns {Promise<{ ok: true, status: import('@ss/contracts').StatusResponse } | { ok: false, problem: ReturnType<typeof problem> }>}
+	 * @returns {Promise<{ ok: true, status: import('@shelfway/contracts').StatusResponse } | { ok: false, problem: ReturnType<typeof problem> }>}
 	 */
 	const websiteOf = async (ctx) => {
 		if (ctx.websiteId === null)
@@ -391,8 +391,8 @@ export const createBlueprint = ({ kit, lists, hooks, events, openapi, build: bui
 			return {
 				ok: false,
 				problem:
-					found.code === 'portal_unreachable'
-						? problem('portal_unreachable')
+					found.code === 'platform_unreachable'
+						? problem('platform_unreachable')
 						: problem('website_not_found', 'This product does not know the website.'),
 			};
 		if (found.status.status === 'removed')

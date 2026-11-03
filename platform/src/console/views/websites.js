@@ -26,7 +26,7 @@ import {
 	formatCredits,
 	useNarrow,
 	TextLink,
-} from '@ss/ui';
+} from '@shelfway/ui';
 import { AUTH, BILLING, MERCHANT, MORE, WEBSITE } from '../../texts/console.js';
 import { Link } from '../link.js';
 import { useNavigation } from '../navigation.js';
@@ -37,11 +37,11 @@ import { PageProblem, openDashboard } from './common.js';
 import { ConfirmOtp } from './common.js';
 import { ActivityTimeline } from './login-settings.js';
 import { contactLine } from './sign-in.js';
-import { dailyCostOf, websiteDot } from './website.js';
+import { AddWebsiteDialog, dailyCostOf, websiteDot } from './website.js';
 import { WebsitePageView } from './website-page.js';
 
 /** @typedef {import('./website.js').ProductCard} ProductCard */
-/** @typedef {{ support?: { channels: import('@ss/contracts/text').SupportChannel[] } | null }} BrandingSupport */
+/** @typedef {{ support?: { channels: import('@shelfway/contracts/text').SupportChannel[] } | null }} BrandingSupport */
 
 /**
  * The welcome of a merchant with no websites yet.
@@ -103,7 +103,7 @@ export function OverviewView(props) {
 		</Button>
 	);
 
-	/** @type {import('@ss/ui').Need[]} */
+	/** @type {import('@shelfway/ui').Need[]} */
 	const needs = [];
 	for (const { website, cards } of rows) {
 		if (cards.length === 0)
@@ -415,15 +415,53 @@ function WebsitesScreen({
  * @param {any} props loader result of `loadWebsites` plus `branding`
  */
 export function WebsitesView(props) {
+	const nav = useNavigation();
+	const [adding, setAdding] = useState(false);
 	if (!props.ok) return <PageProblem problem={props.problem} />;
 	const rows = /** @type {Array<{ website: any, cards: ProductCard[] }>} */ (props.rows);
 	return (
 		<>
 			<FrameBilling billing={props.billing} />
 			{rows.length === 0 ? (
-				<Page flush crumbs={[{ label: MERCHANT.websitesTitle }]} info={MERCHANT.websitesInfo} linkAs={Link}>
-					<Welcome branding={props.branding} />
-				</Page>
+				<>
+					<Page
+						flush
+						crumbs={[{ label: MERCHANT.websitesTitle }]}
+						info={MERCHANT.websitesInfo}
+						linkAs={Link}
+						actions={{
+							primary: {
+								label: WEBSITE.addWebsite,
+								icon: 'plus',
+								onClick: () => setAdding(true),
+							},
+						}}>
+						<EmptyState
+							icon="globe"
+							kind="website"
+							title={AUTH.welcomeTitle}
+							description={
+								<>
+									{AUTH.welcome} {AUTH.contactUs} {contactLine(props.branding?.support)}.
+								</>
+							}
+							action={
+								<Button icon={<Icon name="plus" size={14} />} onClick={() => setAdding(true)}>
+									{WEBSITE.addWebsite}
+								</Button>
+							}
+						/>
+					</Page>
+					<AddWebsiteDialog
+						open={adding}
+						merchantId={props.merchantId}
+						onClose={() => setAdding(false)}
+						onAdded={(website) => {
+							setAdding(false);
+							nav.go(routes.website(website.websiteId));
+						}}
+					/>
+				</>
 			) : (
 				<WebsitesScreen
 					rows={rows}

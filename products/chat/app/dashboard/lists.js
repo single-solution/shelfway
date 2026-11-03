@@ -28,7 +28,7 @@ import {
 	Select,
 	TextArea,
 	SaveBar,
-} from '@ss/ui';
+} from '@shelfway/ui';
 import { FALLBACK_LIMITS, PLACEHOLDERS, fallbackProblems, placeholdersOf } from '../../core/fallback.js';
 import { FIELD_TYPES } from '../../core/fields.js';
 import { STANDARD_FIELDS } from '../../core/flows.js';
@@ -39,7 +39,7 @@ import { LABEL_LIMITS } from '../../core/labels.js';
 import { PARAMETER_TYPES } from '../../core/tools.js';
 import { UPLOAD_MAX_MB } from '../../core/uploads.js';
 import { ATTACHMENT_TYPES } from '../../core/widgets.js';
-import { Loaded, SaveOutcome, call, fill, useLoad } from '@ss/ui/dashboard';
+import { Loaded, SaveOutcome, call, fill, useLoad } from '@shelfway/ui/dashboard';
 import { TEXTS } from './texts.js';
 
 /** @typedef {Record<string, any>} Item */
@@ -77,7 +77,7 @@ const moved = (items, index, step) => {
 
 /**
  * @typedef {object} ListLook how the entries of a list look as rows
- * @property {import('@ss/ui').IconName} icon the lead of each row
+ * @property {import('@shelfway/ui').IconName} icon the lead of each row
  * @property {(item: Item, index: number) => string[]} facts the line under the name (empty ones are left out)
  * @property {(item: Item, index: number) => string} [value] the value at the right of the row
  */
@@ -116,7 +116,7 @@ function ListEditor({
 	const { answer, reload } = useLoad(path);
 	const [draft, setDraft] = useState(/** @type {Item[] | null} */ (null));
 	const [opened, setOpened] = useState(/** @type {number | null} */ (null));
-	const [result, setResult] = useState(/** @type {import('@ss/ui/dashboard').Answer | null} */ (null));
+	const [result, setResult] = useState(/** @type {import('@shelfway/ui/dashboard').Answer | null} */ (null));
 	const data = answer?.ok ? answer.data : null;
 	/** @type {Item[]} */
 	const items = draft ?? (Array.isArray(data?.value) ? data.value : []);
@@ -1345,7 +1345,7 @@ export function ToolSecret({ websiteId, bare = false }) {
 	const [secret, setSecret] = useState(/** @type {string | null} */ (null));
 	const [confirming, setConfirming] = useState(false);
 	const [busy, setBusy] = useState(false);
-	const [result, setResult] = useState(/** @type {import('@ss/ui/dashboard').Answer | null} */ (null));
+	const [result, setResult] = useState(/** @type {import('@shelfway/ui/dashboard').Answer | null} */ (null));
 	/** @param {'GET' | 'POST'} method */
 	const load = async (method) => {
 		setBusy(true);

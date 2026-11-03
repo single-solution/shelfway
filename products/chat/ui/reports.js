@@ -5,7 +5,7 @@
  * resolved, average rating, Net Promoter Score, leads and AI tokens (numbers in the website's Format too).
  * @module
  */
-import { adminCall, block, element, formatDate, formatText, mountWidget, viewerOf } from '@ss/app-kit/widget';
+import { adminCall, block, element, formatDate, formatText, mountWidget, viewerOf } from '@shelfway/app-kit/widget';
 import { dayKey } from '../core/time.js';
 import { fieldMaker, isInvalid, numbersOf, textsOf } from './common.js';
 import { WIDGET_CSS } from './styles.js';
@@ -13,7 +13,7 @@ import { WIDGET_CSS } from './styles.js';
 const DAY_MS = 86_400_000;
 
 /**
- * @param {{ host: HTMLElement, win: Window, api: import('@ss/app-kit/widget').AdminApi,
+ * @param {{ host: HTMLElement, win: Window, api: import('@shelfway/app-kit/widget').AdminApi,
  *   config: import('./common.js').WidgetConfig, now: () => number }} input
  */
 export const mountReports = ({ host, win, api, config, now }) => {
@@ -45,7 +45,7 @@ export const mountReports = ({ host, win, api, config, now }) => {
 		css: WIDGET_CSS,
 		render: (root) => {
 			const doc = /** @type {Document} */ (root.ownerDocument);
-			const make = fieldMaker(doc, 'ss-reports');
+			const make = fieldMaker(doc, 'shelfway-reports');
 			const form = element(doc, 'form', { class: 'row' });
 			const from = make.field('input', t('reports.from'), { type: 'date', required: '' });
 			const to = make.field('input', t('reports.to'), { type: 'date', required: '' });

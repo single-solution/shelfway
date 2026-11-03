@@ -1,11 +1,11 @@
 /**
  * The visitor's session in the browser (PLAN 0.8.6). The sign-in token lives in memory only and is renewed 1 minute
  * before it expires with the refresh token, which is kept in localStorage when the user checked "Remember me", else in
- * sessionStorage. Every change is announced on `window` (`ss-accounts:signed-in` with `detail: { user }`,
- * `ss-accounts:signed-out`) and to the widgets.
+ * sessionStorage. Every change is announced on `window` (`shelfway-accounts:signed-in` with `detail: { user }`,
+ * `shelfway-accounts:signed-out`) and to the widgets.
  * @module
  */
-import { requestJson } from '@ss/app-kit/widget';
+import { requestJson } from '@shelfway/app-kit/widget';
 import {
 	BINDING_STORAGE_KEY,
 	DEVICE_STORAGE_KEY,
@@ -183,7 +183,7 @@ export const createSession = ({ win, base, token, schedule, cancel, now }) => {
 	};
 
 	/**
-	 * A call of the signed-in user (`ss-sign-in` header); status 0 when signed out.
+	 * A call of the signed-in user (`shelfway-sign-in` header); status 0 when signed out.
 	 * @param {string} method @param {string} path @param {unknown} [body]
 	 * @returns {Promise<Answer>}
 	 */

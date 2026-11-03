@@ -44,7 +44,7 @@ const lastQuery = (server) => Object.fromEntries(server.last('GET /v1/admin/prod
 describe('catalog admin: the product list', () => {
 	it('lists products with status chips, the total, Load more and the signed-out line', async () => {
 		const { host, root, server, tickets } = await start();
-		expect(host.getAttribute('data-ss-mounted')).toBe('catalog-admin');
+		expect(host.getAttribute('data-shelfway-mounted')).toBe('catalog-admin');
 		const panel = panelOf(root, 'products');
 		expect(rowsOf(panel)).toEqual(['Phone']);
 		expect(textOf(panel)).toContain('USD 1,250.00');

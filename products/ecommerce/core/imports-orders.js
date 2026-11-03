@@ -12,10 +12,10 @@
  * emits, holds stock or moves points. No I/O.
  * @module
  */
-import { isId } from '@ss/contracts';
-import { normalizeEmail } from '@ss/contracts/email';
-import { normalizePhone } from '@ss/contracts/phone';
-import { countryCodeOf, tidyPostcode } from '@ss/contracts/address';
+import { isId } from '@shelfway/contracts';
+import { normalizeEmail } from '@shelfway/contracts/email';
+import { normalizePhone } from '@shelfway/contracts/phone';
+import { countryCodeOf, tidyPostcode } from '@shelfway/contracts/address';
 import { ADDRESS_LIMITS } from './address.js';
 import { ALERT_TRIES, checkAlertInput } from './alerts.js';
 import { LIMITS } from './catalog.js';
@@ -25,8 +25,8 @@ import { derivedFacts } from './facts.js';
 import { statusOf } from './flow.js';
 import { guestKeyOf, guestRules, phoneDigitsOf, phoneRules } from './guests.js';
 import { ID_PREFIX, MAX_WISHLIST } from './model.js';
-import { MAX_AMOUNT } from '@ss/contracts/format';
-import { isObject } from '@ss/contracts/util';
+import { MAX_AMOUNT } from '@shelfway/contracts/format';
+import { isObject } from '@shelfway/contracts/util';
 import { describeNumberForm, numberFormOf, numberMatcher } from './order-numbers.js';
 import {
 	MAX_NOTE,
@@ -283,7 +283,7 @@ const checker = () => {
 	};
 
 	/**
-	 * A phone as E.164 by the website's rules (`@ss/contracts/phone`, K12) ('' when missing). With `strict` it must be
+	 * A phone as E.164 by the website's rules (`@shelfway/contracts/phone`, K12) ('' when missing). With `strict` it must be
 	 * one (a customer's, an alert's); else a phone-like text the normalizer cannot read is kept as checkout keeps it (an
 	 * order's).
 	 * @param {unknown} value @param {string} path @param {ImportRules['phoneRules']} rules
@@ -373,7 +373,7 @@ const answer = (c, value) => (c.errors.length > 0 ? { ok: false, errors: c.error
 
 /**
  * The rules of one import call from what the website has (`prepare`).
- * @param {{ flow: unknown, checkout: Record<string, unknown>, region: import('@ss/contracts').WebsiteSettings['region'],
+ * @param {{ flow: unknown, checkout: Record<string, unknown>, region: import('@shelfway/contracts').WebsiteSettings['region'],
  *   now: number, fields?: ImportRules['fields'], claims?: ImportRules['claims'],
  *   attachmentKinds?: ImportRules['attachmentKinds'] }} input `region`: the Portal's Region and format (the currency,
  *   the phone rules and the country); `fields`: the shop's order and customer fields (none: no field value is taken);

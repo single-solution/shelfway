@@ -10,8 +10,8 @@
  * run inside a transaction, the driver session.
  * @module
  */
-import { createId } from '@ss/contracts';
-import { zonedParts } from '@ss/contracts/format';
+import { createId } from '@shelfway/contracts';
+import { zonedParts } from '@shelfway/contracts/format';
 import { summarize } from '../core/catalog.js';
 import { unitKeys } from '../core/fields.js';
 import { COLLECTIONS, ID_PREFIX, isDuplicate } from '../core/model.js';
@@ -19,7 +19,7 @@ import { lotsByRule } from '../core/loyalty.js';
 import { counterIdOf, counterNumbers, numberFormOf, orderNumberOf } from '../core/order-numbers.js';
 import { balanceOf, compactLots, expireLots, spendFromLots, takeFromLots } from '../core/points.js';
 
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('mongodb').ClientSession} Session */
 /** @typedef {import('../core/model.js').OrderRecord} OrderRecord */
 /** @typedef {import('../core/model.js').LoyaltyRecord} LoyaltyRecord */
@@ -31,7 +31,7 @@ const HISTORY_KEPT = 200;
 
 /**
  * Indexes the ledger relies on (merged into the product's index list): the unique ones are what make the guards hold.
- * @type {import('@ss/app-kit').IndexDefinition[]}
+ * @type {import('@shelfway/app-kit').IndexDefinition[]}
  */
 export const LEDGER_INDEXES = [
 	{ collection: COLLECTIONS.orders, keys: { websiteId: 1, id: 1 }, name: 'by_id', unique: true },

@@ -3,7 +3,7 @@
  * and max chats, leads, and the conversation's context panel. A part whose route answers 403 hides itself.
  * @module
  */
-import { adminCall, element, formatText } from '@ss/app-kit/widget';
+import { adminCall, element, formatText } from '@shelfway/app-kit/widget';
 import { buttonOf, formPart, setHidden, webAddress } from './common.js';
 
 /**
@@ -11,8 +11,8 @@ import { buttonOf, formPart, setHidden, webAddress } from './common.js';
  * @property {Document} doc
  * @property {import('./common.js').Texts} t
  * @property {import('./common.js').FieldMaker} make
- * @property {import('@ss/app-kit/widget').AdminApi} api
- * @property {(answer: import('@ss/app-kit/widget').Answer, invalid?: string) => string} failure the widget's text for a failed
+ * @property {import('@shelfway/app-kit/widget').AdminApi} api
+ * @property {(answer: import('@shelfway/app-kit/widget').Answer, invalid?: string) => string} failure the widget's text for a failed
  *   call (`invalid`: the text of a refused value for that action)
  */
 

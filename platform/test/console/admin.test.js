@@ -90,7 +90,7 @@ describe('admin console smoke', () => {
 		try {
 			const { ownerBrowser } = world;
 			// inviting an admin asks for the Owner's password (and a code once two-step is on), so it comes first
-			const invite = { email: 'help@ss.test', role: 'support', password: 'owner password 123!' };
+			const invite = { email: 'help@shelfway.test', role: 'support', password: 'owner password 123!' };
 			expect((await ownerBrowser.api.post(adminApi.admins(), invite)).ok).toBe(true);
 			// two-step on for the Owner (My account shows the recovery codes left)
 			const started = await ownerBrowser.api.post('/v1/me/two-step/start', { password: 'owner password 123!' });
@@ -150,7 +150,7 @@ describe('admin console smoke', () => {
 			expect(listHtml).toContain('250 credits'); // the balance on the row
 			expect(listHtml).toContain('Add merchant');
 			expect(listRaw).toContain(`href="/admin/merchants/${merchantId}"`);
-			expect(listRaw).toContain('data-ss-page');
+			expect(listRaw).toContain('data-shelfway-page');
 			expect(listRaw).not.toContain('role="tab"');
 			const none = await admin.loadMerchants(ownerBrowser.api, { q: 'nobody-here' });
 			expect(none).toMatchObject({ ok: true, page: { items: [] } });
@@ -271,9 +271,9 @@ describe('admin console smoke', () => {
 			expect(text(ssr(<ActivityView {...activity} />))).toContain('Product added');
 			const admins = await admin.loadAdmins(ownerBrowser.api, owner);
 			const adminsHtml = text(ssr(<AdminsView {...admins} />));
-			expect(adminsHtml).toContain('help@ss.test');
+			expect(adminsHtml).toContain('help@shelfway.test');
 			expect(adminsHtml).toContain('Two-step');
-			const invited = admins.ok ? admins.items.find((a) => a.email === 'help@ss.test') : null;
+			const invited = admins.ok ? admins.items.find((a) => a.email === 'help@shelfway.test') : null;
 			const invitedId = String(invited?.adminId);
 			const invitedRaw = ssr(
 				<AdminsView {...await admin.loadAdmin(ownerBrowser.api, owner, invitedId)} selectedId={invitedId} />,

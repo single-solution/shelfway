@@ -2,7 +2,7 @@
  * Message templates (PLAN 0.8.5, 0.8.10 N2): the rules every template's words follow wherever they are written — a
  * merchant's template in Notifications, or a product's default template (its `schemas/messages.json`, checked by
  * `validateMessageDefaults`). One copy of the rules, so a default always passes the checks a merchant's template
- * passes. Pure and browser-safe: Notifications' `core/` and widgets use it through `@ss/contracts/templates`.
+ * passes. Pure and browser-safe: Notifications' `core/` and widgets use it through `@shelfway/contracts/templates`.
  *
  * - A template key is 1–64 lower-case letters, digits, `_`, `.` or `-`, starting with a letter; a product's own keys
  *   start with its id and a dot (`accounts.password_reset`).

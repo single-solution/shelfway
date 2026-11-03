@@ -15,7 +15,7 @@ import { platformError } from './errors.js';
 /** @typedef {import('./db.js').CollectionDefinition} CollectionDefinition */
 /** @typedef {import('./http.js').RouteDefinition} RouteDefinition */
 /** @typedef {import('./authenticators.js').AuthPorts} AuthPorts */
-/** @typedef {import('@ss/net').Logger} Logger */
+/** @typedef {import('@shelfway/net').Logger} Logger */
 
 /**
  * Shared services every module may use (built once by the composition root).
@@ -24,7 +24,7 @@ import { platformError } from './errors.js';
  * @property {Logger} logger
  * @property {() => number} now
  * @property {(n: number) => Uint8Array} randomBytes
- * @property {import('@ss/contracts').ProblemFactory} problems
+ * @property {import('@shelfway/contracts').ProblemFactory} problems
  * @property {import('./crypto.js').PortalKeys} keys the Portal signer, the token signer and the published JWKS
  * @property {import('./crypto.js').SecretBox} secretBox seal/open the Portal's stored secrets with `ENCRYPTION_KEY`, and
  *   `ENCRYPTION_KEY_PREVIOUS` while it changes (SMTP password, two-step secrets, server tokens; PLAN 0.4.8)
@@ -35,7 +35,7 @@ import { platformError } from './errors.js';
  * @property {import('./mailer.js').Mailer} mailer platform mailer (setup links, invites, resets, email changes, two-step notices)
  * @property {import('./auth.js').Sessions} sessions
  * @property {import('./auth.js').LoginThrottle} loginThrottle
- * @property {import('@ss/protocol').ReplayStore} replayStore
+ * @property {import('@shelfway/protocol').ReplayStore} replayStore
  * @property {{ name: (kind: 'admin' | 'merchant') => string, set: (kind: 'admin' | 'merchant', token: string, maxAgeSeconds: number) => string, clear: (kind: 'admin' | 'merchant') => string }} cookies
  * @property {import('./system.js').SystemStore} system generated secrets and recorded settings (admin settings, key
  *   rotation)

@@ -1,5 +1,5 @@
 /**
- * Test harness: Chat on the kit, connected to the kit's fake Portal (`@ss/app-kit/testing`), with one website, its two
+ * Test harness: Chat on the kit, connected to the kit's fake Portal (`@shelfway/app-kit/testing`), with one website, its two
  * tokens, dashboard sessions, a merchant database on the run's MongoDB (`TEST_MONGODB_URI`) and fakes for every outside
  * service: the AI provider (OpenAI-compatible answers queued by the test), Notifications (records what Chat sends), the
  * Accounts double (sign-ins and public keys; other Accounts answers set per test with `responders`), Ecommerce (answers set per test with `responders`), S3 storage, the merchant's tool and booking endpoints, and the website
@@ -16,8 +16,8 @@ import {
 	portalConnector,
 	portalSectionsOf,
 	staffCaller,
-} from '@ss/app-kit/testing';
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
+} from '@shelfway/app-kit/testing';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import apiJson from '../schemas/api.json' with { type: 'json' };
 import { createProductInstance, manifest } from '../adapters/product.js';
 import { createRoutes } from '../server/routes.js';
@@ -64,7 +64,7 @@ const merchantDatabase = () => {
 
 /**
  * A connected product with one website.
- * @param {{ start?: number, store?: (store: import('@ss/app-kit').Store) => import('@ss/app-kit').Store }} [options]
+ * @param {{ start?: number, store?: (store: import('@shelfway/app-kit').Store) => import('@shelfway/app-kit').Store }} [options]
  *   `store` wraps the product database (a test can make a read fail)
  */
 export const setup = async ({ start = Date.parse('2026-10-05T10:00:00Z'), store = (given) => given } = {}) => {
@@ -189,9 +189,9 @@ export const setup = async ({ start = Date.parse('2026-10-05T10:00:00Z'), store 
 		if (
 			token === server &&
 			!bare &&
-			headers['ss-sign-in'] === undefined &&
-			headers['ss-visitor-ip'] === undefined &&
-			headers['ss-guest'] === undefined
+			headers['shelfway-sign-in'] === undefined &&
+			headers['shelfway-visitor-ip'] === undefined &&
+			headers['shelfway-guest'] === undefined
 		)
 			// eslint-disable-next-line no-param-reassign -- the harness signs the staff member in
 			headers = await staffHeaders({ headers, staff });
@@ -237,8 +237,8 @@ export const setup = async ({ start = Date.parse('2026-10-05T10:00:00Z'), store 
 				...(body === undefined ? {} : { body }),
 				...(init.network ? { network: init.network } : {}),
 				headers: {
-					...(state.guestKey ? { 'ss-guest': state.guestKey } : {}),
-					...(state.signIn ? { 'ss-sign-in': state.signIn } : {}),
+					...(state.guestKey ? { 'shelfway-guest': state.guestKey } : {}),
+					...(state.signIn ? { 'shelfway-sign-in': state.signIn } : {}),
 				},
 			});
 			if (typeof response.json?.guestKey === 'string') state.guestKey = response.json.guestKey;
@@ -428,7 +428,7 @@ export const setup = async ({ start = Date.parse('2026-10-05T10:00:00Z'), store 
 
 	/**
 	 * The merchant saves website settings in the Portal (Website settings): the product is told and fetches them.
-	 * @param {Partial<Pick<import('@ss/contracts').WebsiteSettings, 'business' | 'brand' | 'region' | 'pages' | 'team'>>} sections
+	 * @param {Partial<Pick<import('@shelfway/contracts').WebsiteSettings, 'business' | 'brand' | 'region' | 'pages' | 'team'>>} sections
 	 */
 	const setWebsite = async (sections) => {
 		Object.assign(site, sections);

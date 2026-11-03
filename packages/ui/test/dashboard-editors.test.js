@@ -316,8 +316,8 @@ describe('rows with unsaved changes are marked (KP-1a left over)', () => {
 	/** The rows of the list that carry the word "Changed". @param {ParentNode} root */
 	const markedRows = (root) =>
 		[...root.querySelectorAll('[role="option"]')]
-			.filter((row) => row.querySelector('[data-ss-changed]'))
-			.map((row) => row.getAttribute('data-ss-id'));
+			.filter((row) => row.querySelector('[data-shelfway-changed]'))
+			.map((row) => row.getAttribute('data-shelfway-id'));
 
 	it('Settings: the row of a feature with edits says Changed, in words, until Save or Discard', async () => {
 		const id = freshSite();
@@ -325,7 +325,7 @@ describe('rows with unsaved changes are marked (KP-1a left over)', () => {
 		expect(markedRows(container)).toEqual([]);
 		type(byLabel(container, 'Greeting'), 'Mine');
 		expect(markedRows(container)).toEqual(['notes']);
-		expect(container.querySelector('[role="option"][data-ss-id="notes"]')?.textContent).toContain('Changed');
+		expect(container.querySelector('[role="option"][data-shelfway-id="notes"]')?.textContent).toContain('Changed');
 		await act(async () => buttonsOf(container, 'Discard')[0]?.click());
 		expect(markedRows(container)).toEqual([]);
 		type(byLabel(container, 'Greeting'), 'Again');

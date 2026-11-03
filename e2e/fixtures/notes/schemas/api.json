@@ -284,7 +284,7 @@
 		}
 	},
 	"GET /v1/import/status": {
-		"summary": "What the import holds now (ss-import verify)",
+		"summary": "What the import holds now (shelfway-import verify)",
 		"response": {
 			"type": "object",
 			"required": ["collections", "imported", "totals"],

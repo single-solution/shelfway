@@ -8,7 +8,7 @@ import { COLLECTIONS, isDuplicate } from '../core/model.js';
 import { normalizeCode } from '../core/coupons.js';
 import { dealLive } from '../core/deals.js';
 
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/model.js').DealRecord} DealRecord */
 /** @typedef {import('../core/model.js').BundleRecord} BundleRecord */
 /** @typedef {import('../core/model.js').CouponRecord} CouponRecord */
@@ -17,7 +17,7 @@ import { dealLive } from '../core/deals.js';
 /** Most deals or bundles loaded for one cart. */
 const MAX_LIVE_OFFERS = 500;
 
-/** Merchant database indexes of this part. @type {import('@ss/app-kit').IndexDefinition[]} */
+/** Merchant database indexes of this part. @type {import('@shelfway/app-kit').IndexDefinition[]} */
 export const INDEXES = [
 	{ collection: COLLECTIONS.coupons, keys: { websiteId: 1, code: 1 }, name: 'by_code', unique: true },
 	{ collection: COLLECTIONS.coupons, keys: { websiteId: 1, id: 1 }, name: 'by_id', unique: true },

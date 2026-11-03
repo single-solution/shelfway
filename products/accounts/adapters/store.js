@@ -1,5 +1,5 @@
 /**
- * Accounts' records in the merchant database (collections `ss_accounts_<name>`, through the kit's tenant guard: every
+ * Accounts' records in the merchant database (collections `shelfway_accounts_<name>`, through the kit's tenant guard: every
  * query carries the website id; inserts are stamped with `websiteId`, `merchantId`, `createdAt` and `updatedAt`).
  *
  * - `users`: the one user list of the website (customers and the merchant's staff), unique email and phone
@@ -24,14 +24,14 @@
  *   after later requests until they expire (TTL)
  * @module
  */
-import { createId } from '@ss/contracts';
-import { nationalNumberOf } from '@ss/contracts/phone';
+import { createId } from '@shelfway/contracts';
+import { nationalNumberOf } from '@shelfway/contracts/phone';
 import { CONSENT_TEMPLATES, MAX_CONSENTS } from '../core/consents.js';
 import { MAX_CUSTOM_FIELDS, MAX_ROLES } from '../core/limits.js';
 import { MAX_VIEWS } from '../core/views.js';
 import { OWNER_ROLE, ROLE_TEMPLATES, SIGN_UP_TEMPLATE } from '../core/roles.js';
 
-/** @typedef {import('@ss/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/profile.js').UserRecord} UserRecord */
 /** @typedef {import('../core/roles.js').Role} Role */
 /** @typedef {import('../core/profile.js').CustomField} CustomField */
@@ -141,7 +141,7 @@ const present = { $type: 'string' };
 /** An ended session (signed out, or past its end) is removed this long after its end (RT-11). */
 const SESSION_KEPT_SECONDS = 7 * 24 * 3600;
 
-/** Merchant database indexes (created on a website's first use). @type {import('@ss/app-kit').IndexDefinition[]} */
+/** Merchant database indexes (created on a website's first use). @type {import('@shelfway/app-kit').IndexDefinition[]} */
 export const INDEXES = [
 	{ collection: USERS, keys: { websiteId: 1, id: 1 }, name: 'by_id', unique: true },
 	{

@@ -2,7 +2,7 @@
  * Small pure helpers shared by the infra layer and the modules. No I/O.
  * @module
  */
-import { isObject } from '@ss/contracts/util';
+import { isObject } from '@shelfway/contracts/util';
 
 /**
  * Default randomness (WebCrypto).

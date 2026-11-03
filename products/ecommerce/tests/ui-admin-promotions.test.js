@@ -163,7 +163,7 @@ const start = (routes = {}, features = ['coupons', 'deals', 'bundles', 'loyalty'
 describe('promotions admin: coupons', () => {
 	it('lists coupons with their state and shows one read fresh', async () => {
 		const { host, root, server } = await start();
-		expect(host.getAttribute('data-ss-mounted')).toBe('promotions-admin');
+		expect(host.getAttribute('data-shelfway-mounted')).toBe('promotions-admin');
 		const panel = panelOf(root, 'coupons');
 		expect(textOf(rowOf(panel, 'cpn_1'))).toContain('10 % off');
 		expect(textOf(rowOf(panel, 'cpn_1'))).toContain('Active · Used 3 of 100');
@@ -451,7 +451,7 @@ describe('promotions admin: deals and bundles', () => {
 		await click(buttonIn(detailOf(panel), 'Edit'));
 		const dialog = dialogOf(root);
 		// the fields the shop has are offered by their key (a customer field is not a field of products)
-		expect([...dialog.querySelectorAll('#ss-deal-fields option')].map((option) => option.getAttribute('value'))).toEqual([
+		expect([...dialog.querySelectorAll('#shelfway-deal-fields option')].map((option) => option.getAttribute('value'))).toEqual([
 			'material',
 		]);
 		await click(buttonIn(dialog, 'Add a condition on a field'));

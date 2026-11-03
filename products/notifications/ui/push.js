@@ -1,12 +1,12 @@
 /**
  * The push-permission widget (PLAN 0.8.5), for visitors (`push_permission`, browser token) and for the merchant's
  * staff (`staff_push_permission`, ticket). It asks the browser for permission, registers the merchant's service worker
- * (`/ss-notifications-sw.js` at the root of their website), subscribes with the merchant's public push key and sends
+ * (`/shelfway-notifications-sw.js` at the root of their website), subscribes with the merchant's public push key and sends
  * the subscription to Notifications. A visitor's subscriber id is kept in localStorage and announced with the
- * `ss-notifications:subscribed` event, so the merchant's site can link it to its user; visitors can turn it off again.
+ * `shelfway-notifications:subscribed` event, so the merchant's site can link it to its user; visitors can turn it off again.
  * @module
  */
-import { element, mountWidget } from '@ss/app-kit/widget';
+import { element, mountWidget } from '@shelfway/app-kit/widget';
 import { SERVICE_WORKER_PATH, SUBSCRIBED_EVENT, SUBSCRIBER_STORAGE_KEY, keyBytes } from '../core/widgets.js';
 import { WIDGET_CSS } from './styles.js';
 

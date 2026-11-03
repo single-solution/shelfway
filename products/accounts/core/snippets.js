@@ -4,7 +4,7 @@
  * merchant's server, the public keys address and the social sign-in return addresses. Plain text; no I/O.
  * @module
  */
-import { widgetScriptTag } from '@ss/contracts/text';
+import { widgetScriptTag } from '@shelfway/contracts/text';
 import { PROVIDERS, SIGN_IN_HEADER, WIDGET_ATTRIBUTE, WIDGET_GLOBAL } from './widgets.js';
 
 /**
@@ -19,22 +19,22 @@ export const createSnippets = ({ base, widgets, permissions, websiteId = '<websi
 		widgetScriptTag({ src: `${base}/widget.js`, token: 'YOUR_BROWSER_TOKEN' }),
 		...places('visitor'),
 		'<script>',
-		"  window.addEventListener('ss-accounts:signed-in', async (event) => {",
+		"  window.addEventListener('shelfway-accounts:signed-in', async (event) => {",
 		'    // event.detail.user is the signed-in user; send a fresh sign-in to your own server with each request:',
 		`    const signIn = await window.${WIDGET_GLOBAL}.getSignIn(); // null when signed out`,
 		"    await fetch('/api/me', { headers: { authorization: `Bearer ${signIn}` } });",
 		'  });',
-		"  window.addEventListener('ss-accounts:signed-out', () => { /* … */ });",
+		"  window.addEventListener('shelfway-accounts:signed-out', () => { /* … */ });",
 		'</script>',
 	].join('\n');
 	const admin = [
-		// no async: the admin() call below needs window.SSAccounts
+		// no async: the admin() call below needs window.ShelfwayAccounts
 		widgetScriptTag({ src: `${base}/widget.js`, loading: 'blocking' }),
 		...places('admin'),
 		'<script>',
 		`  window.${WIDGET_GLOBAL}.admin({`,
 		'    // your own server route (below): it checks the signed-in user and their role, then asks for a ticket',
-		"    getTicket: () => fetch('/api/ss-ticket', { method: 'POST' }).then((response) => response.json()),",
+		"    getTicket: () => fetch('/api/shelfway-ticket', { method: 'POST' }).then((response) => response.json()),",
 		'  });',
 		'</script>',
 	].join('\n');
@@ -47,7 +47,7 @@ export const createSnippets = ({ base, widgets, permissions, websiteId = '<websi
 		"// your server, after checking the user's sign-in and role (Node.js 18+, also inside a Next.js route handler)",
 		`const response = await fetch('${base}/v1/tickets', {`,
 		"  method: 'POST',",
-		"  headers: { authorization: `Bearer ${process.env.SS_SERVER_TOKEN}`, 'content-type': 'application/json' },",
+		"  headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}`, 'content-type': 'application/json' },",
 		'  body: JSON.stringify({',
 		'    user: { id: user.id, name: user.name, email: user.email },',
 		`    permissions: ${JSON.stringify(permissions)},`,
@@ -58,7 +58,7 @@ export const createSnippets = ({ base, widgets, permissions, websiteId = '<websi
 	].join('\n');
 	const ticketCurl = [
 		`curl -X POST '${base}/v1/tickets' \\`,
-		'  -H "Authorization: Bearer $SS_SERVER_TOKEN" \\',
+		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN" \\',
 		"  -H 'Content-Type: application/json' \\",
 		`  -d '${JSON.stringify(ticketBody)}'`,
 	].join('\n');

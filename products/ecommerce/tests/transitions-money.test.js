@@ -5,7 +5,7 @@
  * through Payments not sent once the order was refunded meanwhile, a guest's points, a claim's points with a return at
  * the same time, and a move that loses its race after Payments or a courier was called.
  */
-import { createId } from '@ss/contracts';
+import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { givePoints, loyaltyAccount } from '../adapters/ledger.js';
 import { DEFAULT_FLOW } from '../core/flow.js';

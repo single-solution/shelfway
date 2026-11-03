@@ -3,11 +3,11 @@
  * the dashboard API with Chat's lists, the import routes of the feature `import`, and for the merchant's server the
  * settings API with Chat's lists, and the activity log). Every browser-token, server-token and ticket route belongs to
  * one feature (ticket routes to their permission's feature unless they name another); `openapi.json` is generated from these definitions
- * (`ss app assets`), so `method`, `path`, `auth`, `feature` and `permission` stay literals. Public entry
+ * (`shelfway app assets`), so `method`, `path`, `auth`, `feature` and `permission` stay literals. Public entry
  * `./routes` of this package: `product.handler(createRoutes(product))`.
  * @module
  */
-import { defineRoute } from '@ss/app-kit';
+import { defineRoute } from '@shelfway/app-kit';
 import { createAdmin } from './admin.js';
 import { renderDocs } from './docs.js';
 import { createInbox } from './inbox.js';

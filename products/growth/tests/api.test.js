@@ -1,4 +1,4 @@
-import { emptyWebsiteSettings } from '@ss/contracts/website-settings';
+import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { AI_TRAINING_CRAWLERS } from '../core/seo.js';
 import { ADMIN_ORIGIN, ALL, BASE, DOMAIN, ORIGIN, dailyRows, setup } from './helpers.js';
@@ -100,7 +100,7 @@ describe('events and totals', () => {
 		expect(answer.status).toBe(202);
 		expect(await answer.json()).toEqual({ accepted: 8 });
 		const db = await env.merchantDb();
-		const events = await db.collection('ss_growth_analytics_events').find({}).toArray();
+		const events = await db.collection('shelfway_growth_analytics_events').find({}).toArray();
 		expect(events).toHaveLength(8);
 		const first = events.find((event) => event.type === 'page_view' && event.data.visit);
 		expect(first).toMatchObject({
@@ -110,10 +110,10 @@ describe('events and totals', () => {
 		});
 		expect(JSON.stringify(events)).not.toContain('secret');
 		expect(first?.expiresAt.toISOString()).toBe('2027-11-01T10:00:00.000Z');
-		const indexes = await db.collection('ss_growth_analytics_events').indexes();
+		const indexes = await db.collection('shelfway_growth_analytics_events').indexes();
 		expect(indexes.find((index) => index.name === 'expiry')).toMatchObject({ key: { expiresAt: 1 }, expireAfterSeconds: 0 });
 		// one document for the day holds every total
-		expect(await db.collection('ss_growth_totals').countDocuments()).toBe(1);
+		expect(await db.collection('shelfway_growth_totals').countDocuments()).toBe(1);
 		const daily = await dailyRows(db);
 		/** @param {string} metric @param {string} key */
 		const total = (metric, key) => daily.find((row) => row.metric === metric && row.key === key);
@@ -134,7 +134,7 @@ describe('events and totals', () => {
 		await env.setting('visitor_analytics', 'recordCountry', false);
 		await env.collect([{ type: 'page_view', path: '/later', visit: true }], { 'cf-ipcountry': 'DE' });
 		const db = await env.merchantDb();
-		const later = await db.collection('ss_growth_analytics_events').findOne({ path: '/later' });
+		const later = await db.collection('shelfway_growth_analytics_events').findOne({ path: '/later' });
 		expect(later?.expiresAt.toISOString()).toBe('2026-11-01T10:00:00.000Z');
 		expect(later?.data.country).toBe('(unknown)');
 		await env.switchOn(['visitor_analytics']);
@@ -548,7 +548,7 @@ describe('IndexNow', () => {
 		const badWidget = await env.call('POST', '/v1/admin/indexnow', { token: ticket, origin: ADMIN_ORIGIN, body: { urls: [] } });
 		expect(badWidget.status).toBe(422);
 		const db = await env.merchantDb();
-		const logged = await db.collection('ss_growth_activity').findOne({ action: 'indexnow.submitted' });
+		const logged = await db.collection('shelfway_growth_activity').findOne({ action: 'indexnow.submitted' });
 		expect(logged).toMatchObject({
 			actor: { kind: 'staff', id: 'u_1', name: 'Sam Staff' },
 			target: 'indexnow',
@@ -556,7 +556,7 @@ describe('IndexNow', () => {
 			detail: 'IndexNow answered 202. Pages: /d',
 		});
 		// the server token's own submissions are not in the activity log
-		expect(await db.collection('ss_growth_activity').countDocuments({ action: 'indexnow.submitted' })).toBe(1);
+		expect(await db.collection('shelfway_growth_activity').countDocuments({ action: 'indexnow.submitted' })).toBe(1);
 	});
 
 	it('names the key file at the merchant’s own path (G5)', async () => {
@@ -606,18 +606,18 @@ describe('statuses, data rights and public routes', () => {
 	it('serves the page script and the public docs', async () => {
 		const script = await env.call('GET', '/widget.js');
 		expect(script.headers.get('content-type')).toContain('javascript');
-		expect(await script.text()).toContain('SSGrowth');
+		expect(await script.text()).toContain('ShelfwayGrowth');
 		const docs = await env.call('GET', '/docs');
 		const html = await docs.text();
 		expect(html).toContain('Growth docs');
-		expect(html).toContain('ss:purchase');
+		expect(html).toContain('shelfway:purchase');
 		expect(html).toContain(`${BASE}/widget.js`);
 		expect(html).toContain('feature-seo_checklist');
 		for (const id of ['server-settings', 'acting-user', 'server-visitors', 'counts', 'activity', 'format'])
 			expect(html).toContain(`<h2 id="${id}">`);
 		expect(html).toContain('/v1/events/counts');
 		// the API reference: every call with what it takes and answers; the route tables link to it
-		expect(html).toContain('<section class="ss-api-op" id="op-get-v1-notice">');
+		expect(html).toContain('<section class="shelfway-api-op" id="op-get-v1-notice">');
 		expect(html).toContain('<a href="#op-post-v1-import-collection-prune">');
 		expect(html).toContain('id="schema-Report"');
 		expect(html).toContain('text/plain, not JSON');
@@ -663,7 +663,7 @@ describe('store conversion kit (PLAN 0.8.10 K2–K9)', () => {
 			{ type: 'page_view', path: '/shop', visit: false },
 		]);
 		const db = await kit.merchantDb();
-		expect(await db.collection('ss_growth_totals').distinct('day')).toEqual(['2026-10-02']);
+		expect(await db.collection('shelfway_growth_totals').distinct('day')).toEqual(['2026-10-02']);
 		const report = await (await kit.call('GET', '/v1/analytics', { token: kit.server })).json();
 		expect(report).toMatchObject({
 			from: '2026-09-03',
@@ -686,7 +686,7 @@ describe('store conversion kit (PLAN 0.8.10 K2–K9)', () => {
 			kit.call('POST', '/v1/collect', {
 				token: kit.server,
 				body: { events },
-				headers: ip ? { 'ss-visitor-ip': ip } : {},
+				headers: ip ? { 'shelfway-visitor-ip': ip } : {},
 			});
 		const noIp = await fromServer(null);
 		expect(noIp.status).toBe(400);
@@ -700,7 +700,7 @@ describe('store conversion kit (PLAN 0.8.10 K2–K9)', () => {
 			day: '2026-10-02',
 			count: 1,
 		});
-		// the per-visitor limit (120 a minute) counts by SS-Visitor-IP
+		// the per-visitor limit (120 a minute) counts by Shelfway-Visitor-IP
 		for (let i = 0; i < 119; i += 1) expect((await fromServer(VISITOR)).status).toBe(202);
 		const limited = await fromServer(VISITOR);
 		expect(limited.status).toBe(429);
@@ -747,7 +747,7 @@ describe('store conversion kit (PLAN 0.8.10 K2–K9)', () => {
 		const forged = await kit.call('GET', '/v1/analytics', {
 			token: kit.server,
 			bare: true,
-			headers: { 'ss-actor-id': 'u_7', 'ss-actor-name': 'Alex%20Morgan' },
+			headers: { 'shelfway-actor-id': 'u_7', 'shelfway-actor-name': 'Alex%20Morgan' },
 		});
 		expect(forged.status).toBe(403);
 		expect(await codeOf(forged)).toBe('needs_signed_in_staff');
@@ -755,7 +755,11 @@ describe('store conversion kit (PLAN 0.8.10 K2–K9)', () => {
 		const saved = await kit.call('PUT', '/v1/settings/consent_banner.position', {
 			token: kit.server,
 			body: { value: 'top' },
-			headers: { 'ss-actor-id': 'u_7', 'ss-actor-name': encodeURIComponent('Alex Morgan'), 'ss-actor-role': 'Manager' },
+			headers: {
+				'shelfway-actor-id': 'u_7',
+				'shelfway-actor-name': encodeURIComponent('Alex Morgan'),
+				'shelfway-actor-role': 'Manager',
+			},
 		});
 		expect(saved.status).toBe(200);
 		// the Format is the Portal's: a server cannot save it, the merchant saves it there

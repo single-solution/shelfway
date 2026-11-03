@@ -6,8 +6,8 @@
  * (switch off and on, regenerate, each after the password) with the words of what a link allows.
  */
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { ToastProvider } from '@ss/ui';
-import { act, byLabel, cleanup, render, type } from '@ss/ui/testing';
+import { ToastProvider } from '@shelfway/ui';
+import { act, byLabel, cleanup, render, type } from '@shelfway/ui/testing';
 import { closeMongoClients } from '../../src/testing.js';
 import * as loaders from '../../src/console/loaders.js';
 import { WebsiteView } from '../../src/console/views/websites.js';
@@ -123,8 +123,8 @@ describe('Data and files (jsdom)', () => {
 			expect(shows('Database (MongoDB)')).toBe(true);
 			expect(shows('Not set')).toBe(true);
 			// each product on the website has its own database and folder
-			expect(shows('Database ss_ecommerce')).toBe(true);
-			expect(shows('Database ss_payments')).toBe(true);
+			expect(shows('Database shelfway_ecommerce')).toBe(true);
+			expect(shows('Database shelfway_payments')).toBe(true);
 			expect(shows('Folder payments/')).toBe(true);
 			// the value goes in a password field; nothing is saved without the person's OTP
 			type(field('Connection string'), URI);

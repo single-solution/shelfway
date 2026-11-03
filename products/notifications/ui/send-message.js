@@ -6,7 +6,7 @@
  * call or a message that was not sent shows the website's words for why, never the server's English.
  * @module
  */
-import { adminCall, block, element, field, formatText, mountWidget, segmented } from '@ss/app-kit/widget';
+import { adminCall, block, element, field, formatText, mountWidget, segmented } from '@shelfway/app-kit/widget';
 import { notSentText, problemText } from './problems.js';
 import { WIDGET_CSS } from './styles.js';
 
@@ -30,7 +30,7 @@ const TO_TEXT = Object.freeze({
 });
 
 /**
- * @param {{ host: HTMLElement, api: import('@ss/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig }} input
+ * @param {{ host: HTMLElement, api: import('@shelfway/app-kit/widget').AdminApi, config: import('./widget.js').WidgetConfig }} input
  */
 export const mountSendMessage = ({ host, api, config }) => {
 	/** @param {string} key */

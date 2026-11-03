@@ -1,9 +1,9 @@
 /**
  * The dashboard's own texts (US English, kept in this file; the dashboard is not translated, PLAN 0.6), laid over the
- * words every product dashboard shares (`@ss/ui/dashboard` `DASHBOARD_TEXTS`).
+ * words every product dashboard shares (`@shelfway/ui/dashboard` `DASHBOARD_TEXTS`).
  * @module
  */
-import { dashboardTexts } from '@ss/ui';
+import { dashboardTexts } from '@shelfway/ui';
 
 export const TEXTS = dashboardTexts({
 	title: 'Accounts',

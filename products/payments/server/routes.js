@@ -1,16 +1,16 @@
 /**
  * Payments' routes (the kit adds its own: connect, notices, tickets, data rights, widget config, `/sso` and the
  * dashboard API). Every browser-token, server-token and ticket route belongs to one feature; `openapi.json` is
- * generated from these definitions (`ss app assets`), so `method`, `path`, `auth`, `feature` and `permission` stay
+ * generated from these definitions (`shelfway app assets`), so `method`, `path`, `auth`, `feature` and `permission` stay
  * string literals. Public routes: the widget script, the docs, the hosted link and pay pages, the payer's return from a
  * gateway and the gateways' signed notices. Payment events are the kit's (PLAN 0.8.10 K5): every route that makes one,
  * public ones included, hands the kit its request's `after()`, so the event is forwarded right after the answer.
  * Public entry `./routes` of this package: `product.handler(createRoutes(product))`.
  * @module
  */
-import { isId } from '@ss/contracts';
-import { actorOf, countHandlers, created, defineRoute, formatText, paginate, problem } from '@ss/app-kit';
-import { fromDecimal } from '@ss/contracts/format';
+import { isId } from '@shelfway/contracts';
+import { actorOf, countHandlers, created, defineRoute, formatText, paginate, problem } from '@shelfway/app-kit';
+import { fromDecimal } from '@shelfway/contracts/format';
 import { CUSTOM_GATEWAY_CONNECTIONS, GATEWAY_FEATURES, adapterOf, isCustomGateway, isGateway } from '../core/gateways.js';
 import { PROOF_MAX_MB } from '../core/limits.js';
 import { methodView } from '../core/methods.js';
@@ -147,7 +147,7 @@ export const createRoutes = (product) => {
 
 	/**
 	 * Who acts (PLAN 0.8.10 K2): the ticket's member of the merchant's staff, else the acting user a server-token call
-	 * names with verified `SS-Sign-In`, else the server.
+	 * names with verified `Shelfway-Sign-In`, else the server.
 	 * @param {any} ctx
 	 */
 	const who = (ctx) => actorOf(ctx, SERVER_ACTOR);
@@ -528,7 +528,7 @@ export const createRoutes = (product) => {
 		let payment = await service.recheck(s, found);
 		const business = (await product.business(websiteId)).name;
 		const result = { ...look, business, amount: payment.amount, currency: payment.currency };
-		const back = payment.returnUrl ? withParam(payment.returnUrl, 'ss_payment', payment.id) : null;
+		const back = payment.returnUrl ? withParam(payment.returnUrl, 'shelfway_payment', payment.id) : null;
 		if (payment.status === 'paid' || payment.status === 'partially_refunded')
 			return html(renderResultPage({ ...result, state: isRefundDue(payment) ? 'refundDue' : 'paid', backUrl: back }));
 		if (payment.status === 'refunded') return html(renderResultPage({ ...result, state: 'refunded', backUrl: back }));
@@ -638,9 +638,9 @@ export const createRoutes = (product) => {
 			const subscription = await s.store.subscriptions.get(id);
 			if (!subscription) return notFound();
 			if (gateway === 'cancel')
-				return seeOther(withParam(subscription.cancelUrl ?? subscription.returnUrl, 'ss_subscription', id));
+				return seeOther(withParam(subscription.cancelUrl ?? subscription.returnUrl, 'shelfway_subscription', id));
 			const checked = await service.recheckSubscription(s, subscription);
-			return seeOther(withParam(checked.returnUrl, 'ss_subscription', id));
+			return seeOther(withParam(checked.returnUrl, 'shelfway_subscription', id));
 		}
 		const payment = isId(id, 'pay') ? await s.store.payments.get(id) : null;
 		if (!payment) return notFound();
@@ -652,7 +652,7 @@ export const createRoutes = (product) => {
 				{ event: 'canceled', detail: 'by the payer' },
 			);
 			return seeOther(
-				payment.cancelUrl ? withParam(payment.cancelUrl, 'ss_payment', payment.id) : `/pay/${websiteId}/${payment.id}`,
+				payment.cancelUrl ? withParam(payment.cancelUrl, 'shelfway_payment', payment.id) : `/pay/${websiteId}/${payment.id}`,
 			);
 		}
 		if (payment.gateway === gateway && isGateway(gateway)) {
@@ -684,7 +684,7 @@ export const createRoutes = (product) => {
 			}
 		}
 		const after = /** @type {import('../adapters/store.js').PaymentRecord} */ (await s.store.payments.get(payment.id));
-		if (after.returnUrl && after.status !== 'failed') return seeOther(withParam(after.returnUrl, 'ss_payment', after.id));
+		if (after.returnUrl && after.status !== 'failed') return seeOther(withParam(after.returnUrl, 'shelfway_payment', after.id));
 		return seeOther(`/pay/${websiteId}/${after.id}`);
 	};
 
@@ -950,7 +950,7 @@ export const createRoutes = (product) => {
 			auth: 'server',
 			scope: 'payments.refund',
 			permission: 'payments.refund',
-			feature: 'payment_api',
+			feature: ['refunds', 'payment_api'],
 			idempotent: true,
 			rateLimit: SERVER_LIMITS,
 			handler: refundPayment,
@@ -1144,7 +1144,7 @@ export const createRoutes = (product) => {
 			path: '/v1/admin/payments/:id/refunds',
 			auth: 'ticket',
 			permission: 'payments.refund',
-			feature: 'payment_api',
+			feature: ['refunds', 'payment_api'],
 			idempotent: true,
 			handler: refundPayment,
 		}),
