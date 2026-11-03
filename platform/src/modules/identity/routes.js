@@ -18,6 +18,7 @@
 import { readCookie } from '../../infra/auth.js';
 import { created, defineRoute, noContent, ok, paginate, problem } from '../../infra/http.js';
 import { PERMISSIONS as P } from '../../infra/rbac.js';
+import { verifyTurnstile } from '../../infra/turnstile.js';
 import { inputs } from './core/inputs.js';
 
 /** @typedef {import('../../infra/http.js').RequestContext} RequestContext */
@@ -155,7 +156,18 @@ export const identityRoutes = (ctx, service) => {
 			auth: 'public',
 			idempotent: 'no-store',
 			rateLimit: AUTH_LIMIT,
-			handler: async (c) => withCookie(await accounts.signIn(valid(inputs.signIn(c.body)), metaOf(c))),
+			handler: async (c) => {
+				const body = valid(inputs.signIn(c.body));
+				if (ctx.config.turnstileSecretKey) {
+					const check = await verifyTurnstile({
+						secretKey: ctx.config.turnstileSecretKey,
+						token: body.turnstileToken,
+						ip: c.ip,
+					});
+					if (!check.ok) throw problem('turnstile_failed', check.error ?? 'Bot verification failed');
+				}
+				return withCookie(await accounts.signIn(body, metaOf(c)));
+			},
 		},
 		{
 			method: 'POST',
@@ -187,7 +199,18 @@ export const identityRoutes = (ctx, service) => {
 			auth: 'public',
 			idempotent: 'no-store',
 			rateLimit: AUTH_LIMIT,
-			handler: async (c) => ok(await accounts.forgotPassword(valid(inputs.emailOnly(c.body))), { status: 202 }),
+			handler: async (c) => {
+				const body = valid(inputs.emailOnly(c.body));
+				if (ctx.config.turnstileSecretKey) {
+					const check = await verifyTurnstile({
+						secretKey: ctx.config.turnstileSecretKey,
+						token: body.turnstileToken,
+						ip: c.ip,
+					});
+					if (!check.ok) throw problem('turnstile_failed', check.error ?? 'Bot verification failed');
+				}
+				return ok(await accounts.forgotPassword(body), { status: 202 });
+			},
 		},
 		{
 			method: 'POST',

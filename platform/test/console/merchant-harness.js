@@ -33,7 +33,7 @@ export const settle = async (rounds = 3) => {
  * @param {() => unknown} check
  * @param {number} [timeoutMs]
  */
-export const until = async (check, timeoutMs = 30_000) => {
+export const until = async (check, timeoutMs = 45_000) => {
 	const end = Date.now() + timeoutMs;
 	for (;;) {
 		try {

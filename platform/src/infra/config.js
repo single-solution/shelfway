@@ -28,6 +28,7 @@ import { platformError } from './errors.js';
  * @property {string} encryptionKey `ENCRYPTION_KEY` (at least 32 characters; encrypts stored secrets, PLAN 0.4.8)
  * @property {string | null} previousEncryptionKey `ENCRYPTION_KEY_PREVIOUS`: the old key while the owner changes
  *   `ENCRYPTION_KEY` (values it sealed keep opening until Settings → Encryption key → Re-seal), else null
+ * @property {string | null} turnstileSecretKey Cloudflare Turnstile secret key for bot defense
  * @property {{ uri: string, dbName: string, maxPoolSize: number }} mongo control-plane database only
  * @property {string} logLevel
  * @property {number} maxBodyBytes default JSON body cap
@@ -68,6 +69,7 @@ import { platformError } from './errors.js';
  * @property {boolean} cookieSecure true when `PLATFORM_URL` is https
  * @property {string} encryptionKey `ENCRYPTION_KEY`
  * @property {string | null} previousEncryptionKey `ENCRYPTION_KEY_PREVIOUS` (null when not set)
+ * @property {string | null} turnstileSecretKey Cloudflare Turnstile secret key for bot defense
  * @property {PortalSettings} settings
  * @property {{ uri: string, dbName: string, maxPoolSize: number }} mongo control-plane database only
 
@@ -209,6 +211,7 @@ export const loadEnv = (env = process.env) => {
 	const previousEncryptionKey = read('ENCRYPTION_KEY_PREVIOUS') ?? null;
 	if (previousEncryptionKey !== null && previousEncryptionKey.length < 32)
 		problems.push('ENCRYPTION_KEY_PREVIOUS must be at least 32 characters');
+	const turnstileSecretKey = read('TURNSTILE_SECRET_KEY') ?? null;
 
 	// Log level: info, debug in development; the optional LOG_LEVEL (`.env.example`) overrides it
 	const logLevel = read('LOG_LEVEL') ?? (portalEnv === 'development' ? 'debug' : 'info');
@@ -222,6 +225,7 @@ export const loadEnv = (env = process.env) => {
 		platformUrl: platformUrl.ok ? platformUrl.value : '',
 		encryptionKey,
 		previousEncryptionKey,
+		turnstileSecretKey,
 		mongo: Object.freeze({ uri: mongoUri, dbName, maxPoolSize: MONGO_POOL_SIZE }),
 		logLevel,
 		maxBodyBytes: MAX_BODY_BYTES,

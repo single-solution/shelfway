@@ -20,6 +20,7 @@ const IDENTITY_PROBLEMS = Object.freeze({
 	merchant_suspended: Object.freeze({ status: 403, title: 'Merchant suspended' }),
 	products_on_website: Object.freeze({ status: 409, title: 'Remove its products first' }),
 	token_invalid: Object.freeze({ status: 400, title: 'Invalid or expired link' }),
+	turnstile_failed: Object.freeze({ status: 403, title: 'Bot verification failed' }),
 });
 
 /**

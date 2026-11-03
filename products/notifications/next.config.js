@@ -17,6 +17,7 @@ const root = existsSync(resolve(monorepo, 'pnpm-workspace.yaml')) ? monorepo : h
 const config = {
 	poweredByHeader: false,
 	reactStrictMode: true,
+	images: { unoptimized: true },
 	// `next dev` would write AGENTS.md / CLAUDE.md into the project when it detects a coding agent
 	agentRules: false,
 	outputFileTracingRoot: root,

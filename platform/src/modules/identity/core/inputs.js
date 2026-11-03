@@ -234,7 +234,9 @@ const someOf = (b, spec) => {
 
 /** Body parsers per operation. */
 export const inputs = Object.freeze({
-	signIn: /** @type {(b: unknown) => Parsed<{ email: string, password: string }>} */ ((b) => object(b, { email, password })),
+	signIn: /** @type {(b: unknown) => Parsed<{ email: string, password: string, turnstileToken?: string }>} */ (
+		(b) => object(b, { email, password, turnstileToken: { optional: text(2048) } })
+	),
 	twoStepSignIn: /** @type {(b: unknown) => Parsed<SecondFactor & { challenge: string }>} */ (
 		(b) => secondFactor(b, { challenge: token })
 	),
@@ -242,7 +244,9 @@ export const inputs = Object.freeze({
 		(b) => object(b, { name: text(120), email, password: newPassword })
 	),
 	tokenOnly: /** @type {(b: unknown) => Parsed<{ token: string }>} */ ((b) => object(b, { token })),
-	emailOnly: /** @type {(b: unknown) => Parsed<{ email: string }>} */ ((b) => object(b, { email })),
+	emailOnly: /** @type {(b: unknown) => Parsed<{ email: string, turnstileToken?: string }>} */ (
+		(b) => object(b, { email, turnstileToken: { optional: text(2048) } })
+	),
 	resetConfirm: /** @type {(b: unknown) => Parsed<{ token: string, password: string }>} */ (
 		(b) => object(b, { token, password: newPassword })
 	),
