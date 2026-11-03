@@ -240,6 +240,8 @@ export const createIdentityService = (ctx, options = {}) => {
 			if (!parsed.ok) throw problem('validation_failed', 'Confirm with your two-step code.', { errors: parsed.errors });
 			await accounts.confirm(kind, { ...parsed.value, id }, meta);
 		},
+		setLaunchStepUp: accounts.setLaunchStepUp,
+		isLaunchStepUpRequired: accounts.isLaunchStepUpRequired,
 		/**
 		 * 404 unless the product is on the website now (not removed).
 		 * @param {string} websiteId @param {string} productId

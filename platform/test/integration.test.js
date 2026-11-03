@@ -457,7 +457,7 @@ describe('sessions (Mongo)', () => {
 	it('create, one lifetime from sign-in (Session length), reads that write nothing, rotation, revocation', async () => {
 		const { portal, clock, config } = await boot({ dbName: 'it_sessions', modules: [] });
 		const sessions = portal.shared.sessions;
-		expect(config.sessionMs).toBe(12 * 3_600_000);
+		expect(config.sessionMs).toBe(720 * 3_600_000);
 		const { token, session } = await sessions.create({ kind: 'admin', subject: 'adm_1' });
 		expect(token).toMatch(/^[A-Za-z0-9_-]{43}$/);
 		expect(session.id).not.toContain(token);
@@ -586,7 +586,7 @@ describe('Settings (stored in the database, never in the environment; Owner only
 		expect((await call('GET', '/v1/admin/settings', { headers: as(support) })).status).toBe(403);
 		const read = await call('GET', '/v1/admin/settings', { headers: as(owner) });
 		expect(read.status).toBe(200);
-		expect(read.json).toMatchObject({ mail: null, security: { sessionHours: 12, requireTwoStepForAdmins: false } });
+		expect(read.json).toMatchObject({ mail: null, security: { sessionHours: 720, requireTwoStepForAdmins: false } });
 		expect(JSON.stringify(read.json)).not.toMatch(/seed|keys/);
 		// no stored Portal URL (it is PLATFORM_URL) and no key rotation
 		expect((await call('PUT', '/v1/admin/settings/portal-url', { headers: as(owner), body: {} })).status).toBe(404);
@@ -718,7 +718,7 @@ describe('Settings (stored in the database, never in the environment; Owner only
 			body: { sessionHours: 24, requireTwoStepForAdmins: true },
 		});
 		expect(security.json.security).toEqual({ sessionHours: 24, requireTwoStepForAdmins: true });
-		for (const hours of [0, 337, 1.5])
+		for (const hours of [0, 721, 1.5])
 			expect(
 				(
 					await call('PUT', '/v1/admin/settings/security', {

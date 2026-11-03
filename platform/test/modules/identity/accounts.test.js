@@ -227,7 +227,8 @@ describe('links (PLAN 0.2 Logins)', () => {
 		// expires after 72 hours for merchants
 		h.clock.advance(72 * 3_600_000 + 1);
 		expect((await h.client().post('/v1/auth/set-password', { token, password: PASSWORD })).status).toBe(400);
-		// the Owner's sign-in lasted 12 hours (Session length): sign in again
+		// the Owner's sign-in lasts 720 hours (Session length): advance to test session expiration
+		h.clock.advance((720 - 72) * 3_600_000 + 1);
 		expect((await o.client.get('/v1/me')).status).toBe(401);
 		o.client.setCookie((await h.signIn(o.email)).cookie);
 		const resent = await o.client.post(`/v1/admin/merchants/${created.json.merchant.merchantId}/setup-link`, {});

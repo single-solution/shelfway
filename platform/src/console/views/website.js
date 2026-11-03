@@ -225,6 +225,19 @@ export const twoStepOnOf = (me) => {
 };
 
 /**
+ * @param {import('./common.js').ApiResult | any | null} me
+ */
+export const launchStepUpOf = (me) => {
+	if (!me) return false;
+	const obj = me?.ok === true ? me.data : me;
+	if (!obj) return false;
+	const kind = obj.kind;
+	if (kind && obj[kind]?.launchStepUp !== undefined) return Boolean(obj[kind].launchStepUp);
+	if (obj.launchStepUp !== undefined) return Boolean(obj.launchStepUp);
+	return false;
+};
+
+/**
  * One product's install block, the body of the product's card on the website page: the widget script tag (products
  * with widgets), the browser token, the server token (reveal / copy / regenerate, each after the person's password in a
  * dialog; regenerate also with a typed confirmation of the product name) and the docs link (PLAN 0.4.4, 0.8.2).

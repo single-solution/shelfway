@@ -5,7 +5,7 @@
  * QR code, 10 recovery codes shown once, turn off, new codes) and the person's own activity.
  * @module
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import qrcode from 'qrcode-generator';
 import {
 	Badge,
@@ -25,6 +25,7 @@ import {
 	Row,
 	SettingsCard,
 	Stepper,
+	Switch,
 	Timeline,
 	describeProblem,
 	fieldErrors,
@@ -33,7 +34,7 @@ import {
 	TextLink,
 } from '@shelfway/ui';
 import { AUTH, LOGIN, MORE, TWO_STEP } from '../../texts/console.js';
-import { apiConfirm, usePagedList } from '../client.js';
+import { apiFetch, apiConfirm, usePagedList } from '../client.js';
 import { Link } from '../link.js';
 import { withCursor } from '../paths.js';
 import { factorOf } from './common.js';
@@ -318,6 +319,63 @@ export function TwoStepPanel({ twoStep, onChange }) {
 					</div>
 				)}
 			</FieldLayoutContext.Provider>
+		</SettingsCard>
+	);
+}
+
+/**
+ * Product dashboard launch verification setting card.
+ * @param {{ launchStepUp?: boolean, onChange: () => void }} props
+ */
+export function LaunchStepUpCard({ launchStepUp = false, onChange }) {
+	const toast = useToast();
+	const [busy, setBusy] = useState(false);
+	const [checked, setChecked] = useState(launchStepUp);
+
+	useEffect(() => {
+		setChecked(launchStepUp);
+	}, [launchStepUp]);
+
+	const toggle = async (/** @type {boolean} */ next) => {
+		setChecked(next);
+		setBusy(true);
+		try {
+			const res = await apiFetch('/v1/me/launch-step-up', {
+				method: 'POST',
+				body: { enabled: next },
+			});
+			if (res.ok) {
+				toast.show({
+					tone: 'success',
+					title: next ? 'Launch verification turned on.' : 'Launch verification turned off.',
+				});
+				onChange();
+			} else {
+				setChecked(!next);
+				toast.show({ tone: 'danger', title: describeProblem(res.problem) });
+			}
+		} catch {
+			setChecked(!next);
+			toast.show({ tone: 'danger', title: 'Could not update setting.' });
+		} finally {
+			setBusy(false);
+		}
+	};
+
+	return (
+		<SettingsCard
+			title="Product Launch Security"
+			description="Require one-time email OTP verification every time you open a connected product dashboard."
+			actions={<Badge tone={checked ? 'success' : 'neutral'}>{checked ? 'Enabled' : 'Disabled'}</Badge>}>
+			<div className="space-y-3">
+				<Switch
+					checked={checked}
+					disabled={busy}
+					onChange={(val) => void toggle(val)}
+					label="Require verification on launch"
+					description="When turned off, opening a product dashboard from the console is instant with zero prompt."
+				/>
+			</div>
 		</SettingsCard>
 	);
 }

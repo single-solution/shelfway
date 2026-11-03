@@ -151,6 +151,7 @@ describe('fuller Portal screens (jsdom)', () => {
 			expect(overview.creditsAdded).toBe(1_000_000);
 			expect(overview.merchants.map((m) => m.name)).toContain('Shop & Co');
 			expect(typeof overview.billing[merchantId]?.balance).toBe('number');
+			owner.launchStepUp = true;
 			withToasts(<OverviewView {...overview} admin={owner} />);
 			// one page: what needs the admin (with what happens if it waits), the month's numbers, the first merchants and
 			// the products as tables, the timeline; the greeting is behind the (i)

@@ -15,7 +15,7 @@
 	"prettier": "@shelfway/config/prettier.json",
 	"scripts": {
 		"dev": "next dev -p 3000",
-		"build": "next build",
+		"build": "next build --webpack",
 		"start": "next start -p 3000",
 		"db:memory": "node scripts/dev-mongo.js",
 		"db:local": "node scripts/dev-mongo.js --keep",

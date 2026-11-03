@@ -127,7 +127,7 @@ describe('buildConfig: environment + system state', () => {
 		expect(config.settings).toEqual(DEFAULT_SETTINGS);
 		// two-step is required of every admin until an Owner turns the requirement off
 		expect(config.settings.security.requireTwoStepForAdmins).toBe(true);
-		expect(config.sessionMs).toBe(12 * 3_600_000);
+		expect(config.sessionMs).toBe(720 * 3_600_000);
 	});
 
 	it('the Portal address is PLATFORM_URL only: https, an origin with nothing after it (PLAN 0.8.1, 0.11)', async () => {

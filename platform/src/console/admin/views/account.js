@@ -10,7 +10,7 @@ import { Button, Form, FormError, Input, SettingsCard, fieldErrors, useToast } f
 import { ADMIN, LOGIN, TWO_STEP } from '../../../texts/console.js';
 import { apiFetch, useResource } from '../../client.js';
 import { AccountPage } from '../../views/account.js';
-import { EmailPanel, PasswordPanel, TwoStepPanel } from '../../views/login-settings.js';
+import { EmailPanel, PasswordPanel, TwoStepPanel, LaunchStepUpCard } from '../../views/login-settings.js';
 import { adminApi, adminRoutes } from '../paths.js';
 import { AdminProblem, RoleBadge } from './shell.js';
 
@@ -101,7 +101,12 @@ export function MyAccountView(props) {
 					label: TWO_STEP.title,
 					icon: 'shield',
 					href: adminRoutes.accountPart('two-step'),
-					body: <TwoStepPanel twoStep={admin.twoStep} onChange={() => void reload()} />,
+					body: (
+						<>
+							<TwoStepPanel twoStep={admin.twoStep} onChange={() => void reload()} />
+							<LaunchStepUpCard launchStepUp={admin.launchStepUp} onChange={() => void reload()} />
+						</>
+					),
 				},
 			]}
 			activity={{ path: adminApi.myActivity(), href: adminRoutes.accountPart('activity'), initial: props.activity }}

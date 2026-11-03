@@ -67,6 +67,13 @@ describe('launches (PLAN 0.4.3)', () => {
 		const { h, product, m, w1, w2, w3 } = await setUp('launch_merchant');
 		const path = (/** @type {string} */ websiteId) =>
 			`/v1/merchants/${m.merchantId}/websites/${websiteId}/products/notes/launch`;
+		// Default: launchStepUp is false, so launch opens directly without OTP
+		const directOpen = await m.client.post(path(w1), {});
+		expect(directOpen.status).toBe(200);
+		expect(directOpen.json.url.startsWith(`${product.url}/sso?launch=`)).toBe(true);
+
+		// When launchStepUp is enabled in account settings, OTP is required
+		await m.client.post('/v1/me/launch-step-up', { enabled: true });
 		expect(codeOf(await m.client.post(path(w1), {}))).toEqual([422, 'validation_failed']);
 		expect(codeOf(await m.client.post(path(w1), { password: PASSWORD }))).toEqual([422, 'validation_failed']);
 		const opened = await openWithOtp(h, m.client, m.email, path(w1));
@@ -79,7 +86,7 @@ describe('launches (PLAN 0.4.3)', () => {
 			aud: 'notes',
 			sub: m.merchantId,
 			kind: 'merchant',
-			sessionExpiresAt: '2026-10-01T22:00:00.000Z',
+			sessionExpiresAt: '2026-10-31T10:00:00.000Z',
 			branding: { name: 'Acme Portal', accent: '#112233', logoUrl: null },
 			support: {
 				channels: [

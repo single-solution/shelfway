@@ -1,3 +1,4 @@
+'use client';
 /**
  * Form controls. Every control has a visible label (or `hideLabel` for a visually hidden one), optional help text
  * and an error message, wired with `aria-describedby` / `aria-invalid` so assistive technology announces them.

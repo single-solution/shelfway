@@ -36,7 +36,7 @@ import { openDashboard } from './common.js';
 import { ConfirmOtp } from './common.js';
 import { SetupView, useSetupSheet } from './setup.js';
 import { SettingsSectionBody, contextOf, readinessLines, useWebsiteSettings } from './website-settings.js';
-import { AddProductDrawer, dailyCostOf, twoStepOnOf, useOnce, websiteDot } from './website.js';
+import { AddProductDrawer, dailyCostOf, launchStepUpOf, twoStepOnOf, useOnce, websiteDot } from './website.js';
 
 /** @typedef {import('./website.js').ProductCard} ProductCard */
 /**
@@ -194,6 +194,7 @@ export function WebsitePageView({
 	const onHome = own === null && !error && !gone;
 	const meResult = useOnce('/v1/me');
 	const twoStepOn = initialTwoStepOn !== undefined ? initialTwoStepOn : twoStepOnOf(meResult);
+	const launchStepUp = launchStepUpOf(meResult);
 
 	// a deep link to one product scrolls its row into view on the home
 	useEffect(() => {
@@ -211,7 +212,19 @@ export function WebsitePageView({
 	/** @param {ProductCard[]} next */
 	const setCards = (next) => setCardsState(next);
 	/** @param {ProductCard} card */
-	const askOpen = (card) => setLaunching(card);
+	const askOpen = async (card) => {
+		if (launchStepUp) {
+			setLaunching(card);
+			return;
+		}
+		setOpening(card.productId);
+		const { path, body } = launch(card.productId);
+		const result = await openDashboard(path, body && typeof body === 'object' ? body : {});
+		setOpening(null);
+		if (!result.ok) {
+			toast.show({ tone: 'danger', title: describeProblem(result.problem) });
+		}
+	};
 	/** @param {{ code?: string, recoveryCode?: string }} confirmation */
 	const sendLaunch = async (confirmation) => {
 		if (!launching)

@@ -25,6 +25,8 @@ import {
 	StatGrid,
 	formatCredits,
 	useNarrow,
+	useToast,
+	describeProblem,
 	TextLink,
 } from '@shelfway/ui';
 import { AUTH, BILLING, MERCHANT, MORE, WEBSITE } from '../../texts/console.js';
@@ -37,7 +39,7 @@ import { PageProblem, openDashboard } from './common.js';
 import { ConfirmOtp } from './common.js';
 import { ActivityTimeline } from './login-settings.js';
 import { contactLine } from './sign-in.js';
-import { AddWebsiteDialog, dailyCostOf, websiteDot } from './website.js';
+import { AddWebsiteDialog, dailyCostOf, launchStepUpOf, websiteDot } from './website.js';
 import { WebsitePageView } from './website-page.js';
 
 /** @typedef {import('./website.js').ProductCard} ProductCard */
@@ -70,10 +72,26 @@ function Welcome({ branding }) {
  * @param {any} props loader result of `loadOverview` plus `branding` and the signed-in `me`
  */
 export function OverviewView(props) {
+	const toast = useToast();
 	const [opening, setOpening] = useState(/** @type {string | null} */ (null));
 	const [launching, setLaunching] = useState(/** @type {{ website: any, card: ProductCard } | null} */ (null));
 	if (!props.ok) return <PageProblem problem={props.problem} />;
+	const launchStepUp = launchStepUpOf(props.me) || Boolean(props.launchStepUp);
 	const rows = /** @type {Array<{ website: any, cards: ProductCard[] }>} */ (props.rows);
+	/** @param {any} website @param {ProductCard} card */
+	const handleOpen = async (website, card) => {
+		if (launchStepUp) {
+			setLaunching({ website, card });
+			return;
+		}
+		const key = `${website.websiteId}:${card.productId}`;
+		setOpening(key);
+		const result = await openDashboard(api.launch(props.merchantId, website.websiteId, card.productId));
+		setOpening(null);
+		if (!result.ok) {
+			toast.show({ tone: 'danger', title: describeProblem(result.problem) });
+		}
+	};
 	/** @param {{ password: string, code?: string, recoveryCode?: string }} confirmation */
 	const sendLaunch = async (confirmation) => {
 		if (!launching) return { ok: /** @type {const} */ (false), problem: /** @type {any} */ ({ status: 400 }) };
@@ -97,7 +115,7 @@ export function OverviewView(props) {
 			variant="secondary"
 			loading={opening === `${website.websiteId}:${card.productId}`}
 			aria-label={`${WEBSITE.openLabel(card.name)} · ${website.domain}`}
-			onClick={() => setLaunching({ website, card })}
+			onClick={() => void handleOpen(website, card)}
 			icon={<Icon name="external" size={14} />}>
 			{WEBSITE.open}
 		</Button>

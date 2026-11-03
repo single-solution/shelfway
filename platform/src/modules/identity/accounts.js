@@ -701,6 +701,32 @@ export const createAccounts = (deps) => {
 			await audit(actor, 'two_step.turned_off_by_owner', targetOf(kind, doc), { meta });
 			return present(kind, { ...doc, totp: null, recoveryHashes: [] });
 		},
+
+		/**
+		 * Toggle step-up verification for product dashboard launches.
+		 * @param {Kind} kind
+		 * @param {string} id
+		 * @param {boolean} enabled
+		 * @param {Meta} [meta]
+		 */
+		setLaunchStepUp: async (kind, id, enabled, meta = {}) => {
+			const doc = await loadLogin(kind, id);
+			await logins(kind).updateOne({ _id: doc._id }, { $set: { launchStepUp: Boolean(enabled) } });
+			await audit(actorOf(kind, doc), 'account.launch_step_up_updated', targetOf(kind, doc), {
+				after: { launchStepUp: Boolean(enabled) },
+				meta,
+			});
+			return { launchStepUp: Boolean(enabled) };
+		},
+
+		/**
+		 * Check whether step-up verification is required for product launches.
+		 * @param {{ kind: Kind, id: string }} input
+		 */
+		isLaunchStepUpRequired: async ({ kind, id }) => {
+			const doc = await logins(kind).findOne({ _id: id });
+			return Boolean(doc?.launchStepUp);
+		},
 	});
 };
 /** @typedef {ReturnType<typeof createAccounts>} Accounts */

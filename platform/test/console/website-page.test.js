@@ -41,21 +41,31 @@ import { testRouter } from './router.js';
  * @returns {Promise<any>}
  */
 const confirmOpen = async (/** @type {any} */ browser, /** @type {string} */ path) => {
-	const codeLabel = [...dialog().querySelectorAll('label')].find((l) => /code/i.test(l.textContent ?? ''));
-	if (codeLabel) {
-		let code = browser.totpSecret ? totpCode(browser.totpSecret, Date.now()) : null;
-		if (!code) {
-			await browser.api.post('/v1/me/step-up-otp', {});
-			if (browser.world?.lastOtp) code = browser.world.lastOtp();
+	const all = [...document.querySelectorAll('[role="dialog"]')];
+	if (all.length > 0) {
+		const codeLabel = [...dialog().querySelectorAll('label')].find((l) => /code/i.test(l.textContent ?? ''));
+		if (codeLabel) {
+			let code = browser.totpSecret ? totpCode(browser.totpSecret, Date.now()) : null;
+			if (!code) {
+				await browser.api.post('/v1/me/step-up-otp', {});
+				if (browser.world?.lastOtp) code = browser.world.lastOtp();
+			}
+			fillDialog('Two-step or recovery code', code || '123456');
+		} else {
+			fillDialog('Your password', browser.password);
 		}
-		fillDialog('Two-step or recovery code', code || '123456');
-	} else {
-		fillDialog('Your password', browser.password);
+		const fromIndex = browser.calls.length;
+		await pressDialog('Open configure');
+		const found = await until(() => {
+			const call = browser.calls.slice(fromIndex).find((/** @type {any} */ c) => c.method === 'POST' && c.path === path);
+			if (!call) return false;
+			return call;
+		});
+		await settle(3);
+		return found;
 	}
-	const fromIndex = browser.calls.length;
-	await pressDialog('Open configure');
 	const found = await until(() => {
-		const call = browser.calls.slice(fromIndex).find((/** @type {any} */ c) => c.method === 'POST' && c.path === path);
+		const call = [...browser.calls].reverse().find((/** @type {any} */ c) => c.method === 'POST' && c.path === path);
 		if (!call) return false;
 		return call;
 	});

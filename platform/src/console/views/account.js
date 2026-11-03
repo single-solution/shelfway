@@ -14,7 +14,7 @@ import { apiFetch, useResource } from '../client.js';
 import { Link } from '../link.js';
 import { api, routes } from '../paths.js';
 import { PageProblem } from './common.js';
-import { EmailPanel, PasswordPanel, TwoStepPanel, OwnActivityTimeline } from './login-settings.js';
+import { EmailPanel, PasswordPanel, TwoStepPanel, LaunchStepUpCard, OwnActivityTimeline } from './login-settings.js';
 import { FrameBilling } from './shell.js';
 
 /** The id of the part that shows the person's own activity. */
@@ -267,7 +267,12 @@ export function AccountView(props) {
 					label: TWO_STEP.title,
 					icon: 'shield',
 					href: routes.accountPart('two-step'),
-					body: <TwoStepPanel twoStep={merchant.twoStep} onChange={() => void reload()} />,
+					body: (
+						<>
+							<TwoStepPanel twoStep={merchant.twoStep} onChange={() => void reload()} />
+							<LaunchStepUpCard launchStepUp={merchant.launchStepUp} onChange={() => void reload()} />
+						</>
+					),
 				},
 			]}
 			activity={{ path: api.activity(props.merchantId), href: routes.accountPart('activity'), initial: props.activity }}

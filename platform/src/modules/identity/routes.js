@@ -358,6 +358,18 @@ export const identityRoutes = (ctx, service) => {
 					),
 				),
 		},
+		{
+			method: 'POST',
+			path: '/v1/me/launch-step-up',
+			auth: ['admin', 'merchant'],
+			idempotent: 'no-store',
+			rateLimit: AUTH_LIMIT,
+			handler: async (c) => {
+				const body = typeof c.body === 'object' && c.body !== null ? c.body : {};
+				const enabled = Boolean(/** @type {Record<string, unknown>} */ (body).enabled);
+				return ok(await accounts.setLaunchStepUp(kindOf(c), sessionOf(c).subject, enabled, metaOf(c)));
+			},
+		},
 
 		// ---------------------------------------------------------------------------------------------------------
 		// A merchant's records (the merchant itself, or admins)

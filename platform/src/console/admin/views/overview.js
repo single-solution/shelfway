@@ -25,6 +25,8 @@ import {
 	Stat,
 	StatGrid,
 	formatCredits,
+	useToast,
+	describeProblem,
 	TextLink,
 } from '@shelfway/ui';
 import { ADMIN, BILLING, MORE, PRODUCTS } from '../../../texts/console.js';
@@ -59,9 +61,22 @@ const totalDays = (products) => {
  */
 export function OverviewView(props) {
 	const nav = useNavigation();
+	const toast = useToast();
 	const [adding, setAdding] = useState(false);
 	const [crediting, setCrediting] = useState(/** @type {any} */ (null));
 	const [launching, setLaunching] = useState(/** @type {any | null} */ (null));
+	const launchStepUp = Boolean(props.admin?.launchStepUp);
+	/** @param {any} p */
+	const handleOpen = async (p) => {
+		if (launchStepUp) {
+			setLaunching(p);
+			return;
+		}
+		const result = await openDashboard(adminApi.launch(p.productId), { websiteId: null });
+		if (!result.ok) {
+			toast.show({ tone: 'danger', title: describeProblem(result.problem) });
+		}
+	};
 	/** @param {{ password: string, code?: string, recoveryCode?: string }} confirmation */
 	const sendLaunch = async (confirmation) => {
 		if (!launching) return { ok: /** @type {const} */ (false), problem: /** @type {any} */ ({ status: 400 }) };
@@ -311,7 +326,7 @@ export function OverviewView(props) {
 													label={`Actions for ${p.name}`}
 													items={[
 														{ label: MORE.viewProduct, onSelect: () => nav.go(adminRoutes.product(p.productId)) },
-														{ label: PRODUCTS.openAsAdmin, onSelect: () => setLaunching(p) },
+														{ label: PRODUCTS.openAsAdmin, onSelect: () => void handleOpen(p) },
 													]}
 												/>
 											) : null

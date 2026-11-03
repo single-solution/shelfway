@@ -75,6 +75,7 @@ describe('admin Products (jsdom)', () => {
 			const notes = await world.connect();
 			await world.connect({ id: 'chatty', name: 'Chatty' }, { active: false });
 			ownerBrowser.use();
+			owner.launchStepUp = true;
 			withToasts(<ProductsView {...await admin.loadProducts(ownerBrowser.api, {})} admin={owner} />);
 			expect(shows('Notes') && shows('Chatty') && shows('Inactive')).toBe(true);
 			const search = /** @type {HTMLInputElement} */ (document.querySelector('input[aria-label="Search products"]'));
@@ -156,6 +157,7 @@ describe('admin Products (jsdom)', () => {
 			const open = vi.fn();
 			vi.stubGlobal('open', open);
 			ownerBrowser.use();
+			owner.launchStepUp = true;
 			const loaded = await admin.loadProduct(ownerBrowser.api, 'notes');
 			/** @param {Record<string, unknown>} [over] the product's loader result, changed */
 			const screen = (over = {}) => <ProductsView detail={{ ...loaded, ...over }} admin={owner} />;
@@ -166,7 +168,7 @@ describe('admin Products (jsdom)', () => {
 			expect(document.querySelector('#connection')).not.toBeNull();
 			expect(shows('Earned this month') && shows('Websites')).toBe(true);
 
-			// Open as admin: OTP confirm, then Defaults with no website
+			// Open as admin: OTP confirm when launchStepUp is enabled
 			await press('Open as admin');
 			await ownerBrowser.api.post('/v1/me/step-up-otp', {});
 			const openCode = world.lastOtp('olivia@shelfway.test');

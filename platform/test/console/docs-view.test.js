@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
+import { byText, cleanup, click, render, type } from '@shelfway/ui/testing';
 import { DocsHubView } from '../../src/console/views/docs.js';
 import * as loaders from '../../src/console/loaders.js';
 
@@ -105,5 +106,125 @@ describe('Docs hub views (PLAN §10 B1, B2)', () => {
 		expect(html).toContain('Product Developer SDK');
 		expect(html).toContain('Role:');
 		expect(html).toContain('owner');
+	});
+
+	it('interactively switches tabs, searches, and inspects operations in DocsHubView', async () => {
+		const fullProduct = {
+			...sampleProduct,
+			operations: [
+				{
+					method: 'GET',
+					path: '/v1/conversations',
+					summary: 'List active conversations',
+					auth: 'server',
+					permission: 'chat.read',
+					feature: 'inbox',
+					description: 'Returns conversations with paging.',
+					parameters: [
+						{ name: 'limit', in: 'query', schema: { type: 'integer' }, required: false },
+						{ $ref: '#/components/parameters/Paging' },
+					],
+				},
+				{
+					method: 'POST',
+					path: '/v1/messages',
+					summary: 'Send a message',
+					auth: 'browser',
+					permission: '',
+					feature: 'always',
+					description: 'Post a chat message to a conversation.',
+					requestBody: {
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										text: { type: 'string', description: 'Body' },
+										num: { type: 'number', minimum: 5 },
+										active: { type: 'boolean' },
+										tags: { type: 'array', items: { type: 'string', enum: ['tag1', 'tag2'] } },
+										email: { type: 'string', format: 'email' },
+										date: { type: 'string', format: 'date-time' },
+										uri: { type: 'string', format: 'uri' },
+									},
+								},
+							},
+						},
+					},
+					responses: {
+						200: {
+							description: 'OK',
+							content: {
+								'application/json': {
+									schema: {
+										type: 'object',
+										properties: { id: { type: 'string' } },
+									},
+								},
+							},
+						},
+						400: {
+							description: 'Bad request',
+						},
+					},
+				},
+				{ method: 'PUT', path: '/v1/settings', summary: 'Update settings', auth: 'server' },
+				{ method: 'PATCH', path: '/v1/status', summary: 'Patch status', auth: 'ticket' },
+				{ method: 'DELETE', path: '/v1/messages/123', summary: 'Delete message', auth: 'server' },
+				{ method: 'HEAD', path: '/v1/ping', summary: 'Ping', auth: 'unknown' },
+			],
+		};
+
+		render(<DocsHubView branding={branding} items={[fullProduct]} initialProductId="chat" />);
+
+		// Switch to Getting Started sections
+		const authBtn = byText(document.body, 'Authentication & Tokens');
+		if (authBtn) click(authBtn);
+		expect(document.body.textContent).toContain('Credentials Architecture');
+
+		const quickstartBtn = byText(document.body, 'Quickstart for Developers and AI');
+		if (quickstartBtn) click(quickstartBtn);
+		expect(document.body.textContent).toContain('Everyday Development Path');
+
+		// Switch role view mode
+		const devModeBtn = byText(document.body, 'Product Developer SDK');
+		if (devModeBtn) click(devModeBtn);
+		const cliBtn = byText(document.body, 'CLI');
+		if (cliBtn) click(cliBtn);
+		expect(document.body.textContent).toContain('CLI Reference');
+
+		const storefrontBtn = byText(document.body, 'Storefront APIs');
+		if (storefrontBtn) click(storefrontBtn);
+
+		// Switch back to products section by clicking Chat in sidebar
+		const chatProductBtn = byText(document.body, 'Chat');
+		if (chatProductBtn) click(chatProductBtn);
+
+		// Search
+		const searchInput = document.querySelector('input[placeholder*="Search"]');
+		if (searchInput) {
+			type(searchInput, 'messages');
+		}
+
+		// Select operation from the overview table
+		const opBtn = byText(document.body, '/v1/messages');
+		if (opBtn) click(opBtn);
+		expect(document.body.textContent).toContain('Post a chat message to a conversation');
+
+		// Switch code snippet tabs
+		const jsTab = byText(document.body, 'JavaScript');
+		if (jsTab) click(jsTab);
+		expect(document.body.textContent).toContain('fetch(');
+
+		const curlTab = byText(document.body, 'cURL');
+		if (curlTab) click(curlTab);
+		expect(document.body.textContent).toContain('curl -X POST');
+
+		// Back to product overview
+		const backBtn = byText(document.body, '← Back to Chat Overview');
+		if (backBtn) click(backBtn);
+		expect(document.body.textContent).toContain('Available API Operations');
+
+		cleanup();
 	});
 });

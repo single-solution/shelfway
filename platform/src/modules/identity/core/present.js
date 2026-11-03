@@ -29,6 +29,7 @@ export const presentMerchant = (m, { forAdmin = true } = {}) => ({
 	status: m.status,
 	setupPending: m.status !== 'deleted' && !m.passwordHash,
 	twoStep: twoStepOf(m),
+	launchStepUp: Boolean(m.launchStepUp),
 	...(forAdmin
 		? {
 				suspension: m.suspension ? { reason: m.suspension.reason, at: iso(m.suspension.at), by: m.suspension.by } : null,
@@ -57,6 +58,7 @@ export const presentAdmin = (a) => ({
 	role: a.role,
 	status: a.status,
 	twoStep: twoStepOf(a),
+	launchStepUp: Boolean(a.launchStepUp),
 	lastSignInAt: iso(a.lastSignInAt),
 	createdAt: iso(a.createdAt),
 });

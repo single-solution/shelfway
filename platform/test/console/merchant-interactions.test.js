@@ -211,6 +211,9 @@ describe('merchant console interactions (jsdom): sign-in, Account, Overview, web
 		resetHash();
 		withToasts(<AccountView part="two-step" {...await loaders.loadAccount(a.api, merchantId)} />);
 		expect(shows('10 recovery codes left')).toBe(true);
+		const launchSwitch = byLabel(document, 'Require verification on launch');
+		await clickEl(launchSwitch);
+		await a.waitCall('POST', '/v1/me/launch-step-up', (st) => st === 200);
 		await press('Make new recovery codes');
 		const codesForm = /** @type {HTMLElement} */ (document.querySelector('form[aria-label="Make new recovery codes"]'));
 		type(byLabel(codesForm, 'Current password'), 'a brand new passphrase');
@@ -372,7 +375,14 @@ describe('merchant console interactions (jsdom): sign-in, Account, Overview, web
 		cleanup();
 		const open = vi.fn();
 		vi.stubGlobal('open', open);
-		withToasts(<OverviewView {...await loaders.loadOverview(e.api, beta.merchantId)} branding={BRANDING} />);
+		await e.api.post('/v1/me/launch-step-up', { enabled: true });
+		withToasts(
+			<OverviewView
+				{...await loaders.loadOverview(e.api, beta.merchantId)}
+				branding={BRANDING}
+				me={await e.api.get('/v1/me')}
+			/>,
+		);
 		// one page: the websites table and the spend chart together
 		expect(shows('No features on')).toBe(true);
 		expect(shows('Spend per UTC day (last 30 days)')).toBe(true);

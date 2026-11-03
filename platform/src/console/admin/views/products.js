@@ -207,6 +207,20 @@ function ProductPageView({ detail, owner, list, admin = null, onAdd = null }) {
 	const [busy, setBusy] = useState(/** @type {null | 'open' | 'status'} */ (null));
 	const [askOpen, setAskOpen] = useState(false);
 	const sites = useProductWebsites(String(product.productId), detail.websites, detail.websitesProblem);
+	const launchStepUp = Boolean(admin?.launchStepUp);
+
+	const handleOpen = async () => {
+		if (launchStepUp) {
+			setAskOpen(true);
+			return;
+		}
+		setBusy('open');
+		const result = await openDashboard(adminApi.launch(id), { websiteId: null });
+		setBusy(null);
+		if (!result.ok) {
+			toast.show({ tone: 'danger', title: describeProblem(result.problem) });
+		}
+	};
 
 	const id = String(product.productId);
 	const numbers = product.numbers ?? {};
@@ -401,7 +415,7 @@ function ProductPageView({ detail, owner, list, admin = null, onAdd = null }) {
 									icon: 'external',
 									title: PRODUCTS.openAsAdminHelp,
 									loading: busy === 'open',
-									onClick: () => setAskOpen(true),
+									onClick: () => void handleOpen(),
 								},
 								secondary: [
 									{

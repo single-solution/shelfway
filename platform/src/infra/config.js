@@ -100,7 +100,7 @@ const MONGO_POOL_SIZE = 5;
 const MAX_BODY_BYTES = 1024 * 1024;
 /** Settings bounds and defaults (PLAN 0.5.4, 0.8.2). */
 export const SETTINGS_BOUNDS = Object.freeze({
-	sessionHours: Object.freeze({ min: 1, max: 336, default: 12 }),
+	sessionHours: Object.freeze({ min: 1, max: 720, default: 720 }),
 	graceDays: Object.freeze({ min: 0, max: 30, default: 3 }),
 	lowBalanceDays: Object.freeze({ min: 1, max: 30, default: 3 }),
 });
@@ -194,7 +194,14 @@ export const loadEnv = (env = process.env) => {
 	if (!/^[A-Za-z0-9_-]{1,63}$/.test(dbName)) problems.push('MONGODB_URI names an invalid database');
 
 	// The Portal's address and the key of stored secrets (PLAN 0.11)
-	const platformUrl = parsePortalUrl(read('PLATFORM_URL'), strict);
+	const rawPlatformUrl =
+		read('PLATFORM_URL') ??
+		read('PORTAL_URL') ??
+		(read('VERCEL_URL') ? `https://${read('VERCEL_URL')}` : undefined) ??
+		read('NEXT_PUBLIC_PLATFORM_URL') ??
+		read('NEXT_PUBLIC_PORTAL_URL') ??
+		(!strict ? 'http://localhost:3000' : undefined);
+	const platformUrl = parsePortalUrl(rawPlatformUrl, strict);
 	if (!platformUrl.ok) problems.push(platformUrl.message);
 	const encryptionKey = read('ENCRYPTION_KEY') ?? '';
 	if (!encryptionKey) problems.push('ENCRYPTION_KEY is required');
