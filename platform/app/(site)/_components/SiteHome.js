@@ -142,9 +142,9 @@ const COMPARE = [
 
 /**
  * Public marketing home — plain first, craft second.
- * @param {{ productName?: string, companyName?: string, products?: MarketingProduct[] }} props
+ * @param {{ productName?: string, companyName?: string, products?: MarketingProduct[], session?: any }} props
  */
-export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NAME, products = [] }) {
+export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NAME, products = [], session = null }) {
 	const [spotId, setSpotId] = useState('');
 
 	const fromApi = products.filter((p) => p.id && p.name);
@@ -189,7 +189,7 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 			<div className="wash" aria-hidden="true" />
 			<div className="grid-hard" aria-hidden="true" />
 
-			<SiteHeader brandName={productName} isHome={true} />
+			<SiteHeader brandName={productName} isHome={true} session={session} />
 
 			<main id="top">
 				<section className="hero">
@@ -432,8 +432,8 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 						))}
 					</dl>
 					<div className="hero-actions reveal" style={{ marginTop: '1.75rem' }}>
-						<ButtonLink href="/login" variant="primary" size="lg">
-							Sign in
+						<ButtonLink href={session ? '/overview' : '/login'} variant="primary" size="lg">
+							{session ? 'Open Dashboard' : 'Sign in'}
 						</ButtonLink>
 						<ButtonLink href="/docs" variant="secondary" size="lg">
 							Browse docs
@@ -442,7 +442,7 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 				</section>
 			</main>
 
-			<SiteFooter brandName={productName} companyName={companyName} isHome={true} />
+			<SiteFooter brandName={productName} companyName={companyName} isHome={true} session={session} />
 		</>
 	);
 }

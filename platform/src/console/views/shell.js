@@ -50,11 +50,17 @@ const footerRowClass = (rail) =>
 function FrameFooter({ rail, balance = null, help = null }) {
 	return (
 		<div className="space-y-0.5">
-			<a href={routes.docs()} title={WEBSITE.docs} target="_blank" rel="noopener noreferrer" className={footerRowClass(rail)}>
+			<a href={routes.docs()} title={WEBSITE.docs} className={footerRowClass(rail)}>
 				<span aria-hidden="true" className="text-muted">
 					<Icon name="code" size={17} />
 				</span>
 				<span className={rail ? 'sr-only' : 'min-w-0 flex-1 truncate'}>{WEBSITE.docs}</span>
+			</a>
+			<a href="/" title="Website" className={footerRowClass(rail)}>
+				<span aria-hidden="true" className="text-muted">
+					<Icon name="globe" size={17} />
+				</span>
+				<span className={rail ? 'sr-only' : 'min-w-0 flex-1 truncate'}>Website</span>
 			</a>
 			{balance !== null ? (
 				<Link href={routes.credits()} title={MERCHANT.balanceLink} className={footerRowClass(rail)}>

@@ -1,11 +1,11 @@
-import { redirectIfSignedIn, consoleApi } from '../(console)/_lib/server.js';
+import { consoleApi, consoleSession } from '../(console)/_lib/server.js';
 import { loadDocsHub } from '../../src/console/loaders.js';
 import { COMPANY_NAME, PRODUCT_BRAND } from './_components/brand.js';
 import { SiteHome } from './_components/SiteHome.js';
 
 export const dynamic = 'force-dynamic';
 
-/** Public marketing home on the Portal (signed-in merchants go to the console). */
+/** Public marketing home on the Portal. */
 export async function generateMetadata() {
 	return {
 		title: { absolute: PRODUCT_BRAND },
@@ -15,8 +15,7 @@ export async function generateMetadata() {
 }
 
 export default async function SitePage() {
-	await redirectIfSignedIn();
-	const api = await consoleApi();
+	const [session, api] = await Promise.all([consoleSession(), consoleApi()]);
 	const docs = await loadDocsHub(api).catch(() => null);
 	const products =
 		docs?.ok && Array.isArray(docs.items)
@@ -26,5 +25,12 @@ export default async function SitePage() {
 					description: typeof item.description === 'string' ? item.description : '',
 				}))
 			: [];
-	return <SiteHome productName={PRODUCT_BRAND} companyName={COMPANY_NAME} products={products} />;
+	return (
+		<SiteHome
+			productName={PRODUCT_BRAND}
+			companyName={COMPANY_NAME}
+			products={products}
+			session={session.ok ? session : null}
+		/>
+	);
 }

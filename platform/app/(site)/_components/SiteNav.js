@@ -12,9 +12,9 @@ export { COMPANY_NAME, PRODUCT_BRAND };
 
 /**
  * Shared floating glass header for the public Portal surface (Website + Docs).
- * @param {{ brandName?: string, isHome?: boolean }} props
+ * @param {{ brandName?: string, isHome?: boolean, session?: any }} props
  */
-export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false }) {
+export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session = null }) {
 	const rawPath = usePathname();
 	const pathname = rawPath || (isHome ? '/' : '');
 	const [scrolled, setScrolled] = useState(false);
@@ -40,10 +40,17 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false }) {
 					<Link href="/docs" style={isDocs ? { color: 'var(--shelfway-primary)', fontWeight: 600 } : undefined}>
 						Docs
 					</Link>
+					{session ? <Link href="/overview">Dashboard</Link> : null}
 				</nav>
-				<Link className="cta" href="/login">
-					Sign in
-				</Link>
+				{session ? (
+					<Link className="cta" href="/overview">
+						Dashboard
+					</Link>
+				) : (
+					<Link className="cta" href="/login">
+						Sign in
+					</Link>
+				)}
 			</header>
 		</div>
 	);
@@ -51,9 +58,9 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false }) {
 
 /**
  * Shared footer for the public Portal surface (Website + Docs).
- * @param {{ brandName?: string, companyName?: string, isHome?: boolean }} props
+ * @param {{ brandName?: string, companyName?: string, isHome?: boolean, session?: any }} props
  */
-export function SiteFooter({ brandName = PRODUCT_BRAND, companyName = COMPANY_NAME, isHome = false }) {
+export function SiteFooter({ brandName = PRODUCT_BRAND, companyName = COMPANY_NAME, isHome = false, session = null }) {
 	return (
 		<footer>
 			<div>
@@ -63,7 +70,7 @@ export function SiteFooter({ brandName = PRODUCT_BRAND, companyName = COMPANY_NA
 			<nav aria-label="Footer">
 				<a href={isHome ? '#products' : '/#products'}>Features</a>
 				<Link href="/docs">Docs</Link>
-				<Link href="/login">Sign in</Link>
+				{session ? <Link href="/overview">Dashboard</Link> : <Link href="/login">Sign in</Link>}
 			</nav>
 		</footer>
 	);

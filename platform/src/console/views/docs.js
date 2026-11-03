@@ -228,15 +228,36 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 			<div className="flex flex-col min-h-screen bg-canvas text-fg">
 				{/* Top Global Docs Header */}
 				<header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-surface/90 px-4 backdrop-blur sm:px-6">
-					<div className="flex items-center gap-3">
+					<div className="flex items-center gap-4">
 						<a href="/overview" className="flex items-center gap-2 font-semibold text-fg hover:opacity-80">
 							<span className="flex h-7 w-7 items-center justify-center rounded-control bg-primary text-white font-mono text-sm font-bold">
 								S
 							</span>
 							<span>{brandName}</span>
 						</a>
-						<span className="text-muted/60">/</span>
-						<span className="text-sm font-medium text-muted">Documentation Hub</span>
+
+						<nav className="flex items-center gap-1 border-l border-line pl-3 text-xs" aria-label="Surface navigation">
+							<a
+								href="/"
+								className="rounded-control px-2.5 py-1 text-muted hover:bg-surface-2 hover:text-fg transition font-medium">
+								Website
+							</a>
+							<a
+								href="/overview"
+								className="rounded-control px-2.5 py-1 text-muted hover:bg-surface-2 hover:text-fg transition font-medium">
+								Dashboard
+							</a>
+							<span className="rounded-control bg-surface-2 px-2.5 py-1 font-semibold text-primary">
+								Documentation Hub
+							</span>
+							{isDeveloperRole && actor?.admin ? (
+								<a
+									href="/admin"
+									className="rounded-control px-2.5 py-1 text-muted hover:bg-surface-2 hover:text-fg transition font-medium">
+									Admin
+								</a>
+							) : null}
+						</nav>
 					</div>
 
 					<div className="flex items-center gap-3">

@@ -171,8 +171,6 @@ export function AdminShell({ admin, twoStepRequired = false, attention = 0, bran
 							<a
 								href={routes.docs()}
 								title={WEBSITE.docs}
-								target="_blank"
-								rel="noopener noreferrer"
 								className={cx(
 									'shelfway-motion shelfway-press flex h-9 items-center gap-2.5 rounded-control text-sm font-medium text-fg/80 hover:bg-surface-2 hover:text-fg',
 									'focus-visible:outline-2 focus-visible:outline-focus',
@@ -182,6 +180,19 @@ export function AdminShell({ admin, twoStepRequired = false, attention = 0, bran
 									<Icon name="code" size={17} />
 								</span>
 								<span className={rail ? 'sr-only' : 'min-w-0 flex-1 truncate'}>{WEBSITE.docs}</span>
+							</a>
+							<a
+								href="/"
+								title="Website"
+								className={cx(
+									'shelfway-motion shelfway-press flex h-9 items-center gap-2.5 rounded-control text-sm font-medium text-fg/80 hover:bg-surface-2 hover:text-fg',
+									'focus-visible:outline-2 focus-visible:outline-focus',
+									rail ? 'justify-center' : 'px-2.5',
+								)}>
+								<span aria-hidden="true" className="text-muted">
+									<Icon name="globe" size={17} />
+								</span>
+								<span className={rail ? 'sr-only' : 'min-w-0 flex-1 truncate'}>Website</span>
 							</a>
 						</div>
 					)}>
