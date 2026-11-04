@@ -199,9 +199,27 @@ export function ConsoleShell({ me, websites, billing: frameBilling, children, br
 			<ToastProvider>
 				<div style={accentStyle(branding.accent)}>
 					<AppShell
-						brand={{ name: branding.name }}
+						brand={{ name: branding.name, href: routes.overview() }}
 						linkAs={NavLink}
 						sections={merchantSections(pathname, billing)}
+						topbar={
+							<div className="flex items-center gap-2">
+								<a
+									href="/"
+									className="shelfway-motion shelfway-press inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-xs font-medium text-muted hover:border-line-strong hover:text-fg"
+									title="Go to Website">
+									<Icon name="globe" size={13} />
+									<span>Website</span>
+								</a>
+								<a
+									href={routes.docs()}
+									className="shelfway-motion shelfway-press inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-xs font-medium text-muted hover:border-line-strong hover:text-fg"
+									title="Developer Documentation">
+									<Icon name="code" size={13} />
+									<span>Docs</span>
+								</a>
+							</div>
+						}
 						banner={<BillingBanner summary={billing} contact={contactLine(branding.support)} />}
 						switcher={
 							websites.length > 0 ? (

@@ -247,9 +247,9 @@ function Nav({ sections, linkAs, onNavigate, rail = false }) {
 /**
  * The console's mark and name; `compact` shows the mark alone (the rail) or the name alone (the phone header). In a
  * product dashboard (`product`, its id) the mark is the product's chip in its meaning color.
- * @param {{ name: ReactNode, tagline?: ReactNode, product?: string, compact?: boolean, markOnly?: boolean }} props
+ * @param {{ name: ReactNode, tagline?: ReactNode, product?: string, compact?: boolean, markOnly?: boolean, href?: string }} props
  */
-function Brand({ name, tagline, product, compact = false, markOnly = false }) {
+function Brand({ name, tagline, product, compact = false, markOnly = false, href }) {
 	const mark =
 		typeof name === 'string'
 			? name
@@ -259,7 +259,7 @@ function Brand({ name, tagline, product, compact = false, markOnly = false }) {
 					.map((part) => part[0]?.toUpperCase() ?? '')
 					.join('') || 'SW'
 			: 'SW';
-	return (
+	const inner = (
 		<div className={cx('flex min-w-0 items-center gap-2.5', markOnly && 'justify-center')}>
 			{product ? (
 				<IconBadge product={product} size="sm" />
@@ -278,6 +278,16 @@ function Brand({ name, tagline, product, compact = false, markOnly = false }) {
 			)}
 		</div>
 	);
+	if (href) {
+		return (
+			<a
+				href={href}
+				className="shelfway-motion rounded-control hover:opacity-85 focus-visible:outline-2 focus-visible:outline-focus">
+				{inner}
+			</a>
+		);
+	}
+	return inner;
 }
 
 /**
@@ -443,7 +453,7 @@ export function ScrollArea({ children, className, label, ref, as = 'div' }) {
 }
 
 /**
- * @param {{ brand?: { name: ReactNode, tagline?: ReactNode, product?: string }, sections: NavSection[], topbar?: ReactNode,
+ * @param {{ brand?: { name: ReactNode, tagline?: ReactNode, product?: string, href?: string }, sections: NavSection[], topbar?: ReactNode,
  *   actions?: ReactNode, search?: ReactNode, banner?: ReactNode, children: ReactNode,
  *   linkAs?: import('react').ElementType, switcher?: ReactNode | ((state: { rail: boolean }) => ReactNode),
  *   sidebarFooter?: ReactNode | ((state: { rail: boolean }) => ReactNode), mainId?: string, themeToggle?: boolean,

@@ -69,7 +69,18 @@ function AuthFrame({ branding, title, subtitle, children, footer }) {
 	return (
 		<main className="flex min-h-screen items-center justify-center bg-canvas px-4 py-10">
 			<div className="w-full max-w-md space-y-6">
-				<BrandMark branding={branding} />
+				<div className="flex items-center justify-between">
+					<a href="/" className="inline-flex items-center gap-2 hover:opacity-85 transition-opacity" title="Back to Website">
+						<BrandMark branding={branding} />
+					</a>
+					<a
+						href="/"
+						className="shelfway-motion shelfway-press inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1 text-xs font-medium text-muted hover:border-line-strong hover:text-fg"
+						title="Back to Website">
+						<span aria-hidden="true">&larr;</span>
+						<span>Website</span>
+					</a>
+				</div>
 				<section aria-labelledby="auth-title" className="space-y-6 rounded-card border border-line bg-surface p-6 sm:p-8">
 					<div className="space-y-1">
 						<h1 id="auth-title" className="font-display text-2xl font-semibold tracking-[-0.02em] text-fg">

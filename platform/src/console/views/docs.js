@@ -229,7 +229,7 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 				{/* Top Global Docs Header */}
 				<header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-surface/90 px-4 backdrop-blur sm:px-6">
 					<div className="flex items-center gap-4">
-						<a href="/overview" className="flex items-center gap-2 font-semibold text-fg hover:opacity-80">
+						<a href="/" className="flex items-center gap-2 font-semibold text-fg hover:opacity-80" title="Back to Website">
 							<span className="flex h-7 w-7 items-center justify-center rounded-control bg-primary text-white font-mono text-sm font-bold">
 								S
 							</span>

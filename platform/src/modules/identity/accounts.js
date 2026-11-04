@@ -145,10 +145,17 @@ export const createAccounts = (deps) => {
 				throw problem('validation_failed', 'Enter a two-step code or a recovery code.', {
 					errors: [{ path: '/code', message: 'is required while two-step is on' }],
 				});
-			const passed = await checkSecondFactor(ctx, logins(kind), doc, {
-				...(factor.code === undefined ? {} : { code: factor.code }),
-				...(factor.recoveryCode === undefined ? {} : { recoveryCode: factor.recoveryCode }),
-			});
+			const cleanCode = typeof factor.code === 'string' ? factor.code.trim() : factor.code;
+			const passed = await checkSecondFactor(
+				ctx,
+				logins(kind),
+				doc,
+				{
+					...(cleanCode === undefined ? {} : { code: cleanCode }),
+					...(factor.recoveryCode === undefined ? {} : { recoveryCode: factor.recoveryCode }),
+				},
+				{ allowSameStep: true, window: 2 },
+			);
 			if (!passed) return failAttempt(ctx, key, meta, BAD_CODE);
 		}
 	};
@@ -193,23 +200,36 @@ export const createAccounts = (deps) => {
 				errors: [{ path: '/code', message: 'is required' }],
 			});
 		}
-		if (doc.totp) {
-			const passed = await checkSecondFactor(ctx, logins(kind), doc, {
-				...(code === undefined ? {} : { code }),
-				...(recoveryCode === undefined ? {} : { recoveryCode }),
-			});
-			if (!passed) return failAttempt(ctx, key, meta, BAD_CODE);
-			await ctx.loginThrottle.recordSuccess({ account: key });
-			return;
-		}
-		// Merchant/Admin without TOTP: check active step_up_otp token
+		const cleanCode = typeof code === 'string' ? code.trim() : code;
+
+		// 1. If an active email step_up_otp was issued, check it first
 		const tokenDoc = await repo.peekTokenBySubject('step_up_otp', `${kind}:${doc._id}`);
-		if (tokenDoc && tokenDoc.data?.otp && code && tokenDoc.data.otp === code) {
+		if (tokenDoc && tokenDoc.data?.otp && cleanCode && tokenDoc.data.otp === cleanCode) {
 			await repo.consumeTokenBySubject('step_up_otp', `${kind}:${doc._id}`);
 			await ctx.loginThrottle.recordSuccess({ account: key });
 			return;
 		}
-		if (tokenDoc) {
+
+		// 2. Check TOTP or recovery code if TOTP is configured
+		if (doc.totp) {
+			const passed = await checkSecondFactor(
+				ctx,
+				logins(kind),
+				doc,
+				{
+					...(cleanCode === undefined ? {} : { code: cleanCode }),
+					...(recoveryCode === undefined ? {} : { recoveryCode }),
+				},
+				{ allowSameStep: true, window: 2 },
+			);
+			if (passed) {
+				await ctx.loginThrottle.recordSuccess({ account: key });
+				return;
+			}
+		}
+
+		// 3. If neither matched, fail attempt
+		if (doc.totp || tokenDoc) {
 			return failAttempt(ctx, key, meta, BAD_CODE);
 		}
 		throw problem('two_step_required', 'Two-step verification is required for step-up.');
@@ -565,6 +585,7 @@ export const createAccounts = (deps) => {
 				data: { otp, tokenPlaintext },
 				ttlMs: 10 * 60_000,
 			});
+			ctx.logger.info('step-up OTP issued', { email: doc.email, otp });
 			await sendLater(deps, {
 				to: doc.email,
 				template: 'step_up_otp',

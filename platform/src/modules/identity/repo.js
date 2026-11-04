@@ -266,21 +266,28 @@ export const openTotpSecret = (ctx, sealed, subject) => {
  * @param {MutableOps} collection the login's collection (admins or merchants)
  * @param {Record<string, any>} account
  * @param {{ code?: string, recoveryCode?: string }} input
+ * @param {{ allowSameStep?: boolean, window?: number }} [options]
  * @returns {Promise<boolean>}
  */
-export const checkSecondFactor = async (ctx, collection, account, input) => {
+export const checkSecondFactor = async (ctx, collection, account, input, { allowSameStep = false, window = 2 } = {}) => {
 	if (!account.totp) return false;
 	if (input.code !== undefined) {
 		const secret = openTotpSecret(ctx, account.totp.secret, String(account._id));
 		if (secret === null) return false;
 		const lastStep = typeof account.totp.lastStep === 'number' ? account.totp.lastStep : null;
-		const result = verifyTotp(secret, input.code, { now: ctx.now, lastStep });
+		const result = verifyTotp(secret, input.code, { now: ctx.now, lastStep, allowSameStep, window });
 		if (!result.ok) return false;
 		const burned = await collection.updateOne(
-			{ _id: account._id, $or: [{ 'totp.lastStep': null }, { 'totp.lastStep': { $lt: result.step } }] },
+			{
+				_id: account._id,
+				$or: [
+					{ 'totp.lastStep': null },
+					allowSameStep ? { 'totp.lastStep': { $lte: result.step } } : { 'totp.lastStep': { $lt: result.step } },
+				],
+			},
 			{ $set: { 'totp.lastStep': result.step } },
 		);
-		return burned.modifiedCount === 1;
+		return burned.matchedCount === 1;
 	}
 	const hashes = /** @type {string[]} */ (account.recoveryHashes ?? []);
 	const index = findRecoveryCode(input.recoveryCode, hashes, ctx.config.sessionSecret);

@@ -228,19 +228,29 @@ export function ConfirmChange({
 	const [busy, setBusy] = useState(false);
 	const [resending, setResending] = useState(false);
 	const [errors, setErrors] = useState(/** @type {{ password?: string, code?: string, form?: string }} */ ({}));
+	const [activeTwoStep, setActiveTwoStep] = useState(twoStepOn);
 	const [wantsCode, setWantsCode] = useState(otpOnly || twoStepOn);
-
-	const isEmailOtp = otpOnly && !twoStepOn;
 
 	useEffect(() => {
 		if (open) {
-			setWantsCode(otpOnly || twoStepOn);
 			setErrors({});
-			if (otpOnly && !twoStepOn) {
-				void apiFetch(api.stepUpOtp(), { method: 'POST' });
+			if (twoStepOn) {
+				setActiveTwoStep(true);
+				setWantsCode(true);
+			} else {
+				void apiFetch('/v1/me', { redirectOn401: false }).then((res) => {
+					const hasTotp = Boolean(res.ok && res.data?.twoStep?.enabled);
+					setActiveTwoStep(hasTotp);
+					setWantsCode(otpOnly || hasTotp);
+					if (otpOnly && !hasTotp) {
+						void apiFetch(api.stepUpOtp(), { method: 'POST' });
+					}
+				});
 			}
 		}
 	}, [open, twoStepOn, otpOnly]);
+
+	const isEmailOtp = otpOnly && !activeTwoStep;
 
 	const resendEmailOtp = async () => {
 		setResending(true);
