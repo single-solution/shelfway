@@ -204,6 +204,20 @@ export const confirmationErrors = (problem) => {
 };
 
 /**
+ * Extract two-step status from /v1/me response or object.
+ * @param {ApiResult | any | null} me
+ */
+export const twoStepOnOf = (me) => {
+	if (!me) return false;
+	const obj = me?.ok === true ? me.data : me;
+	if (!obj) return false;
+	const kind = obj.kind;
+	if (kind && obj[kind]?.twoStep?.enabled !== undefined) return Boolean(obj[kind].twoStep.enabled);
+	if (obj.twoStep?.enabled !== undefined) return Boolean(obj.twoStep.enabled);
+	return false;
+};
+
+/**
  * The password dialog of a change: the person's password (and a code when the Portal asks for one), the request, and the
  * reason under its field when refused.
  * @param {{ open: boolean, title: string, help: string, confirmLabel: string, danger?: boolean, expected?: string,
@@ -239,7 +253,7 @@ export function ConfirmChange({
 				setWantsCode(true);
 			} else {
 				void apiFetch('/v1/me', { redirectOn401: false }).then((res) => {
-					const hasTotp = Boolean(res.ok && res.data?.twoStep?.enabled);
+					const hasTotp = twoStepOnOf(res);
 					setActiveTwoStep(hasTotp);
 					setWantsCode(otpOnly || hasTotp);
 					if (otpOnly && !hasTotp) {

@@ -114,6 +114,7 @@ function ConnectionCard({
 	manage,
 	canWrite,
 	problem,
+	twoStepOn = false,
 	setProblem,
 	onChanged,
 }) {
@@ -178,6 +179,7 @@ function ConnectionCard({
 				help={T.data.confirmHelp}
 				confirmLabel={asking === 'remove' ? T.data.remove : T.data.save}
 				danger={asking === 'remove'}
+				twoStepOn={twoStepOn}
 				send={send}
 				onClose={() => setAsking(null)}
 				onDone={() => {
@@ -410,7 +412,7 @@ export function ConnectionsSection({ view, manage, canWrite, twoStepOn = false, 
  * The Between your products section.
  * @param {ConnectionsProps & { twoStepOn?: boolean }} props
  */
-export function LinksSection({ view, manage, canWrite, onChanged }) {
+export function LinksSection({ view, manage, canWrite, twoStepOn = false, onChanged }) {
 	const toast = useToast();
 	const [asking, setAsking] = useState(
 		/** @type {null | { link: ConnectionsView['links'][number], action: 'regenerate' | 'off' | 'on' }} */ (null),
@@ -521,6 +523,7 @@ export function LinksSection({ view, manage, canWrite, onChanged }) {
 							: T.links.switchOn
 				}
 				danger={asking?.action === 'off'}
+				twoStepOn={twoStepOn}
 				send={send}
 				onClose={() => setAsking(null)}
 				onDone={() => {

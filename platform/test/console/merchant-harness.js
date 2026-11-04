@@ -153,6 +153,9 @@ export const fillDialog = (label, value) => type(byLabel(dialog(), label), value
 /** @param {string} snippet */
 export const shows = (snippet) => document.body.textContent?.replace(/\s+/g, ' ').includes(snippet) ?? false;
 
+/** @type {WeakMap<object, () => Promise<void>>} */
+const PORTAL_PENDING = new WeakMap();
+
 /**
  * A browser for one Portal: `fetch` goes to `portal.handle` with this browser's cookies (same origin).
  * @param {import('../../src/platform.js').Portal} portal
@@ -187,6 +190,7 @@ export const browserOf = (portal, password = 'correct horse battery') => {
 		const response = await portal.handle(
 			new Request(url, { method, headers, ...(init.body === undefined ? {} : { body: /** @type {any} */ (init.body) }) }),
 		);
+		await PORTAL_PENDING.get(portal)?.();
 		store(response.headers.getSetCookie());
 		const text = await response.text();
 		let body = null;
@@ -216,6 +220,7 @@ export const browserOf = (portal, password = 'correct horse battery') => {
 				...(body === undefined ? {} : { body: JSON.stringify(body) }),
 			}),
 		);
+		await PORTAL_PENDING.get(portal)?.();
 		store(response.headers.getSetCookie());
 		const text = await response.text();
 		const data = text ? JSON.parse(text) : null;
@@ -301,6 +306,15 @@ export const createWorld = async ({ db }) => {
 	/** @type {Array<{ to: string, template: string, data: Record<string, any> }>} */
 	const mail = [];
 	const mailer = { available: true, send: async (/** @type {any} */ m) => void mail.push(m) };
+	/** @type {Set<Promise<unknown>>} */
+	const pending = new Set();
+	const flushPending = async () => {
+		while (pending.size > 0) {
+			const batch = [...pending];
+			pending.clear();
+			await Promise.allSettled(batch);
+		}
+	};
 	// work right after responses runs at once (emails and notices follow the request that caused them)
 	const portal = createPlatform({
 		config: await testConfig(),
@@ -308,8 +322,17 @@ export const createWorld = async ({ db }) => {
 		modules: testModules({ mailer }),
 		system: createSystemStore(db, { encryptionKey: ENCRYPTION_KEY }),
 		logger: createTestLogger().logger,
-		background: { mode: 'on', fallback: (task) => void task() },
+		background: {
+			mode: 'on',
+			fallback: (task) => {
+				const p = Promise.resolve()
+					.then(task)
+					.finally(() => pending.delete(p));
+				pending.add(p);
+			},
+		},
 	});
+	PORTAL_PENDING.set(portal, flushPending);
 	await portal.ensureIndexes();
 	/** @param {string} to @param {string} template */
 	const tokenOf = (to, template) => {
@@ -323,6 +346,7 @@ export const createWorld = async ({ db }) => {
 
 	// the first admin (an Owner, created from the sign-in page) seeds the world
 	const ownerBrowser = browserOf(portal, 'owner password 123!');
+	ownerBrowser.world = world;
 	const first = await ownerBrowser.api.post('/v1/auth/first-admin', {
 		name: 'Olivia Owner',
 		email: 'olivia@shelfway.test',
@@ -446,6 +470,7 @@ export const createWorld = async ({ db }) => {
 		portal,
 		mail,
 		tokenOf,
+		flushPending,
 		/** @param {string} [to] */
 		lastOtp: (to) => {
 			const m = [...mail].reverse().find((item) => (!to || item.to === to) && item.template === 'step_up_otp');

@@ -569,6 +569,7 @@ export function WebsitePageView({
 				title={WEBSITE.openConfirmTitle(launching?.name ?? '')}
 				help={WEBSITE.openConfirmHelp}
 				confirmLabel={WEBSITE.openConfirmLabel}
+				twoStepOn={twoStepOn}
 				send={sendLaunch}
 				onClose={() => setLaunching(null)}
 				onDone={() => setLaunching(null)}
@@ -578,6 +579,7 @@ export function WebsitePageView({
 				title={WEBSITE.developerPack}
 				help={WEBSITE.developerPackHelp}
 				confirmLabel={WEBSITE.downloadPack}
+				twoStepOn={twoStepOn}
 				send={sendDeveloperPack}
 				onClose={() => setSharingPack(false)}
 				onDone={() => setSharingPack(false)}

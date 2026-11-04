@@ -31,8 +31,7 @@ import { BILLING, WEBSITE } from '../../texts/console.js';
 import { apiConfirm, apiFetch } from '../client.js';
 import { api } from '../paths.js';
 import { productTone, UsageView } from './billing.js';
-import { factorOf } from './common.js';
-import { confirmationErrors } from './common.js';
+import { confirmationErrors, factorOf, twoStepOnOf } from './common.js';
 
 /** @typedef {import('@shelfway/ui/problems').Problem} Problem */
 /**
@@ -210,31 +209,19 @@ export const useOnce = (path) => {
 	return result;
 };
 
-/**
- * Whether the signed-in person has two-step on, from `GET /v1/me` (`{ kind, <kind>: { twoStep }, … }`) or an actor object.
- * @param {import('./common.js').ApiResult | any | null} me
- */
-export const twoStepOnOf = (me) => {
-	if (!me) return false;
-	const obj = me?.ok === true ? me.data : me;
-	if (!obj) return false;
-	const kind = obj.kind;
-	if (kind && obj[kind]?.twoStep?.enabled !== undefined) return Boolean(obj[kind].twoStep.enabled);
-	if (obj.twoStep?.enabled !== undefined) return Boolean(obj.twoStep.enabled);
-	return false;
-};
+export { twoStepOnOf };
 
 /**
  * @param {import('./common.js').ApiResult | any | null} me
  */
 export const launchStepUpOf = (me) => {
-	if (!me) return false;
+	if (!me) return true;
 	const obj = me?.ok === true ? me.data : me;
-	if (!obj) return false;
+	if (!obj) return true;
 	const kind = obj.kind;
 	if (kind && obj[kind]?.launchStepUp !== undefined) return Boolean(obj[kind].launchStepUp);
 	if (obj.launchStepUp !== undefined) return Boolean(obj.launchStepUp);
-	return false;
+	return true;
 };
 
 /**

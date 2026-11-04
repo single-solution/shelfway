@@ -37,14 +37,14 @@ export const PUBLIC_PATHS = Object.freeze([
 
 /** Merchant console page URLs. */
 export const routes = Object.freeze({
-	login: (next = '') => (next ? `/login?next=${e(next)}` : '/login'),
+	login: (next = '') => (next ? `/?auth=1&next=${e(next)}` : '/?auth=1'),
 	forgotPassword: () => '/forgot-password',
 	overview: () => '/overview',
 	/** the Websites screen with nothing selected */
 	websites: () => '/websites',
 	/** the Websites screen with a website selected */
 	website: (/** @type {string} */ id) => `/websites/${e(id)}`,
-	/** a part of a website's page: `products/:productId`, `settings/brand`, `install`, `setup`, `usage`, `changes`; none = Overview */
+	/** a part of a website's page: `products/:productId`, `settings/:section`, `setup`; none = Overview */
 	websitePart: (/** @type {string} */ id, /** @type {string} */ part = '') =>
 		part ? `/websites/${e(id)}/${part.split('/').map(e).join('/')}` : `/websites/${e(id)}`,
 	/** the Setup sheet of a website */

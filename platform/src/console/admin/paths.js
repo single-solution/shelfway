@@ -10,7 +10,7 @@ const e = encodeURIComponent;
 
 /** Admin Console page URLs. */
 export const adminRoutes = Object.freeze({
-	login: (next = '') => (next ? `/login?next=${e(next)}` : '/login'),
+	login: (next = '') => (next ? `/?auth=1&next=${e(next)}` : '/?auth=1'),
 	overview: () => '/admin',
 	/** the Merchants screen with nothing selected; `q` and `status` filter its list */
 	merchants: (/** @type {{ status?: string | null, q?: string | null }} */ q = {}) => `/admin/merchants${query(q)}`,
@@ -22,7 +22,7 @@ export const adminRoutes = Object.freeze({
 		part === 'websites' ? `/admin/merchants/${e(id)}` : `/admin/merchants/${e(id)}/${e(part)}`,
 	/** a website of a merchant: its own page */
 	website: (/** @type {string} */ m, /** @type {string} */ w) => `/admin/merchants/${e(m)}/websites/${e(w)}`,
-	/** a part of a website's page: `products/:productId`, `settings/brand`, `install`, `setup`, `usage`, `changes`; none = Overview */
+	/** a part of a website's page: `products/:productId`, `settings/:section`, `setup`; none = Overview */
 	websitePart: (/** @type {string} */ m, /** @type {string} */ w, /** @type {string} */ part = '') =>
 		part
 			? `/admin/merchants/${e(m)}/websites/${e(w)}/${part.split('/').map(e).join('/')}`

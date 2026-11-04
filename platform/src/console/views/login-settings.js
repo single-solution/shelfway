@@ -327,7 +327,7 @@ export function TwoStepPanel({ twoStep, onChange }) {
  * Product dashboard launch verification setting card.
  * @param {{ launchStepUp?: boolean, onChange: () => void }} props
  */
-export function LaunchStepUpCard({ launchStepUp = false, onChange }) {
+export function LaunchStepUpCard({ launchStepUp = true, onChange }) {
 	const toast = useToast();
 	const [busy, setBusy] = useState(false);
 	const [checked, setChecked] = useState(launchStepUp);

@@ -120,7 +120,7 @@ async function FinancePartPage({ params, searchParams }) {
 }
 
 function AdminLoginPage() {
-	redirect('/login');
+	redirect('/?auth=1&next=/admin');
 }
 
 /** @param {{ searchParams: Promise<Record<string, string | string[] | undefined>> }} props */

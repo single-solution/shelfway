@@ -24,7 +24,7 @@ export const consoleSession = cache(async () => loadSession(await consoleApi()))
 export const merchantContext = async (next) => {
 	const session = await consoleSession();
 	if (!session.ok) {
-		if (session.status === 401) redirect(next ? `/login?next=${encodeURIComponent(next)}` : '/login');
+		if (session.status === 401) redirect(next ? `/?auth=1&next=${encodeURIComponent(next)}` : '/?auth=1');
 		if (/** @type {{ admin?: boolean }} */ (session).admin) redirect('/admin');
 		throw new Error(session.problem?.detail ?? 'The console is unavailable.');
 	}

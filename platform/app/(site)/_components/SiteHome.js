@@ -4,6 +4,7 @@ import Link from 'next/link.js';
 import { ButtonLink } from '@shelfway/ui';
 import { useEffect, useState } from 'react';
 import { COMPANY_NAME, PRODUCT_BRAND, SiteFooter, SiteHeader } from './SiteNav.js';
+import { SignInModal } from './SignInModal.js';
 
 export { COMPANY_NAME, PRODUCT_BRAND };
 
@@ -146,6 +147,7 @@ const COMPARE = [
  */
 export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NAME, products = [], session = null }) {
 	const [spotId, setSpotId] = useState('');
+	const [showSignInModal, setShowSignInModal] = useState(false);
 
 	const fromApi = products.filter((p) => p.id && p.name);
 	const catalog =
@@ -432,15 +434,26 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 						))}
 					</dl>
 					<div className="hero-actions reveal" style={{ marginTop: '1.75rem' }}>
-						<ButtonLink href={session ? '/overview' : '/login'} variant="primary" size="lg">
-							{session ? 'Open Dashboard' : 'Sign in'}
-						</ButtonLink>
+						{session ? (
+							<ButtonLink href="/overview" variant="primary" size="lg">
+								Open Dashboard
+							</ButtonLink>
+						) : (
+							<button
+								type="button"
+								onClick={() => setShowSignInModal(true)}
+								className="shelfway-button shelfway-button-primary shelfway-button-lg cursor-pointer">
+								Sign in
+							</button>
+						)}
 						<ButtonLink href="/docs" variant="secondary" size="lg">
 							Browse docs
 						</ButtonLink>
 					</div>
 				</section>
 			</main>
+
+			<SignInModal open={showSignInModal} onClose={() => setShowSignInModal(false)} brandName={productName} />
 
 			<SiteFooter brandName={productName} companyName={companyName} isHome={true} session={session} />
 		</>

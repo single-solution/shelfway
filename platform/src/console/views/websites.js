@@ -39,7 +39,7 @@ import { PageProblem, openDashboard } from './common.js';
 import { ConfirmOtp } from './common.js';
 import { ActivityTimeline } from './login-settings.js';
 import { contactLine } from './sign-in.js';
-import { AddWebsiteDialog, dailyCostOf, launchStepUpOf, websiteDot } from './website.js';
+import { AddWebsiteDialog, dailyCostOf, launchStepUpOf, twoStepOnOf, websiteDot } from './website.js';
 import { WebsitePageView } from './website-page.js';
 
 /** @typedef {import('./website.js').ProductCard} ProductCard */
@@ -141,7 +141,8 @@ export function OverviewView(props) {
 					action: openButton(website, card),
 				});
 	}
-	const name = props.me?.merchant?.ownerName || props.me?.merchant?.name || '';
+	const meObj = props.me?.ok === true ? props.me.data : props.me;
+	const name = meObj?.merchant?.ownerName || meObj?.merchant?.name || '';
 
 	/** One row per product on a website; a website with none has one row that says so. */
 	/** @type {Array<{ key: string, website: any, card: ProductCard | null }>} */
@@ -292,7 +293,7 @@ export function OverviewView(props) {
 				title={WEBSITE.openConfirmTitle(launching?.card.name ?? '')}
 				help={WEBSITE.openConfirmHelp}
 				confirmLabel={WEBSITE.openConfirmLabel}
-				twoStepOn={Boolean(props.me?.merchant?.twoStep?.enabled)}
+				twoStepOn={twoStepOnOf(props.me)}
 				send={sendLaunch}
 				onClose={() => setLaunching(null)}
 				onDone={() => setLaunching(null)}
@@ -488,7 +489,7 @@ export function WebsitesView(props) {
 					settings={props.settings}
 					addable={props.addable}
 					merchantId={props.merchantId}
-					twoStepOn={Boolean(props.me?.merchant?.twoStep?.enabled)}
+					twoStepOn={twoStepOnOf(props.me)}
 				/>
 			)}
 		</>
@@ -513,7 +514,7 @@ export function WebsiteView(props) {
 				setup={props.setup}
 				addable={props.addable}
 				merchantId={props.merchantId}
-				twoStepOn={Boolean(props.me?.merchant?.twoStep?.enabled)}
+				twoStepOn={twoStepOnOf(props.me)}
 			/>
 		</>
 	);

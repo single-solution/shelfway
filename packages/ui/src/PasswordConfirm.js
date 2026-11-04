@@ -6,7 +6,7 @@
  * a wrong password or code is an error under its own field (`errors`), anything else under the fields (`errors.form`).
  * @module
  */
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Button } from './Button.js';
 import { Input, TextArea } from './fields.js';
 import { Dialog } from './overlay.js';
@@ -69,14 +69,17 @@ export function PasswordConfirmDialog({
 	const [cooldown, setCooldown] = useState(0);
 	const formId = useId();
 
+	const wasOpen = useRef(false);
+
 	useEffect(() => {
-		if (open) {
+		if (open && !wasOpen.current) {
 			setPassword('');
 			setCode('');
 			setTyped('');
 			setUseRecovery(false);
 			setCooldown(isEmailOtp ? 30 : 0);
 		}
+		wasOpen.current = open;
 	}, [open, isEmailOtp]);
 
 	useEffect(() => {

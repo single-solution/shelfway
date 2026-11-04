@@ -28,7 +28,7 @@ const newKey = () =>
 export const signInAgain = (next) => {
 	if (typeof window === 'undefined') return;
 	const back = next ?? `${window.location.pathname}${window.location.search}`;
-	window.location.assign(`/login?next=${encodeURIComponent(back)}&expired=1`);
+	window.location.assign(`/?auth=1&next=${encodeURIComponent(back)}&expired=1`);
 };
 
 /**

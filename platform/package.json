@@ -20,7 +20,7 @@
 		"db:memory": "node scripts/dev-mongo.js",
 		"db:local": "node scripts/dev-mongo.js --keep",
 		"check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test",
-		"test": "vitest run --coverage",
+		"test": "vitest run --coverage --maxWorkers=4",
 		"lint": "eslint .",
 		"typecheck": "tsc -p tsconfig.json",
 		"format": "prettier --write .",

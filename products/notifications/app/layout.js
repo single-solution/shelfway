@@ -1,6 +1,5 @@
 import { Figtree, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 import { ThemeScript } from '@shelfway/ui';
-import { TEXTS } from './dashboard/texts.js';
 import './globals.css';
 
 /** Unite faces for product dashboards (`@shelfway/ui` theme): text, display, mono. */
@@ -9,7 +8,6 @@ const display = Space_Grotesk({
 	subsets: ['latin'],
 	variable: '--shelfway-font-display',
 	display: 'swap',
-	weight: ['500', '600', '700'],
 });
 const mono = JetBrains_Mono({
 	subsets: ['latin'],
@@ -18,7 +16,7 @@ const mono = JetBrains_Mono({
 	weight: ['400', '500', '600'],
 });
 
-export const metadata = { title: TEXTS.title, robots: { index: false, follow: false } };
+export const metadata = { title: 'Notifications', robots: { index: false, follow: false } };
 export const viewport = { width: 'device-width', initialScale: 1, colorScheme: 'light dark' };
 
 /**

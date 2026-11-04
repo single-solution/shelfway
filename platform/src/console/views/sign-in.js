@@ -438,7 +438,7 @@ export function ResetPasswordView({ branding }) {
 			redirectOn401: false,
 		});
 		setBusy(false);
-		if (result.ok) window.location.assign('/login?notice=reset');
+		if (result.ok) window.location.assign('/?auth=1&notice=reset');
 		else setProblem(result.problem);
 	};
 	return (
@@ -566,7 +566,7 @@ export function ConfirmEmailView({ branding }) {
 	useEffect(() => {
 		if (!token) return;
 		void apiFetch('/v1/auth/confirm-email', { method: 'POST', body: { token }, redirectOn401: false }).then((result) => {
-			if (result.ok) window.location.assign('/login?notice=email');
+			if (result.ok) window.location.assign('/?auth=1&notice=email');
 			else setProblem(result.problem);
 		});
 	}, [token]);

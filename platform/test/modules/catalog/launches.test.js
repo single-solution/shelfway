@@ -67,12 +67,20 @@ describe('launches (PLAN 0.4.3)', () => {
 		const { h, product, m, w1, w2, w3 } = await setUp('launch_merchant');
 		const path = (/** @type {string} */ websiteId) =>
 			`/v1/merchants/${m.merchantId}/websites/${websiteId}/products/notes/launch`;
-		// Default: launchStepUp is false, so launch opens directly without OTP
+		// Default: launchStepUp is true, so launch requires OTP
+		expect(codeOf(await m.client.post(path(w1), {}))).toEqual([422, 'validation_failed']);
+		expect(codeOf(await m.client.post(path(w1), { password: PASSWORD }))).toEqual([422, 'validation_failed']);
+		const initialOpen = await openWithOtp(h, m.client, m.email, path(w1));
+		expect(initialOpen.status).toBe(200);
+		expect(initialOpen.json.url.startsWith(`${product.url}/sso?launch=`)).toBe(true);
+
+		// When launchStepUp is disabled in account settings, launch opens directly without OTP
+		await m.client.post('/v1/me/launch-step-up', { enabled: false });
 		const directOpen = await m.client.post(path(w1), {});
 		expect(directOpen.status).toBe(200);
 		expect(directOpen.json.url.startsWith(`${product.url}/sso?launch=`)).toBe(true);
 
-		// When launchStepUp is enabled in account settings, OTP is required
+		// When launchStepUp is re-enabled, OTP is required again
 		await m.client.post('/v1/me/launch-step-up', { enabled: true });
 		expect(codeOf(await m.client.post(path(w1), {}))).toEqual([422, 'validation_failed']);
 		expect(codeOf(await m.client.post(path(w1), { password: PASSWORD }))).toEqual([422, 'validation_failed']);

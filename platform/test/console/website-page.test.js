@@ -41,6 +41,7 @@ import { testRouter } from './router.js';
  * @returns {Promise<any>}
  */
 const confirmOpen = async (/** @type {any} */ browser, /** @type {string} */ path) => {
+	await settle(2);
 	const all = [...document.querySelectorAll('[role="dialog"]')];
 	if (all.length > 0) {
 		const codeLabel = [...dialog().querySelectorAll('label')].find((l) => /code/i.test(l.textContent ?? ''));
@@ -752,7 +753,7 @@ describe('website page (jsdom)', () => {
 		fillDialog('Two-step or recovery code', '654321');
 		await pressDialog('Show token');
 		await until(() => assign.mock.calls.length === 1);
-		expect(assign).toHaveBeenCalledWith('/login?next=%2Fwebsites&expired=1');
+		expect(assign).toHaveBeenCalledWith('/?auth=1&next=%2Fwebsites&expired=1');
 	});
 
 	it('knows from the signed-in person’s answer whether two-step is on', () => {

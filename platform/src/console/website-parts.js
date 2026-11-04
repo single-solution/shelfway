@@ -1,9 +1,6 @@
 /**
  * The parts of a website's own address (both consoles), each its own address segment after the website:
- * `` (product rows home) · `products/:productId` (same home, scroll to row) · `install` · `usage` · `changes` ·
- * `settings/:section` · `setup`.
- * Binding plan (PLAN.md): home is front-first; `install` / `usage` / `changes` are legacy peer apps to collapse
- * (redirect), not the target IA. `settings` and `setup` stay addressable because they are long / focused.
+ * `` (product rows home) · `products/:productId` (same home, scroll to row) · `settings/:section` · `setup`.
  * Plain module (no `'use client'`): the server views and the loaders read it too.
  * @module
  */

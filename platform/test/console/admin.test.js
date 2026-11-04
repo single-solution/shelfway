@@ -478,7 +478,7 @@ describe('admin console smoke', () => {
 		expect(query({ a: 'x', b: null, c: '', d: 2 })).toBe('?a=x&d=2');
 		expect(query({})).toBe('');
 		expect(adminRoutes.activity({ merchantId: 'mer_1' })).toBe('/admin/activity?merchantId=mer_1');
-		expect(adminRoutes.login('/admin/x')).toBe('/login?next=%2Fadmin%2Fx');
+		expect(adminRoutes.login('/admin/x')).toBe('/?auth=1&next=%2Fadmin%2Fx');
 		expect(adminRoutes.merchant('mer_1', { q: 'shop', status: null })).toBe('/admin/merchants/mer_1?q=shop');
 		expect(adminRoutes.merchant('mer_1')).toBe('/admin/merchants/mer_1');
 		expect(adminRoutes.website('mer_1', 'web_1')).toBe('/admin/merchants/mer_1/websites/web_1');

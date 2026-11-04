@@ -577,7 +577,16 @@ export const createAccounts = (deps) => {
 		 */
 		sendStepUpOtp: async (kind, id, meta = {}) => {
 			const doc = await loadLogin(kind, id);
-			const otp = String(Math.floor(100000 + Math.random() * 900000));
+			const existing = await repo.peekTokenBySubject('step_up_otp', `${kind}:${id}`);
+			// If an OTP was already issued in the last 15 seconds, avoid redundant issuance and duplicate email delivery
+			if (existing && existing.data?.otp && existing.expireAt.getTime() - ctx.now() > 585_000) {
+				return { sent: true };
+			}
+			// If an existing OTP is still valid for > 1 minute, reuse the same code so previous emails stay valid
+			const otp =
+				existing && existing.data?.otp && existing.expireAt.getTime() > ctx.now() + 60_000
+					? String(existing.data.otp)
+					: String(Math.floor(100000 + Math.random() * 900000));
 			const tokenPlaintext = newToken(ctx.randomBytes);
 			await repo.dropTokens('step_up_otp', `${kind}:${id}`);
 			await repo.issueToken('step_up_otp', {
@@ -746,7 +755,7 @@ export const createAccounts = (deps) => {
 		 */
 		isLaunchStepUpRequired: async ({ kind, id }) => {
 			const doc = await logins(kind).findOne({ _id: id });
-			return Boolean(doc?.launchStepUp);
+			return doc?.launchStepUp !== false;
 		},
 	});
 };

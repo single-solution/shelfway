@@ -19,26 +19,12 @@ import {
 } from '../../../src/console/loaders.js';
 import { ACCOUNT_PARTS, routes } from '../../../src/console/paths.js';
 import { LEGACY_PEER_REDIRECTS, websitePartOf } from '../../../src/console/website-parts.js';
-import {
-	consoleApi,
-	consoleBranding,
-	consoleSession,
-	firstAdminAvailable,
-	merchantContext,
-	one,
-	redirectIfSignedIn,
-} from '../_lib/server.js';
+import { consoleApi, consoleBranding, consoleSession, merchantContext, one, redirectIfSignedIn } from '../_lib/server.js';
 import { AccountView } from '../../../src/console/views/account.js';
 import { CreditsView } from '../../../src/console/views/credits.js';
 import { DocsHubView } from '../../../src/console/views/docs.js';
 import { SharedSetupView } from '../../../src/console/views/setup.js';
-import {
-	ConfirmEmailView,
-	ForgotPasswordView,
-	ResetPasswordView,
-	SetPasswordView,
-	SignInView,
-} from '../../../src/console/views/sign-in.js';
+import { ConfirmEmailView, ForgotPasswordView, ResetPasswordView, SetPasswordView } from '../../../src/console/views/sign-in.js';
 import { OverviewView, WebsiteView, WebsitesView } from '../../../src/console/views/websites.js';
 
 export const dynamic = 'force-dynamic';
@@ -77,15 +63,8 @@ async function ForgotPasswordPage() {
 async function LoginPage({ searchParams }) {
 	await redirectIfSignedIn();
 	const q = await searchParams;
-	const notice = one(q.expired) === '1' ? 'expired' : one(q.notice);
-	return (
-		<SignInView
-			branding={await consoleBranding()}
-			firstAdmin={await firstAdminAvailable()}
-			next={one(q.next) ?? null}
-			notice={notice === 'expired' || notice === 'reset' || notice === 'email' ? notice : null}
-		/>
-	);
+	const next = one(q.next);
+	redirect(next ? `/?auth=1&next=${encodeURIComponent(next)}` : '/?auth=1');
 }
 
 async function ResetPasswordPage() {
@@ -138,7 +117,7 @@ async function DocsPage({ searchParams }) {
 	const q = (await searchParams) || {};
 	const session = await consoleSession();
 	if (!session.ok) {
-		redirect('/login?next=' + encodeURIComponent('/docs'));
+		redirect('/?auth=1&next=' + encodeURIComponent('/docs'));
 	}
 	const [branding, api] = await Promise.all([consoleBranding(), consoleApi()]);
 	const loaded = await loadDocsHub(api);
@@ -160,7 +139,7 @@ async function DocsProductPage({ params }) {
 	const { productId } = await params;
 	const session = await consoleSession();
 	if (!session.ok) {
-		redirect('/login?next=' + encodeURIComponent(`/docs/${productId}`));
+		redirect('/?auth=1&next=' + encodeURIComponent(`/docs/${productId}`));
 	}
 	const [branding, api] = await Promise.all([consoleBranding(), consoleApi()]);
 	const [loaded, productDetail] = await Promise.all([loadDocsHub(api), loadDocsProduct(api, productId)]);

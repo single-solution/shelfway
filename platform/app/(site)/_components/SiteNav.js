@@ -29,6 +29,16 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 		return () => window.removeEventListener('scroll', onScroll);
 	}, []);
 
+	useEffect(() => {
+		if (typeof window === 'undefined') return;
+		const params = new URLSearchParams(window.location.search);
+		if (params.has('auth') || params.has('login')) {
+			setShowSignInModal(true);
+			const n = params.get('next');
+			if (n) setSignInNext(n);
+		}
+	}, []);
+
 	const isCurrentHome = isHome || pathname === '/';
 	const isDocs = pathname === '/docs' || pathname.startsWith('/docs/');
 

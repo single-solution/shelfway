@@ -8,7 +8,7 @@
  * @module
  */
 import { useEffect, useMemo, useState } from 'react';
-import { Badge, Button, CodeBlock, Icon, ToastProvider, copyText } from '@shelfway/ui';
+import { Badge, Button, CodeBlock, Icon, Input, ToastProvider, copyText } from '@shelfway/ui';
 import { apiFetch } from '../client.js';
 
 /**
@@ -295,18 +295,16 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 					<aside className="w-72 shrink-0 border-r border-line bg-surface/60 overflow-y-auto flex flex-col p-4 space-y-6">
 						{/* Search Bar */}
 						<div>
-							<div className="relative">
-								<span className="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none text-muted">
-									<Icon name="search" size={14} />
-								</span>
-								<input
-									type="text"
-									placeholder="Search endpoints or guides..."
-									value={searchQuery}
-									onChange={(e) => setSearchQuery(e.target.value)}
-									className="w-full rounded-control border border-line bg-surface py-1.5 pl-8 pr-3 text-xs text-fg placeholder:text-muted focus:border-focus focus:outline-none"
-								/>
-							</div>
+							<Input
+								label="Search endpoints or guides"
+								hideLabel
+								type="search"
+								placeholder="Search endpoints or guides..."
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.currentTarget.value)}
+								prefix={<Icon name="search" size={14} />}
+								className="text-xs"
+							/>
 						</div>
 
 						{/* Section: Getting Started */}
@@ -731,44 +729,64 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 									</div>
 								</div>
 
-								{/* Parameters Table */}
+								{/* Parameters List */}
 								{currentOperation.parameters && currentOperation.parameters.length > 0 ? (
 									<div className="space-y-3">
 										<h3 className="text-sm font-semibold">Parameters</h3>
-										<div className="rounded-card border border-line bg-surface overflow-hidden">
-											<table className="w-full text-left text-xs">
-												<thead className="border-b border-line bg-surface-2 text-muted">
-													<tr>
-														<th className="p-2.5">Name</th>
-														<th className="p-2.5">In</th>
-														<th className="p-2.5">Type</th>
-														<th className="p-2.5">Required</th>
-														<th className="p-2.5">Description</th>
-													</tr>
-												</thead>
-												<tbody className="divide-y divide-line">
-													{currentOperation.parameters.map((/** @type {any} */ p, /** @type {number} */ idx) => {
-														const paramObj = p.name ? p : p.$ref ? { name: p.$ref.split('/').pop(), in: 'ref' } : p;
-														return (
-															<tr key={paramObj.name || idx}>
-																<td className="p-2.5 font-mono font-medium text-fg">{paramObj.name}</td>
-																<td className="p-2.5 font-mono text-muted">{paramObj.in || 'query'}</td>
-																<td className="p-2.5 font-mono text-primary">
-																	{paramObj.schema?.type || 'string'}
-																</td>
-																<td className="p-2.5">
-																	{paramObj.required ? (
-																		<span className="text-rose-600 font-bold">required</span>
-																	) : (
-																		<span className="text-muted">optional</span>
-																	)}
-																</td>
-																<td className="p-2.5 text-muted">{paramObj.description || '—'}</td>
-															</tr>
-														);
-													})}
-												</tbody>
-											</table>
+										<div
+											className="rounded-card border border-line bg-surface overflow-hidden"
+											role="table"
+											aria-label="Parameters">
+											<div
+												className="grid grid-cols-12 border-b border-line bg-surface-2 p-2.5 text-xs font-semibold text-muted"
+												role="row">
+												<div className="col-span-3" role="columnheader">
+													Name
+												</div>
+												<div className="col-span-2" role="columnheader">
+													In
+												</div>
+												<div className="col-span-2" role="columnheader">
+													Type
+												</div>
+												<div className="col-span-2" role="columnheader">
+													Required
+												</div>
+												<div className="col-span-3" role="columnheader">
+													Description
+												</div>
+											</div>
+											<div className="divide-y divide-line text-xs" role="rowgroup">
+												{currentOperation.parameters.map((/** @type {any} */ p, /** @type {number} */ idx) => {
+													const paramObj = p.name ? p : p.$ref ? { name: p.$ref.split('/').pop(), in: 'ref' } : p;
+													return (
+														<div
+															key={paramObj.name || idx}
+															className="grid grid-cols-12 p-2.5 items-center"
+															role="row">
+															<div className="col-span-3 font-mono font-medium text-fg" role="cell">
+																{paramObj.name}
+															</div>
+															<div className="col-span-2 font-mono text-muted" role="cell">
+																{paramObj.in || 'query'}
+															</div>
+															<div className="col-span-2 font-mono text-primary" role="cell">
+																{paramObj.schema?.type || 'string'}
+															</div>
+															<div className="col-span-2" role="cell">
+																{paramObj.required ? (
+																	<span className="text-rose-600 font-bold">required</span>
+																) : (
+																	<span className="text-muted">optional</span>
+																)}
+															</div>
+															<div className="col-span-3 text-muted" role="cell">
+																{paramObj.description || '-'}
+															</div>
+														</div>
+													);
+												})}
+											</div>
 										</div>
 									</div>
 								) : null}
