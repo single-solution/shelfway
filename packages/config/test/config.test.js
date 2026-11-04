@@ -36,6 +36,14 @@ describe('eslint config', () => {
 		expect(config[4]?.languageOptions?.globals).toHaveProperty('document');
 		expect(config[4]?.languageOptions?.parserOptions).toEqual({ ecmaFeatures: { jsx: true } });
 	});
+
+	it('adds design system restrictions when enforceDesignSystem is true', () => {
+		const config = createEslintConfig({ jsx: ['app/**/*.js'], enforceDesignSystem: true });
+		expect(config).toHaveLength(6);
+		const designRuleBlock = config.find((c) => c.rules && 'no-restricted-syntax' in c.rules && c.ignores);
+		expect(designRuleBlock).toBeDefined();
+		expect(JSON.stringify(designRuleBlock?.rules)).toContain('Design System Violation');
+	});
 });
 
 describe('vitest preset', () => {

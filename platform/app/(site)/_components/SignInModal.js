@@ -2,12 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import NextLink from 'next/link.js';
+import { Button, Callout, Dialog, Form, FormError, Input, TextLink, fieldErrors, problemCode } from '@shelfway/ui';
+import { apiFetch } from '../../../src/console/client.js';
 
 const Link = /** @type {any} */ (NextLink);
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 /**
  * Sign In Modal Popup for public website and docs navigation.
- * Allows visitors to authenticate without leaving their current surface.
+ * Built with @shelfway/ui Dialog, Input, and Button.
  *
  * @param {{
  *   open: boolean,
@@ -21,7 +25,8 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [busy, setBusy] = useState(false);
-	const [error, setError] = useState('');
+	const [problem, setProblem] = useState(/** @type {any | null} */ (null));
+	const [errors, setErrors] = useState(/** @type {Record<string, string>} */ ({}));
 	const [challenge, setChallenge] = useState(/** @type {string | null} */ (null));
 	const [totpCode, setTotpCode] = useState('');
 	const [useRecovery, setUseRecovery] = useState(false);
@@ -30,254 +35,206 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 		if (!open) {
 			setEmail('');
 			setPassword('');
-			setError('');
+			setProblem(null);
+			setErrors({});
 			setChallenge(null);
 			setTotpCode('');
 			setUseRecovery(false);
 		}
 	}, [open]);
 
-	useEffect(() => {
-		if (!open) return;
-		const onKeyDown = (e) => {
-			if (e.key === 'Escape') onClose();
-		};
-		window.addEventListener('keydown', onKeyDown);
-		return () => window.removeEventListener('keydown', onKeyDown);
-	}, [open, onClose]);
+	const done = (/** @type {string | undefined} */ consoleKind) => {
+		onClose();
+		if (onSuccess) {
+			onSuccess();
+		} else {
+			const destination = next || (consoleKind === 'admin' ? '/admin/overview' : '/overview');
+			window.location.assign(destination);
+		}
+	};
 
-	if (!open) return null;
-
-	const handleSignInSubmit = async (e) => {
-		e.preventDefault();
+	const handleSignInSubmit = async () => {
 		const trimmedEmail = email.trim();
-		if (!trimmedEmail || !password) {
-			setError('Please enter both your email and password.');
+		/** @type {Record<string, string>} */
+		const localErrors = {};
+		if (!trimmedEmail) {
+			localErrors.email = 'Email address is required.';
+		} else if (!EMAIL_REGEX.test(trimmedEmail)) {
+			localErrors.email = 'Enter a valid email address.';
+		}
+		if (!password) {
+			localErrors.password = 'Password is required.';
+		}
+		setErrors(localErrors);
+		if (Object.keys(localErrors).length > 0) return;
+
+		setBusy(true);
+		setProblem(null);
+		const result = await apiFetch('/v1/auth/sign-in', {
+			method: 'POST',
+			body: { email: trimmedEmail, password },
+			redirectOn401: false,
+		});
+		setBusy(false);
+		if (!result.ok) {
+			setProblem(result.problem);
+			setErrors(fieldErrors(result.problem));
 			return;
 		}
-		setBusy(true);
-		setError('');
-		try {
-			const res = await fetch('/v1/auth/sign-in', {
-				method: 'POST',
-				headers: { 'content-type': 'application/json', accept: 'application/json' },
-				body: JSON.stringify({ email: trimmedEmail, password }),
-			});
-			const data = await res.json().catch(() => null);
-			setBusy(false);
-			if (!res.ok) {
-				setError(data?.detail || data?.message || 'The email or password is incorrect.');
-				return;
-			}
-			if (data?.status === 'two_step_required' && data.challenge) {
-				setChallenge(data.challenge);
-				return;
-			}
-			onClose();
-			if (onSuccess) {
-				onSuccess();
-			} else {
-				const destination = next || (data?.console === 'admin' ? '/admin/overview' : '/overview');
-				window.location.assign(destination);
-			}
-		} catch (err) {
-			setBusy(false);
-			setError(err instanceof Error ? err.message : 'Sign in failed. Please try again.');
+		if (result.data?.status === 'two_step_required' && result.data.challenge) {
+			setChallenge(result.data.challenge);
+		} else {
+			done(result.data?.console);
 		}
 	};
 
-	const handleTwoStepSubmit = async (e) => {
-		e.preventDefault();
-		const codeValue = totpCode.trim();
-		if (!codeValue) {
-			setError(useRecovery ? 'Enter your recovery code.' : 'Enter the 6-digit code from your authenticator app.');
+	const handleTwoStepSubmit = async () => {
+		const value = useRecovery ? totpCode.trim() : totpCode.replace(/\s+/g, '');
+		if (useRecovery ? !/^[a-z2-7]{5}-?[a-z2-7]{5}$/i.test(value) : !/^\d{6}$/.test(value)) {
+			setErrors({
+				code: useRecovery ? 'Enter a valid 10-character recovery code.' : 'Enter a 6-digit code from your authenticator app.',
+			});
 			return;
 		}
 		setBusy(true);
-		setError('');
-		try {
-			const payload = {
-				challenge,
-				...(useRecovery ? { recoveryCode: codeValue } : { code: codeValue }),
-			};
-			const res = await fetch('/v1/auth/sign-in/two-step', {
-				method: 'POST',
-				headers: { 'content-type': 'application/json', accept: 'application/json' },
-				body: JSON.stringify(payload),
-			});
-			const data = await res.json().catch(() => null);
-			setBusy(false);
-			if (!res.ok) {
-				setError(data?.detail || 'The code is incorrect.');
-				return;
-			}
-			onClose();
-			if (onSuccess) {
-				onSuccess();
-			} else {
-				const destination = next || (data?.console === 'admin' ? '/admin/overview' : '/overview');
-				window.location.assign(destination);
-			}
-		} catch (err) {
-			setBusy(false);
-			setError(err instanceof Error ? err.message : 'Verification failed.');
+		setProblem(null);
+		setErrors({});
+		const result = await apiFetch('/v1/auth/sign-in/two-step', {
+			method: 'POST',
+			body: { challenge, ...(useRecovery ? { recoveryCode: value } : { code: value }) },
+			redirectOn401: false,
+		});
+		setBusy(false);
+		if (!result.ok) {
+			setProblem(result.problem);
+			setErrors(fieldErrors(result.problem));
+			return;
 		}
+		done(result.data?.console);
 	};
+
+	const suspended = problemCode(problem) === 'merchant_suspended';
 
 	return (
-		<div
-			className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-			role="dialog"
-			aria-modal="true"
-			aria-labelledby="signin-modal-title"
-			onMouseDown={(e) => {
-				if (e.target === e.currentTarget) onClose();
-			}}>
-			<div className="relative w-full max-w-md rounded-2xl border border-line bg-surface p-6 shadow-2xl text-fg sm:p-8">
-				<button
-					type="button"
-					onClick={onClose}
-					aria-label="Close dialog"
-					className="absolute top-4 right-4 rounded-lg p-1.5 text-muted hover:bg-surface-2 hover:text-fg transition">
-					<svg
-						width="18"
-						height="18"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						strokeWidth="2"
-						strokeLinecap="round"
-						strokeLinejoin="round">
-						<line x1="18" y1="6" x2="6" y2="18" />
-						<line x1="6" y1="6" x2="18" y2="18" />
-					</svg>
-				</button>
+		<Dialog
+			open={open}
+			onClose={onClose}
+			title={challenge ? 'Two-step verification' : `Sign in to ${brandName}`}
+			description={
+				challenge
+					? useRecovery
+						? 'Enter one of your backup recovery codes.'
+						: 'Enter the 6-digit code from your authenticator app.'
+					: 'Enter your credentials to access docs and your dashboard.'
+			}
+			size="sm">
+			{suspended ? <Callout tone="danger">Your account is suspended. Contact support.</Callout> : null}
 
-				<div className="mb-6 flex items-center gap-3">
-					<span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white font-mono text-sm font-bold shadow-sm">
-						S
-					</span>
-					<div>
-						<h2 id="signin-modal-title" className="text-xl font-bold tracking-tight">
-							{challenge ? 'Two-step verification' : `Sign in to ${brandName}`}
-						</h2>
-						<p className="text-xs text-muted">
-							{challenge
-								? useRecovery
-									? 'Enter a backup recovery code'
-									: 'Enter the code from your authenticator app'
-								: 'Enter your credentials to access docs and dashboard'}
-						</p>
+			{!challenge ? (
+				<Form onSubmit={handleSignInSubmit} busy={busy} aria-label="Sign in">
+					<Input
+						label="Email address"
+						type="email"
+						name="email"
+						autoComplete="username"
+						inputMode="email"
+						value={email}
+						onChange={(e) => {
+							setEmail(e.currentTarget.value);
+							if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
+						}}
+						error={errors.email}
+						required
+						autoFocus
+					/>
+
+					<Input
+						label="Password"
+						type="password"
+						name="password"
+						autoComplete="current-password"
+						value={password}
+						onChange={(e) => {
+							setPassword(e.currentTarget.value);
+							if (errors.password) setErrors((prev) => ({ ...prev, password: '' }));
+						}}
+						error={errors.password}
+						required
+					/>
+
+					{suspended ? null : <FormError problem={problem} fields={['email', 'password']} />}
+
+					<Button type="submit" block loading={busy} variant="primary">
+						Sign in
+					</Button>
+
+					<div className="flex items-center justify-between text-xs text-muted pt-1">
+						<span>Need an account? Contact support.</span>
+						<TextLink as={Link} href="/forgot-password" onClick={onClose}>
+							Forgot password?
+						</TextLink>
 					</div>
-				</div>
+				</Form>
+			) : (
+				<Form onSubmit={handleTwoStepSubmit} busy={busy} aria-label="Two-step verification">
+					<Input
+						label={useRecovery ? 'Recovery code' : 'Two-step code'}
+						name="code"
+						value={totpCode}
+						onPaste={(e) => {
+							if (!useRecovery) {
+								e.preventDefault();
+								const pasted = e.clipboardData.getData('text').replace(/\s+/g, '').slice(0, 6);
+								setTotpCode(pasted);
+								if (errors.code) setErrors((prev) => ({ ...prev, code: '' }));
+							}
+						}}
+						onChange={(e) => {
+							const val = useRecovery ? e.currentTarget.value : e.currentTarget.value.replace(/\s+/g, '');
+							setTotpCode(val);
+							if (errors.code) setErrors((prev) => ({ ...prev, code: '' }));
+						}}
+						autoComplete={useRecovery ? 'off' : 'one-time-code'}
+						inputMode={useRecovery ? 'text' : 'numeric'}
+						maxLength={useRecovery ? 16 : 6}
+						placeholder={useRecovery ? 'abcd-efgh-...' : '123456'}
+						error={errors.code || fieldErrors(problem).code || fieldErrors(problem).recoveryCode}
+						autoFocus
+						required
+					/>
 
-				{error ? (
-					<div className="mb-4 rounded-lg border border-danger/30 bg-danger/10 px-3 py-2 text-xs text-danger" role="alert">
-						{error}
+					<FormError problem={problem} fields={['code', 'recoveryCode']} />
+
+					<Button type="submit" block loading={busy} variant="primary">
+						Verify and continue
+					</Button>
+
+					<div className="flex items-center justify-between text-xs text-muted pt-1">
+						<Button
+							type="button"
+							variant="ghost"
+							size="sm"
+							onClick={() => {
+								setUseRecovery((v) => !v);
+								setTotpCode('');
+								setErrors({});
+							}}>
+							{useRecovery ? 'Use authenticator code instead' : 'Use a recovery code instead'}
+						</Button>
+						<Button
+							type="button"
+							variant="ghost"
+							size="sm"
+							onClick={() => {
+								setChallenge(null);
+								setPassword('');
+								setErrors({});
+							}}>
+							Start over
+						</Button>
 					</div>
-				) : null}
-
-				{!challenge ? (
-					<form onSubmit={handleSignInSubmit} className="space-y-4">
-						<div>
-							<label className="block text-xs font-semibold text-fg/80 mb-1" htmlFor="modal-email">
-								Email address
-							</label>
-							<input
-								id="modal-email"
-								type="email"
-								required
-								autoComplete="username"
-								value={email}
-								onChange={(e) => setEmail(e.target.value)}
-								placeholder="name@business.com"
-								className="w-full rounded-xl border border-line bg-canvas px-3.5 py-2.5 text-sm text-fg placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-							/>
-						</div>
-
-						<div>
-							<div className="flex items-center justify-between mb-1">
-								<label className="block text-xs font-semibold text-fg/80" htmlFor="modal-password">
-									Password
-								</label>
-								<Link
-									href="/forgot-password"
-									onClick={onClose}
-									className="text-xs text-primary hover:underline font-medium">
-									Forgot password?
-								</Link>
-							</div>
-							<input
-								id="modal-password"
-								type="password"
-								required
-								autoComplete="current-password"
-								value={password}
-								onChange={(e) => setPassword(e.target.value)}
-								placeholder="••••••••••••"
-								className="w-full rounded-xl border border-line bg-canvas px-3.5 py-2.5 text-sm text-fg placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-							/>
-						</div>
-
-						<button
-							type="submit"
-							disabled={busy}
-							className="mt-2 w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow hover:opacity-90 disabled:opacity-50 transition cursor-pointer">
-							{busy ? 'Signing in...' : 'Sign in'}
-						</button>
-					</form>
-				) : (
-					<form onSubmit={handleTwoStepSubmit} className="space-y-4">
-						<div>
-							<label className="block text-xs font-semibold text-fg/80 mb-1" htmlFor="modal-totp">
-								{useRecovery ? 'Recovery code' : '6-digit code'}
-							</label>
-							<input
-								id="modal-totp"
-								type="text"
-								required
-								autoFocus
-								autoComplete="one-time-code"
-								maxLength={useRecovery ? 16 : 6}
-								value={totpCode}
-								onChange={(e) => setTotpCode(e.target.value)}
-								placeholder={useRecovery ? 'abcde-fghij' : '123456'}
-								className="w-full rounded-xl border border-line bg-canvas px-3.5 py-2.5 font-mono text-center text-lg tracking-widest text-fg placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-							/>
-						</div>
-
-						<button
-							type="submit"
-							disabled={busy}
-							className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow hover:opacity-90 disabled:opacity-50 transition cursor-pointer">
-							{busy ? 'Verifying...' : 'Verify code'}
-						</button>
-
-						<div className="flex items-center justify-between pt-2 text-xs">
-							<button
-								type="button"
-								onClick={() => {
-									setUseRecovery(!useRecovery);
-									setTotpCode('');
-									setError('');
-								}}
-								className="text-primary hover:underline font-medium">
-								{useRecovery ? 'Use authenticator code instead' : 'Use recovery code instead'}
-							</button>
-							<button
-								type="button"
-								onClick={() => {
-									setChallenge(null);
-									setPassword('');
-									setError('');
-								}}
-								className="text-muted hover:text-fg">
-								Start over
-							</button>
-						</div>
-					</form>
-				)}
-			</div>
-		</div>
+				</Form>
+			)}
+		</Dialog>
 	);
 }

@@ -12,6 +12,16 @@ import { COMPANY_NAME, PRODUCT_BRAND } from './brand.js';
 export { COMPANY_NAME, PRODUCT_BRAND };
 
 /**
+ * Open the central sign-in modal from anywhere on the public site.
+ * @param {string | null} [next]
+ */
+export const openSignInModal = (next = null) => {
+	if (typeof window !== 'undefined') {
+		window.dispatchEvent(new CustomEvent('shelfway:open-signin', { detail: { next } }));
+	}
+};
+
+/**
  * Shared floating glass header for the public Portal surface (Website + Docs).
  * @param {{ brandName?: string, isHome?: boolean, session?: any }} props
  */
@@ -39,8 +49,29 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 		}
 	}, []);
 
+	useEffect(() => {
+		/** @param {any} e */
+		const handleOpen = (e) => {
+			setShowSignInModal(true);
+			if (e.detail?.next) setSignInNext(e.detail.next);
+		};
+		window.addEventListener('shelfway:open-signin', handleOpen);
+		return () => window.removeEventListener('shelfway:open-signin', handleOpen);
+	}, []);
+
 	const isCurrentHome = isHome || pathname === '/';
 	const isDocs = pathname === '/docs' || pathname.startsWith('/docs/');
+
+	const handleClose = () => {
+		setShowSignInModal(false);
+		if (typeof window !== 'undefined' && window.location.search) {
+			const url = new URL(window.location.href);
+			url.searchParams.delete('auth');
+			url.searchParams.delete('login');
+			url.searchParams.delete('next');
+			window.history.replaceState(null, '', url.pathname + (url.search || ''));
+		}
+	};
 
 	return (
 		<>
@@ -82,7 +113,7 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 					)}
 				</header>
 			</div>
-			<SignInModal open={showSignInModal} onClose={() => setShowSignInModal(false)} brandName={brandName} next={signInNext} />
+			<SignInModal open={showSignInModal} onClose={handleClose} brandName={brandName} next={signInNext} />
 		</>
 	);
 }
@@ -92,31 +123,26 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
  * @param {{ brandName?: string, companyName?: string, isHome?: boolean, session?: any }} props
  */
 export function SiteFooter({ brandName = PRODUCT_BRAND, companyName = COMPANY_NAME, isHome = false, session = null }) {
-	const [showSignInModal, setShowSignInModal] = useState(false);
-
 	return (
-		<>
-			<footer>
-				<div>
-					<strong>{brandName}</strong>
-					<span className="by">by {companyName}</span>
-				</div>
-				<nav aria-label="Footer">
-					<a href={isHome ? '#products' : '/#products'}>Features</a>
-					<Link href="/docs">Docs</Link>
-					{session ? (
-						<Link href="/overview">Dashboard</Link>
-					) : (
-						<button
-							type="button"
-							onClick={() => setShowSignInModal(true)}
-							className="cursor-pointer text-muted hover:text-fg transition">
-							Sign in
-						</button>
-					)}
-				</nav>
-			</footer>
-			<SignInModal open={showSignInModal} onClose={() => setShowSignInModal(false)} brandName={brandName} />
-		</>
+		<footer>
+			<div>
+				<strong>{brandName}</strong>
+				<span className="by">by {companyName}</span>
+			</div>
+			<nav aria-label="Footer">
+				<a href={isHome ? '#products' : '/#products'}>Features</a>
+				<Link href="/docs">Docs</Link>
+				{session ? (
+					<Link href="/overview">Dashboard</Link>
+				) : (
+					<button
+						type="button"
+						onClick={() => openSignInModal()}
+						className="cursor-pointer text-muted hover:text-fg transition">
+						Sign in
+					</button>
+				)}
+			</nav>
+		</footer>
 	);
 }

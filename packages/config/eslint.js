@@ -26,6 +26,21 @@ const FUNCTIONAL_RULES = /** @type {Readonly<import('eslint').Linter.RulesRecord
 	'no-console': 'error',
 });
 
+/** Design system enforcement rules: forbid raw HTML form controls in application components. */
+export const UI_DESIGN_SYSTEM_RULES = /** @type {Readonly<import('eslint').Linter.RulesRecord>} */ ({
+	'no-restricted-syntax': [
+		'error',
+		{
+			selector: 'JSXOpeningElement[name.name="input"]',
+			message: 'Design System Violation: Import and use Input from @shelfway/ui instead of raw <input>.',
+		},
+		{
+			selector: 'JSXOpeningElement[name.name="textarea"]',
+			message: 'Design System Violation: Import and use TextArea from @shelfway/ui instead of raw <textarea>.',
+		},
+	],
+});
+
 /**
  * JSX in `.js` files (React components). Core ESLint does not see JSX references, so PascalCase names used only in
  * JSX would read as unused.
@@ -44,12 +59,12 @@ const jsxConfig = (files, { browser = false } = {}) => ({
 
 /**
  * The flat config of one unit.
- * @param {{ jsx?: string[], browserJsx?: string[], ignores?: string[] }} [options]
+ * @param {{ jsx?: string[], browserJsx?: string[], ignores?: string[], enforceDesignSystem?: boolean }} [options]
  *   `jsx`: globs of server-side JSX files; `browserJsx`: globs of JSX files that also run in browsers;
- *   `ignores`: extra ignored globs
+ *   `ignores`: extra ignored globs; `enforceDesignSystem`: require @shelfway/ui form controls in JSX
  * @returns {import('eslint').Linter.Config[]}
  */
-export const createEslintConfig = ({ jsx = [], browserJsx = [], ignores = [] } = {}) => [
+export const createEslintConfig = ({ jsx = [], browserJsx = [], ignores = [], enforceDesignSystem = false } = {}) => [
 	{ ignores: [...IGNORES, ...ignores] },
 	js.configs.recommended,
 	{
@@ -60,6 +75,15 @@ export const createEslintConfig = ({ jsx = [], browserJsx = [], ignores = [] } =
 	},
 	...(jsx.length > 0 ? [jsxConfig(jsx)] : []),
 	...(browserJsx.length > 0 ? [jsxConfig(browserJsx, { browser: true })] : []),
+	...(enforceDesignSystem && (jsx.length > 0 || browserJsx.length > 0)
+		? [
+				{
+					files: [...new Set([...jsx, ...browserJsx])],
+					ignores: ['**/test/**', '**/*.test.*'],
+					rules: { ...UI_DESIGN_SYSTEM_RULES },
+				},
+			]
+		: []),
 	{
 		files: ['**/test/**/*.js', '**/*.test.js'],
 		languageOptions: { globals: { ...globals.node } },
