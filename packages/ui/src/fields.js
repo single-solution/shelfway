@@ -182,11 +182,24 @@ const isRow = (layout, inherited) => (layout ?? inherited) === 'row';
  * Label + control + messages layout (for custom controls). In a row layout (inside a {@link SettingsCard}, or with
  * `layout="row"`) the label and its help sit on the left and the control and its error on the right, stacking again
  * when the card is narrow (container query); hidden labels always stack.
- * @param {{ id?: string, label: ReactNode, hideLabel?: boolean, required?: boolean, help?: ReactNode,
+ * @param {{ id?: string, label: ReactNode, hideLabel?: boolean, required?: boolean, hideRequiredMark?: boolean, help?: ReactNode,
  *   error?: ReactNode, aside?: ReactNode, className?: string, wide?: boolean, layout?: 'stack' | 'row',
  *   children: (ids: { id: string, help: string, error: string, describedBy: string | undefined }) => ReactNode }} props
  */
-function Field({ id, label, hideLabel = false, required = false, help, error, aside, className, wide, layout, children }) {
+function Field({
+	id,
+	label,
+	hideLabel = false,
+	required = false,
+	hideRequiredMark = false,
+	help,
+	error,
+	aside,
+	className,
+	wide,
+	layout,
+	children,
+}) {
 	const ids = useFieldIds(id);
 	const inherited = useContext(FieldLayoutContext);
 	const row = isRow(layout, inherited) && !hideLabel;
@@ -194,7 +207,7 @@ function Field({ id, label, hideLabel = false, required = false, help, error, as
 		<div className={cx('flex items-center justify-between gap-2', hideLabel && 'sr-only')}>
 			<label htmlFor={ids.id} className={cx(LABEL_CLASS, 'min-w-0 break-words')}>
 				{label}
-				{required ? (
+				{required && !hideRequiredMark ? (
 					<span className="text-danger" aria-hidden="true">
 						{' '}
 						*
@@ -229,7 +242,7 @@ function Field({ id, label, hideLabel = false, required = false, help, error, as
 /**
  * `wide`: span the whole row of a field grid (and stack the label above the control in a setting row); `layout`
  * overrides the layout of the card around the field.
- * @typedef {{ label: ReactNode, hideLabel?: boolean, help?: ReactNode, error?: ReactNode, aside?: ReactNode,
+ * @typedef {{ label: ReactNode, hideLabel?: boolean, hideRequiredMark?: boolean, help?: ReactNode, error?: ReactNode, aside?: ReactNode,
  *   suffix?: ReactNode, prefix?: ReactNode, fieldClassName?: string, wide?: boolean, layout?: 'stack' | 'row' }} FieldProps
  */
 
@@ -242,6 +255,7 @@ function Field({ id, label, hideLabel = false, required = false, help, error, as
 export function Input({
 	label,
 	hideLabel,
+	hideRequiredMark,
 	help,
 	error,
 	aside,
@@ -263,6 +277,7 @@ export function Input({
 			{...(layout ? { layout } : {})}
 			{...(id ? { id } : {})}
 			{...(hideLabel ? { hideLabel } : {})}
+			{...(hideRequiredMark ? { hideRequiredMark } : {})}
 			required={Boolean(required)}
 			help={help}
 			error={error}
@@ -277,6 +292,7 @@ export function Input({
 							required={required}
 							aria-invalid={error ? true : undefined}
 							aria-describedby={ids.describedBy}
+							{...(rest.autoFocus ? { 'data-autofocus': '' } : {})}
 							className={cx(
 								'h-full min-w-0 flex-1 bg-transparent px-3 text-sm text-fg placeholder:text-muted/70 focus:outline-none disabled:cursor-not-allowed',
 								prefix ? 'pl-2' : null,
@@ -293,6 +309,7 @@ export function Input({
 						required={required}
 						aria-invalid={error ? true : undefined}
 						aria-describedby={ids.describedBy}
+						{...(rest.autoFocus ? { 'data-autofocus': '' } : {})}
 						className={cx(
 							controlClass(Boolean(error)),
 							LINE,

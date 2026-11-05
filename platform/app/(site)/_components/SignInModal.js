@@ -127,6 +127,13 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 						: 'Enter the 6-digit code from your authenticator app.'
 					: 'Enter your credentials to access docs and your dashboard.'
 			}
+			icon={
+				<span
+					className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-on-primary font-mono text-sm font-bold shadow-sm"
+					aria-hidden="true">
+					{brandName.charAt(0)}
+				</span>
+			}
 			size="sm">
 			{suspended ? <Callout tone="danger">Your account is suspended. Contact support.</Callout> : null}
 
@@ -138,6 +145,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 						name="email"
 						autoComplete="username"
 						inputMode="email"
+						placeholder="name@company.com"
 						value={email}
 						onChange={(e) => {
 							setEmail(e.currentTarget.value);
@@ -145,7 +153,9 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 						}}
 						error={errors.email}
 						required
+						hideRequiredMark
 						autoFocus
+						className="h-10 text-sm"
 					/>
 
 					<Input
@@ -153,6 +163,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 						type="password"
 						name="password"
 						autoComplete="current-password"
+						placeholder="Enter your password"
 						value={password}
 						onChange={(e) => {
 							setPassword(e.currentTarget.value);
@@ -160,19 +171,27 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 						}}
 						error={errors.password}
 						required
+						hideRequiredMark
+						className="h-10 text-sm"
+						aside={
+							<TextLink
+								as={Link}
+								href="/forgot-password"
+								onClick={onClose}
+								className="text-xs text-muted hover:text-primary transition">
+								Forgot password?
+							</TextLink>
+						}
 					/>
 
 					{suspended ? null : <FormError problem={problem} fields={['email', 'password']} />}
 
-					<Button type="submit" block loading={busy} variant="primary">
+					<Button type="submit" block loading={busy} variant="primary" size="md" className="h-10 font-semibold">
 						Sign in
 					</Button>
 
-					<div className="flex items-center justify-between text-xs text-muted pt-1">
+					<div className="text-center text-xs text-muted pt-1">
 						<span>Need an account? Contact support.</span>
-						<TextLink as={Link} href="/forgot-password" onClick={onClose}>
-							Forgot password?
-						</TextLink>
 					</div>
 				</Form>
 			) : (
@@ -201,6 +220,8 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 						error={errors.code || fieldErrors(problem).code || fieldErrors(problem).recoveryCode}
 						autoFocus
 						required
+						hideRequiredMark
+						className="h-10 text-sm"
 					/>
 
 					<FormError problem={problem} fields={['code', 'recoveryCode']} />

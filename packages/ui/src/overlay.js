@@ -117,7 +117,7 @@ export const useFocusTrap = (ref, open, onClose) => {
 /**
  * @typedef {{ open: boolean, onClose: () => void, title: ReactNode, description?: ReactNode, children?: ReactNode,
  *   footer?: ReactNode, size?: 'sm' | 'md' | 'lg', closeLabel?: string, dismissible?: boolean,
- *   placement?: 'right' | 'center' }} OverlayProps
+ *   placement?: 'right' | 'center', icon?: ReactNode }} OverlayProps
  */
 
 /**
@@ -167,7 +167,7 @@ export function Drawer({
 			data-state={presence.closing ? 'closed' : 'open'}
 			data-placement="right"
 			className={cx(
-				'group fixed inset-0 z-50 flex bg-overlay',
+				'group fixed inset-0 z-50 flex bg-overlay/70 backdrop-blur-md',
 				DRAWER.layer,
 				'animate-shelfway-fade data-[state=closed]:pointer-events-none data-[state=closed]:animate-shelfway-fade-out',
 			)}
@@ -188,7 +188,7 @@ export function Drawer({
 					'animate-shelfway-side group-data-[state=closed]:animate-shelfway-side-out focus:outline-none',
 				)}>
 				<div data-shelfway-part="header" className={DRAWER.header}>
-					<h2 id={titleId} className="min-w-0 truncate text-lead font-semibold tracking-[-0.01em] text-fg">
+					<h2 id={titleId} className="font-display min-w-0 truncate text-lead font-semibold tracking-tight text-fg">
 						{title}
 					</h2>
 					{status && status.length > 0 ? (
@@ -240,7 +240,18 @@ export function Drawer({
  * A short centered dialog (a bottom sheet on phones): a confirmation or a link to copy.
  * @param {Omit<OverlayProps, 'placement'>} props
  */
-function CenterDialog({ open, onClose, title, description, children, footer, size, closeLabel = 'Close', dismissible = true }) {
+function CenterDialog({
+	open,
+	onClose,
+	title,
+	description,
+	children,
+	footer,
+	size,
+	closeLabel = 'Close',
+	dismissible = true,
+	icon,
+}) {
 	const ref = useRef(/** @type {HTMLDivElement | null} */ (null));
 	const titleId = useId();
 	const descriptionId = useId();
@@ -256,7 +267,7 @@ function CenterDialog({ open, onClose, title, description, children, footer, siz
 			data-state={presence.closing ? 'closed' : 'open'}
 			data-placement="center"
 			className={cx(
-				'group fixed inset-0 z-50 flex items-end justify-center bg-overlay p-0 sm:items-center sm:p-4',
+				'group fixed inset-0 z-50 flex items-end justify-center bg-overlay/70 backdrop-blur-md p-0 sm:items-center sm:p-4',
 				'animate-shelfway-fade data-[state=closed]:pointer-events-none data-[state=closed]:animate-shelfway-fade-out',
 			)}
 			onMouseDown={(event) => {
@@ -275,22 +286,25 @@ function CenterDialog({ open, onClose, title, description, children, footer, siz
 					size === 'sm' ? 'max-w-md' : size === 'lg' ? 'max-w-3xl' : 'max-w-xl',
 				)}>
 				<div className="flex items-start justify-between gap-4 px-6 pt-6 pb-1">
-					<div className="min-w-0">
-						<h2 id={titleId} className="text-lead font-semibold tracking-[-0.01em] text-fg">
-							{title}
-						</h2>
-						{description ? (
-							<p id={descriptionId} className="mt-1 text-sm text-muted">
-								{description}
-							</p>
-						) : null}
+					<div className="flex items-start gap-3 min-w-0">
+						{icon ? <div className="shrink-0 mt-0.5">{icon}</div> : null}
+						<div className="min-w-0">
+							<h2 id={titleId} className="font-display text-xl font-bold tracking-tight text-fg">
+								{title}
+							</h2>
+							{description ? (
+								<p id={descriptionId} className="mt-1 text-xs text-muted leading-relaxed">
+									{description}
+								</p>
+							) : null}
+						</div>
 					</div>
 					{dismissible ? (
 						<button
 							type="button"
 							onClick={onClose}
 							aria-label={closeLabel}
-							className="shelfway-motion shelfway-press rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg focus-visible:outline-2 focus-visible:outline-focus">
+							className="shelfway-motion shelfway-press rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg focus:outline-none focus-visible:outline-2 focus-visible:outline-focus">
 							<Icon name="close" size={16} />
 						</button>
 					) : null}

@@ -971,6 +971,7 @@
 	input:-webkit-autofill:focus,
 	textarea:-webkit-autofill,
 	select:-webkit-autofill {
+		-webkit-box-shadow: 0 0 0 1000px var(--shelfway-surface) inset;
 		-webkit-text-fill-color: var(--shelfway-fg);
 		caret-color: var(--shelfway-fg);
 		transition:
