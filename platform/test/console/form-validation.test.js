@@ -30,7 +30,7 @@ describe('Tier 1 Client-Side Pre-Validation', () => {
 		);
 
 		// Find submit button and click without filling required fields
-		const submitBtn = document.querySelector('button[type="submit"]');
+		const submitBtn = /** @type {HTMLButtonElement} */ (document.querySelector('button[type="submit"]'));
 		expect(submitBtn).toBeTruthy();
 		await click(submitBtn);
 
@@ -63,7 +63,7 @@ describe('Tier 1 Client-Side Pre-Validation', () => {
 		await type(byLabel(document, 'Owner name'), 'Alice Smith');
 		await type(byLabel(document, 'Owner email (login)'), 'not-an-email');
 
-		const submitBtn = document.querySelector('button[type="submit"]');
+		const submitBtn = /** @type {HTMLButtonElement} */ (document.querySelector('button[type="submit"]'));
 		await click(submitBtn);
 
 		expect(apiFetchSpy).not.toHaveBeenCalled();
@@ -80,12 +80,14 @@ describe('Tier 1 Client-Side Pre-Validation', () => {
 		);
 
 		// Empty submit
-		const submitBtn = document.querySelector('button[type="submit"]');
+		const submitBtn = /** @type {HTMLButtonElement} */ (document.querySelector('button[type="submit"]'));
 		await click(submitBtn);
 		expect(apiFetchSpy).not.toHaveBeenCalled();
 
 		// Invalid domain format
-		const domainInput = document.querySelector('input[type="text"], input[inputmode="url"]');
+		const domainInput = /** @type {HTMLInputElement} */ (
+			document.querySelector('input[type="text"], input[inputmode="url"]')
+		);
 		expect(domainInput).toBeTruthy();
 		await type(domainInput, 'invalid domain name');
 		await click(submitBtn);
@@ -108,7 +110,7 @@ describe('Tier 1 Client-Side Pre-Validation', () => {
 		const nameInput = byLabel(document, 'Business name');
 		await type(nameInput, '   ');
 
-		const submitBtn = document.querySelector('button[type="submit"]');
+		const submitBtn = /** @type {HTMLButtonElement} */ (document.querySelector('button[type="submit"]'));
 		await click(submitBtn);
 
 		// Submission must be blocked

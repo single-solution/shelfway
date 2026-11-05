@@ -603,11 +603,31 @@ export function WebsitePageView({
 				onClose={() => setRevealedPack(null)}
 				title="Developer Access & Website Credentials"
 				description={`Access link and environment credentials for ${website.domain}. Scoped to active products only.`}>
-				{revealedPack ? (
+				{revealedPack ? (() => {
+					const browserToken =
+						revealedPack.products?.find((/** @type {any} */ p) => p.browserToken)?.browserToken || '';
+					const serverToken =
+						revealedPack.products?.find((/** @type {any} */ p) => p.serverToken)?.serverToken || '';
+					const docsLink =
+						typeof window !== 'undefined'
+							? `${window.location.origin}/docs?website=${encodeURIComponent(website.domain)}${
+									browserToken ? `&token=${encodeURIComponent(browserToken)}` : ''
+								}`
+							: '';
+					const envSnippet = [
+						`NEXT_PUBLIC_SHELFWAY_DOMAIN="${typeof window !== 'undefined' ? window.location.origin : 'https://shelfway.com'}"`,
+						`NEXT_PUBLIC_SHELFWAY_WEBSITE_DOMAIN="${website.domain}"`,
+						browserToken ? `NEXT_PUBLIC_SHELFWAY_CLIENT_TOKEN="${browserToken}"` : null,
+						serverToken ? `SHELFWAY_SERVER_TOKEN="${serverToken}"` : null,
+					]
+						.filter(Boolean)
+						.join('\n');
+
+					return (
 					<div className="space-y-4 pt-1">
 						<div className="space-y-1.5">
 							<span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted">
-								Documentation & API Access Link
+								Documentation &amp; API Access Link
 							</span>
 							<p className="text-xs text-muted">
 								Share this link with whoever is coding your site. They can view interactive docs and live endpoints without an account.
@@ -617,27 +637,14 @@ export function WebsitePageView({
 									readOnly
 									hideLabel
 									label="Developer Documentation Link"
-									value={
-										typeof window !== 'undefined'
-											? `${window.location.origin}/docs?website=${encodeURIComponent(website.domain)}${
-													revealedPack.products?.find((p) => p.browserToken)?.browserToken
-														? `&token=${encodeURIComponent(revealedPack.products.find((p) => p.browserToken).browserToken)}`
-														: ''
-												}`
-											: ''
-									}
+									value={docsLink}
 									className="flex-1 font-mono text-xs"
 								/>
 								<Button
 									size="sm"
 									variant="secondary"
 									onClick={() => {
-										const link = `${window.location.origin}/docs?website=${encodeURIComponent(website.domain)}${
-											revealedPack.products?.find((p) => p.browserToken)?.browserToken
-												? `&token=${encodeURIComponent(revealedPack.products.find((p) => p.browserToken).browserToken)}`
-												: ''
-										}`;
-										copyText(link, 'Copied Link');
+										copyText(docsLink);
 										toast.show({ title: 'Link copied to clipboard' });
 									}}>
 									Copy Link
@@ -654,35 +661,14 @@ export function WebsitePageView({
 									size="sm"
 									variant="ghost"
 									onClick={() => {
-										const bToken = revealedPack.products?.find((p) => p.browserToken)?.browserToken || '';
-										const sToken = revealedPack.products?.find((p) => p.serverToken)?.serverToken || '';
-										const snippet = [
-											`NEXT_PUBLIC_SHELFWAY_DOMAIN="${typeof window !== 'undefined' ? window.location.origin : 'https://shelfway.com'}"`,
-											`NEXT_PUBLIC_SHELFWAY_WEBSITE_DOMAIN="${website.domain}"`,
-											bToken ? `NEXT_PUBLIC_SHELFWAY_CLIENT_TOKEN="${bToken}"` : null,
-											sToken ? `SHELFWAY_SERVER_TOKEN="${sToken}"` : null,
-										]
-											.filter(Boolean)
-											.join('\n');
-										copyText(snippet, 'Copied .env');
+										copyText(envSnippet);
 										toast.show({ title: 'Config copied to clipboard' });
 									}}>
 									Copy .env
 								</Button>
 							</div>
 							<CodeBlock
-								code={[
-									`NEXT_PUBLIC_SHELFWAY_DOMAIN="${typeof window !== 'undefined' ? window.location.origin : 'https://shelfway.com'}"`,
-									`NEXT_PUBLIC_SHELFWAY_WEBSITE_DOMAIN="${website.domain}"`,
-									revealedPack.products?.find((p) => p.browserToken)?.browserToken
-										? `NEXT_PUBLIC_SHELFWAY_CLIENT_TOKEN="${revealedPack.products.find((p) => p.browserToken).browserToken}"`
-										: null,
-									revealedPack.products?.find((p) => p.serverToken)?.serverToken
-										? `SHELFWAY_SERVER_TOKEN="${revealedPack.products.find((p) => p.serverToken).serverToken}"`
-										: null,
-								]
-									.filter(Boolean)
-									.join('\n')}
+								code={envSnippet}
 								label="Environment Variables"
 								wrap
 							/>
@@ -714,7 +700,8 @@ export function WebsitePageView({
 							</Button>
 						</div>
 					</div>
-				) : null}
+					);
+				})() : null}
 			</Dialog>
 			<TypedConfirmDialog
 				open={Boolean(removing)}

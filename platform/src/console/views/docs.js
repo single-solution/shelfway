@@ -143,6 +143,8 @@ const STATIC_SDK_GUIDES = [
  *   initialProductId?: string,
  *   initialOpKey?: string,
  *   initialSection?: string,
+ *   initialToken?: string,
+ *   initialWebsite?: string,
  * }} props
  */
 export function DocsHubView({
@@ -173,6 +175,11 @@ export function DocsHubView({
 	const [roleViewMode, setRoleViewMode] = useState(isDeveloperRole ? 'developer' : 'storefront');
 
 	// Synchronize URL query params seamlessly without page reloads
+	/**
+	 * @param {string | null} [pId]
+	 * @param {string | null} [op]
+	 * @param {string} [sec]
+	 */
 	const syncUrl = (pId, op, sec) => {
 		if (typeof window === 'undefined') return;
 		const params = new URLSearchParams(window.location.search);
@@ -259,6 +266,7 @@ export function DocsHubView({
 		);
 	}, [operations, searchQuery]);
 
+	/** @param {string} productId */
 	const selectProduct = (productId) => {
 		setSelectedProductId(productId);
 		setSelectedOpKey(null);
@@ -266,12 +274,14 @@ export function DocsHubView({
 		syncUrl(productId, null, 'products');
 	};
 
+	/** @param {string | null} opKey */
 	const selectOperation = (opKey) => {
 		setSelectedOpKey(opKey);
 		setActiveSection('products');
 		syncUrl(selectedProductId, opKey, 'products');
 	};
 
+	/** @param {string} section */
 	const selectSection = (section) => {
 		setActiveSection(section);
 		setSelectedOpKey(null);
