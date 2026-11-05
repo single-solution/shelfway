@@ -19,7 +19,7 @@ const SCREEN_FOLDERS = [
 ];
 
 /** Folders that are never screens. */
-const SKIPPED = new Set(['test', 'tests', '__tests__', 'node_modules', '.next', 'coverage', '(site)']);
+const SKIPPED = new Set(['test', 'tests', '__tests__', 'node_modules', '.next', 'coverage']);
 
 /** Kit parts a screen does not use any more, found by their import from `@shelfway/ui` (or `@shelfway/ui/dashboard`, …). */
 const BANNED_IMPORTS = ['DataTable', 'Table', 'Disclosure', 'PillTabs'];
