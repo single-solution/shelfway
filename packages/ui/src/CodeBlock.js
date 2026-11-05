@@ -93,7 +93,7 @@ export function CodeBlock({ code, label, secret = false, wrap = true, className 
 			{secret ? (
 				<p className="flex items-center gap-1.5 text-xs font-medium text-warning">
 					<Icon name="alert" size={12} />
-					Copy it now — it is shown only once and cannot be displayed again.
+					Copy it now - it is shown only once and cannot be displayed again.
 				</p>
 			) : null}
 		</div>

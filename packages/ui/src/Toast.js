@@ -113,7 +113,7 @@ function ToastCard({ toast, words, onDismiss, onGone }) {
 			ref={presence.ref}
 			data-state={presence.closing ? 'closed' : 'open'}
 			className={cx(
-				'pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-card border border-line bg-surface px-3.5 py-3 text-sm text-fg shadow-overlay',
+				'pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-card border border-line bg-surface/95 backdrop-blur-xl px-3.5 py-3 text-sm text-fg shadow-overlay',
 				'animate-shelfway-toast data-[state=closed]:pointer-events-none data-[state=closed]:animate-shelfway-toast-out',
 			)}>
 			<Icon

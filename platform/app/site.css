@@ -1,10 +1,10 @@
 /*
  * Marketing layout for Portal `/` (composition only).
- * Theme pack: Unite — tokens from `@shelfway/ui/theme.css` (see packages/ui/THEME-PACK.md).
+ * Theme pack: Unite - tokens from `@shelfway/ui/theme.css` (see packages/ui/THEME-PACK.md).
  * Alias kit vars below; never redefine a parallel palette here.
  */
 .shelfway-site {
-	/* readable column — ~85% viewport, not full-bleed */
+	/* readable column - ~85% viewport, not full-bleed */
 	--max: min(85vw, 96rem);
 	--gutter: clamp(1.25rem, 3.5vw, 2.5rem);
 	--d: 0;
@@ -36,7 +36,7 @@
 	box-shadow: 4px 4px 0 color-mix(in srgb, var(--shelfway-primary) 18%, transparent);
 }
 
-/* nav: sticky bar — stays visible while scrolling */
+/* nav: sticky bar - stays visible while scrolling */
 .shelfway-site .nav-shell {
 	position: sticky;
 	top: 0;
@@ -787,7 +787,7 @@
 }
 
 .shelfway-site .feature-detail .gets li::before {
-	content: '✓';
+	content: '\2713';
 	position: absolute;
 	left: 0;
 	top: 0;
@@ -949,7 +949,7 @@
 }
 
 .shelfway-site .handoff-bits li::before {
-	content: '✓';
+	content: '\2713';
 	position: absolute;
 	left: 0;
 	top: 0;
@@ -1009,7 +1009,7 @@
 	transform: none;
 }
 
-/* Internal screen mockups — same Unite glass/hard language */
+/* Internal screen mockups - same Unite glass/hard language */
 .shelfway-site .shot-chrome {
 	display: flex;
 	align-items: center;

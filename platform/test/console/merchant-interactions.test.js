@@ -388,7 +388,8 @@ describe('merchant console interactions (jsdom): sign-in, Account, Overview, web
 		expect(shows('Spend per UTC day (last 30 days)')).toBe(true);
 		await press('Open Notes · beta.example.com');
 		await e.api.post('/v1/me/step-up-otp', {});
-		fillDialog('Two-step or recovery code', world.lastOtp('bea@beta.test'));
+		const otp1 = await until(() => world.lastOtp('bea@beta.test'));
+		fillDialog('Two-step or recovery code', String(otp1));
 		await pressDialog('Open configure');
 		const launched = await e.waitCall(
 			'POST',
@@ -401,7 +402,8 @@ describe('merchant console interactions (jsdom): sign-in, Account, Overview, web
 		await world.ownerBrowser.api.post(`/v1/admin/merchants/${beta.merchantId}/suspend`, { reason: 'check' });
 		await press('Open Notes · beta.example.com');
 		await e.api.post('/v1/me/step-up-otp', {});
-		fillDialog('Two-step or recovery code', world.lastOtp('bea@beta.test'));
+		const otp2 = await until(() => world.lastOtp('bea@beta.test'));
+		fillDialog('Two-step or recovery code', String(otp2));
 		await pressDialog('Open configure');
 		await e.waitCall(
 			'POST',

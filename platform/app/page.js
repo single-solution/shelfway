@@ -1,5 +1,5 @@
-import { consoleApi, consoleSession } from '../(console)/_lib/server.js';
-import { loadDocsHub } from '../../src/console/loaders.js';
+import { consoleApi, consoleSession } from './(console)/_lib/server.js';
+import { loadDocsHub } from '../src/console/loaders.js';
 import { COMPANY_NAME, PRODUCT_BRAND } from './_components/brand.js';
 import { SiteHome } from './_components/SiteHome.js';
 
@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export async function generateMetadata() {
 	return {
 		title: { absolute: PRODUCT_BRAND },
-		description: `${PRODUCT_BRAND} by ${COMPANY_NAME}: ready website features — sign-in, payments, chat, and more — without building them yourself. You keep the look. One account to manage it. Plans follow your account.`,
+		description: `${PRODUCT_BRAND} by ${COMPANY_NAME}: ready website features - sign-in, payments, chat, and more - without building them yourself. You keep the look. One account to manage it. Plans follow your account.`,
 		robots: { index: true, follow: true },
 	};
 }
@@ -26,11 +26,13 @@ export default async function SitePage() {
 				}))
 			: [];
 	return (
-		<SiteHome
-			productName={PRODUCT_BRAND}
-			companyName={COMPANY_NAME}
-			products={products}
-			session={session.ok ? session : null}
-		/>
+		<div className="shelfway-site bg-canvas text-fg font-sans">
+			<SiteHome
+				productName={PRODUCT_BRAND}
+				companyName={COMPANY_NAME}
+				products={products}
+				session={session.ok ? session : null}
+			/>
+		</div>
 	);
 }

@@ -87,13 +87,18 @@ async function WebsitesPage() {
 	return <WebsitesView {...websites} branding={welcome ? await consoleBranding() : undefined} />;
 }
 
-/** @param {{ params: Promise<{ websiteId: string, part?: string, sub?: string }> }} props */
-async function WebsitePage({ params }) {
+/** @param {{ params: Promise<{ websiteId: string, part?: string, sub?: string }>, searchParams?: Promise<Record<string, string | string[] | undefined>> }} props */
+async function WebsitePage({ params, searchParams }) {
 	const { websiteId, part, sub } = await params;
-	if (part && LEGACY_PEER_REDIRECTS.includes(/** @type {any} */ (part))) {
+	const q = (await searchParams) || {};
+	const queryPart =
+		one(q.part) ||
+		(one(q.tab) ? (one(q.section) ? `${one(q.tab)}/${one(q.section)}` : one(q.tab)) : one(q.product) ? `products/${one(q.product)}` : '');
+	const effectivePart = part || queryPart;
+	if (effectivePart && LEGACY_PEER_REDIRECTS.includes(/** @type {any} */ (effectivePart))) {
 		redirect(routes.website(websiteId));
 	}
-	const path = websitePartOf(part, sub);
+	const path = websitePartOf(effectivePart, sub);
 	const { api, merchantId } = await merchantContext(routes.websitePart(websiteId, path));
 	return <WebsiteView {...await loadWebsitePage(api, merchantId, websiteId, path)} />;
 }

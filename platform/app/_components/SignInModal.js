@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import NextLink from 'next/link.js';
-import { Button, Callout, Dialog, Form, FormError, Input, TextLink, fieldErrors, problemCode } from '@shelfway/ui';
-import { apiFetch } from '../../../src/console/client.js';
+import { Button, Callout, Dialog, Form, FormError, Input, OtpInput, TextLink, fieldErrors, problemCode } from '@shelfway/ui';
+import { apiFetch } from '../../src/console/client.js';
 
 const Link = /** @type {any} */ (NextLink);
 
@@ -29,6 +29,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 	const [errors, setErrors] = useState(/** @type {Record<string, string>} */ ({}));
 	const [challenge, setChallenge] = useState(/** @type {string | null} */ (null));
 	const [totpCode, setTotpCode] = useState('');
+	const [recoveryCode, setRecoveryCode] = useState('');
 	const [useRecovery, setUseRecovery] = useState(false);
 
 	useEffect(() => {
@@ -39,6 +40,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 			setErrors({});
 			setChallenge(null);
 			setTotpCode('');
+			setRecoveryCode('');
 			setUseRecovery(false);
 		}
 	}, [open]);
@@ -88,14 +90,36 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 		}
 	};
 
-	const handleTwoStepSubmit = async () => {
-		const value = useRecovery ? totpCode.trim() : totpCode.replace(/\s+/g, '');
-		if (useRecovery ? !/^[a-z2-7]{5}-?[a-z2-7]{5}$/i.test(value) : !/^\d{6}$/.test(value)) {
-			setErrors({
-				code: useRecovery ? 'Enter a valid 10-character recovery code.' : 'Enter a 6-digit code from your authenticator app.',
-			});
-			return;
+	/** @param {string} [overrideCode] */
+	const handleTwoStepSubmit = async (overrideCode) => {
+		const raw = typeof overrideCode === 'string' ? overrideCode : useRecovery ? recoveryCode : totpCode;
+		const value = useRecovery ? raw.trim() : raw.replace(/\D/g, '');
+
+		// Client-side pre-validation (Tier 1)
+		if (useRecovery) {
+			if (!value) {
+				setErrors({ code: 'Recovery code is required.' });
+				return;
+			}
+			if (!/^[a-z2-7]{5}-?[a-z2-7]{5}$/i.test(value)) {
+				setErrors({ code: 'Enter a valid 10-character recovery code.' });
+				return;
+			}
+		} else {
+			if (!value) {
+				setErrors({ code: 'Enter the 6-digit code from your authenticator app.' });
+				return;
+			}
+			if (value.length < 6) {
+				setErrors({ code: 'Please enter all 6 digits.' });
+				return;
+			}
+			if (!/^\d{6}$/.test(value)) {
+				setErrors({ code: 'Verification code must contain digits only.' });
+				return;
+			}
 		}
+
 		setBusy(true);
 		setProblem(null);
 		setErrors({});
@@ -108,6 +132,9 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 		if (!result.ok) {
 			setProblem(result.problem);
 			setErrors(fieldErrors(result.problem));
+			if (!useRecovery) {
+				setTotpCode('');
+			}
 			return;
 		}
 		done(result.data?.console);
@@ -120,19 +147,13 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 			open={open}
 			onClose={onClose}
 			title={challenge ? 'Two-step verification' : `Sign in to ${brandName}`}
+			eyebrow={challenge ? 'TWO-STEP VERIFICATION' : 'PORTAL ACCESS'}
 			description={
 				challenge
 					? useRecovery
 						? 'Enter one of your backup recovery codes.'
 						: 'Enter the 6-digit code from your authenticator app.'
 					: 'Enter your credentials to access docs and your dashboard.'
-			}
-			icon={
-				<span
-					className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-on-primary font-mono text-sm font-bold shadow-sm"
-					aria-hidden="true">
-					{brandName.charAt(0)}
-				</span>
 			}
 			size="sm">
 			{suspended ? <Callout tone="danger">Your account is suspended. Contact support.</Callout> : null}
@@ -195,38 +216,49 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 					</div>
 				</Form>
 			) : (
-				<Form onSubmit={handleTwoStepSubmit} busy={busy} aria-label="Two-step verification">
-					<Input
-						label={useRecovery ? 'Recovery code' : 'Two-step code'}
-						name="code"
-						value={totpCode}
-						onPaste={(e) => {
-							if (!useRecovery) {
-								e.preventDefault();
-								const pasted = e.clipboardData.getData('text').replace(/\s+/g, '').slice(0, 6);
-								setTotpCode(pasted);
+				<Form onSubmit={() => void handleTwoStepSubmit()} busy={busy} aria-label="Two-step verification">
+					{useRecovery ? (
+						<Input
+							label="Recovery code"
+							name="recoveryCode"
+							value={recoveryCode}
+							onChange={(e) => {
+								setRecoveryCode(e.currentTarget.value);
 								if (errors.code) setErrors((prev) => ({ ...prev, code: '' }));
-							}
-						}}
-						onChange={(e) => {
-							const val = useRecovery ? e.currentTarget.value : e.currentTarget.value.replace(/\s+/g, '');
-							setTotpCode(val);
-							if (errors.code) setErrors((prev) => ({ ...prev, code: '' }));
-						}}
-						autoComplete={useRecovery ? 'off' : 'one-time-code'}
-						inputMode={useRecovery ? 'text' : 'numeric'}
-						maxLength={useRecovery ? 16 : 6}
-						placeholder={useRecovery ? 'abcd-efgh-...' : '123456'}
-						error={errors.code || fieldErrors(problem).code || fieldErrors(problem).recoveryCode}
-						autoFocus
-						required
-						hideRequiredMark
-						className="h-10 text-sm"
-					/>
+							}}
+							placeholder="abcd-efgh-ijkl"
+							help="Enter one of your 10-character backup recovery codes."
+							error={errors.code || fieldErrors(problem).code || fieldErrors(problem).recoveryCode}
+							autoFocus
+							required
+							hideRequiredMark
+							className="h-10 font-mono text-sm"
+						/>
+					) : (
+						<div className="py-1">
+							<OtpInput
+								label="Two-step code"
+								name="code"
+								length={6}
+								value={totpCode}
+								onChange={(val) => {
+									setTotpCode(val);
+									if (errors.code) setErrors((prev) => ({ ...prev, code: '' }));
+								}}
+								onComplete={(val) => {
+									void handleTwoStepSubmit(val);
+								}}
+								error={errors.code || fieldErrors(problem).code || fieldErrors(problem).recoveryCode}
+								autoFocus
+								required
+								hideRequiredMark
+							/>
+						</div>
+					)}
 
 					<FormError problem={problem} fields={['code', 'recoveryCode']} />
 
-					<Button type="submit" block loading={busy} variant="primary">
+					<Button type="submit" block loading={busy} variant="primary" size="md" className="h-10 font-semibold">
 						Verify and continue
 					</Button>
 
@@ -238,6 +270,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 							onClick={() => {
 								setUseRecovery((v) => !v);
 								setTotpCode('');
+								setRecoveryCode('');
 								setErrors({});
 							}}>
 							{useRecovery ? 'Use authenticator code instead' : 'Use a recovery code instead'}
@@ -249,7 +282,11 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 							onClick={() => {
 								setChallenge(null);
 								setPassword('');
+								setTotpCode('');
+								setRecoveryCode('');
+								setUseRecovery(false);
 								setErrors({});
+								setProblem(null);
 							}}>
 							Start over
 						</Button>

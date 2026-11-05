@@ -174,18 +174,55 @@ function CopyLinkDialog({ link, onClose }) {
 export function AddMerchantDialog({ open, onClose, onCreated }) {
 	const toast = useToast();
 	const [form, setForm] = useState({ name: '', ownerName: '', email: '', phone: '', address: '', country: '' });
+	const [clientErrors, setClientErrors] = useState(/** @type {Record<string, string>} */ ({}));
 	const [busy, setBusy] = useState(false);
 	const [problem, setProblem] = useState(/** @type {Problem | null} */ (null));
 	const [unmailedLink, setUnmailedLink] = useState(/** @type {string | null} */ (null));
+
+	const validate = () => {
+		/** @type {Record<string, string>} */
+		const errs = {};
+		const name = form.name.trim();
+		const ownerName = form.ownerName.trim();
+		const email = form.email.trim();
+		if (!name) errs.name = 'Business name is required.';
+		else if (name.length > 120) errs.name = 'Business name cannot exceed 120 characters.';
+		if (!ownerName) errs.ownerName = 'Contact name is required.';
+		else if (ownerName.length > 120) errs.ownerName = 'Contact name cannot exceed 120 characters.';
+		if (!email) errs.email = 'Email address is required.';
+		else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = 'Enter a valid email address.';
+		return errs;
+	};
+
 	const handleInput = (/** @type {any} */ e) => {
 		const { name, value } = e.currentTarget;
 		setForm((f) => ({ ...f, [name]: value }));
+		if (clientErrors[name]) {
+			setClientErrors((prev) => {
+				const next = { ...prev };
+				delete next[name];
+				return next;
+			});
+		}
 	};
 	const handleCountry = (/** @type {any} */ e) => {
 		const { value } = e.currentTarget;
 		setForm((f) => ({ ...f, country: value }));
+		if (clientErrors.country) {
+			setClientErrors((prev) => {
+				const next = { ...prev };
+				delete next.country;
+				return next;
+			});
+		}
 	};
 	const submit = async () => {
+		const errs = validate();
+		if (Object.keys(errs).length > 0) {
+			setClientErrors(errs);
+			return;
+		}
+		setClientErrors({});
 		setBusy(true);
 		setProblem(null);
 		/** @type {Record<string, string>} */
@@ -203,6 +240,7 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 			description: result.data?.setup?.mailed ? ADMIN.setupMailed : ADMIN.setupNotMailed,
 		});
 		setForm({ name: '', ownerName: '', email: '', phone: '', address: '', country: '' });
+		setClientErrors({});
 		if (!result.data?.setup?.mailed && result.data?.setup?.link) {
 			setUnmailedLink(result.data.setup.link);
 		} else {
@@ -210,7 +248,8 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 		}
 		onCreated(result.data?.merchant);
 	};
-	const errors = fieldErrors(problem);
+	const serverErrors = fieldErrors(problem);
+	const errors = { ...serverErrors, ...clientErrors };
 	const formId = useId();
 	return (
 		<>

@@ -1053,3 +1053,211 @@ export function ChoicePicker({
 		</fieldset>
 	);
 }
+
+/**
+ * @typedef {object} OtpInputProps
+ * @property {ReactNode} [label]
+ * @property {boolean} [hideLabel]
+ * @property {boolean} [hideRequiredMark]
+ * @property {ReactNode} [help]
+ * @property {ReactNode} [error]
+ * @property {ReactNode} [aside]
+ * @property {string} [fieldClassName]
+ * @property {string} [className]
+ * @property {number} [length] number of digit slots (default 6)
+ * @property {string} [value] controlled value
+ * @property {(value: string) => void} [onChange] called when digits change
+ * @property {(value: string) => void} [onComplete] called when all digits are filled
+ * @property {boolean} [disabled]
+ * @property {boolean} [autoFocus]
+ * @property {string} [name] hidden input name for form submissions
+ * @property {string} [id]
+ * @property {boolean} [required]
+ */
+
+/**
+ * Segmented OTP / PIN code input.
+ * Displays `length` individual digit boxes with auto-advance, backspace auto-retreat,
+ * clipboard paste distribution, arrow navigation, and numeric-only filtering.
+ * @param {OtpInputProps} props
+ */
+export function OtpInput({
+	label,
+	hideLabel,
+	hideRequiredMark,
+	help,
+	error,
+	aside,
+	fieldClassName,
+	className,
+	length = 6,
+	value: controlledValue,
+	onChange,
+	onComplete,
+	disabled = false,
+	autoFocus = false,
+	name = 'code',
+	id,
+	required = false,
+}) {
+	const [internalValue, setInternalValue] = useState('');
+	const value = controlledValue !== undefined ? controlledValue : internalValue;
+	const digits = Array.from({ length }, (_, i) => value[i] || '');
+	const inputsRef = useRef(/** @type {(HTMLInputElement | null)[]} */ ([]));
+
+	const updateValue = (/** @type {string} */ nextVal) => {
+		const clean = nextVal.replace(/\D/g, '').slice(0, length);
+		if (controlledValue === undefined) {
+			setInternalValue(clean);
+		}
+		onChange?.(clean);
+		if (clean.length === length) {
+			onComplete?.(clean);
+		}
+	};
+
+	const handleDigitChange = (/** @type {number} */ index, /** @type {string} */ char) => {
+		if (disabled) return;
+		const digitsOnly = char.replace(/\D/g, '');
+		if (!digitsOnly) {
+			const next = digits.slice();
+			next[index] = '';
+			updateValue(next.join(''));
+			return;
+		}
+
+		if (digitsOnly.length > 1) {
+			const currentChars = digits.slice();
+			const start = digitsOnly.length >= length ? 0 : index;
+			for (let i = 0; i < digitsOnly.length && start + i < length; i++) {
+				currentChars[start + i] = digitsOnly[i] ?? '';
+			}
+			const nextVal = currentChars.join('');
+			updateValue(nextVal);
+			const nextFocus = Math.min(length - 1, start + digitsOnly.length - 1);
+			inputsRef.current[nextFocus]?.focus();
+			inputsRef.current[nextFocus]?.select();
+			return;
+		}
+
+		const next = digits.slice();
+		next[index] = digitsOnly;
+		const nextVal = next.join('');
+		updateValue(nextVal);
+
+		if (index < length - 1) {
+			inputsRef.current[index + 1]?.focus();
+			inputsRef.current[index + 1]?.select();
+		}
+	};
+
+	const handleKeyDown = (/** @type {number} */ index, /** @type {import('react').KeyboardEvent<HTMLInputElement>} */ event) => {
+		if (disabled) return;
+		if (event.key === 'Backspace') {
+			if (!digits[index] && index > 0) {
+				event.preventDefault();
+				const next = digits.slice();
+				next[index - 1] = '';
+				updateValue(next.join(''));
+				inputsRef.current[index - 1]?.focus();
+				inputsRef.current[index - 1]?.select();
+			} else {
+				const next = digits.slice();
+				next[index] = '';
+				updateValue(next.join(''));
+			}
+		} else if (event.key === 'ArrowLeft' && index > 0) {
+			event.preventDefault();
+			inputsRef.current[index - 1]?.focus();
+			inputsRef.current[index - 1]?.select();
+		} else if (event.key === 'ArrowRight' && index < length - 1) {
+			event.preventDefault();
+			inputsRef.current[index + 1]?.focus();
+			inputsRef.current[index + 1]?.select();
+		}
+	};
+
+	const handlePaste = (/** @type {number} */ index, /** @type {import('react').ClipboardEvent<HTMLInputElement>} */ event) => {
+		event.preventDefault();
+		const pasted = event.clipboardData.getData('text').replace(/\D/g, '');
+		if (!pasted) return;
+		const currentChars = digits.slice();
+		const start = pasted.length >= length ? 0 : index;
+		for (let i = 0; i < pasted.length && start + i < length; i++) {
+			currentChars[start + i] = pasted[i] ?? '';
+		}
+		const nextVal = currentChars.join('');
+		updateValue(nextVal);
+		const targetIndex = Math.min(length - 1, start + pasted.length);
+		inputsRef.current[targetIndex]?.focus();
+		inputsRef.current[targetIndex]?.select();
+	};
+
+	return (
+		<Field
+			label={label}
+			{...(id ? { id } : {})}
+			{...(hideLabel ? { hideLabel } : {})}
+			{...(hideRequiredMark ? { hideRequiredMark } : {})}
+			required={Boolean(required)}
+			help={help}
+			error={error}
+			aside={aside}
+			{...(fieldClassName ? { className: fieldClassName } : {})}>
+			{(ids) => (
+				<div className="space-y-1">
+					<input type="hidden" name={name} value={value} />
+					<div
+						role="group"
+						aria-label={typeof label === 'string' ? label : 'One-time verification code'}
+						className={cx('flex items-center justify-center gap-2 sm:gap-2.5', className)}>
+						{Array.from({ length }, (_, i) => {
+							const isSeparator = length === 6 && i === 3;
+							return (
+								<div key={i} className="flex items-center gap-2 sm:gap-2.5">
+									{isSeparator ? (
+										<span className="text-muted/60 font-mono font-bold select-none text-base" aria-hidden="true">
+											-
+										</span>
+									) : null}
+									<input
+										ref={(el) => {
+											inputsRef.current[i] = el;
+										}}
+										id={i === 0 ? ids.id : undefined}
+										type="text"
+										inputMode="numeric"
+										pattern="[0-9]*"
+										autoComplete={i === 0 ? 'one-time-code' : 'off'}
+										maxLength={length}
+										disabled={disabled}
+										value={digits[i] || ''}
+										aria-label={`Digit ${i + 1} of ${length}`}
+										aria-invalid={error ? true : undefined}
+										aria-describedby={ids.describedBy}
+										autoFocus={autoFocus && i === 0}
+										data-autofocus={autoFocus && i === 0 ? '' : undefined}
+										onFocus={(e) => e.currentTarget.select()}
+										onChange={(e) => handleDigitChange(i, e.currentTarget.value)}
+										onKeyDown={(e) => handleKeyDown(i, e)}
+										onPaste={(e) => handlePaste(i, e)}
+										className={cx(
+											'h-12 w-10 sm:h-13 sm:w-12 rounded-control border bg-surface text-center font-mono text-xl font-bold text-fg shelfway-motion',
+											'focus:outline-none focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/20',
+											'disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-muted',
+											error
+												? 'border-danger text-danger focus-visible:border-danger focus-visible:ring-danger/20'
+												: digits[i]
+													? 'border-primary/60 bg-surface shadow-xs'
+													: 'border-line hover:border-line-strong',
+										)}
+									/>
+								</div>
+							);
+						})}
+					</div>
+				</div>
+			)}
+		</Field>
+	);
+}

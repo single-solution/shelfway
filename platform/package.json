@@ -1,7 +1,7 @@
 {
 	"name": "@shelfway/platform",
 	"version": "0.1.0",
-	"description": "Shelfway Portal — admins, merchants, websites, connected products, products on websites with their tokens, credits and billing, consoles.",
+	"description": "Shelfway Portal - admins, merchants, websites, connected products, products on websites with their tokens, credits and billing, consoles.",
 	"type": "module",
 	"private": true,
 	"license": "UNLICENSED",
@@ -20,7 +20,7 @@
 		"db:memory": "node scripts/dev-mongo.js",
 		"db:local": "node scripts/dev-mongo.js --keep",
 		"check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test",
-		"test": "vitest run --coverage --maxWorkers=4",
+		"test": "vitest run --coverage --maxWorkers=2",
 		"lint": "eslint .",
 		"typecheck": "tsc -p tsconfig.json",
 		"format": "prettier --write .",

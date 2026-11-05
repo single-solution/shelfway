@@ -280,8 +280,8 @@ describe('website page (jsdom)', () => {
 			await press('Share with developer');
 			expect(shows('Developer pack')).toBe(true);
 			await ownerBrowser.api.post('/v1/me/step-up-otp', {});
-			const packOtp = world.lastOtp(owner.email) || '123456';
-			fillDialog('Two-step or recovery code', packOtp);
+			const packOtp = await until(() => world.lastOtp(owner.email));
+			fillDialog('Two-step or recovery code', String(packOtp));
 			await pressDialog('Download developer pack');
 			const packCall = await ownerBrowser.waitCall(
 				'POST',

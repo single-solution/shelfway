@@ -13,6 +13,7 @@ import {
 	Form,
 	FormError,
 	Input,
+	OtpInput,
 	Spinner,
 	describeProblem,
 	fieldErrors,
@@ -67,7 +68,7 @@ const emailProblem = (email) => (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
  */
 function AuthFrame({ branding, title, subtitle, children, footer }) {
 	return (
-		<main className="flex min-h-screen items-center justify-center bg-canvas px-4 py-10">
+		<main className="relative z-10 flex min-h-screen items-center justify-center px-4 py-10">
 			<div className="w-full max-w-md space-y-6">
 				<div className="flex items-center justify-between">
 					<a href="/" className="inline-flex items-center gap-2 hover:opacity-85 transition-opacity" title="Back to Website">
@@ -75,13 +76,15 @@ function AuthFrame({ branding, title, subtitle, children, footer }) {
 					</a>
 					<a
 						href="/"
-						className="shelfway-motion shelfway-press inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1 text-xs font-medium text-muted hover:border-line-strong hover:text-fg"
+						className="shelfway-motion shelfway-press inline-flex items-center gap-1.5 rounded-full border border-line bg-surface/90 backdrop-blur-sm px-3 py-1 text-xs font-medium text-muted hover:border-line-strong hover:text-fg"
 						title="Back to Website">
-						<span aria-hidden="true">&larr;</span>
+						<span aria-hidden="true">&lt;-</span>
 						<span>Website</span>
 					</a>
 				</div>
-				<section aria-labelledby="auth-title" className="space-y-6 rounded-card border border-line bg-surface p-6 sm:p-8">
+				<section
+					aria-labelledby="auth-title"
+					className="space-y-6 rounded-card border border-line bg-surface/95 backdrop-blur-xl shadow-overlay p-6 sm:p-8">
 					<div className="space-y-1">
 						<h1 id="auth-title" className="font-display text-2xl font-semibold tracking-[-0.02em] text-fg">
 							{title}
@@ -107,8 +110,10 @@ function TwoStepStep({ challenge, onDone, onRestart, onProblem }) {
 	const [busy, setBusy] = useState(false);
 	const [problem, setProblem] = useState(/** @type {Problem | null} */ (null));
 	const [error, setError] = useState(/** @type {string | null} */ (null));
-	const submit = async () => {
-		const value = useRecovery ? code.trim() : code.replace(/\s+/g, '');
+	/** @param {string} [overrideCode] */
+	const submit = async (overrideCode) => {
+		const raw = typeof overrideCode === 'string' ? overrideCode : code;
+		const value = useRecovery ? raw.trim() : raw.replace(/\D/g, '');
 		if (useRecovery ? !/^[a-z2-7]{5}-?[a-z2-7]{5}$/i.test(value) : !/^\d{6}$/.test(value)) {
 			setError(useRecovery ? AUTH.recoveryInvalid : AUTH.codeInvalid);
 			return;
@@ -123,37 +128,49 @@ function TwoStepStep({ challenge, onDone, onRestart, onProblem }) {
 		setBusy(false);
 		if (result.ok) onDone(result.data?.console === 'admin' ? 'admin' : 'merchant');
 		else if (problemCode(result.problem) === 'merchant_suspended') onProblem(result.problem);
-		else setProblem(result.problem);
+		else {
+			setProblem(result.problem);
+			if (!useRecovery) setCode('');
+		}
 	};
 	const expired = problemCode(problem) === 'token_invalid';
 	return (
-		<Form onSubmit={submit} busy={busy} aria-label={AUTH.twoStepTitle}>
+		<Form onSubmit={() => void submit()} busy={busy} aria-label={AUTH.twoStepTitle}>
 			<p className="text-sm text-muted">{useRecovery ? AUTH.recoveryHelp : AUTH.twoStepHelp}</p>
-			<Input
-				label={useRecovery ? AUTH.recoveryCode : AUTH.code}
-				name="code"
-				value={code}
-				onPaste={(e) => {
-					if (!useRecovery) {
-						e.preventDefault();
-						const pasted = e.clipboardData.getData('text').replace(/\s+/g, '').slice(0, 6);
-						setCode(pasted);
+			{useRecovery ? (
+				<Input
+					label={AUTH.recoveryCode}
+					name="recoveryCode"
+					value={code}
+					onChange={(e) => {
+						setCode(e.currentTarget.value);
 						if (error) setError(null);
-					}
-				}}
-				onChange={(e) => {
-					const val = useRecovery ? e.currentTarget.value : e.currentTarget.value.replace(/\s+/g, '');
-					setCode(val);
-					if (error) setError(null);
-				}}
-				autoComplete={useRecovery ? 'off' : 'one-time-code'}
-				inputMode={useRecovery ? 'text' : 'numeric'}
-				maxLength={useRecovery ? 16 : 6}
-				placeholder={useRecovery ? 'abcd-efgh-...' : '123456'}
-				error={error ?? fieldErrors(problem).code ?? fieldErrors(problem).recoveryCode}
-				autoFocus
-				required
-			/>
+					}}
+					placeholder="abcd-efgh-..."
+					error={error ?? fieldErrors(problem).code ?? fieldErrors(problem).recoveryCode}
+					autoFocus
+					required
+				/>
+			) : (
+				<div className="py-1">
+					<OtpInput
+						label={AUTH.code}
+						name="code"
+						length={6}
+						value={code}
+						onChange={(val) => {
+							setCode(val);
+							if (error) setError(null);
+						}}
+						onComplete={(val) => {
+							void submit(val);
+						}}
+						error={error ?? fieldErrors(problem).code ?? fieldErrors(problem).recoveryCode}
+						autoFocus
+						required
+					/>
+				</div>
+			)}
 			<FormError problem={problem} fields={['code', 'recoveryCode']} />
 			{expired ? (
 				<Button variant="secondary" block onClick={onRestart}>

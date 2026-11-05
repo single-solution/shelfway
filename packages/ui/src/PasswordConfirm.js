@@ -8,7 +8,7 @@
  */
 import { useEffect, useId, useRef, useState } from 'react';
 import { Button } from './Button.js';
-import { Input, TextArea } from './fields.js';
+import { Input, OtpInput, TextArea } from './fields.js';
 import { Dialog } from './overlay.js';
 
 /** @typedef {import('react').ReactNode} ReactNode */
@@ -104,6 +104,7 @@ export function PasswordConfirmDialog({
 		<Dialog
 			open={open}
 			onClose={busy ? () => undefined : onClose}
+			eyebrow="SECURITY VERIFICATION"
 			title={title}
 			{...(description ? { description } : {})}
 			size="sm"
@@ -146,36 +147,49 @@ export function PasswordConfirmDialog({
 				)}
 				{effectiveShowCode ? (
 					<div className="space-y-2">
-						<Input
-							label={useRecovery ? (T.recoveryCode ?? 'Recovery code') : T.code}
-							help={
-								useRecovery
-									? (T.recoveryHelp ?? 'One of your backup recovery codes.')
-									: isEmailOtp
+						{useRecovery || !otpOnly ? (
+							<Input
+								label={useRecovery ? (T.recoveryCode ?? 'Recovery code') : T.code}
+								help={
+									useRecovery
+										? (T.recoveryHelp ?? 'One of your backup recovery codes.')
+										: isEmailOtp
+											? (T.emailCodeHelp ?? '6-digit code sent to your email address.')
+											: T.codeHelp
+								}
+								autoComplete={useRecovery ? 'off' : 'one-time-code'}
+								inputMode={useRecovery ? 'text' : 'numeric'}
+								maxLength={16}
+								placeholder={useRecovery ? 'abcd-efgh-...' : '123456'}
+								spellCheck={false}
+								value={code}
+								onChange={(event) => {
+									const val = useRecovery ? event.currentTarget.value : event.currentTarget.value.replace(/\s+/g, '');
+									setCode(val);
+								}}
+								error={errors.code}
+								required
+								data-autofocus
+							/>
+						) : (
+							<OtpInput
+								label={T.code}
+								help={
+									isEmailOtp
 										? (T.emailCodeHelp ?? '6-digit code sent to your email address.')
 										: T.codeHelp
-							}
-							autoComplete={useRecovery ? 'off' : 'one-time-code'}
-							inputMode={useRecovery ? 'text' : 'numeric'}
-							maxLength={useRecovery ? 16 : 6}
-							placeholder={useRecovery ? 'abcd-efgh-...' : '123456'}
-							spellCheck={false}
-							value={code}
-							onPaste={(event) => {
-								if (!useRecovery) {
-									event.preventDefault();
-									const pasted = event.clipboardData.getData('text').replace(/\s+/g, '');
-									setCode(pasted.slice(0, 6));
 								}
-							}}
-							onChange={(event) => {
-								const val = useRecovery ? event.currentTarget.value : event.currentTarget.value.replace(/\s+/g, '');
-								setCode(val);
-							}}
-							error={errors.code}
-							required
-							data-autofocus={otpOnly ? true : undefined}
-						/>
+								length={6}
+								value={code}
+								onChange={setCode}
+								onComplete={(val) => {
+									setCode(val);
+								}}
+								error={errors.code}
+								required
+								data-autofocus={otpOnly ? true : undefined}
+							/>
+						)}
 						<div className="flex flex-wrap items-center justify-between gap-2">
 							{isEmailOtp && onResendEmailOtp ? (
 								<Button

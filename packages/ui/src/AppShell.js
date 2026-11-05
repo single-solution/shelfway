@@ -631,7 +631,7 @@ export function AppShell({
 						className="sr-only z-[70] rounded-control bg-primary px-3 py-2 text-sm font-semibold text-on-primary focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
 						Skip to content
 					</a>
-					<div className="relative z-10 flex min-h-0 min-w-0 flex-1 overflow-hidden rounded-panel border border-line bg-surface/90 shadow-2xl backdrop-blur-md">
+					<div className="relative z-10 flex min-h-0 min-w-0 flex-1 overflow-hidden rounded-panel border border-line bg-surface/95 shadow-overlay backdrop-blur-md">
 						<aside
 							data-rail={rail || undefined}
 							className={cx(

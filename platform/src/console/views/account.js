@@ -113,11 +113,43 @@ export function MerchantFieldsForm({
 		address: merchant.address ?? '',
 		country: merchant.country ?? '',
 	});
+	const [clientErrors, setClientErrors] = useState(/** @type {Record<string, string>} */ ({}));
 	const [busy, setBusy] = useState(false);
 	const [problem, setProblem] = useState(/** @type {Problem | null} */ (null));
 	/** @param {keyof typeof form} key @param {string} value */
-	const set = (key, value) => setForm((f) => ({ ...f, [key]: value }));
+	const set = (key, value) => {
+		setForm((f) => ({ ...f, [key]: value }));
+		if (clientErrors[key]) {
+			setClientErrors((prev) => {
+				const next = { ...prev };
+				delete next[key];
+				return next;
+			});
+		}
+	};
+	const validate = () => {
+		/** @type {Record<string, string>} */
+		const errs = {};
+		const name = form.name.trim();
+		const ownerName = form.ownerName.trim();
+		if (!name) errs.name = 'Business name is required.';
+		else if (name.length > 120) errs.name = 'Business name cannot exceed 120 characters.';
+		if (!ownerName) errs.ownerName = 'Contact name is required.';
+		else if (ownerName.length > 120) errs.ownerName = 'Contact name cannot exceed 120 characters.';
+		if (withEmail && !emailLocked) {
+			const email = form.email.trim();
+			if (!email) errs.email = 'Email address is required.';
+			else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = 'Enter a valid email address.';
+		}
+		return errs;
+	};
 	const submit = async () => {
+		const errs = validate();
+		if (Object.keys(errs).length > 0) {
+			setClientErrors(errs);
+			return;
+		}
+		setClientErrors({});
 		setBusy(true);
 		setProblem(null);
 		/** @type {Record<string, string | null>} */
@@ -140,7 +172,8 @@ export function MerchantFieldsForm({
 		toast.show({ title: MERCHANT.detailsSaved });
 		onSaved?.(result.data);
 	};
-	const errors = fieldErrors(problem);
+	const serverErrors = fieldErrors(problem);
+	const errors = { ...serverErrors, ...clientErrors };
 	return (
 		<Form onSubmit={submit} busy={busy} aria-label={MERCHANT.detailsTitle}>
 			<Input

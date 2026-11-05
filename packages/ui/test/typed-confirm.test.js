@@ -152,7 +152,8 @@ describe('PasswordConfirmDialog', () => {
 		click(confirm('Use authenticator code instead'));
 		type(byLabel(dialog(), 'Two-step code'), ' 123456 ');
 		expect(confirm('Regenerate').disabled).toBe(true); // the name is not typed yet
-		type(/** @type {HTMLInputElement} */ (dialog().querySelectorAll('input')[2]), 'Notes');
+		const inputs = dialog().querySelectorAll('input');
+		type(/** @type {HTMLInputElement} */ (inputs[inputs.length - 1]), 'Notes');
 		expect(confirm('Regenerate').disabled).toBe(false);
 		click(confirm('Regenerate'));
 		expect(onConfirm).toHaveBeenLastCalledWith({ password: 'hunter2 hunter2', code: '123456' });

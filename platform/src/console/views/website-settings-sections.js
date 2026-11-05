@@ -77,12 +77,27 @@ export const useSectionForm = ({ manage, section, saved, version, onSaved, onSta
 	const [saving, setSaving] = useState(false);
 	const [problem, setProblem] = useState(/** @type {Problem | null} */ (null));
 	// a new saved copy (after a save here, or a reload) is the new starting point
+	const [clientErrors, setClientErrors] = useState(/** @type {Record<string, string>} */ ({}));
 	useEffect(() => {
 		setDraft(saved);
 		setProblem(null);
+		setClientErrors({});
 	}, [saved]);
-	const errors = fieldErrors(problem, { base: `/${section}/` });
+	const serverErrors = fieldErrors(problem, { base: `/${section}/` });
+	const errors = { ...serverErrors, ...clientErrors };
 	const dirty = !same(draft, saved);
+	const validateSection = () => {
+		/** @type {Record<string, string>} */
+		const errs = {};
+		if (!draft || typeof draft !== 'object') return errs;
+		if (section === 'business') {
+			const b = /** @type {any} */ (draft);
+			if (!String(b.name ?? '').trim()) errs['name'] = 'Business name is required.';
+			const email = String(b.supportEmail ?? '').trim();
+			if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs['supportEmail'] = 'Enter a valid email address.';
+		}
+		return errs;
+	};
 	return {
 		draft,
 		setDraft,
@@ -93,12 +108,30 @@ export const useSectionForm = ({ manage, section, saved, version, onSaved, onSta
 		/** The error of the field at a path of the section (`['address', 'city']`). @param {ReadonlyArray<string | number>} path */
 		error: (path) => errors[path.join('.')],
 		/** Change the value at a path of the section. @param {ReadonlyArray<string | number>} path @param {unknown} value */
-		change: (path, value) => setDraft((old) => setIn(old, path, value)),
+		change: (path, value) => {
+			const key = path.join('.');
+			if (clientErrors[key]) {
+				setClientErrors((prev) => {
+					const next = { ...prev };
+					delete next[key];
+					return next;
+				});
+			}
+			setDraft((old) => setIn(old, path, value));
+		},
 		discard: () => {
 			setDraft(saved);
 			setProblem(null);
+			setClientErrors({});
 		},
 		save: async () => {
+			const localErrs = validateSection();
+			if (Object.keys(localErrs).length > 0) {
+				setClientErrors(localErrs);
+				toast.show({ tone: 'danger', title: 'Please correct the highlighted errors before saving.' });
+				return;
+			}
+			setClientErrors({});
 			setSaving(true);
 			setProblem(null);
 			const result = await apiFetch(api.websiteSettingsSection(manage.merchantId, manage.websiteId, section), {

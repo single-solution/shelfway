@@ -1,10 +1,9 @@
 'use client';
 /**
- * Documentation Hub view: professional API explorer with a sidebar mega menu,
- * full Swagger / OpenAPI 3.1 interactive documentation, role-based visibility,
- * and client/server token integration guides.
- * Gated behind Portal login. External storefront builders and AI agents use website-bound
- * tokens from the Developer Pack without access to internal platform/product source code.
+ * Documentation Hub view: unified single-page API explorer with a sticky sidebar,
+ * full Swagger / OpenAPI 3.1 interactive inspection, query parameter deep-linking,
+ * role-based visibility, and client/server token integration guides.
+ * Grounded 100% in the website theme with frosted glass and geometric offset teal shadows.
  * @module
  */
 import { useEffect, useMemo, useState } from 'react';
@@ -23,8 +22,8 @@ import { apiFetch } from '../client.js';
  * @property {{ offers: any[], needs: any[] }} [links]
  * @property {string | null} [widgetScriptUrl]
  * @property {'async' | 'blocking'} [widgetScriptLoading]
- * @property {string} docsUrl
- * @property {string} openapiUrl
+ * @property {string} [docsUrl]
+ * @property {string} [openapiUrl]
  * @property {any} [guide]
  * @property {any[]} [operations]
  * @property {any} [components]
@@ -74,24 +73,24 @@ function sampleFromSchema(schema, components) {
 }
 
 /**
- * HTTP method badge styling helper.
+ * HTTP method badge styling helper matching website theme colors.
  * @param {string} method
  */
 function methodColor(method) {
 	const m = String(method).toUpperCase();
 	switch (m) {
 		case 'GET':
-			return 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30';
+			return 'bg-info-soft text-on-info-soft border border-info/30';
 		case 'POST':
-			return 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30';
+			return 'bg-success-soft text-on-success-soft border border-success/30';
 		case 'PUT':
-			return 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30';
+			return 'bg-warning-soft text-on-warning-soft border border-warning/30';
 		case 'PATCH':
-			return 'bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30';
+			return 'bg-attention-soft text-on-attention-soft border border-attention/30';
 		case 'DELETE':
-			return 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30';
+			return 'bg-danger-soft text-on-danger-soft border border-danger/30';
 		default:
-			return 'bg-zinc-500/15 text-zinc-700 dark:text-zinc-300 border-zinc-500/30';
+			return 'bg-surface-2 text-muted border border-line';
 	}
 }
 
@@ -142,13 +141,27 @@ const STATIC_SDK_GUIDES = [
  *   activeProductDetail?: any,
  *   actor?: any,
  *   initialProductId?: string,
+ *   initialOpKey?: string,
+ *   initialSection?: string,
  * }} props
  */
-export function DocsHubView({ branding, items = [], activeProductDetail = null, actor = null, initialProductId = '' }) {
+export function DocsHubView({
+	branding,
+	items = [],
+	activeProductDetail = null,
+	actor = null,
+	initialProductId = '',
+	initialOpKey = '',
+	initialSection = 'products',
+	initialToken = '',
+	initialWebsite = '',
+}) {
 	const brandName = branding?.name || 'Shelfway';
-	const [activeSection, setActiveSection] = useState('products');
+	const [activeSection, setActiveSection] = useState(initialSection || 'products');
 	const [selectedProductId, setSelectedProductId] = useState(initialProductId || items[0]?.productId || 'chat');
-	const [selectedOpKey, setSelectedOpKey] = useState(/** @type {string | null} */ (null));
+	const [selectedOpKey, setSelectedOpKey] = useState(/** @type {string | null} */ (initialOpKey || null));
+	const [token, setToken] = useState(initialToken || '');
+	const [website, setWebsite] = useState(initialWebsite || '');
 	const [activeSnippetTab, setActiveSnippetTab] = useState('curl');
 	const [activeResponseStatus, setActiveResponseStatus] = useState('200');
 	const [searchQuery, setSearchQuery] = useState('');
@@ -158,6 +171,46 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 	const userRole = actor?.role || (actor?.admin ? 'owner' : 'merchant');
 	const isDeveloperRole = userRole === 'owner' || userRole === 'developer' || userRole === 'support';
 	const [roleViewMode, setRoleViewMode] = useState(isDeveloperRole ? 'developer' : 'storefront');
+
+	// Synchronize URL query params seamlessly without page reloads
+	const syncUrl = (pId, op, sec) => {
+		if (typeof window === 'undefined') return;
+		const params = new URLSearchParams(window.location.search);
+		if (pId) params.set('product', pId);
+		else params.delete('product');
+		if (op) params.set('op', op);
+		else params.delete('op');
+		if (sec && sec !== 'products') params.set('section', sec);
+		else params.delete('section');
+		if (token) params.set('token', token);
+		else params.delete('token');
+		if (website) params.set('website', website);
+		else params.delete('website');
+		const qs = params.toString();
+		const nextUrl = `${window.location.pathname}${qs ? `?${qs}` : ''}`;
+		if (`${window.location.pathname}${window.location.search}` !== nextUrl) {
+			window.history.replaceState(null, '', nextUrl);
+		}
+	};
+
+	// Listen for browser forward/back buttons
+	useEffect(() => {
+		const onPopState = () => {
+			const params = new URLSearchParams(window.location.search);
+			const p = params.get('product') || items[0]?.productId || 'chat';
+			const o = params.get('op') || null;
+			const s = params.get('section') || 'products';
+			const t = params.get('token') || '';
+			const w = params.get('website') || '';
+			setSelectedProductId(p);
+			setSelectedOpKey(o);
+			setActiveSection(s);
+			setToken(t);
+			setWebsite(w);
+		};
+		window.addEventListener('popstate', onPopState);
+		return () => window.removeEventListener('popstate', onPopState);
+	}, [items]);
 
 	// Populate initial cached detail if passed from server
 	useEffect(() => {
@@ -206,6 +259,25 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 		);
 	}, [operations, searchQuery]);
 
+	const selectProduct = (productId) => {
+		setSelectedProductId(productId);
+		setSelectedOpKey(null);
+		setActiveSection('products');
+		syncUrl(productId, null, 'products');
+	};
+
+	const selectOperation = (opKey) => {
+		setSelectedOpKey(opKey);
+		setActiveSection('products');
+		syncUrl(selectedProductId, opKey, 'products');
+	};
+
+	const selectSection = (section) => {
+		setActiveSection(section);
+		setSelectedOpKey(null);
+		syncUrl(selectedProductId, null, section);
+	};
+
 	/**
 	 * @param {string} key
 	 * @param {string} text
@@ -227,27 +299,35 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 		<ToastProvider>
 			<div className="flex flex-col min-h-screen bg-canvas text-fg">
 				{/* Top Docs Toolbar */}
-				<header className="sticky top-0 z-20 flex h-12 items-center justify-between border-b border-line bg-surface/90 px-4 backdrop-blur sm:px-6">
+				<header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-surface/90 px-4 backdrop-blur-md sm:px-6 shadow-sm">
 					<div className="flex items-center gap-3">
-						<span className="text-sm font-semibold text-fg">{brandName} Documentation Hub</span>
+						<p className="font-mono text-xs font-bold tracking-widest uppercase text-primary">API REFERENCE</p>
+						<span className="text-muted/60" aria-hidden="true">
+							|
+						</span>
+						<span className="text-sm font-semibold text-fg tracking-tight">{brandName} Documentation Hub</span>
 					</div>
 
 					<div className="flex items-center gap-3">
 						{/* Role view switcher */}
-						<div className="flex items-center rounded-control bg-surface-2 p-0.5 text-xs">
+						<div className="flex items-center rounded-control bg-surface-2 p-0.5 text-xs border border-line">
 							<button
 								type="button"
 								onClick={() => setRoleViewMode('storefront')}
-								className={`rounded-[calc(var(--radius-control)-2px)] px-2.5 py-1 font-medium transition ${
-									roleViewMode === 'storefront' ? 'bg-surface text-fg shadow-sm' : 'text-muted hover:text-fg'
+								className={`rounded-[calc(var(--radius-control)-2px)] px-3 py-1 font-medium transition ${
+									roleViewMode === 'storefront'
+										? 'bg-surface text-fg shadow-xs font-semibold'
+										: 'text-muted hover:text-fg'
 								}`}>
 								Storefront APIs
 							</button>
 							<button
 								type="button"
 								onClick={() => setRoleViewMode('developer')}
-								className={`rounded-[calc(var(--radius-control)-2px)] px-2.5 py-1 font-medium transition ${
-									roleViewMode === 'developer' ? 'bg-surface text-fg shadow-sm' : 'text-muted hover:text-fg'
+								className={`rounded-[calc(var(--radius-control)-2px)] px-3 py-1 font-medium transition ${
+									roleViewMode === 'developer'
+										? 'bg-surface text-fg shadow-xs font-semibold'
+										: 'text-muted hover:text-fg'
 								}`}>
 								Product Developer SDK
 							</button>
@@ -256,15 +336,15 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 						<div className="hidden sm:flex items-center gap-1.5 text-xs text-muted border-l border-line pl-3">
 							<Icon name="user" size={14} />
 							<span>Role:</span>
-							<strong className="text-fg capitalize">{userRole}</strong>
+							<strong className="text-fg capitalize font-medium">{userRole}</strong>
 						</div>
 					</div>
 				</header>
 
 				{/* Two-Column Docs Explorer Layout */}
 				<div className="flex flex-1">
-					{/* Left Mega-Menu Sidebar */}
-					<aside className="w-72 shrink-0 border-r border-line bg-surface/60 overflow-y-auto flex flex-col p-4 space-y-6 sticky top-12 self-start max-h-[calc(100vh-3rem)]">
+					{/* Left Mega-Menu Sticky Sidebar */}
+					<aside className="w-72 lg:w-80 shrink-0 border-r border-line bg-surface/80 backdrop-blur-xl overflow-y-auto shelfway-scroll flex flex-col p-4 space-y-6 sticky top-14 self-start max-h-[calc(100vh-3.5rem)]">
 						{/* Search Bar */}
 						<div>
 							<Input
@@ -275,47 +355,43 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 								value={searchQuery}
 								onChange={(e) => setSearchQuery(e.currentTarget.value)}
 								prefix={<Icon name="search" size={14} />}
-								className="text-xs"
+								className="text-xs h-9 bg-surface/90"
 							/>
 						</div>
 
 						{/* Section: Getting Started */}
 						<div className="space-y-1">
-							<p className="px-2 text-[11px] font-semibold uppercase tracking-wider text-muted">Getting Started</p>
+							<p className="px-2 text-[10px] font-mono font-bold uppercase tracking-widest text-muted">
+								Getting Started
+							</p>
 							<button
 								type="button"
-								onClick={() => {
-									setActiveSection('quickstart');
-									setSelectedOpKey(null);
-								}}
-								className={`flex w-full items-center gap-2 rounded-control px-2.5 py-1.5 text-xs font-medium transition ${
+								onClick={() => selectSection('quickstart')}
+								className={`flex w-full items-center gap-2 rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
 									activeSection === 'quickstart'
-										? 'bg-primary/10 text-primary font-semibold'
+										? 'bg-primary/10 text-primary font-semibold shadow-xs'
 										: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
 								}`}>
 								<Icon name="info" size={15} />
-								<span>Quickstart for Developers and AI</span>
+								<span>Quickstart Guide</span>
 							</button>
 							<button
 								type="button"
-								onClick={() => {
-									setActiveSection('tokens');
-									setSelectedOpKey(null);
-								}}
-								className={`flex w-full items-center gap-2 rounded-control px-2.5 py-1.5 text-xs font-medium transition ${
+								onClick={() => selectSection('tokens')}
+								className={`flex w-full items-center gap-2 rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
 									activeSection === 'tokens'
-										? 'bg-primary/10 text-primary font-semibold'
+										? 'bg-primary/10 text-primary font-semibold shadow-xs'
 										: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
 								}`}>
 								<Icon name="key" size={15} />
-								<span>Authentication & Tokens</span>
+								<span>Authentication &amp; Tokens</span>
 							</button>
 						</div>
 
 						{/* Section: Catalog Products & Endpoints (Storefront View) */}
 						<div className="space-y-2">
 							<div className="flex items-center justify-between px-2">
-								<p className="text-[11px] font-semibold uppercase tracking-wider text-muted">Products & APIs</p>
+								<p className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted">Products &amp; APIs</p>
 								<span className="text-[10px] text-muted font-mono">{items.length} products</span>
 							</div>
 
@@ -327,18 +403,14 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 										<div key={prod.productId} className="space-y-0.5">
 											<button
 												type="button"
-												onClick={() => {
-													setSelectedProductId(prod.productId);
-													setActiveSection('products');
-													setSelectedOpKey(null);
-												}}
-												className={`flex w-full items-center justify-between rounded-control px-2.5 py-1.5 text-xs font-medium transition ${
+												onClick={() => selectProduct(prod.productId)}
+												className={`flex w-full items-center justify-between rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
 													isSelected && !selectedOpKey && activeSection === 'products'
-														? 'bg-primary/10 text-primary font-semibold'
+														? 'bg-primary/10 text-primary font-semibold shadow-xs'
 														: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
 												}`}>
 												<div className="flex items-center gap-2 truncate">
-													<span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-surface-2 font-mono text-[10px] text-muted">
+													<span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-surface-2 font-mono text-[10px] text-primary font-bold border border-line">
 														{prod.name.slice(0, 1)}
 													</span>
 													<span className="truncate">{prod.name}</span>
@@ -351,32 +423,32 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 												<div className="ml-4 pl-2 border-l border-line space-y-0.5 py-1">
 													<button
 														type="button"
-														onClick={() => setSelectedOpKey(null)}
-														className={`flex w-full items-center gap-1.5 rounded px-2 py-1 text-[11px] transition ${
+														onClick={() => selectOperation('')}
+														className={`flex w-full items-center gap-1.5 rounded px-2 py-1.5 text-[11px] transition ${
 															!selectedOpKey
 																? 'bg-surface-2 text-primary font-semibold'
 																: 'text-muted hover:text-fg'
 														}`}>
-														<Icon name="info" size={12} />
-														<span>Overview & Embed</span>
+														<Icon name="info" size={13} />
+														<span>Overview &amp; Embed</span>
 													</button>
 
-													{filteredOperations.slice(0, 30).map((/** @type {any} */ op) => {
+													{filteredOperations.slice(0, 40).map((/** @type {any} */ op) => {
 														const opKey = `${op.method}:${op.path}`;
 														const isOpActive = selectedOpKey === opKey;
 														return (
 															<button
 																key={opKey}
 																type="button"
-																onClick={() => setSelectedOpKey(opKey)}
-																className={`flex w-full items-center gap-1.5 rounded px-2 py-1 text-[11px] truncate transition ${
+																onClick={() => selectOperation(opKey)}
+																className={`flex w-full items-center gap-1.5 rounded px-2 py-1.5 text-[11px] truncate transition ${
 																	isOpActive
-																		? 'bg-surface-2 text-primary font-semibold'
+																		? 'bg-surface-2 text-primary font-semibold shadow-xs'
 																		: 'text-muted hover:text-fg'
 																}`}
 																title={`${op.method} ${op.path}`}>
 																<span
-																	className={`font-mono text-[9px] px-1 py-0.2 rounded font-bold border ${methodColor(
+																	className={`font-mono text-[9px] px-1.5 py-0.5 rounded font-bold ${methodColor(
 																		op.method,
 																	)}`}>
 																	{op.method}
@@ -386,9 +458,9 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 														);
 													})}
 
-													{filteredOperations.length > 30 ? (
+													{filteredOperations.length > 40 ? (
 														<p className="px-2 py-1 text-[10px] text-muted italic">
-															+{filteredOperations.length - 30} more endpoints in spec
+															+{filteredOperations.length - 40} more endpoints in spec
 														</p>
 													) : null}
 												</div>
@@ -399,26 +471,25 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 							</div>
 						</div>
 
-						{/* Section: Product Developer SDK (Visible for developer role or when toggled) */}
+						{/* Section: Product Developer SDK */}
 						{roleViewMode === 'developer' || isDeveloperRole ? (
-							<div className="space-y-1 pt-2 border-t border-line">
+							<div className="space-y-1 pt-3 border-t border-line">
 								<div className="flex items-center justify-between px-2">
-									<p className="text-[11px] font-semibold uppercase tracking-wider text-primary">
+									<p className="text-[10px] font-mono font-bold uppercase tracking-widest text-primary">
 										Product Developer SDK
 									</p>
-									<span className="text-[10px] font-medium text-primary bg-primary/10 px-1 rounded">Core Kit</span>
+									<span className="text-[9px] font-mono font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">
+										CORE
+									</span>
 								</div>
 								{STATIC_SDK_GUIDES.map((guide) => (
 									<button
 										key={guide.id}
 										type="button"
-										onClick={() => {
-											setActiveSection(`sdk-${guide.id}`);
-											setSelectedOpKey(null);
-										}}
-										className={`flex w-full items-center gap-2 rounded-control px-2.5 py-1.5 text-xs font-medium transition ${
+										onClick={() => selectSection(`sdk-${guide.id}`)}
+										className={`flex w-full items-center gap-2 rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
 											activeSection === `sdk-${guide.id}`
-												? 'bg-primary/10 text-primary font-semibold'
+												? 'bg-primary/10 text-primary font-semibold shadow-xs'
 												: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
 										}`}>
 										<Icon name="code" size={15} />
@@ -434,59 +505,97 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 								href="/docs/openapi.json"
 								target="_blank"
 								rel="noopener noreferrer"
-								className="flex items-center justify-between text-muted hover:text-fg px-2 py-1 rounded">
-								<span>Catalog OpenAPI 3.1</span>
+								className="flex items-center justify-between text-muted hover:text-fg px-2 py-1.5 rounded hover:bg-surface-2 transition">
+								<span className="font-mono text-xs">Catalog OpenAPI 3.1</span>
 								<Icon name="external" size={12} />
 							</a>
 						</div>
 					</aside>
 
 					{/* Right Content Area: Interactive Swagger & Guides */}
-					<main className="flex-1 p-6 sm:p-8 space-y-8 max-w-5xl">
+					<main className="flex-1 p-6 sm:p-10 space-y-8 max-w-5xl">
+						{token ? (
+							<div className="rounded-card border border-primary/30 bg-primary-soft/10 p-4 shadow-card">
+								<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+									<div className="space-y-1">
+										<div className="flex items-center gap-2">
+											<span className="font-mono text-xs font-bold uppercase tracking-wider text-primary">
+												Authenticated Documentation
+											</span>
+											{website ? (
+												<span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-surface border border-line text-fg">
+													{website}
+												</span>
+											) : null}
+										</div>
+										<p className="text-xs text-muted">
+											Interactive code snippets below are pre-filled with your scoped credentials. No login required.
+										</p>
+									</div>
+									<div className="flex items-center gap-2">
+										<button
+											type="button"
+											className="shelfway-motion shelfway-press inline-flex h-8 items-center gap-1.5 rounded-control border border-line bg-surface px-2.5 text-xs font-medium text-fg hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-focus"
+											onClick={() => {
+												navigator.clipboard?.writeText(token);
+												setCopiedNotice('Copied Token');
+												setTimeout(() => setCopiedNotice(''), 2000);
+											}}>
+											{copiedNotice === 'Copied Token' ? 'Copied Token!' : 'Copy Token'}
+										</button>
+									</div>
+								</div>
+							</div>
+						) : null}
+
 						{/* 1. Quickstart Section */}
 						{activeSection === 'quickstart' ? (
 							<section className="space-y-6">
 								<div className="space-y-2">
-									<Badge tone="primary">Storefront & AI Builder Guide</Badge>
-									<h1 className="text-2xl font-bold tracking-tight">Quickstart for Developers and AI</h1>
-									<p className="text-sm text-muted leading-relaxed">
+									<p className="font-mono text-xs font-bold tracking-widest uppercase text-primary">
+										STOREFRONT &amp; BUILDER GUIDE
+									</p>
+									<h1 className="font-display text-3xl font-bold tracking-tight text-fg">
+										Quickstart Guide
+									</h1>
+									<p className="text-sm text-muted leading-relaxed max-w-3xl">
 										Shelfway connects modular products (Accounts, Notifications, Chat, Payments, Ecommerce, Growth) to
-										merchants' websites. Storefront developers and AI agents build directly against our public widget
-										scripts and backend REST APIs using credentials from the merchant's <strong>Developer Pack</strong>.
+										merchants' websites. Storefront builders connect directly to our public widget scripts and backend REST
+										APIs using credentials from the merchant's setup link or Developer Pack.
 									</p>
 								</div>
 
 								<div className="grid gap-4 sm:grid-cols-2">
-									<div className="rounded-card border border-line bg-surface p-5 space-y-2">
+									<div className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-5 space-y-2 shadow-card shelfway-lift">
 										<div className="flex items-center gap-2 text-primary font-semibold text-sm">
 											<Icon name="globe" size={16} />
 											<span>1. Merchant Onboarding</span>
 										</div>
 										<p className="text-xs text-muted leading-relaxed">
 											Merchants add their website domain in the Shelfway Portal, place desired products, and generate a
-											single-file <strong>Developer Pack</strong>.
+											single-file <strong>Developer Pack</strong> or 1-click setup link.
 										</p>
 									</div>
 
-									<div className="rounded-card border border-line bg-surface p-5 space-y-2">
+									<div className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-5 space-y-2 shadow-card shelfway-lift">
 										<div className="flex items-center gap-2 text-emerald-600 font-semibold text-sm">
 											<Icon name="shield" size={16} />
 											<span>2. Isolated Credentials</span>
 										</div>
 										<p className="text-xs text-muted leading-relaxed">
-											External developers and AI agents receive website-bound tokens. They build the storefront and{' '}
-											<strong>never</strong> need Portal logins or internal source code access.
+											Builders receive website-bound tokens. They build the storefront and{' '}
+											<strong>never</strong> need Portal logins or merchant passwords.
 										</p>
 									</div>
 								</div>
 
-								<div className="rounded-card border border-line bg-surface p-6 space-y-4">
-									<h2 className="text-base font-semibold">Everyday Development Path</h2>
-									<ol className="list-decimal list-inside space-y-2 text-xs text-muted leading-relaxed">
+								<div className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-6 space-y-4 shadow-card">
+									<h2 className="text-base font-semibold text-fg">Everyday Development Path</h2>
+									<ol className="list-decimal list-inside space-y-2.5 text-xs text-muted leading-relaxed">
 										<li>
-											Merchant opens Portal: <code>Websites → [Your Website] → Developer Pack</code>.
+											Merchant opens Portal: <code className="font-mono text-fg">Websites -&gt; [Your Website] -&gt; Developer Pack</code>.
 										</li>
-										<li>Merchant passes the generated tokens and API base URLs to their developer or AI prompt.</li>
+										<li>Merchant copies the setup link or credentials and provides it to whoever builds their site.</li>
 										<li>Paste client-side widget scripts into your HTML layout with your public Browser Token.</li>
 										<li>Call backend REST APIs from your server backend using your private Server Bearer Token.</li>
 									</ol>
@@ -498,21 +607,23 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 						{activeSection === 'tokens' ? (
 							<section className="space-y-6">
 								<div className="space-y-2">
-									<Badge tone="info">Credentials Architecture</Badge>
-									<h1 className="text-2xl font-bold tracking-tight">Authentication & Tokens</h1>
-									<p className="text-sm text-muted leading-relaxed">
+									<p className="font-mono text-xs font-bold tracking-widest uppercase text-primary">
+										Credentials Architecture
+									</p>
+									<h1 className="font-display text-3xl font-bold tracking-tight text-fg">Authentication &amp; Tokens</h1>
+									<p className="text-sm text-muted leading-relaxed max-w-3xl">
 										Shelfway enforces strictly typed credentials. Browser tokens, server tokens, configure sessions, and
 										staff tickets are mutually exclusive and never cross-authorized.
 									</p>
 								</div>
 
 								<div className="space-y-4">
-									<div className="rounded-card border border-blue-500/20 bg-blue-500/5 p-5 space-y-2">
+									<div className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-5 space-y-3 shadow-card">
 										<div className="flex items-center justify-between">
-											<span className="font-semibold text-sm text-blue-600 dark:text-blue-400">
+											<span className="font-semibold text-sm text-primary">
 												Browser Token (Public Client-side)
 											</span>
-											<span className="text-[10px] font-mono bg-blue-500/10 text-blue-600 px-2 py-0.5 rounded">
+											<span className="text-[10px] font-mono bg-primary/10 text-primary px-2 py-0.5 rounded font-bold">
 												Safe for HTML
 											</span>
 										</div>
@@ -526,12 +637,12 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 										/>
 									</div>
 
-									<div className="rounded-card border border-emerald-500/20 bg-emerald-500/5 p-5 space-y-2">
+									<div className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-5 space-y-3 shadow-card">
 										<div className="flex items-center justify-between">
 											<span className="font-semibold text-sm text-emerald-600 dark:text-emerald-400">
 												Server Token (Private Backend Secret)
 											</span>
-											<span className="text-[10px] font-mono bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded">
+											<span className="text-[10px] font-mono bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded font-bold">
 												Backend .env Only
 											</span>
 										</div>
@@ -553,12 +664,15 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 							<section className="space-y-6">
 								<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-line pb-6">
 									<div className="space-y-1">
-										<div className="flex items-center gap-2">
-											<h1 className="text-2xl font-bold tracking-tight">{currentProduct.name}</h1>
-											<span className="font-mono text-xs bg-surface-2 text-muted px-2 py-0.5 rounded">
+										<p className="font-mono text-xs font-bold tracking-widest uppercase text-primary">
+											PRODUCT SPECIFICATION
+										</p>
+										<div className="flex items-center gap-2.5">
+											<h1 className="font-display text-3xl font-bold tracking-tight text-fg">{currentProduct.name}</h1>
+											<span className="font-mono text-xs bg-surface-2 text-muted px-2 py-0.5 rounded border border-line">
 												v{currentProduct.version}
 											</span>
-											<span className="font-mono text-xs bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded">
+											<span className="font-mono text-xs bg-success-soft text-on-success-soft px-2 py-0.5 rounded font-semibold border border-success/30">
 												active
 											</span>
 										</div>
@@ -567,10 +681,16 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 
 									<div className="flex items-center gap-2">
 										<a
-											href={`/docs/${currentProduct.productId}/openapi.json`}
+											href={currentProduct.docsUrl || `/docs?product=${currentProduct.productId}`}
+											className="hidden"
+											tabIndex={-1}>
+											{currentProduct.docsUrl}
+										</a>
+										<a
+											href={currentProduct.openapiUrl || `/docs/${currentProduct.productId}/openapi.json`}
 											target="_blank"
 											rel="noopener noreferrer"
-											className="inline-flex items-center gap-1.5 rounded-control border border-line bg-surface px-3 py-1.5 text-xs font-medium text-fg hover:bg-surface-2 transition">
+											className="inline-flex items-center gap-1.5 rounded-control border border-line bg-surface/90 px-3.5 py-2 text-xs font-medium text-fg hover:bg-surface-2 transition shadow-xs">
 											<Icon name="external" size={14} />
 											<span>OpenAPI Spec</span>
 										</a>
@@ -594,13 +714,17 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 								{/* Features & Capabilities */}
 								{currentProduct.features && currentProduct.features.length > 0 ? (
 									<div className="space-y-3">
-										<h2 className="text-sm font-semibold">Capabilities & Feature Switches</h2>
-										<div className="grid gap-2 sm:grid-cols-2">
+										<h2 className="text-sm font-semibold">Capabilities &amp; Feature Switches</h2>
+										<div className="grid gap-2.5 sm:grid-cols-2">
 											{currentProduct.features.map((/** @type {any} */ f) => (
-												<div key={f.key} className="rounded-control border border-line bg-surface p-3 space-y-1">
+												<div
+													key={f.key}
+													className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-3.5 space-y-1 shadow-card">
 													<div className="flex items-center justify-between">
 														<span className="text-xs font-semibold text-fg">{f.name}</span>
-														<code className="text-[10px] text-muted font-mono">{f.key}</code>
+														<code className="text-[10px] text-muted font-mono bg-surface-2 px-1.5 py-0.5 rounded">
+															{f.key}
+														</code>
 													</div>
 													{f.description ? <p className="text-xs text-muted">{f.description}</p> : null}
 												</div>
@@ -609,34 +733,34 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 									</div>
 								) : null}
 
-								{/* Endpoints Table Overview */}
+								{/* Endpoints Table Overview (Swagger-style) */}
 								<div className="space-y-3">
 									<div className="flex items-center justify-between">
 										<h2 className="text-sm font-semibold">Available API Operations ({operations.length})</h2>
 										<span className="text-xs text-muted">Click any operation to view interactive Swagger docs</span>
 									</div>
 
-									<div className="rounded-card border border-line bg-surface overflow-hidden divide-y divide-line">
+									<div className="rounded-card border border-line bg-surface/95 backdrop-blur-md overflow-hidden divide-y divide-line shadow-card">
 										{operations.slice(0, 50).map((/** @type {any} */ op) => {
 											const opKey = `${op.method}:${op.path}`;
 											return (
 												<button
 													key={opKey}
 													type="button"
-													onClick={() => setSelectedOpKey(opKey)}
-													className="flex w-full items-center justify-between p-3 text-left hover:bg-surface-2 transition group">
+													onClick={() => selectOperation(opKey)}
+													className="flex w-full items-center justify-between p-3.5 text-left hover:bg-surface-2 transition group">
 													<div className="flex items-center gap-3 truncate">
 														<span
-															className={`font-mono text-[10px] px-1.5 py-0.5 rounded font-bold border ${methodColor(
+															className={`font-mono text-[10px] px-2 py-0.5 rounded font-bold ${methodColor(
 																op.method,
 															)}`}>
 															{op.method}
 														</span>
-														<span className="font-mono text-xs text-fg group-hover:text-primary transition truncate">
+														<span className="font-mono text-xs text-fg group-hover:text-primary transition truncate font-medium">
 															{op.path}
 														</span>
 													</div>
-													<span className="text-xs text-muted truncate ml-4 max-w-xs">{op.summary}</span>
+													<span className="text-xs text-muted truncate ml-4 max-w-sm">{op.summary}</span>
 												</button>
 											);
 										})}
@@ -653,15 +777,15 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 									<div className="flex items-center gap-2">
 										<button
 											type="button"
-											onClick={() => setSelectedOpKey(null)}
-											className="text-xs text-muted hover:text-fg flex items-center gap-1 transition">
-											← Back to {currentProduct?.name || 'Product'} Overview
+											onClick={() => selectOperation('')}
+											className="text-xs text-muted hover:text-fg flex items-center gap-1.5 transition font-medium">
+											&lt;- Back to {currentProduct?.name || 'Product'} Overview
 										</button>
 									</div>
 
 									<div className="flex flex-wrap items-center gap-2.5">
 										<span
-											className={`font-mono text-xs px-2.5 py-1 rounded font-bold border ${methodColor(
+											className={`font-mono text-xs px-2.5 py-1 rounded font-bold ${methodColor(
 												currentOperation.method,
 											)}`}>
 											{currentOperation.method}
@@ -670,8 +794,8 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 										<button
 											type="button"
 											onClick={() => copyCode('path', currentOperation.path)}
-											className="text-xs text-muted hover:text-fg px-1.5 py-0.5 rounded border border-line">
-											{copiedNotice === 'path' ? 'Copied ✓' : 'Copy'}
+											className="text-xs text-muted hover:text-fg px-2 py-0.5 rounded border border-line bg-surface hover:bg-surface-2 transition">
+											{copiedNotice === 'path' ? 'Copied' : 'Copy'}
 										</button>
 									</div>
 
@@ -694,7 +818,7 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 													: 'Staff Ticket'}
 										</span>
 										{currentOperation.permission ? (
-											<span className="rounded bg-primary/10 px-2 py-0.5 font-mono text-[11px] text-primary">
+											<span className="rounded bg-primary/10 px-2 py-0.5 font-mono text-[11px] text-primary font-semibold">
 												Perm: {currentOperation.permission}
 											</span>
 										) : null}
@@ -706,7 +830,7 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 									<div className="space-y-3">
 										<h3 className="text-sm font-semibold">Parameters</h3>
 										<div
-											className="rounded-card border border-line bg-surface overflow-hidden"
+											className="rounded-card border border-line bg-surface/95 backdrop-blur-md overflow-hidden shadow-card"
 											role="table"
 											aria-label="Parameters">
 											<div
@@ -734,7 +858,7 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 													return (
 														<div
 															key={paramObj.name || idx}
-															className="grid grid-cols-12 p-2.5 items-center"
+															className="grid grid-cols-12 p-2.5 items-center hover:bg-surface-2/50 transition"
 															role="row">
 															<div className="col-span-3 font-mono font-medium text-fg" role="cell">
 																{paramObj.name}
@@ -742,12 +866,12 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 															<div className="col-span-2 font-mono text-muted" role="cell">
 																{paramObj.in || 'query'}
 															</div>
-															<div className="col-span-2 font-mono text-primary" role="cell">
+															<div className="col-span-2 font-mono text-primary font-medium" role="cell">
 																{paramObj.schema?.type || 'string'}
 															</div>
 															<div className="col-span-2" role="cell">
 																{paramObj.required ? (
-																	<span className="text-rose-600 font-bold">required</span>
+																	<span className="text-danger font-bold">required</span>
 																) : (
 																	<span className="text-muted">optional</span>
 																)}
@@ -768,7 +892,7 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 									<div className="space-y-3">
 										<div className="flex items-center justify-between">
 											<h3 className="text-sm font-semibold">Request Body (application/json)</h3>
-											<span className="text-xs text-muted">JSON Schema & Example</span>
+											<span className="text-xs text-muted">JSON Schema &amp; Example</span>
 										</div>
 										{(() => {
 											const reqSchema = currentOperation.requestBody?.content?.['application/json']?.schema;
@@ -778,19 +902,19 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 									</div>
 								) : null}
 
-								{/* Responses Specification */}
+								{/* Responses Specification (Swagger tabs) */}
 								{currentOperation.responses ? (
 									<div className="space-y-3">
 										<h3 className="text-sm font-semibold">Responses</h3>
-										<div className="flex items-center gap-1 border-b border-line pb-2">
+										<div className="flex items-center gap-1.5 border-b border-line pb-2">
 											{Object.keys(currentOperation.responses).map((status) => (
 												<button
 													key={status}
 													type="button"
 													onClick={() => setActiveResponseStatus(status)}
-													className={`rounded px-2.5 py-1 text-xs font-mono transition ${
+													className={`rounded px-2.5 py-1 text-xs font-mono transition shelfway-motion ${
 														activeResponseStatus === status
-															? 'bg-primary text-white font-semibold'
+															? 'bg-primary text-on-primary font-bold shadow-xs'
 															: 'bg-surface-2 text-muted hover:text-fg'
 													}`}>
 													{status}
@@ -826,29 +950,37 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 								<div className="space-y-3 pt-4 border-t border-line">
 									<div className="flex items-center justify-between">
 										<h3 className="text-sm font-semibold">Ready-to-Use Code Snippet</h3>
-										<div className="flex items-center rounded bg-surface-2 p-0.5 text-xs">
+										<div className="flex items-center rounded bg-surface-2 p-0.5 text-xs border border-line">
 											<button
 												type="button"
 												onClick={() => setActiveSnippetTab('curl')}
-												className={`rounded px-2 py-0.5 font-medium transition ${
-													activeSnippetTab === 'curl' ? 'bg-surface text-fg font-semibold' : 'text-muted'
+												className={`rounded px-2.5 py-1 font-medium transition ${
+													activeSnippetTab === 'curl' ? 'bg-surface text-fg font-semibold shadow-xs' : 'text-muted'
 												}`}>
 												cURL
 											</button>
 											<button
 												type="button"
 												onClick={() => setActiveSnippetTab('fetch')}
-												className={`rounded px-2 py-0.5 font-medium transition ${
-													activeSnippetTab === 'fetch' ? 'bg-surface text-fg font-semibold' : 'text-muted'
+												className={`rounded px-2.5 py-1 font-medium transition ${
+													activeSnippetTab === 'fetch' ? 'bg-surface text-fg font-semibold shadow-xs' : 'text-muted'
 												}`}>
 												JavaScript
+											</button>
+											<button
+												type="button"
+												onClick={() => setActiveSnippetTab('python')}
+												className={`rounded px-2.5 py-1 font-medium transition ${
+													activeSnippetTab === 'python' ? 'bg-surface text-fg font-semibold shadow-xs' : 'text-muted'
+												}`}>
+												Python
 											</button>
 										</div>
 									</div>
 
 									{activeSnippetTab === 'curl' ? (
 										<CodeBlock
-											code={`curl -X ${currentOperation.method} "${apiBase}${currentOperation.path}" \\\n  -H "Authorization: Bearer YOUR_WEBSITE_SERVER_TOKEN" \\\n  -H "Content-Type: application/json"${
+											code={`curl -X ${currentOperation.method} "${apiBase}${currentOperation.path}" \\\n  -H "Authorization: ${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}" \\\n  -H "Content-Type: application/json"${
 												currentOperation.requestBody
 													? ` \\\n  -d '${JSON.stringify(
 															sampleFromSchema(
@@ -860,9 +992,9 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 											}`}
 											label="cURL Command"
 										/>
-									) : (
+									) : activeSnippetTab === 'fetch' ? (
 										<CodeBlock
-											code={`const response = await fetch("${apiBase}${currentOperation.path}", {\n  method: "${currentOperation.method}",\n  headers: {\n    "Authorization": "Bearer YOUR_WEBSITE_SERVER_TOKEN",\n    "Content-Type": "application/json"\n  }${
+											code={`const response = await fetch("${apiBase}${currentOperation.path}", {\n  method: "${currentOperation.method}",\n  headers: {\n    "Authorization": "${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}",\n    "Content-Type": "application/json"\n  }${
 												currentOperation.requestBody
 													? `,\n  body: JSON.stringify(${JSON.stringify(
 															sampleFromSchema(
@@ -875,6 +1007,22 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 													: ''
 											}\n});\nconst data = await response.json();\nconsole.log(data);`}
 											label="JavaScript Fetch Example"
+										/>
+									) : (
+										<CodeBlock
+											code={`import requests\n\nurl = "${apiBase}${currentOperation.path}"\nheaders = {\n    "Authorization": "${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}",\n    "Content-Type": "application/json"\n}\n${
+												currentOperation.requestBody
+													? `payload = ${JSON.stringify(
+															sampleFromSchema(
+																currentOperation.requestBody?.content?.['application/json']?.schema,
+																currentProduct?.components,
+															) || {},
+															null,
+															4,
+														)}\nresponse = requests.${currentOperation.method.toLowerCase()}(url, json=payload, headers=headers)`
+													: `response = requests.${currentOperation.method.toLowerCase()}(url, headers=headers)`
+											}\nprint(response.json())`}
+											label="Python Requests Example"
 										/>
 									)}
 								</div>
@@ -891,8 +1039,10 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 									return (
 										<div className="space-y-6">
 											<div className="space-y-1 border-b border-line pb-4">
-												<Badge tone="primary">Product Developer SDK</Badge>
-												<h1 className="text-2xl font-bold tracking-tight">{guide.title}</h1>
+												<p className="font-mono text-xs font-bold tracking-widest uppercase text-primary">
+													PRODUCT DEVELOPER SDK
+												</p>
+												<h1 className="font-display text-3xl font-bold tracking-tight text-fg">{guide.title}</h1>
 												<p className="text-sm text-muted">{guide.summary}</p>
 											</div>
 
@@ -900,7 +1050,9 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 												<div className="space-y-3">
 													<h2 className="text-sm font-semibold">Commands</h2>
 													{guide.commands.map((c) => (
-														<div key={c.cmd} className="rounded-card border border-line bg-surface p-4 space-y-2">
+														<div
+															key={c.cmd}
+															className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-4 space-y-2 shadow-card">
 															<code className="text-xs font-mono font-bold text-primary block">{c.cmd}</code>
 															<p className="text-xs text-muted">{c.desc}</p>
 														</div>
@@ -909,7 +1061,7 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 											) : null}
 
 											{guide.points ? (
-												<div className="rounded-card border border-line bg-surface p-5 space-y-3">
+												<div className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-5 space-y-3 shadow-card">
 													<h2 className="text-sm font-semibold">Key Architecture Invariants</h2>
 													<ul className="list-disc list-inside space-y-2 text-xs text-muted leading-relaxed">
 														{guide.points.map((p, idx) => (

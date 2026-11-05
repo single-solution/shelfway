@@ -9,21 +9,21 @@ export { COMPANY_NAME, PRODUCT_BRAND };
 
 /**
  * Plain lines for known products; catalog description / name otherwise.
- * New products appear automatically — this map is optional enrichment only.
+ * New products appear automatically  -  this map is optional enrichment only.
  * @type {Record<string, { name: string, blurb: string, more: string, for: string, gets: string[], use: string }>}
  */
 const PRODUCT_COPY = {
 	accounts: {
 		name: 'Accounts',
 		blurb: 'Visitors sign in. Your team gets access.',
-		more: 'Members and staff on your website — without building sign-in from scratch.',
+		more: 'Members and staff on your website  -  without building sign-in from scratch.',
 		for: 'Any site that needs logins, members, or staff.',
 		gets: ['Sign-in on your pages', 'Staff invites and roles', 'My Account for members', 'Turn methods on when you need them'],
 		use: 'Add it once. Visitors sign in on your site; you manage staff in your Shelfway account.',
 	},
 	ecommerce: {
 		name: 'Ecommerce',
-		blurb: 'Catalog, cart, and orders — when you sell.',
+		blurb: 'Catalog, cart, and orders  -  when you sell.',
 		more: 'Optional. Skip it if you are not selling online.',
 		for: 'Anyone who sells goods or services on the website.',
 		gets: ['Catalog and categories', 'Cart and checkout', 'Orders and returns', 'Shop pieces for your pages'],
@@ -32,7 +32,7 @@ const PRODUCT_COPY = {
 	payments: {
 		name: 'Payments',
 		blurb: 'Collect money on your website.',
-		more: 'Payment links, wallets, cards, and proof checks — set up in your account.',
+		more: 'Payment links, wallets, cards, and proof checks  -  set up in your account.',
 		for: 'Anyone who needs to take payment on the site.',
 		gets: ['Payment links and checkout', 'Providers you connect', 'Proof review for staff', 'Pay steps on your pages'],
 		use: 'Connect your payment providers. Your pages show the pay step; staff review on the site.',
@@ -40,7 +40,7 @@ const PRODUCT_COPY = {
 	chat: {
 		name: 'Chat',
 		blurb: 'Talk to visitors on your pages.',
-		more: 'Live chat where people already are — with help from AI when you want it.',
+		more: 'Live chat where people already are  -  with help from AI when you want it.',
 		for: 'Sites that answer questions before or after someone buys or signs up.',
 		gets: ['Chat on your pages', 'Inbox for your team', 'AI replies when enabled', 'Hand off to a person'],
 		use: 'Add chat to your pages. Your team replies on the live site.',
@@ -48,7 +48,7 @@ const PRODUCT_COPY = {
 	notifications: {
 		name: 'Notifications',
 		blurb: 'Message people by WhatsApp, SMS, email, or push.',
-		more: 'Updates and alerts from one place — not five separate tools.',
+		more: 'Updates and alerts from one place  -  not five separate tools.',
 		for: 'Anyone who sends status, alerts, or reminders.',
 		gets: ['WhatsApp, SMS, email, push', 'Sending rules you control', 'Templates', 'Caps and quiet hours'],
 		use: 'Connect channels once. Your site features send through the same place.',
@@ -56,7 +56,7 @@ const PRODUCT_COPY = {
 	growth: {
 		name: 'Growth',
 		blurb: 'Consent, SEO, and site measurement.',
-		more: 'Stay with this website — not a maze of extra tools.',
+		more: 'Stay with this website  -  not a maze of extra tools.',
 		for: 'Anyone who wants consent, SEO, and analytics together.',
 		gets: ['Consent and tags', 'SEO helpers', 'Analytics hooks', 'Tied to this website'],
 		use: 'Turn it on for the website. Measurement stays next to your other features.',
@@ -67,45 +67,49 @@ const WORK_STEPS = [
 	{
 		n: '01',
 		k: 'Your account',
-		t: 'Manage the website',
-		d: 'Add a site, turn features on, invite staff, and share setup with your developer.',
+		t: 'Pick what you need',
+		d: 'Choose the features your website wants: customer sign-in, taking payments, live chat, or messaging.',
 	},
 	{
 		n: '02',
-		k: 'Settings',
-		t: 'Adjust each feature',
-		d: 'Choose what is on, edit the words visitors see, connect outside services.',
+		k: 'Share setup',
+		t: 'Copy your setup link',
+		d: 'Copy one simple access link and give it to whoever is building your site. All instructions and keys are ready.',
 	},
 	{
 		n: '03',
 		k: 'On your site',
-		t: 'Do the daily work',
-		d: 'Reply to chat, check payments, handle tasks — on the live website with your team.',
+		t: 'Run your business',
+		d: 'Reply to visitor chats, review payments, and manage your team right from your Shelfway account.',
 	},
 ];
 
 const FAQ = [
 	{
 		q: 'What is Shelfway, in one line?',
-		a: 'Ready website features (sign-in, payments, chat, and more) you turn on — you keep your own site design.',
+		a: 'Ready website features (sign-in, payments, live chat, orders, and messages) you turn on - you keep your own site design.',
+	},
+	{
+		q: 'Do I need to be a developer or know how to code?',
+		a: 'No. You never have to write code or manage servers. You just pick what you want in your account and give your builder the ready setup link.',
 	},
 	{
 		q: 'Do I need every feature?',
-		a: 'No. Turn on only what this site needs. Add more later.',
+		a: 'No. Turn on only what this website needs right now. You can always turn on more later with one click.',
 	},
 	{
 		q: 'Is this only for online shops?',
-		a: 'No. Selling online is optional. Use it for services, community, or content too.',
+		a: 'No. Selling online is optional. You can use Shelfway for service businesses, clubs, blogs, or community websites.',
 	},
 	{
 		q: 'Who builds how the site looks?',
-		a: 'You or your developer. Shelfway provides the features behind those pages.',
+		a: 'You, your designer, or your developer. You build the look however you like, and Shelfway powers the features behind those pages.',
 	},
 ];
 
 const COMPARE = [
 	{
-		need: 'Sign-in, payments, chat, messages…',
+		need: 'Sign-in, payments, chat, messages...',
 		diy: 'You build and maintain each one yourself',
 		us: 'Turn on ready features for the site',
 	},
@@ -120,9 +124,9 @@ const COMPARE = [
 		us: 'Invite staff with the right access',
 	},
 	{
-		need: 'Working with a developer',
-		diy: 'Passwords and notes scattered in chat',
-		us: 'One share file plus public docs',
+		need: 'Handing off to your builder',
+		diy: 'Passwords and notes scattered in messages',
+		us: 'One setup link with ready guides',
 	},
 	{
 		need: 'Day-to-day work',
@@ -141,7 +145,7 @@ const COMPARE = [
  */
 
 /**
- * Public marketing home — plain first, craft second.
+ * Public marketing home  -  plain first, craft second.
  * @param {{ productName?: string, companyName?: string, products?: MarketingProduct[], session?: any }} props
  */
 export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NAME, products = [], session = null }) {
@@ -186,9 +190,6 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 
 	return (
 		<>
-			<div className="wash" aria-hidden="true" />
-			<div className="grid-hard" aria-hidden="true" />
-
 			<SiteHeader brandName={productName} isHome={true} session={session} />
 
 			<main id="top">
@@ -196,20 +197,20 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 					<div className="hero-copy reveal">
 						<p className="byline">by {companyName}</p>
 						<h1>
-							Website features,
+							You choose how your website looks.
 							<br />
-							<span className="accent">already built for you.</span>
+							<span className="accent">We run the features behind it.</span>
 						</h1>
 						<p className="lede">
-							Sign-in, payments, chat, and more — on your site. You keep how it looks. {productName} provides the features.
-							One account to manage it.
+							Sign-in, customer chat, payments, orders, and messages - ready on your site without building everything
+							from scratch. You keep your own design. We handle the heavy lifting.
 						</p>
 						<div className="hero-actions">
 							<a className="text-link" href="#products">
-								See what you can add →
+								See what you can add -&gt;
 							</a>
 							<a className="text-link muted-link" href="#why">
-								Compare options →
+								Compare options -&gt;
 							</a>
 						</div>
 					</div>
@@ -234,12 +235,12 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 										<li>Ready features</li>
 										<li>Pieces for your pages</li>
 										<li>Account for you and staff</li>
-										<li>Docs for your developer</li>
+										<li>Step-by-step setup guides</li>
 									</ul>
 								</div>
 							</div>
 						</div>
-						<p className="fit-foot mono">Add features · share setup · run the site</p>
+						<p className="fit-foot mono">Add features - share setup - run the site</p>
 					</div>
 				</section>
 
@@ -271,7 +272,7 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 						<div className="vs mono">vs</div>
 						<article className="glass hard hot">
 							<span className="mono lime">With {productName}</span>
-							<p>You keep the look. We provide the features, your account, and one share file for your developer.</p>
+							<p>You keep the look. We provide the features, your account, and one simple setup link.</p>
 						</article>
 					</div>
 					<div className="compare-pair reveal">
@@ -281,7 +282,7 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 								{COMPARE.map((row) => (
 									<li key={`diy-${row.need}`}>
 										<span className="mark" aria-hidden="true">
-											✗
+											x
 										</span>
 										<div>
 											<strong>{row.need}</strong>
@@ -297,7 +298,7 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 								{COMPARE.map((row) => (
 									<li key={`us-${row.need}`}>
 										<span className="mark" aria-hidden="true">
-											✓
+											+
 										</span>
 										<div>
 											<strong>{row.need}</strong>
@@ -315,7 +316,7 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 						<p className="eyebrow">What you can add</p>
 						<h2>Pick the features this website needs.</h2>
 						<p>
-							Not only for shops — services, community, or content work too. Tap one to see what it includes and what you
+							Not only for shops - services, community, or content work too. Tap one to see what it includes and what you
 							can customize.
 						</p>
 					</header>
@@ -351,7 +352,7 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 									<p>{activeCopy?.more || active.description || `Add ${active.name} when you need it.`}</p>
 									<ul className="gets">
 										{(
-											activeCopy?.gets || ['Ready on your site', 'Settings in your account', 'Docs for your developer']
+											activeCopy?.gets || ['Ready on your site', 'Settings in your account', 'Step-by-step setup guides']
 										).map((g) => (
 											<li key={g}>{g}</li>
 										))}
@@ -367,7 +368,7 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 										</p>
 									) : null}
 									<Link className="product-docs" href="/docs">
-										{active.name} docs →
+										{active.name} docs -&gt;
 									</Link>
 								</div>
 							</div>
@@ -378,8 +379,8 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 				<section id="work" className="block">
 					<header className="block-head reveal">
 						<p className="eyebrow">How you use it</p>
-						<h2>Your account, settings, then work on the live site.</h2>
-						<p>You run the business here. Your developer starts from one share file and public docs.</p>
+						<h2>Your account, your settings, then live on your site.</h2>
+						<p>You manage your business here. Whoever builds your site gets a single setup link with clear guides.</p>
 					</header>
 
 					<ol className="work-steps reveal">
@@ -397,22 +398,22 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 
 					<div className="handoff glass hard reveal">
 						<div className="handoff-copy">
-							<p className="eyebrow">For your developer</p>
-							<h3>One share file. Public docs. They do not start from zero.</h3>
+							<p className="eyebrow">Zero friction handoff</p>
+							<h3>One setup link. Ready guides. No starting from zero.</h3>
 							<p>
-								Share the file from your account. It points to the site, the features on it, and the docs. Keys stay in
-								the file — not in chat.
+								Share the setup link directly from your account. It connects directly to your site, turns on the
+								features, and provides full guides. Secure keys stay organized without sharing account passwords.
 							</p>
 						</div>
-						<ul className="handoff-bits" aria-label="What the share file covers">
-							<li>Site address & API endpoints</li>
-							<li>Features enabled on this site</li>
-							<li>Docs hub and page piece guides</li>
-							<li>API keys stay safely in the file</li>
+						<ul className="handoff-bits" aria-label="What the setup link covers">
+							<li>Website address and connections</li>
+							<li>Features enabled for your site</li>
+							<li>Interactive guides and ready examples</li>
+							<li>Secure keys stay protected</li>
 						</ul>
 						<div className="handoff-action">
 							<ButtonLink href="/docs" variant="secondary" size="md">
-								Browse docs →
+								Browse docs -&gt;
 							</ButtonLink>
 						</div>
 					</div>

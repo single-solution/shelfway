@@ -190,7 +190,7 @@ export function ActionMenu({
 					data-state={presence.closing ? 'closed' : 'open'}
 					{...(floating && anchor ? { style: anchor.style } : {})}
 					className={cx(
-						'z-40 max-w-[calc(100vw-2rem)] rounded-card border border-line bg-surface p-1 shadow-overlay',
+						'z-40 max-w-[calc(100vw-2rem)] rounded-card border border-line bg-surface/95 backdrop-blur-xl p-1 shadow-overlay',
 						floating && anchor
 							? cx('fixed w-60', ORIGINS[`${anchor.up ? 'bottom' : 'top'}-${align}`])
 							: placement === 'up'
@@ -225,7 +225,7 @@ export function ActionMenu({
 								{heading ? (
 									<p
 										aria-hidden="true"
-										className="px-2.5 pt-1 pb-1 text-micro font-semibold tracking-[0.06em] text-muted uppercase">
+										className="px-2.5 pt-1 pb-1 font-mono text-micro font-bold tracking-[0.12em] text-muted uppercase">
 										{heading}
 									</p>
 								) : null}

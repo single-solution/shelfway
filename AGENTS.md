@@ -11,8 +11,8 @@ Every agent and developer must read, understand, and strictly follow these stand
 Shelfway is structured as a strictly bounded monorepo. Every directory has a defined scope and responsibility:
 
 ```
-singleSolutionSaas/
-  |-- platform/          # Next.js control plane (merchant and admin consoles, public site, API server)
+shelfway/
+  |-- platform/          # Next.js unified surface (public site, public docs, merchant and admin consoles, API server)
   |-- packages/
   |   |-- ui/            # @shelfway/ui: The Unite design system (only UI primitives allowed)
   |   |-- schema/        # @shelfway/schema: Shared validation schemas, types, and RFC 7807/9457 problem helpers
@@ -26,7 +26,7 @@ singleSolutionSaas/
 
 ### Architectural Responsibilities:
 
-- **`platform/` (The Control Plane)**: Handles identity, authentication, merchant accounts, website management, billing, catalog placement, and product SSO launch. It is NOT a documentation hub or a storefront.
+- **`platform/` (The Unified Surface & Control Plane)**: Hosts the public website at `/`, public interactive documentation at `/docs`, secure merchant console at `/(console)`, secure admin console at `/(admin)`, and the API server. It handles identity, authentication, merchant accounts, website management, billing, catalog placement, and product SSO launch.
 - **`packages/ui` (The Single Design System)**: The sole provider of visual components. No application component or product may define ad-hoc design primitives, unvetted CSS cascades, or custom input styles.
 - **`packages/schema` (The Shared Contract)**: Pure schemas, RFC 9457 problem helpers, and type definitions shared across platform and products.
 - **`packages/app-kit` (The Runtime Guard)**: Micro-products integrate with the platform runtime exclusively via `app-kit`. It enforces fail-closed authorization (`allows()`) and denylists invalid operations.

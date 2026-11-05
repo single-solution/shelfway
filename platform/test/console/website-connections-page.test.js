@@ -107,7 +107,7 @@ const fillOtp = async (x, bad = false) => {
 		fillDialog('Two-step or recovery code', '000000');
 		return;
 	}
-	const code = x.w.lastOtp('owner@shop.test');
+	const code = await until(() => x.w.lastOtp('owner@shop.test'));
 	fillDialog('Two-step or recovery code', String(code));
 };
 

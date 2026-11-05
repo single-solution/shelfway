@@ -98,12 +98,20 @@ export function AddWebsiteDialog({ open, merchantId, onClose, onAdded }) {
 	const [error, setError] = useState(/** @type {string | null} */ (null));
 	const [problem, setProblem] = useState(/** @type {Problem | null} */ (null));
 	const submit = async () => {
-		const value = domain.trim();
-		setError(value ? null : WEBSITE.domainMissing);
-		if (!value) return;
+		const raw = domain.trim();
+		if (!raw) {
+			setError(WEBSITE.domainMissing);
+			return;
+		}
+		const clean = raw.replace(/^[a-z]+:\/\//i, '').replace(/\/.*$/, '').toLowerCase();
+		if (!/^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/.test(clean)) {
+			setError('Enter a valid domain name (e.g. shop.example.com).');
+			return;
+		}
+		setError(null);
 		setBusy(true);
 		setProblem(null);
-		const result = await apiFetch(api.websites(merchantId), { method: 'POST', body: { domain: value } });
+		const result = await apiFetch(api.websites(merchantId), { method: 'POST', body: { domain: clean } });
 		setBusy(false);
 		if (!result.ok) {
 			setProblem(result.problem);
@@ -121,7 +129,10 @@ export function AddWebsiteDialog({ open, merchantId, onClose, onAdded }) {
 					autoComplete="off"
 					inputMode="url"
 					value={domain}
-					onChange={(e) => setDomain(e.currentTarget.value)}
+					onChange={(e) => {
+						setDomain(e.currentTarget.value);
+						if (error) setError(null);
+					}}
 					error={error ?? fieldErrors(problem).domain}
 					required
 					wide

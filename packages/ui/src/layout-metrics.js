@@ -29,7 +29,7 @@ export const METRICS = Object.freeze({
 
 /** The inner navigation panel on wide screens (about 224 px, own scroll). */
 export const NAV_PANEL =
-	'hidden min-h-0 w-56 shrink-0 flex-col overflow-hidden rounded-panel border border-line bg-surface/90 backdrop-blur-md lg:flex';
+	'hidden min-h-0 w-56 shrink-0 flex-col overflow-hidden rounded-panel border border-line bg-surface/95 backdrop-blur-md shadow-panel lg:flex';
 
 /** Drawer widths: about 480 px (`md`), about 760 px (`lg`), the whole screen on phones. */
 export const DRAWER_WIDTH = Object.freeze({
@@ -44,7 +44,7 @@ export const DRAWER_WIDTH = Object.freeze({
  */
 export const DRAWER = Object.freeze({
 	layer: 'justify-end p-0 sm:p-3',
-	panel: 'flex h-full w-full flex-col border-line bg-surface/95 backdrop-blur-md text-fg sm:rounded-panel sm:border',
+	panel: 'flex h-full w-full flex-col border-line bg-surface/95 backdrop-blur-xl text-fg shadow-overlay sm:rounded-panel sm:border',
 	header: `relative z-10 flex ${METRICS.drawerHeader} shrink-0 items-center gap-3 border-b border-line bg-surface/90 backdrop-blur-md px-3 sm:px-4`,
 	body: 'shelfway-scroll min-h-0 flex-1 space-y-4 px-3 py-4 sm:px-4 sm:py-5',
 	footer: `flex ${METRICS.drawerFooter} shrink-0 items-center justify-end gap-2 border-t border-line bg-surface/90 backdrop-blur-md px-3 sm:px-4`,
@@ -161,11 +161,11 @@ export const pageBody = ({ toolbar = false, footer = false }) =>
 
 /** The card and the summary tile, shared by the real ones (`Card`, `Stat`) and their skeletons. */
 export const CARD = Object.freeze({
-	box: 'min-w-0 rounded-card border border-line bg-surface/90 backdrop-blur-sm',
+	box: 'min-w-0 rounded-card border border-line bg-surface/95 backdrop-blur-md shadow-card transition-all shelfway-motion',
 	header: 'flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 pt-3.5',
 	body: 'p-4',
 	bodyWithHeader: 'px-4 pt-2.5 pb-4',
-	tile: '@container min-w-0 rounded-card border border-line bg-surface/90 backdrop-blur-sm px-4 py-3.5 shelfway-lift',
+	tile: '@container min-w-0 rounded-card border border-line bg-surface/95 backdrop-blur-md px-4 py-3.5 shadow-card shelfway-lift',
 });
 
 /**

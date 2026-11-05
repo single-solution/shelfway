@@ -174,7 +174,8 @@ describe('fuller Portal screens (jsdom)', () => {
 			await menu('Actions for Notes');
 			await clickEl(menuItem('Open as admin'));
 			await ownerBrowser.api.post('/v1/me/step-up-otp', {});
-			fillDialog('Two-step or recovery code', world.lastOtp('olivia@shelfway.test'));
+			const openOtp = await until(() => world.lastOtp('olivia@shelfway.test'));
+			fillDialog('Two-step or recovery code', String(openOtp));
 			await pressDialog('Open configure');
 			await until(() => open.mock.calls.length > 0);
 			await press('Add credits');

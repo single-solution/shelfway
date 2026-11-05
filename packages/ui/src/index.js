@@ -24,6 +24,7 @@ export {
 	ChoicePicker,
 	FieldGrid,
 	SuggestInput,
+	OtpInput,
 } from './fields.js';
 export { Form, FormError } from './Form.js';
 export { ListEditor, EntryGroup, LIST_EDITOR_TEXTS, moveItem } from './ListEditor.js';

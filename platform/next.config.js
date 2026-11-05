@@ -33,7 +33,7 @@ const config = {
 			})),
 		],
 	}),
-	// `/` is the public marketing site ((site)/page.js). Signed-in merchants are sent to /overview from that page.
+	// `/` is the public marketing site (app/page.js). Signed-in merchants are sent to /overview from that page.
 	headers: async () => [
 		{ source: '/:path*', headers: staticSecurityHeaders() },
 		{ source: '/api/:path*', headers: [{ key: 'Content-Security-Policy', value: API_CSP }] },

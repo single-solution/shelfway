@@ -60,7 +60,7 @@ export const routes = Object.freeze({
 	accountPart: (/** @type {string} */ part) => (part === 'details' ? '/account' : `/account#${e(part)}`),
 	/** Public Docs hub */
 	docs: () => '/docs',
-	docsProduct: (/** @type {string} */ id) => `/docs/${e(id)}`,
+	docsProduct: (/** @type {string} */ id) => `/docs?product=${e(id)}`,
 	docsProductOpenapi: (/** @type {string} */ id) => `/docs/${e(id)}/openapi.json`,
 	docsOpenapi: () => '/docs/openapi.json',
 });

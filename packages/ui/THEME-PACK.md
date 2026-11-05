@@ -13,7 +13,7 @@
 
 1. **Unite is the only theme pack.** Do not ship a second marketing palette, product-specific colors, or a parallel type kit.
 2. **Tokens and universal kit styles live in** `packages/ui/src/theme.css` (`--shelfway-*`, `@theme inline`, and core utilities `.wash`, `.grid-hard`, `.signal`, `.glass`, `.hard`, `.eyebrow`, `.accent`). Light / dark via `data-theme` or system preference (`theme.js` / `ThemeScript`).
-3. **Marketing home and custom views** (`platform/app/(site)/site.css`, etc.) are for layout, spacing, and page composition only. Every color, radius, font, and surface must consume kit tokens (`--shelfway-canvas`, `--shelfway-fg`, `--shelfway-primary`, `--shelfway-glass`, `--radius-control`, etc.) and theme kit utilities directly — never define local alias layers or rogue hex values.
+3. **Marketing home and custom views** (`platform/app/site.css`, etc.) are for layout, spacing, and page composition only. Every color, radius, font, and surface must consume kit tokens (`--shelfway-canvas`, `--shelfway-fg`, `--shelfway-primary`, `--shelfway-glass`, `--radius-control`, etc.) and theme kit utilities directly - never define local alias layers or rogue hex values.
 4. **New screens** use kit parts (`Page`, `Card`, `Button`, …) and token utilities (`bg-canvas`, `text-fg`, `rounded-control`, …). Do not hand-draw a different look “just for this page.”
 5. **Product brand** = Shelfway. **Company** = Shelfway. Naming is copy, not a second theme.
 

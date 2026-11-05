@@ -115,13 +115,13 @@ export const useFocusTrap = (ref, open, onClose) => {
 };
 
 /**
- * @typedef {{ open: boolean, onClose: () => void, title: ReactNode, description?: ReactNode, children?: ReactNode,
+ * @typedef {{ open: boolean, onClose: () => void, title: ReactNode, eyebrow?: ReactNode, description?: ReactNode, children?: ReactNode,
  *   footer?: ReactNode, size?: 'sm' | 'md' | 'lg', closeLabel?: string, dismissible?: boolean,
  *   placement?: 'right' | 'center', icon?: ReactNode }} OverlayProps
  */
 
 /**
- * @typedef {{ open: boolean, onClose: () => void, title: ReactNode, description?: ReactNode, children?: ReactNode,
+ * @typedef {{ open: boolean, onClose: () => void, title: ReactNode, eyebrow?: ReactNode, description?: ReactNode, children?: ReactNode,
  *   footer?: ReactNode, size?: 'md' | 'lg', status?: import('./Page.js').PageStatus[],
  *   actions?: import('./Page.js').PageActions, loading?: boolean, skeleton?: ReactNode, closeLabel?: string,
  *   dismissible?: boolean }} DrawerProps
@@ -140,6 +140,7 @@ export function Drawer({
 	open,
 	onClose,
 	title,
+	eyebrow,
 	description,
 	children,
 	footer,
@@ -188,9 +189,14 @@ export function Drawer({
 					'animate-shelfway-side group-data-[state=closed]:animate-shelfway-side-out focus:outline-none',
 				)}>
 				<div data-shelfway-part="header" className={DRAWER.header}>
-					<h2 id={titleId} className="font-display min-w-0 truncate text-lead font-semibold tracking-tight text-fg">
-						{title}
-					</h2>
+					<div className="min-w-0 flex-1">
+						{eyebrow ? (
+							<p className="mb-0.5 text-xs font-mono font-bold tracking-widest uppercase text-primary">{eyebrow}</p>
+						) : null}
+						<h2 id={titleId} className="font-display min-w-0 truncate text-lead font-semibold tracking-tight text-fg">
+							{title}
+						</h2>
+					</div>
 					{status && status.length > 0 ? (
 						<div className="flex shrink-0 items-center gap-1.5">
 							{status.map((pill, i) => (
@@ -207,7 +213,7 @@ export function Drawer({
 								type="button"
 								onClick={onClose}
 								aria-label={closeLabel}
-								className="shelfway-motion shelfway-press rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg focus-visible:outline-2 focus-visible:outline-focus">
+								className="shelfway-motion shelfway-press rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:bg-surface-2">
 								<Icon name="close" size={16} />
 							</button>
 						) : null}
@@ -244,6 +250,7 @@ function CenterDialog({
 	open,
 	onClose,
 	title,
+	eyebrow,
 	description,
 	children,
 	footer,
@@ -281,7 +288,7 @@ function CenterDialog({
 				aria-describedby={description ? descriptionId : undefined}
 				tabIndex={-1}
 				className={cx(
-					'flex max-h-[92vh] w-full flex-col rounded-t-card border border-line bg-surface text-fg shadow-overlay focus:outline-none sm:rounded-card',
+					'flex max-h-[92vh] w-full flex-col rounded-t-card border border-line bg-surface/95 backdrop-blur-xl text-fg shadow-overlay focus:outline-none sm:rounded-card',
 					'animate-shelfway-sheet group-data-[state=closed]:animate-shelfway-sheet-out sm:animate-shelfway-pop sm:group-data-[state=closed]:animate-shelfway-pop-out',
 					size === 'sm' ? 'max-w-md' : size === 'lg' ? 'max-w-3xl' : 'max-w-xl',
 				)}>
@@ -289,6 +296,9 @@ function CenterDialog({
 					<div className="flex items-start gap-3 min-w-0">
 						{icon ? <div className="shrink-0 mt-0.5">{icon}</div> : null}
 						<div className="min-w-0">
+							{eyebrow ? (
+								<p className="mb-1 text-xs font-mono font-bold tracking-widest uppercase text-primary">{eyebrow}</p>
+							) : null}
 							<h2 id={titleId} className="font-display text-xl font-bold tracking-tight text-fg">
 								{title}
 							</h2>
@@ -304,7 +314,7 @@ function CenterDialog({
 							type="button"
 							onClick={onClose}
 							aria-label={closeLabel}
-							className="shelfway-motion shelfway-press rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg focus:outline-none focus-visible:outline-2 focus-visible:outline-focus">
+							className="shelfway-motion shelfway-press rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:bg-surface-2">
 							<Icon name="close" size={16} />
 						</button>
 					) : null}

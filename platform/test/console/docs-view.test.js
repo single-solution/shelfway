@@ -61,7 +61,7 @@ describe('Docs hub views (PLAN §10 B1, B2)', () => {
 	it('renders DocsHubView with hero, quickstart, and product cards without error', () => {
 		const html = renderToString(<DocsHubView branding={branding} items={[sampleProduct]} />);
 		expect(html).toContain('Documentation Hub');
-		expect(html).toContain('Quickstart for Developers and AI');
+		expect(html).toContain('Quickstart Guide');
 		expect(html).toContain('Chat');
 		expect(html).toContain('v1.0.0');
 		expect(html).toContain('AI Assistant');
@@ -182,7 +182,7 @@ describe('Docs hub views (PLAN §10 B1, B2)', () => {
 		if (authBtn) click(authBtn);
 		expect(document.body.textContent).toContain('Credentials Architecture');
 
-		const quickstartBtn = byText(document.body, 'Quickstart for Developers and AI');
+		const quickstartBtn = byText(document.body, 'Quickstart Guide');
 		if (quickstartBtn) click(quickstartBtn);
 		expect(document.body.textContent).toContain('Everyday Development Path');
 
@@ -221,7 +221,7 @@ describe('Docs hub views (PLAN §10 B1, B2)', () => {
 		expect(document.body.textContent).toContain('curl -X POST');
 
 		// Back to product overview
-		const backBtn = byText(document.body, '← Back to Chat Overview');
+		const backBtn = byText(document.body, '<- Back to Chat Overview');
 		if (backBtn) click(backBtn);
 		expect(document.body.textContent).toContain('Available API Operations');
 

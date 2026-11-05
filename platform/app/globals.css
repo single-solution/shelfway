@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import '@shelfway/ui/theme.css';
+@import './site.css';
 
 /* the component library lives outside this package: scan its sources for classes */
 @source '../node_modules/@shelfway/ui/src';

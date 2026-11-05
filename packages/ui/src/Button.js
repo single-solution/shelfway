@@ -27,10 +27,13 @@ const BASE =
 
 /** @type {Record<ButtonVariant, string>} */
 const VARIANTS = {
-	primary: 'border border-primary bg-primary text-on-primary hover:bg-primary-hover hover:border-primary-hover',
-	secondary: 'border border-line bg-surface text-fg hover:bg-surface-2',
+	primary:
+		'border border-primary bg-primary text-on-primary hover:bg-primary-hover hover:border-primary-hover hover:-translate-y-px active:translate-y-0',
+	secondary:
+		'border border-line bg-surface/90 backdrop-blur-sm text-fg hover:bg-surface-2 hover:border-line-strong hover:-translate-y-px active:translate-y-0',
 	ghost: 'border border-transparent text-fg/80 hover:border-line hover:bg-surface-2 hover:text-fg',
-	danger: 'border border-danger bg-danger text-on-danger hover:bg-danger-hover hover:border-danger-hover',
+	danger:
+		'border border-danger bg-danger text-on-danger hover:bg-danger-hover hover:border-danger-hover hover:-translate-y-px active:translate-y-0',
 	soft: 'border border-transparent bg-primary-soft text-on-primary-soft hover:bg-primary-soft/70',
 };
 

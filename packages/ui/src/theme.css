@@ -757,12 +757,12 @@
 	--shelfway-on-new-soft: #9d174d;
 	--shelfway-focus: #0f766e;
 	--shelfway-overlay: rgb(11 18 32 / 0.36);
-	/* Unite: subtle border with soft modern ambient elevation */
-	--shelfway-shadow-1: 0 1px 3px 0 rgb(11 18 32 / 0.05), 0 1px 2px -1px rgb(11 18 32 / 0.05);
-	--shelfway-shadow-2: 0 4px 6px -1px rgb(11 18 32 / 0.07), 0 2px 4px -2px rgb(11 18 32 / 0.05);
-	--shelfway-shadow-3: 0 10px 25px -5px rgb(11 18 32 / 0.1), 0 8px 10px -6px rgb(11 18 32 / 0.04);
-	--shelfway-hard: 0 2px 8px -1px rgb(15 118 110 / 0.14), 0 0 0 1px rgb(15 118 110 / 0.12);
-	--shelfway-lift: 0 4px 12px -2px rgb(15 118 110 / 0.18), 0 0 0 1px rgb(15 118 110 / 0.16);
+	/* Unite signature elevation from website: crisp geometric offset teal shadows */
+	--shelfway-shadow-1: 4px 4px 0 color-mix(in srgb, var(--shelfway-primary) 18%, transparent);
+	--shelfway-shadow-2: 6px 6px 0 color-mix(in srgb, var(--shelfway-primary) 18%, transparent);
+	--shelfway-shadow-3: 8px 8px 0 color-mix(in srgb, var(--shelfway-primary) 18%, transparent);
+	--shelfway-hard: 4px 4px 0 color-mix(in srgb, var(--shelfway-primary) 20%, transparent);
+	--shelfway-lift: 5px 5px 0 color-mix(in srgb, var(--shelfway-primary) 22%, transparent);
 	--shelfway-grid-line: rgb(11 18 32 / 0.03);
 	--shelfway-glow-primary: 0 0 #0000;
 	--shelfway-glow-danger: 0 0 #0000;
@@ -824,11 +824,11 @@
 		--shelfway-on-new-soft: #f9a8d4;
 		--shelfway-focus: #5eead4;
 		--shelfway-overlay: rgb(3 8 18 / 0.72);
-		--shelfway-shadow-1: 0 1px 3px 0 rgb(0 0 0 / 0.25);
-		--shelfway-shadow-2: 0 4px 8px -1px rgb(0 0 0 / 0.35);
-		--shelfway-shadow-3: 0 0 0 1px #2a3548, 0 16px 40px -12px rgb(0 0 0 / 0.5);
-		--shelfway-hard: 0 2px 8px -1px rgb(45 212 191 / 0.22), 0 0 0 1px rgb(45 212 191 / 0.2);
-		--shelfway-lift: 0 4px 14px -2px rgb(45 212 191 / 0.28), 0 0 0 1px rgb(45 212 191 / 0.25);
+		--shelfway-shadow-1: 4px 4px 0 color-mix(in srgb, var(--shelfway-primary) 22%, transparent);
+		--shelfway-shadow-2: 6px 6px 0 color-mix(in srgb, var(--shelfway-primary) 22%, transparent);
+		--shelfway-shadow-3: 8px 8px 0 color-mix(in srgb, var(--shelfway-primary) 22%, transparent);
+		--shelfway-hard: 4px 4px 0 color-mix(in srgb, var(--shelfway-primary) 24%, transparent);
+		--shelfway-lift: 5px 5px 0 color-mix(in srgb, var(--shelfway-primary) 26%, transparent);
 		--shelfway-grid-line: rgb(238 242 247 / 0.04);
 		--shelfway-glow-primary: 0 0 #0000;
 		--shelfway-glow-danger: 0 0 #0000;
@@ -887,11 +887,11 @@
 	--shelfway-on-new-soft: #f9a8d4;
 	--shelfway-focus: #5eead4;
 	--shelfway-overlay: rgb(3 8 18 / 0.72);
-	--shelfway-shadow-1: 0 1px 3px 0 rgb(0 0 0 / 0.25);
-	--shelfway-shadow-2: 0 4px 8px -1px rgb(0 0 0 / 0.35);
-	--shelfway-shadow-3: 0 0 0 1px #2a3548, 0 16px 40px -12px rgb(0 0 0 / 0.5);
-	--shelfway-hard: 0 2px 8px -1px rgb(45 212 191 / 0.22), 0 0 0 1px rgb(45 212 191 / 0.2);
-	--shelfway-lift: 0 4px 14px -2px rgb(45 212 191 / 0.28), 0 0 0 1px rgb(45 212 191 / 0.25);
+	--shelfway-shadow-1: 4px 4px 0 color-mix(in srgb, var(--shelfway-primary) 22%, transparent);
+	--shelfway-shadow-2: 6px 6px 0 color-mix(in srgb, var(--shelfway-primary) 22%, transparent);
+	--shelfway-shadow-3: 8px 8px 0 color-mix(in srgb, var(--shelfway-primary) 22%, transparent);
+	--shelfway-hard: 4px 4px 0 color-mix(in srgb, var(--shelfway-primary) 24%, transparent);
+	--shelfway-lift: 5px 5px 0 color-mix(in srgb, var(--shelfway-primary) 26%, transparent);
 	--shelfway-grid-line: rgb(238 242 247 / 0.04);
 	--shelfway-glow-primary: 0 0 #0000;
 	--shelfway-glow-danger: 0 0 #0000;
@@ -971,12 +971,12 @@
 	input:-webkit-autofill:focus,
 	textarea:-webkit-autofill,
 	select:-webkit-autofill {
-		-webkit-box-shadow: 0 0 0 1000px var(--shelfway-surface) inset;
-		-webkit-text-fill-color: var(--shelfway-fg);
-		caret-color: var(--shelfway-fg);
+		-webkit-box-shadow: 0 0 0 1000px var(--shelfway-surface) inset !important;
+		-webkit-text-fill-color: var(--shelfway-fg) !important;
+		caret-color: var(--shelfway-fg) !important;
 		transition:
 			background-color 600000s 0s,
-			color 600000s 0s;
+			color 600000s 0s !important;
 	}
 	/* number fields: no browser spinners (type the number, or use the arrow keys) */
 	input[type='number'] {

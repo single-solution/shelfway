@@ -479,14 +479,14 @@ export function StatusPill({ status, children, title, className }) {
 
 /** The soft box and the icon of each meaning (a `Callout`, a `NextStep`). @type {Record<Tone, { box: string, icon: import('./icons.js').IconName }>} */
 export const CALLOUTS = {
-	neutral: { box: 'bg-surface-2 text-fg', icon: 'info' },
-	primary: { box: 'bg-primary-soft text-on-primary-soft', icon: 'info' },
-	info: { box: 'bg-info-soft text-on-info-soft', icon: 'info' },
-	success: { box: 'bg-success-soft text-on-success-soft', icon: 'check' },
-	warning: { box: 'bg-warning-soft text-on-warning-soft', icon: 'alert' },
-	danger: { box: 'bg-danger-soft text-on-danger-soft', icon: 'alert' },
-	attention: { box: 'bg-attention-soft text-on-attention-soft', icon: 'alert' },
-	new: { box: 'bg-new-soft text-on-new-soft', icon: 'sparkle' },
+	neutral: { box: 'bg-surface-2 text-fg border border-line', icon: 'info' },
+	primary: { box: 'bg-primary-soft text-on-primary-soft border border-primary/20', icon: 'info' },
+	info: { box: 'bg-info-soft text-on-info-soft border border-info/20', icon: 'info' },
+	success: { box: 'bg-success-soft text-on-success-soft border border-success/20', icon: 'check' },
+	warning: { box: 'bg-warning-soft text-on-warning-soft border border-warning/20', icon: 'alert' },
+	danger: { box: 'bg-danger-soft text-on-danger-soft border border-danger/20', icon: 'alert' },
+	attention: { box: 'bg-attention-soft text-on-attention-soft border border-attention/20', icon: 'alert' },
+	new: { box: 'bg-new-soft text-on-new-soft border border-new/20', icon: 'sparkle' },
 };
 
 /**
