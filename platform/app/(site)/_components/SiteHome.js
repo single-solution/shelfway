@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link.js';
-import { ButtonLink } from '@shelfway/ui';
+import { Button, ButtonLink } from '@shelfway/ui';
 import { useEffect, useState } from 'react';
 import { COMPANY_NAME, PRODUCT_BRAND, SiteFooter, SiteHeader, openSignInModal } from './SiteNav.js';
 
@@ -437,12 +437,9 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 								Open Dashboard
 							</ButtonLink>
 						) : (
-							<button
-								type="button"
-								onClick={() => openSignInModal()}
-								className="shelfway-button shelfway-button-primary shelfway-button-lg cursor-pointer">
+							<Button type="button" variant="primary" size="lg" onClick={() => openSignInModal()}>
 								Sign in
-							</button>
+							</Button>
 						)}
 						<ButtonLink href="/docs" variant="secondary" size="lg">
 							Browse docs

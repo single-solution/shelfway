@@ -82,16 +82,7 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 					</Link>
 					<nav aria-label="Main">
 						<a href={isCurrentHome ? '#products' : '/#products'}>Features</a>
-						<Link
-							href="/docs"
-							onClick={(e) => {
-								if (!session) {
-									e.preventDefault();
-									setSignInNext('/docs');
-									setShowSignInModal(true);
-								}
-							}}
-							style={isDocs ? { color: 'var(--shelfway-primary)', fontWeight: 600 } : undefined}>
+						<Link href="/docs" style={isDocs ? { color: 'var(--shelfway-primary)', fontWeight: 600 } : undefined}>
 							Docs
 						</Link>
 						{session ? <Link href="/overview">Dashboard</Link> : null}

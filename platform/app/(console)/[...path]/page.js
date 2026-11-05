@@ -116,9 +116,6 @@ async function DocsPage({ searchParams }) {
 	await connection();
 	const q = (await searchParams) || {};
 	const session = await consoleSession();
-	if (!session.ok) {
-		redirect('/?auth=1&next=' + encodeURIComponent('/docs'));
-	}
 	const [branding, api] = await Promise.all([consoleBranding(), consoleApi()]);
 	const loaded = await loadDocsHub(api);
 	const initialProduct = one(q.product) || '';
@@ -128,7 +125,7 @@ async function DocsPage({ searchParams }) {
 			branding={branding}
 			items={loaded.ok ? loaded.items : []}
 			activeProductDetail={productDetail?.ok ? productDetail.product : null}
-			actor={session.me || session.actor || (session.admin ? { role: 'owner', name: 'Admin' } : null)}
+			actor={session.ok ? session.me || session.actor || (session.admin ? { role: 'owner', name: 'Admin' } : null) : null}
 			initialProductId={initialProduct}
 		/>
 	);
@@ -138,9 +135,6 @@ async function DocsProductPage({ params }) {
 	await connection();
 	const { productId } = await params;
 	const session = await consoleSession();
-	if (!session.ok) {
-		redirect('/?auth=1&next=' + encodeURIComponent(`/docs/${productId}`));
-	}
 	const [branding, api] = await Promise.all([consoleBranding(), consoleApi()]);
 	const [loaded, productDetail] = await Promise.all([loadDocsHub(api), loadDocsProduct(api, productId)]);
 	return (
@@ -148,7 +142,7 @@ async function DocsProductPage({ params }) {
 			branding={branding}
 			items={loaded.ok ? loaded.items : []}
 			activeProductDetail={productDetail.ok ? productDetail.product : null}
-			actor={session.me || session.actor || (session.admin ? { role: 'owner', name: 'Admin' } : null)}
+			actor={session.ok ? session.me || session.actor || (session.admin ? { role: 'owner', name: 'Admin' } : null) : null}
 			initialProductId={productId}
 		/>
 	);
