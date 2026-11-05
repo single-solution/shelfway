@@ -226,38 +226,10 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 	return (
 		<ToastProvider>
 			<div className="flex flex-col min-h-screen bg-canvas text-fg">
-				{/* Top Global Docs Header */}
-				<header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-surface/90 px-4 backdrop-blur sm:px-6">
-					<div className="flex items-center gap-4">
-						<a href="/" className="flex items-center gap-2 font-semibold text-fg hover:opacity-80" title="Back to Website">
-							<span className="flex h-7 w-7 items-center justify-center rounded-control bg-primary text-white font-mono text-sm font-bold">
-								S
-							</span>
-							<span>{brandName}</span>
-						</a>
-
-						<nav className="flex items-center gap-1 border-l border-line pl-3 text-xs" aria-label="Surface navigation">
-							<a
-								href="/"
-								className="rounded-control px-2.5 py-1 text-muted hover:bg-surface-2 hover:text-fg transition font-medium">
-								Website
-							</a>
-							<a
-								href="/overview"
-								className="rounded-control px-2.5 py-1 text-muted hover:bg-surface-2 hover:text-fg transition font-medium">
-								Dashboard
-							</a>
-							<span className="rounded-control bg-surface-2 px-2.5 py-1 font-semibold text-primary">
-								Documentation Hub
-							</span>
-							{isDeveloperRole && actor?.admin ? (
-								<a
-									href="/admin"
-									className="rounded-control px-2.5 py-1 text-muted hover:bg-surface-2 hover:text-fg transition font-medium">
-									Admin
-								</a>
-							) : null}
-						</nav>
+				{/* Top Docs Toolbar */}
+				<header className="sticky top-0 z-20 flex h-12 items-center justify-between border-b border-line bg-surface/90 px-4 backdrop-blur sm:px-6">
+					<div className="flex items-center gap-3">
+						<span className="text-sm font-semibold text-fg">{brandName} Documentation Hub</span>
 					</div>
 
 					<div className="flex items-center gap-3">
@@ -290,9 +262,9 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 				</header>
 
 				{/* Two-Column Docs Explorer Layout */}
-				<div className="flex flex-1 overflow-hidden">
+				<div className="flex flex-1">
 					{/* Left Mega-Menu Sidebar */}
-					<aside className="w-72 shrink-0 border-r border-line bg-surface/60 overflow-y-auto flex flex-col p-4 space-y-6">
+					<aside className="w-72 shrink-0 border-r border-line bg-surface/60 overflow-y-auto flex flex-col p-4 space-y-6 sticky top-12 self-start max-h-[calc(100vh-3rem)]">
 						{/* Search Bar */}
 						<div>
 							<Input
@@ -470,7 +442,7 @@ export function DocsHubView({ branding, items = [], activeProductDetail = null, 
 					</aside>
 
 					{/* Right Content Area: Interactive Swagger & Guides */}
-					<main className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8 max-w-5xl">
+					<main className="flex-1 p-6 sm:p-8 space-y-8 max-w-5xl">
 						{/* 1. Quickstart Section */}
 						{activeSection === 'quickstart' ? (
 							<section className="space-y-6">

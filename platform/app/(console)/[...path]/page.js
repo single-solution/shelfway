@@ -8,21 +8,12 @@
 import { notFound, redirect } from 'next/navigation.js';
 import { connection } from 'next/server';
 import { PageTransition } from '@shelfway/ui';
-import {
-	loadAccount,
-	loadCredits,
-	loadDocsHub,
-	loadDocsProduct,
-	loadOverview,
-	loadWebsitePage,
-	loadWebsites,
-} from '../../../src/console/loaders.js';
+import { loadAccount, loadCredits, loadOverview, loadWebsitePage, loadWebsites } from '../../../src/console/loaders.js';
 import { ACCOUNT_PARTS, routes } from '../../../src/console/paths.js';
 import { LEGACY_PEER_REDIRECTS, websitePartOf } from '../../../src/console/website-parts.js';
-import { consoleApi, consoleBranding, consoleSession, merchantContext, one, redirectIfSignedIn } from '../_lib/server.js';
+import { consoleBranding, merchantContext, one, redirectIfSignedIn } from '../_lib/server.js';
 import { AccountView } from '../../../src/console/views/account.js';
 import { CreditsView } from '../../../src/console/views/credits.js';
-import { DocsHubView } from '../../../src/console/views/docs.js';
 import { SharedSetupView } from '../../../src/console/views/setup.js';
 import { ConfirmEmailView, ForgotPasswordView, ResetPasswordView, SetPasswordView } from '../../../src/console/views/sign-in.js';
 import { OverviewView, WebsiteView, WebsitesView } from '../../../src/console/views/websites.js';
@@ -112,42 +103,6 @@ async function SharedSetupPage() {
 	return <SharedSetupView brand={(await consoleBranding()).name} />;
 }
 
-async function DocsPage({ searchParams }) {
-	await connection();
-	const q = (await searchParams) || {};
-	const session = await consoleSession();
-	const [branding, api] = await Promise.all([consoleBranding(), consoleApi()]);
-	const loaded = await loadDocsHub(api);
-	const initialProduct = one(q.product) || '';
-	const productDetail = initialProduct ? await loadDocsProduct(api, initialProduct) : null;
-	return (
-		<DocsHubView
-			branding={branding}
-			items={loaded.ok ? loaded.items : []}
-			activeProductDetail={productDetail?.ok ? productDetail.product : null}
-			actor={session.ok ? session.me || session.actor || (session.admin ? { role: 'owner', name: 'Admin' } : null) : null}
-			initialProductId={initialProduct}
-		/>
-	);
-}
-
-async function DocsProductPage({ params }) {
-	await connection();
-	const { productId } = await params;
-	const session = await consoleSession();
-	const [branding, api] = await Promise.all([consoleBranding(), consoleApi()]);
-	const [loaded, productDetail] = await Promise.all([loadDocsHub(api), loadDocsProduct(api, productId)]);
-	return (
-		<DocsHubView
-			branding={branding}
-			items={loaded.ok ? loaded.items : []}
-			activeProductDetail={productDetail.ok ? productDetail.product : null}
-			actor={session.ok ? session.me || session.actor || (session.admin ? { role: 'owner', name: 'Admin' } : null) : null}
-			initialProductId={productId}
-		/>
-	);
-}
-
 /**
  * Path patterns under / (`:name` captures a segment into `params`), views, metadata and the kind of view: a console
  * `page` (wrapped in the page transition), a `screen` (a `Page` of `@shelfway/ui`: it fades its own body in and keeps its header
@@ -170,26 +125,6 @@ const VIEWS = /** @type {Array<[string[], (props: any) => any, import('next').Me
 	[['websites', ':websiteId', ':part'], WebsitePage, { title: 'Website' }, 'screen'],
 	[['websites', ':websiteId', ':part', ':sub'], WebsitePage, { title: 'Website' }, 'screen'],
 	[['shared-setup'], SharedSetupPage, { title: 'Shared Setup', robots: { index: false, follow: false } }, 'public'],
-	[
-		['docs'],
-		DocsPage,
-		{
-			title: 'Documentation Hub',
-			description: 'Developer documentation and OpenAPI 3.0 specs for Shelfway products.',
-			robots: { index: false, follow: false },
-		},
-		'screen',
-	],
-	[
-		['docs', ':productId'],
-		DocsProductPage,
-		{
-			title: 'Product Documentation',
-			description: 'Developer documentation, guides, and OpenAPI spec.',
-			robots: { index: false, follow: false },
-		},
-		'screen',
-	],
 ]);
 
 /**

@@ -1,6 +1,6 @@
-# AGENTS.md - System Architecture, Engineering Standards, and Operational Constitution for Shelfway SaaS
+# AGENTS.md - System Architecture, Engineering Standards, and Operational Constitution for Shelfway
 
-This document is the binding, non-negotiable architectural constitution for all AI coding agents (Antigravity, Cursor, Claude Code, Copilot, Gemini) and human contributors working across the Shelfway SaaS monorepo.
+This document is the binding, non-negotiable architectural constitution for all AI coding agents (Antigravity, Cursor, Claude Code, Copilot, Gemini) and human contributors working across the Shelfway monorepo.
 
 Every agent and developer must read, understand, and strictly follow these standards. Violating any of these rules constitutes a regression and will fail automated verification.
 
