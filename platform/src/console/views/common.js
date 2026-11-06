@@ -69,13 +69,19 @@ export const openDashboard = async (path, body) => {
 };
 
 /**
- * A two-step or recovery code field value → the API members.
+ * A two-step or recovery code field value -> the API members.
+ * Strips formatting spaces and dashes so 6-digit TOTP / OTP codes are accurately
+ * routed to code, and backup codes to recoveryCode.
  * @param {string} value
  */
 export const factorOf = (value) => {
+	if (typeof value !== 'string') return {};
 	const v = value.trim();
 	if (!v) return {};
-	return /^\d{6}$/.test(v) ? { code: v } : { recoveryCode: v };
+	const digits = v.replace(/[\s-]/g, '');
+	if (/^\d{6}$/.test(digits)) return { code: digits };
+	const cleanRecovery = v.replace(/\s+/g, '').toLowerCase();
+	return { recoveryCode: cleanRecovery };
 };
 
 /** Rows per page of the tables fed by the server. */

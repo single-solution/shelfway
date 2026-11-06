@@ -11,6 +11,7 @@ import * as client from '../../src/console/client.js';
 import { AddMerchantDialog } from '../../src/console/admin/views/merchants.js';
 import { AddWebsiteDialog } from '../../src/console/views/website.js';
 import { MerchantFieldsForm } from '../../src/console/views/account.js';
+import { factorOf } from '../../src/console/views/common.js';
 
 afterEach(() => {
 	cleanup();
@@ -116,5 +117,15 @@ describe('Tier 1 Client-Side Pre-Validation', () => {
 		// Submission must be blocked
 		expect(apiFetchSpy).not.toHaveBeenCalled();
 		expect(document.body.textContent).toContain('Business name is required.');
+	});
+
+	it('factorOf normalizes formatted two-step codes and recovery codes', () => {
+		expect(factorOf('123456')).toEqual({ code: '123456' });
+		expect(factorOf(' 123 456 ')).toEqual({ code: '123456' });
+		expect(factorOf('123-456')).toEqual({ code: '123456' });
+		expect(factorOf(' 123-456 ')).toEqual({ code: '123456' });
+		expect(factorOf('abcde-fghij')).toEqual({ recoveryCode: 'abcde-fghij' });
+		expect(factorOf('ABCDE FGHIJ')).toEqual({ recoveryCode: 'abcdefghij' });
+		expect(factorOf('')).toEqual({});
 	});
 });

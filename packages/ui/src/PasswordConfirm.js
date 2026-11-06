@@ -124,7 +124,8 @@ export function PasswordConfirmDialog({
 				className="space-y-4"
 				onSubmit={(event) => {
 					event.preventDefault();
-					if (ready) onConfirm({ ...(otpOnly ? {} : { password }), code: code.trim() });
+					const cleanCode = useRecovery ? code.trim() : code.replace(/[\s-]/g, '');
+					if (ready) onConfirm({ ...(otpOnly ? {} : { password }), code: cleanCode });
 				}}>
 				{children}
 				{isEmailOtp && (
@@ -164,7 +165,7 @@ export function PasswordConfirmDialog({
 								spellCheck={false}
 								value={code}
 								onChange={(event) => {
-									const val = useRecovery ? event.currentTarget.value : event.currentTarget.value.replace(/\s+/g, '');
+									const val = useRecovery ? event.currentTarget.value : event.currentTarget.value.replace(/[\s-]/g, '').slice(0, 6);
 									setCode(val);
 								}}
 								error={errors.code}

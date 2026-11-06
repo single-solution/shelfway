@@ -44,9 +44,12 @@ describe('inputs: fields', () => {
 		expect(I.token('a'.repeat(43)).ok).toBe(true);
 		expect(I.token('a+b').ok).toBe(false);
 		expect(I.otp(' 123456 ')).toEqual({ ok: true, value: '123456' });
+		expect(I.otp('123 456')).toEqual({ ok: true, value: '123456' });
+		expect(I.otp('123-456')).toEqual({ ok: true, value: '123456' });
 		expect(I.otp('12345').ok).toBe(false);
 		expect(I.otp(123456).ok).toBe(false);
 		expect(I.recoveryCode('ABCDE-FGHIJ')).toEqual({ ok: true, value: 'abcde-fghij' });
+		expect(I.recoveryCode('abcde fghij')).toEqual({ ok: true, value: 'abcde-fghij' });
 		expect(I.recoveryCode('abcdefghij').ok).toBe(true);
 		expect(I.recoveryCode('abc').ok).toBe(false);
 		expect(I.recoveryCode(1).ok).toBe(false);

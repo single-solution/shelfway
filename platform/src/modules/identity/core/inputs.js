@@ -95,11 +95,18 @@ export const idOf = (prefix) => (value) => (isId(value, prefix) ? okv(value) : b
 export const token = (value) => (typeof value === 'string' && TOKEN.test(value) ? okv(value) : bad('is invalid'));
 
 /** @type {Field<string>} */
-export const otp = (value) => (typeof value === 'string' && OTP.test(value.trim()) ? okv(value.trim()) : bad('must be 6 digits'));
+export const otp = (value) => {
+	if (typeof value !== 'string') return bad('must be a string');
+	const clean = value.replace(/[\s-]/g, '');
+	return OTP.test(clean) ? okv(clean) : bad('must be 6 digits');
+};
 
 /** @type {Field<string>} */
-export const recoveryCode = (value) =>
-	typeof value === 'string' && RECOVERY.test(value.trim()) ? okv(value.trim().toLowerCase()) : bad('is invalid');
+export const recoveryCode = (value) => {
+	if (typeof value !== 'string') return bad('must be a string');
+	const clean = value.replace(/[\s-]/g, '').toLowerCase();
+	return /^[a-z2-7]{10}$/.test(clean) ? okv(`${clean.slice(0, 5)}-${clean.slice(5)}`) : bad('is invalid');
+};
 
 /** @type {Field<boolean>} */
 export const bool = (value) => (typeof value === 'boolean' ? okv(value) : bad('must be a boolean'));

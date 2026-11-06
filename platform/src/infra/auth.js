@@ -209,7 +209,9 @@ export const verifyTotp = (
 	code,
 	{ now = Date.now, window = 1, lastStep = null, allowSameStep = false, step = 30, digits = 6, algorithm = 'sha1' } = {},
 ) => {
-	if (typeof code !== 'string' || !new RegExp(`^\\d{${digits}}$`).test(code.trim())) return { ok: false };
+	if (typeof code !== 'string') return { ok: false };
+	const clean = code.replace(/[\s-]/g, '');
+	if (!new RegExp(`^\\d{${digits}}$`).test(clean)) return { ok: false };
 	const key = base32Decode(secret);
 	const current = Math.floor(now() / 1000 / step);
 	/** @type {number | null} */
@@ -217,7 +219,7 @@ export const verifyTotp = (
 	for (let delta = -window; delta <= window; delta += 1) {
 		const counter = current + delta;
 		// compare every candidate (no early exit) so timing does not reveal which step matched
-		if (constantTimeEqual(hotp(key, counter, { digits, algorithm }), code.trim()) && matched === null) matched = counter;
+		if (constantTimeEqual(hotp(key, counter, { digits, algorithm }), clean) && matched === null) matched = counter;
 	}
 	if (matched === null) return { ok: false };
 	if (lastStep !== null) {

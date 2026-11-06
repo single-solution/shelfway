@@ -145,14 +145,16 @@ export const createAccounts = (deps) => {
 				throw problem('validation_failed', 'Enter a two-step code or a recovery code.', {
 					errors: [{ path: '/code', message: 'is required while two-step is on' }],
 				});
-			const cleanCode = typeof factor.code === 'string' ? factor.code.trim() : factor.code;
+			const cleanCode = typeof factor.code === 'string' ? factor.code.replace(/[\s-]/g, '') : factor.code;
+			const cleanRecovery =
+				typeof factor.recoveryCode === 'string' ? factor.recoveryCode.replace(/\s+/g, '') : factor.recoveryCode;
 			const passed = await checkSecondFactor(
 				ctx,
 				logins(kind),
 				doc,
 				{
 					...(cleanCode === undefined ? {} : { code: cleanCode }),
-					...(factor.recoveryCode === undefined ? {} : { recoveryCode: factor.recoveryCode }),
+					...(cleanRecovery === undefined ? {} : { recoveryCode: cleanRecovery }),
 				},
 				{ allowSameStep: true, window: 2 },
 			);
@@ -200,7 +202,8 @@ export const createAccounts = (deps) => {
 				errors: [{ path: '/code', message: 'is required' }],
 			});
 		}
-		const cleanCode = typeof code === 'string' ? code.trim() : code;
+		const cleanCode = typeof code === 'string' ? code.replace(/[\s-]/g, '') : code;
+		const cleanRecovery = typeof recoveryCode === 'string' ? recoveryCode.replace(/\s+/g, '') : recoveryCode;
 
 		// 1. If an active email step_up_otp was issued, check it first
 		const tokenDoc = await repo.peekTokenBySubject('step_up_otp', `${kind}:${doc._id}`);
@@ -218,7 +221,7 @@ export const createAccounts = (deps) => {
 				doc,
 				{
 					...(cleanCode === undefined ? {} : { code: cleanCode }),
-					...(recoveryCode === undefined ? {} : { recoveryCode }),
+					...(cleanRecovery === undefined ? {} : { recoveryCode: cleanRecovery }),
 				},
 				{ allowSameStep: true, window: 2 },
 			);
@@ -311,9 +314,11 @@ export const createAccounts = (deps) => {
 				throw problem('token_invalid', 'The sign-in attempt has expired. Sign in again.');
 			const key = throttleKey(kind, doc.email);
 			await throttleGate(ctx, key, meta);
+			const cleanCode = typeof code === 'string' ? code.replace(/[\s-]/g, '') : code;
+			const cleanRecovery = typeof recoveryCode === 'string' ? recoveryCode.replace(/\s+/g, '') : recoveryCode;
 			const passed = await checkSecondFactor(ctx, logins(kind), doc, {
-				...(code === undefined ? {} : { code }),
-				...(recoveryCode === undefined ? {} : { recoveryCode }),
+				...(cleanCode === undefined ? {} : { code: cleanCode }),
+				...(cleanRecovery === undefined ? {} : { recoveryCode: cleanRecovery }),
 			});
 			if (!passed) return failSignIn(kind, doc, doc.email, meta, BAD_CODE);
 			if (!(await repo.consumeToken('two_step', challenge)))
@@ -662,7 +667,8 @@ export const createAccounts = (deps) => {
 			if (!secret) throw problem('conflict', 'Start setting two-step up first.');
 			const key = throttleKey(kind, doc.email);
 			await throttleGate(ctx, key, meta);
-			const result = verifyTotp(secret, code, { now: ctx.now });
+			const cleanCode = typeof code === 'string' ? code.replace(/[\s-]/g, '') : code;
+			const result = verifyTotp(secret, cleanCode, { now: ctx.now, window: 2 });
 			if (!result.ok) return failAttempt(ctx, key, meta, BAD_CODE);
 			const { codes, hashes } = generateRecoveryCodes({ secret: ctx.config.sessionSecret, randomBytes: ctx.randomBytes });
 			const enabled = await logins(kind).updateOne(

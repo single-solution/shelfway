@@ -94,6 +94,8 @@ describe('TOTP (RFC 6238)', () => {
 		const code = totpCode(secret, at);
 		const ok = verifyTotp(secret, code, { now: () => at });
 		expect(ok.ok).toBe(true);
+		expect(verifyTotp(secret, `${code.slice(0, 3)} ${code.slice(3)}`, { now: () => at }).ok).toBe(true);
+		expect(verifyTotp(secret, `${code.slice(0, 3)}-${code.slice(3)}`, { now: () => at }).ok).toBe(true);
 		const step = /** @type {{ step: number }} */ (ok).step;
 		expect(verifyTotp(secret, code, { now: () => at, lastStep: step })).toEqual({ ok: false });
 		expect(verifyTotp(secret, totpCode(secret, at - 30_000), { now: () => at }).ok).toBe(true);

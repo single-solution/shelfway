@@ -21,6 +21,7 @@ import {
 	Input,
 	KeyValueList,
 	LocalTime,
+	OtpInput,
 	Pagination,
 	Row,
 	SettingsCard,
@@ -93,10 +94,13 @@ export function TwoStepSetup({ onDone }) {
 		if (result.ok) setSecret(result.data);
 		return result;
 	};
-	const confirm = async () => {
+	/** @param {string} [overrideCode] */
+	const confirm = async (overrideCode) => {
 		setBusy(true);
 		setProblem(null);
-		const result = await apiConfirm('/v1/me/two-step/confirm', { method: 'POST', body: { code: code.trim() } });
+		const raw = typeof overrideCode === 'string' ? overrideCode : code;
+		const clean = raw.replace(/[\s-]/g, '');
+		const result = await apiConfirm('/v1/me/two-step/confirm', { method: 'POST', body: { code: clean } });
 		setBusy(false);
 		if (result.ok) {
 			setSecret(null);
@@ -130,21 +134,27 @@ export function TwoStepSetup({ onDone }) {
 				</div>
 			) : null}
 			{step === 'confirm' && secret ? (
-				<Form onSubmit={confirm} busy={busy} aria-label={TWO_STEP.stepConfirm}>
+				<Form onSubmit={() => void confirm()} busy={busy} aria-label={TWO_STEP.stepConfirm}>
 					<p className="text-sm text-muted">{TWO_STEP.scan}</p>
 					<div className="flex justify-center sm:justify-start">
 						<QrCode text={secret.uri} />
 					</div>
 					<CodeBlock label={TWO_STEP.key} code={secret.secret} secret />
-					<Input
+					<OtpInput
 						label={TWO_STEP.codeLabel}
+						length={6}
 						value={code}
-						onChange={(e) => setCode(e.currentTarget.value)}
-						autoComplete="one-time-code"
-						inputMode="numeric"
-						maxLength={6}
+						onChange={(val) => {
+							setCode(val);
+							if (problem) setProblem(null);
+						}}
+						onComplete={(val) => {
+							setCode(val);
+							void confirm(val);
+						}}
 						error={fieldErrors(problem).code}
 						required
+						autoFocus
 					/>
 					<FormError problem={problem} fields={['code']} />
 					<Button type="submit" loading={busy}>
@@ -209,10 +219,13 @@ function ProveForm({ title, help, label, path, danger = false, onDone, onCancel 
 			<Input
 				label={useRecovery ? AUTH.recoveryCode : LOGIN.twoStepCode}
 				value={code}
-				onChange={(e) => setCode(e.currentTarget.value)}
+				onChange={(e) => {
+					const val = useRecovery ? e.currentTarget.value : e.currentTarget.value.replace(/[\s-]/g, '').slice(0, 6);
+					setCode(val);
+				}}
 				autoComplete={useRecovery ? 'off' : 'one-time-code'}
 				inputMode={useRecovery ? 'text' : 'numeric'}
-				maxLength={useRecovery ? 16 : 6}
+				maxLength={useRecovery ? 16 : 8}
 				placeholder={useRecovery ? 'abcd-efgh-...' : '123456'}
 				error={fieldErrors(problem).code ?? fieldErrors(problem).recoveryCode}
 				required
@@ -435,10 +448,13 @@ export function EmailPanel({ email, twoStepOn }) {
 							label={useRecovery ? AUTH.recoveryCode : LOGIN.twoStepCode}
 							help={useRecovery ? AUTH.recoveryHelp : LOGIN.twoStepCodeHelp}
 							value={code}
-							onChange={(e) => setCode(e.currentTarget.value)}
+							onChange={(e) => {
+								const val = useRecovery ? e.currentTarget.value : e.currentTarget.value.replace(/[\s-]/g, '').slice(0, 6);
+								setCode(val);
+							}}
 							autoComplete={useRecovery ? 'off' : 'one-time-code'}
 							inputMode={useRecovery ? 'text' : 'numeric'}
-							maxLength={useRecovery ? 16 : 6}
+							maxLength={useRecovery ? 16 : 8}
 							placeholder={useRecovery ? 'abcd-efgh-...' : '123456'}
 							error={fieldErrors(problem).code ?? fieldErrors(problem).recoveryCode}
 							required
@@ -531,10 +547,13 @@ export function PasswordPanel({ twoStepOn }) {
 							label={useRecovery ? AUTH.recoveryCode : LOGIN.twoStepCode}
 							help={useRecovery ? AUTH.recoveryHelp : LOGIN.twoStepCodeHelp}
 							value={code}
-							onChange={(e) => setCode(e.currentTarget.value)}
+							onChange={(e) => {
+								const val = useRecovery ? e.currentTarget.value : e.currentTarget.value.replace(/[\s-]/g, '').slice(0, 6);
+								setCode(val);
+							}}
 							autoComplete={useRecovery ? 'off' : 'one-time-code'}
 							inputMode={useRecovery ? 'text' : 'numeric'}
-							maxLength={useRecovery ? 16 : 6}
+							maxLength={useRecovery ? 16 : 8}
 							placeholder={useRecovery ? 'abcd-efgh-...' : '123456'}
 							error={fieldErrors(problem).code ?? fieldErrors(problem).recoveryCode}
 							required
