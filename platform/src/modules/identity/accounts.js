@@ -316,10 +316,16 @@ export const createAccounts = (deps) => {
 			await throttleGate(ctx, key, meta);
 			const cleanCode = typeof code === 'string' ? code.replace(/[\s-]/g, '') : code;
 			const cleanRecovery = typeof recoveryCode === 'string' ? recoveryCode.replace(/\s+/g, '') : recoveryCode;
-			const passed = await checkSecondFactor(ctx, logins(kind), doc, {
-				...(cleanCode === undefined ? {} : { code: cleanCode }),
-				...(cleanRecovery === undefined ? {} : { recoveryCode: cleanRecovery }),
-			});
+			const passed = await checkSecondFactor(
+				ctx,
+				logins(kind),
+				doc,
+				{
+					...(cleanCode === undefined ? {} : { code: cleanCode }),
+					...(cleanRecovery === undefined ? {} : { recoveryCode: cleanRecovery }),
+				},
+				{ allowSameStep: true, window: 2 },
+			);
 			if (!passed) return failSignIn(kind, doc, doc.email, meta, BAD_CODE);
 			if (!(await repo.consumeToken('two_step', challenge)))
 				throw problem('token_invalid', 'The sign-in attempt has expired. Sign in again.');
@@ -675,7 +681,7 @@ export const createAccounts = (deps) => {
 				{ _id: doc._id, totp: null },
 				{
 					$set: {
-						totp: { secret: doc.pendingTotp.secret, lastStep: result.step, enabledAt: new Date(ctx.now()) },
+						totp: { secret: doc.pendingTotp.secret, lastStep: null, enabledAt: new Date(ctx.now()) },
 						pendingTotp: null,
 						recoveryHashes: hashes,
 					},

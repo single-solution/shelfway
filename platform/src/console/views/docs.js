@@ -371,9 +371,7 @@ export function DocsHubView({
 
 						{/* Section: Getting Started */}
 						<div className="space-y-1">
-							<p className="px-2 text-[10px] font-mono font-bold uppercase tracking-widest text-muted">
-								Getting Started
-							</p>
+							<p className="px-2 text-[10px] font-mono font-bold uppercase tracking-widest text-muted">Getting Started</p>
 							<button
 								type="button"
 								onClick={() => selectSection('quickstart')}
@@ -401,7 +399,9 @@ export function DocsHubView({
 						{/* Section: Catalog Products & Endpoints (Storefront View) */}
 						<div className="space-y-2">
 							<div className="flex items-center justify-between px-2">
-								<p className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted">Products &amp; APIs</p>
+								<p className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted">
+									Products &amp; APIs
+								</p>
 								<span className="text-[10px] text-muted font-mono">{items.length} products</span>
 							</div>
 
@@ -565,13 +565,11 @@ export function DocsHubView({
 									<p className="font-mono text-xs font-bold tracking-widest uppercase text-primary">
 										STOREFRONT &amp; BUILDER GUIDE
 									</p>
-									<h1 className="font-display text-3xl font-bold tracking-tight text-fg">
-										Quickstart Guide
-									</h1>
+									<h1 className="font-display text-3xl font-bold tracking-tight text-fg">Quickstart Guide</h1>
 									<p className="text-sm text-muted leading-relaxed max-w-3xl">
 										Shelfway connects modular products (Accounts, Notifications, Chat, Payments, Ecommerce, Growth) to
-										merchants' websites. Storefront builders connect directly to our public widget scripts and backend REST
-										APIs using credentials from the merchant's setup link or Developer Pack.
+										merchants' websites. Storefront builders connect directly to our public widget scripts and backend
+										REST APIs using credentials from the merchant's setup link or Developer Pack.
 									</p>
 								</div>
 
@@ -593,8 +591,8 @@ export function DocsHubView({
 											<span>2. Isolated Credentials</span>
 										</div>
 										<p className="text-xs text-muted leading-relaxed">
-											Builders receive website-bound tokens. They build the storefront and{' '}
-											<strong>never</strong> need Portal logins or merchant passwords.
+											Builders receive website-bound tokens. They build the storefront and <strong>never</strong> need
+											Portal logins or merchant passwords.
 										</p>
 									</div>
 								</div>
@@ -603,7 +601,8 @@ export function DocsHubView({
 									<h2 className="text-base font-semibold text-fg">Everyday Development Path</h2>
 									<ol className="list-decimal list-inside space-y-2.5 text-xs text-muted leading-relaxed">
 										<li>
-											Merchant opens Portal: <code className="font-mono text-fg">Websites -&gt; [Your Website] -&gt; Developer Pack</code>.
+											Merchant opens Portal:{' '}
+											<code className="font-mono text-fg">Websites -&gt; [Your Website] -&gt; Developer Pack</code>.
 										</li>
 										<li>Merchant copies the setup link or credentials and provides it to whoever builds their site.</li>
 										<li>Paste client-side widget scripts into your HTML layout with your public Browser Token.</li>
@@ -630,9 +629,7 @@ export function DocsHubView({
 								<div className="space-y-4">
 									<div className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-5 space-y-3 shadow-card">
 										<div className="flex items-center justify-between">
-											<span className="font-semibold text-sm text-primary">
-												Browser Token (Public Client-side)
-											</span>
+											<span className="font-semibold text-sm text-primary">Browser Token (Public Client-side)</span>
 											<span className="text-[10px] font-mono bg-primary/10 text-primary px-2 py-0.5 rounded font-bold">
 												Safe for HTML
 											</span>

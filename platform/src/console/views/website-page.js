@@ -603,105 +603,105 @@ export function WebsitePageView({
 				onClose={() => setRevealedPack(null)}
 				title="Developer Access & Website Credentials"
 				description={`Access link and environment credentials for ${website.domain}. Scoped to active products only.`}>
-				{revealedPack ? (() => {
-					const browserToken =
-						revealedPack.products?.find((/** @type {any} */ p) => p.browserToken)?.browserToken || '';
-					const serverToken =
-						revealedPack.products?.find((/** @type {any} */ p) => p.serverToken)?.serverToken || '';
-					const docsLink =
-						typeof window !== 'undefined'
-							? `${window.location.origin}/docs?website=${encodeURIComponent(website.domain)}${
-									browserToken ? `&token=${encodeURIComponent(browserToken)}` : ''
-								}`
-							: '';
-					const envSnippet = [
-						`NEXT_PUBLIC_SHELFWAY_DOMAIN="${typeof window !== 'undefined' ? window.location.origin : 'https://shelfway.com'}"`,
-						`NEXT_PUBLIC_SHELFWAY_WEBSITE_DOMAIN="${website.domain}"`,
-						browserToken ? `NEXT_PUBLIC_SHELFWAY_CLIENT_TOKEN="${browserToken}"` : null,
-						serverToken ? `SHELFWAY_SERVER_TOKEN="${serverToken}"` : null,
-					]
-						.filter(Boolean)
-						.join('\n');
+				{revealedPack
+					? (() => {
+							const browserToken =
+								revealedPack.products?.find((/** @type {any} */ p) => p.browserToken)?.browserToken || '';
+							const serverToken = revealedPack.products?.find((/** @type {any} */ p) => p.serverToken)?.serverToken || '';
+							const docsLink =
+								typeof window !== 'undefined'
+									? `${window.location.origin}/docs?website=${encodeURIComponent(website.domain)}${
+											browserToken ? `&token=${encodeURIComponent(browserToken)}` : ''
+										}`
+									: '';
+							const envSnippet = [
+								`NEXT_PUBLIC_SHELFWAY_DOMAIN="${typeof window !== 'undefined' ? window.location.origin : 'https://shelfway.com'}"`,
+								`NEXT_PUBLIC_SHELFWAY_WEBSITE_DOMAIN="${website.domain}"`,
+								browserToken ? `NEXT_PUBLIC_SHELFWAY_CLIENT_TOKEN="${browserToken}"` : null,
+								serverToken ? `SHELFWAY_SERVER_TOKEN="${serverToken}"` : null,
+							]
+								.filter(Boolean)
+								.join('\n');
 
-					return (
-					<div className="space-y-4 pt-1">
-						<div className="space-y-1.5">
-							<span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted">
-								Documentation &amp; API Access Link
-							</span>
-							<p className="text-xs text-muted">
-								Share this link with whoever is coding your site. They can view interactive docs and live endpoints without an account.
-							</p>
-							<div className="flex items-center gap-2">
-								<Input
-									readOnly
-									hideLabel
-									label="Developer Documentation Link"
-									value={docsLink}
-									className="flex-1 font-mono text-xs"
-								/>
-								<Button
-									size="sm"
-									variant="secondary"
-									onClick={() => {
-										copyText(docsLink);
-										toast.show({ title: 'Link copied to clipboard' });
-									}}>
-									Copy Link
-								</Button>
-							</div>
-						</div>
+							return (
+								<div className="space-y-4 pt-1">
+									<div className="space-y-1.5">
+										<span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted">
+											Documentation &amp; API Access Link
+										</span>
+										<p className="text-xs text-muted">
+											Share this link with whoever is coding your site. They can view interactive docs and live
+											endpoints without an account.
+										</p>
+										<div className="flex items-center gap-2">
+											<Input
+												readOnly
+												hideLabel
+												label="Developer Documentation Link"
+												value={docsLink}
+												className="flex-1 font-mono text-xs"
+											/>
+											<Button
+												size="sm"
+												variant="secondary"
+												onClick={() => {
+													copyText(docsLink);
+													toast.show({ title: 'Link copied to clipboard' });
+												}}>
+												Copy Link
+											</Button>
+										</div>
+									</div>
 
-						<div className="space-y-1.5">
-							<div className="flex items-center justify-between">
-								<span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted">
-									Environment Variables (.env)
-								</span>
-								<Button
-									size="sm"
-									variant="ghost"
-									onClick={() => {
-										copyText(envSnippet);
-										toast.show({ title: 'Config copied to clipboard' });
-									}}>
-									Copy .env
-								</Button>
-							</div>
-							<CodeBlock
-								code={envSnippet}
-								label="Environment Variables"
-								wrap
-							/>
-						</div>
+									<div className="space-y-1.5">
+										<div className="flex items-center justify-between">
+											<span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted">
+												Environment Variables (.env)
+											</span>
+											<Button
+												size="sm"
+												variant="ghost"
+												onClick={() => {
+													copyText(envSnippet);
+													toast.show({ title: 'Config copied to clipboard' });
+												}}>
+												Copy .env
+											</Button>
+										</div>
+										<CodeBlock code={envSnippet} label="Environment Variables" wrap />
+									</div>
 
-						<div className="flex items-center justify-between border-t border-line pt-3">
-							<Button
-								size="sm"
-								variant="secondary"
-								icon={<Icon name="arrowDown" size={14} />}
-								onClick={() => {
-									if (typeof URL.createObjectURL === 'function') {
-										const blob = new Blob([JSON.stringify(revealedPack, null, 2)], { type: 'application/json' });
-										const url = URL.createObjectURL(blob);
-										const a = document.createElement('a');
-										a.href = url;
-										a.download = `developer-pack-${website.domain}.json`;
-										document.body.appendChild(a);
-										a.click();
-										a.remove();
-										URL.revokeObjectURL(url);
-										toast.show({ title: WEBSITE.developerPackDownloaded });
-									}
-								}}>
-								Download JSON Pack
-							</Button>
-							<Button size="sm" variant="primary" onClick={() => setRevealedPack(null)}>
-								Done
-							</Button>
-						</div>
-					</div>
-					);
-				})() : null}
+									<div className="flex items-center justify-between border-t border-line pt-3">
+										<Button
+											size="sm"
+											variant="secondary"
+											icon={<Icon name="arrowDown" size={14} />}
+											onClick={() => {
+												if (typeof URL.createObjectURL === 'function') {
+													const blob = new Blob([JSON.stringify(revealedPack, null, 2)], {
+														type: 'application/json',
+													});
+													const url = URL.createObjectURL(blob);
+													const a = document.createElement('a');
+													a.href = url;
+													a.download = `developer-pack-${website.domain}.json`;
+													document.body.appendChild(a);
+													a.click();
+													a.remove();
+													URL.revokeObjectURL(url);
+													toast.show({ title: WEBSITE.developerPackDownloaded });
+												}
+											}}>
+											Download JSON Pack
+										</Button>
+										<Button size="sm" variant="primary" onClick={() => setRevealedPack(null)}>
+											Done
+										</Button>
+									</div>
+								</div>
+							);
+						})()
+					: null}
 			</Dialog>
 			<TypedConfirmDialog
 				open={Boolean(removing)}

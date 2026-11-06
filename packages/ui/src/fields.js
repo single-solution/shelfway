@@ -1105,6 +1105,13 @@ export function OtpInput({
 	const digits = Array.from({ length }, (_, i) => value[i] || '');
 	const inputsRef = useRef(/** @type {(HTMLInputElement | null)[]} */ ([]));
 
+	useEffect(() => {
+		if (value === '' && inputsRef.current.some((el) => el && el === document.activeElement)) {
+			inputsRef.current[0]?.focus();
+			inputsRef.current[0]?.select();
+		}
+	}, [value]);
+
 	const updateValue = (/** @type {string} */ nextVal) => {
 		const clean = nextVal.replace(/\D/g, '').slice(0, length);
 		if (controlledValue === undefined) {
@@ -1237,7 +1244,15 @@ export function OtpInput({
 										aria-describedby={ids.describedBy}
 										autoFocus={autoFocus && i === 0}
 										data-autofocus={autoFocus && i === 0 ? '' : undefined}
-										onFocus={(e) => e.currentTarget.select()}
+										onFocus={(e) => {
+											const targetIndex = Math.min(i, value.length);
+											if (targetIndex !== i && inputsRef.current[targetIndex]) {
+												inputsRef.current[targetIndex]?.focus();
+												inputsRef.current[targetIndex]?.select();
+											} else {
+												e.currentTarget.select();
+											}
+										}}
 										onChange={(e) => handleDigitChange(i, e.currentTarget.value)}
 										onKeyDown={(e) => handleKeyDown(i, e)}
 										onPaste={(e) => handlePaste(i, e)}

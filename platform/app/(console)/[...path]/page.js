@@ -93,7 +93,13 @@ async function WebsitePage({ params, searchParams }) {
 	const q = (await searchParams) || {};
 	const queryPart =
 		one(q.part) ||
-		(one(q.tab) ? (one(q.section) ? `${one(q.tab)}/${one(q.section)}` : one(q.tab)) : one(q.product) ? `products/${one(q.product)}` : '');
+		(one(q.tab)
+			? one(q.section)
+				? `${one(q.tab)}/${one(q.section)}`
+				: one(q.tab)
+			: one(q.product)
+				? `products/${one(q.product)}`
+				: '');
 	const effectivePart = part || queryPart;
 	if (effectivePart && LEGACY_PEER_REDIRECTS.includes(/** @type {any} */ (effectivePart))) {
 		redirect(routes.website(websiteId));

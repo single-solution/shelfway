@@ -165,7 +165,9 @@ export function PasswordConfirmDialog({
 								spellCheck={false}
 								value={code}
 								onChange={(event) => {
-									const val = useRecovery ? event.currentTarget.value : event.currentTarget.value.replace(/[\s-]/g, '').slice(0, 6);
+									const val = useRecovery
+										? event.currentTarget.value
+										: event.currentTarget.value.replace(/[\s-]/g, '').slice(0, 6);
 									setCode(val);
 								}}
 								error={errors.code}
@@ -175,11 +177,7 @@ export function PasswordConfirmDialog({
 						) : (
 							<OtpInput
 								label={T.code}
-								help={
-									isEmailOtp
-										? (T.emailCodeHelp ?? '6-digit code sent to your email address.')
-										: T.codeHelp
-								}
+								help={isEmailOtp ? (T.emailCodeHelp ?? '6-digit code sent to your email address.') : T.codeHelp}
 								length={6}
 								value={code}
 								onChange={setCode}

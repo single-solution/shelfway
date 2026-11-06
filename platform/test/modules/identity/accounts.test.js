@@ -140,6 +140,12 @@ describe('two-step sign-in (PLAN 0.2)', () => {
 			400,
 		);
 
+		const sameStepSignIn = await h.client().post('/v1/auth/sign-in', { email: 'sam@shop.test', password: PASSWORD });
+		const viaSameStep = await h
+			.client()
+			.post('/v1/auth/sign-in/two-step', { challenge: sameStepSignIn.json.challenge, code: h.code(secret) });
+		expect(viaSameStep.json).toMatchObject({ status: 'ok', console: 'merchant' });
+
 		const second = await h.client().post('/v1/auth/sign-in', { email: 'sam@shop.test', password: PASSWORD });
 		const viaRecovery = await h
 			.client()

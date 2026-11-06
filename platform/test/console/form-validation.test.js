@@ -86,9 +86,7 @@ describe('Tier 1 Client-Side Pre-Validation', () => {
 		expect(apiFetchSpy).not.toHaveBeenCalled();
 
 		// Invalid domain format
-		const domainInput = /** @type {HTMLInputElement} */ (
-			document.querySelector('input[type="text"], input[inputmode="url"]')
-		);
+		const domainInput = /** @type {HTMLInputElement} */ (document.querySelector('input[type="text"], input[inputmode="url"]'));
 		expect(domainInput).toBeTruthy();
 		await type(domainInput, 'invalid domain name');
 		await click(submitBtn);

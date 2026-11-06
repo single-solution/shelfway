@@ -280,12 +280,13 @@ export const checkSecondFactor = async (ctx, collection, account, input, { allow
 		const burned = await collection.updateOne(
 			{
 				_id: account._id,
-				$or: [
-					{ 'totp.lastStep': null },
-					allowSameStep ? { 'totp.lastStep': { $lte: result.step } } : { 'totp.lastStep': { $lt: result.step } },
-				],
+				...(allowSameStep
+					? {}
+					: {
+							$or: [{ 'totp.lastStep': null }, { 'totp.lastStep': { $lt: result.step } }],
+						}),
 			},
-			{ $set: { 'totp.lastStep': result.step } },
+			allowSameStep ? { $max: { 'totp.lastStep': result.step } } : { $set: { 'totp.lastStep': result.step } },
 		);
 		return burned.matchedCount === 1;
 	}

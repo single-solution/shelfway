@@ -26,7 +26,6 @@ const MERCHANT_FIELD_MAX = Object.freeze({ name: 120, ownerName: 120, phone: 40,
 
 const TOKEN = /^[A-Za-z0-9_-]{20,128}$/;
 const OTP = /^\d{6}$/;
-const RECOVERY = /^[a-z2-7]{5}-?[a-z2-7]{5}$/i;
 
 /**
  * @template T

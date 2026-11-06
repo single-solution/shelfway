@@ -23,6 +23,40 @@
 	box-sizing: border-box;
 }
 
+.shelfway-site .wash {
+	pointer-events: none;
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	background:
+		radial-gradient(1000px 520px at 8% -8%, color-mix(in srgb, var(--shelfway-primary) 14%, transparent), transparent 55%),
+		radial-gradient(700px 400px at 100% 5%, color-mix(in srgb, var(--shelfway-success) 8%, transparent), transparent 45%),
+		linear-gradient(
+			180deg,
+			color-mix(in srgb, var(--shelfway-surface) 70%, var(--shelfway-canvas)) 0%,
+			var(--shelfway-canvas) 45%,
+			var(--shelfway-surface-2) 100%
+		);
+}
+.shelfway-site .grid-hard {
+	pointer-events: none;
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	background-image:
+		linear-gradient(color-mix(in srgb, var(--shelfway-fg) 6%, transparent) 1px, transparent 1px),
+		linear-gradient(90deg, color-mix(in srgb, var(--shelfway-fg) 6%, transparent) 1px, transparent 1px);
+	background-size: 40px 40px;
+	mask-image: radial-gradient(ellipse at 50% 15%, #000 25%, transparent 75%);
+	-webkit-mask-image: radial-gradient(ellipse at 50% 15%, #000 25%, transparent 75%);
+	animation: gridDrift 40s linear infinite;
+}
+@keyframes gridDrift {
+	to {
+		background-position: 40px 40px;
+	}
+}
+
 .shelfway-site .compare-card.hard:hover,
 .shelfway-site .shot-frame.hard:hover,
 .shelfway-site .feature-mock.hard:hover {

@@ -103,7 +103,10 @@ export function AddWebsiteDialog({ open, merchantId, onClose, onAdded }) {
 			setError(WEBSITE.domainMissing);
 			return;
 		}
-		const clean = raw.replace(/^[a-z]+:\/\//i, '').replace(/\/.*$/, '').toLowerCase();
+		const clean = raw
+			.replace(/^[a-z]+:\/\//i, '')
+			.replace(/\/.*$/, '')
+			.toLowerCase();
 		if (!/^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/.test(clean)) {
 			setError('Enter a valid domain name (e.g. shop.example.com).');
 			return;

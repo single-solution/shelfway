@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import NextLink from 'next/link.js';
 import { Button, Callout, Dialog, Form, FormError, Input, OtpInput, TextLink, fieldErrors, problemCode } from '@shelfway/ui';
 import { apiFetch } from '../../src/console/client.js';
@@ -26,6 +26,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [busy, setBusy] = useState(false);
+	const busyRef = useRef(false);
 	const [problem, setProblem] = useState(/** @type {any | null} */ (null));
 	const [errors, setErrors] = useState(/** @type {Record<string, string>} */ ({}));
 	const [challenge, setChallenge] = useState(/** @type {string | null} */ (null));
@@ -43,6 +44,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 			setTotpCode('');
 			setRecoveryCode('');
 			setUseRecovery(false);
+			busyRef.current = false;
 		}
 	}, [open]);
 
@@ -57,6 +59,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 	};
 
 	const handleSignInSubmit = async () => {
+		if (busyRef.current) return;
 		const trimmedEmail = email.trim();
 		/** @type {Record<string, string>} */
 		const localErrors = {};
@@ -71,28 +74,34 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 		setErrors(localErrors);
 		if (Object.keys(localErrors).length > 0) return;
 
+		busyRef.current = true;
 		setBusy(true);
 		setProblem(null);
-		const result = await apiFetch('/v1/auth/sign-in', {
-			method: 'POST',
-			body: { email: trimmedEmail, password },
-			redirectOn401: false,
-		});
-		setBusy(false);
-		if (!result.ok) {
-			setProblem(result.problem);
-			setErrors(fieldErrors(result.problem));
-			return;
-		}
-		if (result.data?.status === 'two_step_required' && result.data.challenge) {
-			setChallenge(result.data.challenge);
-		} else {
-			done(result.data?.console);
+		try {
+			const result = await apiFetch('/v1/auth/sign-in', {
+				method: 'POST',
+				body: { email: trimmedEmail, password },
+				redirectOn401: false,
+			});
+			if (!result.ok) {
+				setProblem(result.problem);
+				setErrors(fieldErrors(result.problem));
+				return;
+			}
+			if (result.data?.status === 'two_step_required' && result.data.challenge) {
+				setChallenge(result.data.challenge);
+			} else {
+				done(result.data?.console);
+			}
+		} finally {
+			busyRef.current = false;
+			setBusy(false);
 		}
 	};
 
 	/** @param {string} [overrideCode] */
 	const handleTwoStepSubmit = async (overrideCode) => {
+		if (busyRef.current) return;
 		const raw = typeof overrideCode === 'string' ? overrideCode : useRecovery ? recoveryCode : totpCode;
 		const value = useRecovery ? raw.trim().replace(/\s+/g, '') : raw.replace(/\D/g, '');
 
@@ -121,24 +130,29 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 			}
 		}
 
+		busyRef.current = true;
 		setBusy(true);
 		setProblem(null);
 		setErrors({});
-		const result = await apiFetch('/v1/auth/sign-in/two-step', {
-			method: 'POST',
-			body: { challenge, ...(useRecovery ? { recoveryCode: value } : { code: value }) },
-			redirectOn401: false,
-		});
-		setBusy(false);
-		if (!result.ok) {
-			setProblem(result.problem);
-			setErrors(fieldErrors(result.problem));
-			if (!useRecovery) {
-				setTotpCode('');
+		try {
+			const result = await apiFetch('/v1/auth/sign-in/two-step', {
+				method: 'POST',
+				body: { challenge, ...(useRecovery ? { recoveryCode: value } : { code: value }) },
+				redirectOn401: false,
+			});
+			if (!result.ok) {
+				setProblem(result.problem);
+				setErrors(fieldErrors(result.problem));
+				if (!useRecovery) {
+					setTotpCode('');
+				}
+				return;
 			}
-			return;
+			done(result.data?.console);
+		} finally {
+			busyRef.current = false;
+			setBusy(false);
 		}
-		done(result.data?.console);
 	};
 
 	const suspended = problemCode(problem) === 'merchant_suspended';
@@ -223,6 +237,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 							label="Recovery code"
 							name="recoveryCode"
 							value={recoveryCode}
+							disabled={busy}
 							onChange={(e) => {
 								setRecoveryCode(e.currentTarget.value);
 								if (errors.code) setErrors((prev) => ({ ...prev, code: '' }));
@@ -242,6 +257,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 								name="code"
 								length={6}
 								value={totpCode}
+								disabled={busy}
 								onChange={(val) => {
 									setTotpCode(val);
 									if (errors.code) setErrors((prev) => ({ ...prev, code: '' }));
@@ -259,15 +275,34 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 
 					<FormError problem={problem} fields={['code', 'recoveryCode']} />
 
-					<Button type="submit" block loading={busy} variant="primary" size="md" className="h-10 font-semibold">
-						Verify and continue
-					</Button>
+					{problemCode(problem) === 'token_invalid' ? (
+						<Button
+							type="button"
+							variant="secondary"
+							block
+							onClick={() => {
+								setChallenge(null);
+								setPassword('');
+								setTotpCode('');
+								setRecoveryCode('');
+								setUseRecovery(false);
+								setErrors({});
+								setProblem(null);
+							}}>
+							Start over
+						</Button>
+					) : (
+						<Button type="submit" block loading={busy} variant="primary" size="md" className="h-10 font-semibold">
+							Verify and continue
+						</Button>
+					)}
 
 					<div className="flex items-center justify-between text-xs text-muted pt-1">
 						<Button
 							type="button"
 							variant="ghost"
 							size="sm"
+							disabled={busy}
 							onClick={() => {
 								setUseRecovery((v) => !v);
 								setTotpCode('');
@@ -280,6 +315,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 							type="button"
 							variant="ghost"
 							size="sm"
+							disabled={busy}
 							onClick={() => {
 								setChallenge(null);
 								setPassword('');

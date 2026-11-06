@@ -222,8 +222,8 @@ export const verifyTotp = (
 		if (constantTimeEqual(hotp(key, counter, { digits, algorithm }), clean) && matched === null) matched = counter;
 	}
 	if (matched === null) return { ok: false };
-	if (lastStep !== null) {
-		if (allowSameStep ? matched < lastStep : matched <= lastStep) return { ok: false };
+	if (lastStep !== null && !allowSameStep) {
+		if (matched <= lastStep) return { ok: false };
 	}
 	return { ok: true, step: matched };
 };

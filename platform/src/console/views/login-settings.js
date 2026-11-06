@@ -148,10 +148,6 @@ export function TwoStepSetup({ onDone }) {
 							setCode(val);
 							if (problem) setProblem(null);
 						}}
-						onComplete={(val) => {
-							setCode(val);
-							void confirm(val);
-						}}
 						error={fieldErrors(problem).code}
 						required
 						autoFocus
@@ -219,13 +215,10 @@ function ProveForm({ title, help, label, path, danger = false, onDone, onCancel 
 			<Input
 				label={useRecovery ? AUTH.recoveryCode : LOGIN.twoStepCode}
 				value={code}
-				onChange={(e) => {
-					const val = useRecovery ? e.currentTarget.value : e.currentTarget.value.replace(/[\s-]/g, '').slice(0, 6);
-					setCode(val);
-				}}
+				onChange={(e) => setCode(e.currentTarget.value)}
 				autoComplete={useRecovery ? 'off' : 'one-time-code'}
 				inputMode={useRecovery ? 'text' : 'numeric'}
-				maxLength={useRecovery ? 16 : 8}
+				maxLength={16}
 				placeholder={useRecovery ? 'abcd-efgh-...' : '123456'}
 				error={fieldErrors(problem).code ?? fieldErrors(problem).recoveryCode}
 				required
@@ -448,13 +441,10 @@ export function EmailPanel({ email, twoStepOn }) {
 							label={useRecovery ? AUTH.recoveryCode : LOGIN.twoStepCode}
 							help={useRecovery ? AUTH.recoveryHelp : LOGIN.twoStepCodeHelp}
 							value={code}
-							onChange={(e) => {
-								const val = useRecovery ? e.currentTarget.value : e.currentTarget.value.replace(/[\s-]/g, '').slice(0, 6);
-								setCode(val);
-							}}
+							onChange={(e) => setCode(e.currentTarget.value)}
 							autoComplete={useRecovery ? 'off' : 'one-time-code'}
 							inputMode={useRecovery ? 'text' : 'numeric'}
-							maxLength={useRecovery ? 16 : 8}
+							maxLength={16}
 							placeholder={useRecovery ? 'abcd-efgh-...' : '123456'}
 							error={fieldErrors(problem).code ?? fieldErrors(problem).recoveryCode}
 							required
@@ -547,13 +537,10 @@ export function PasswordPanel({ twoStepOn }) {
 							label={useRecovery ? AUTH.recoveryCode : LOGIN.twoStepCode}
 							help={useRecovery ? AUTH.recoveryHelp : LOGIN.twoStepCodeHelp}
 							value={code}
-							onChange={(e) => {
-								const val = useRecovery ? e.currentTarget.value : e.currentTarget.value.replace(/[\s-]/g, '').slice(0, 6);
-								setCode(val);
-							}}
+							onChange={(e) => setCode(e.currentTarget.value)}
 							autoComplete={useRecovery ? 'off' : 'one-time-code'}
 							inputMode={useRecovery ? 'text' : 'numeric'}
-							maxLength={useRecovery ? 16 : 8}
+							maxLength={16}
 							placeholder={useRecovery ? 'abcd-efgh-...' : '123456'}
 							error={fieldErrors(problem).code ?? fieldErrors(problem).recoveryCode}
 							required

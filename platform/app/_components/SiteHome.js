@@ -190,6 +190,9 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 
 	return (
 		<>
+			<div className="wash" aria-hidden="true" />
+			<div className="grid-hard" aria-hidden="true" />
+
 			<SiteHeader brandName={productName} isHome={true} session={session} />
 
 			<main id="top">
@@ -202,8 +205,8 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 							<span className="accent">We run the features behind it.</span>
 						</h1>
 						<p className="lede">
-							Sign-in, customer chat, payments, orders, and messages - ready on your site without building everything
-							from scratch. You keep your own design. We handle the heavy lifting.
+							Sign-in, customer chat, payments, orders, and messages - ready on your site without building everything from
+							scratch. You keep your own design. We handle the heavy lifting.
 						</p>
 						<div className="hero-actions">
 							<a className="text-link" href="#products">
@@ -352,7 +355,11 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 									<p>{activeCopy?.more || active.description || `Add ${active.name} when you need it.`}</p>
 									<ul className="gets">
 										{(
-											activeCopy?.gets || ['Ready on your site', 'Settings in your account', 'Step-by-step setup guides']
+											activeCopy?.gets || [
+												'Ready on your site',
+												'Settings in your account',
+												'Step-by-step setup guides',
+											]
 										).map((g) => (
 											<li key={g}>{g}</li>
 										))}
@@ -401,8 +408,8 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 							<p className="eyebrow">Zero friction handoff</p>
 							<h3>One setup link. Ready guides. No starting from zero.</h3>
 							<p>
-								Share the setup link directly from your account. It connects directly to your site, turns on the
-								features, and provides full guides. Secure keys stay organized without sharing account passwords.
+								Share the setup link directly from your account. It connects directly to your site, turns on the features,
+								and provides full guides. Secure keys stay organized without sharing account passwords.
 							</p>
 						</div>
 						<ul className="handoff-bits" aria-label="What the setup link covers">

@@ -108,29 +108,36 @@ function TwoStepStep({ challenge, onDone, onRestart, onProblem }) {
 	const [useRecovery, setUseRecovery] = useState(false);
 	const [code, setCode] = useState('');
 	const [busy, setBusy] = useState(false);
+	const busyRef = useRef(false);
 	const [problem, setProblem] = useState(/** @type {Problem | null} */ (null));
 	const [error, setError] = useState(/** @type {string | null} */ (null));
 	/** @param {string} [overrideCode] */
 	const submit = async (overrideCode) => {
+		if (busyRef.current) return;
 		const raw = typeof overrideCode === 'string' ? overrideCode : code;
 		const value = useRecovery ? raw.trim() : raw.replace(/\D/g, '');
 		if (useRecovery ? !/^[a-z2-7]{5}-?[a-z2-7]{5}$/i.test(value) : !/^\d{6}$/.test(value)) {
 			setError(useRecovery ? AUTH.recoveryInvalid : AUTH.codeInvalid);
 			return;
 		}
+		busyRef.current = true;
 		setBusy(true);
 		setError(null);
-		const result = await apiFetch('/v1/auth/sign-in/two-step', {
-			method: 'POST',
-			body: { challenge, ...(useRecovery ? { recoveryCode: value } : { code: value }) },
-			redirectOn401: false,
-		});
-		setBusy(false);
-		if (result.ok) onDone(result.data?.console === 'admin' ? 'admin' : 'merchant');
-		else if (problemCode(result.problem) === 'merchant_suspended') onProblem(result.problem);
-		else {
-			setProblem(result.problem);
-			if (!useRecovery) setCode('');
+		try {
+			const result = await apiFetch('/v1/auth/sign-in/two-step', {
+				method: 'POST',
+				body: { challenge, ...(useRecovery ? { recoveryCode: value } : { code: value }) },
+				redirectOn401: false,
+			});
+			if (result.ok) onDone(result.data?.console === 'admin' ? 'admin' : 'merchant');
+			else if (problemCode(result.problem) === 'merchant_suspended') onProblem(result.problem);
+			else {
+				setProblem(result.problem);
+				if (!useRecovery) setCode('');
+			}
+		} finally {
+			busyRef.current = false;
+			setBusy(false);
 		}
 	};
 	const expired = problemCode(problem) === 'token_invalid';
@@ -142,6 +149,7 @@ function TwoStepStep({ challenge, onDone, onRestart, onProblem }) {
 					label={AUTH.recoveryCode}
 					name="recoveryCode"
 					value={code}
+					disabled={busy}
 					onChange={(e) => {
 						setCode(e.currentTarget.value);
 						if (error) setError(null);
@@ -158,6 +166,7 @@ function TwoStepStep({ challenge, onDone, onRestart, onProblem }) {
 						name="code"
 						length={6}
 						value={code}
+						disabled={busy}
 						onChange={(val) => {
 							setCode(val);
 							if (error) setError(null);
