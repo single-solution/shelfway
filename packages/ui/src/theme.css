@@ -442,7 +442,7 @@
 		);
 }
 
-/* Technical animated 40px grid drift with radial mask from website */
+/* Technical crisp 40px grid with radial mask from website (static for 60/120fps performance) */
 @utility shelfway-grid-hard {
 	pointer-events: none;
 	position: fixed;
@@ -453,7 +453,7 @@
 		linear-gradient(90deg, color-mix(in srgb, var(--shelfway-fg) 7%, transparent) 1px, transparent 1px);
 	background-size: 40px 40px;
 	mask-image: radial-gradient(ellipse at 50% 15%, #000 25%, transparent 75%);
-	animation: gridDrift 40s linear infinite;
+	contain: strict;
 }
 
 /* Ambient top sweep progress bar from website */
@@ -502,7 +502,7 @@
 		linear-gradient(90deg, color-mix(in srgb, var(--shelfway-fg) 7%, transparent) 1px, transparent 1px);
 	background-size: 40px 40px;
 	mask-image: radial-gradient(ellipse at 50% 15%, #000 25%, transparent 75%);
-	animation: gridDrift 40s linear infinite;
+	contain: strict;
 }
 
 .signal {

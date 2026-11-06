@@ -31,7 +31,10 @@ export const scrollToContact = () => {
 	if (isHome) {
 		const el = document.getElementById('contact');
 		if (el) {
-			el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			const nav = document.querySelector('.nav-shell');
+			const navHeight = nav ? nav.getBoundingClientRect().height : 80;
+			const targetY = el.getBoundingClientRect().top + window.scrollY - navHeight - 24;
+			window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
 			window.history.pushState(null, '', '#contact');
 			return;
 		}
@@ -51,8 +54,22 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 	const [signInNext, setSignInNext] = useState(/** @type {string | null} */ (null));
 
 	useEffect(() => {
-		const onScroll = () => setScrolled(window.scrollY > 12);
-		onScroll();
+		let ticking = false;
+		let lastState = window.scrollY > 12;
+		setScrolled(lastState);
+		const onScroll = () => {
+			if (!ticking) {
+				window.requestAnimationFrame(() => {
+					const nextState = window.scrollY > 12;
+					if (nextState !== lastState) {
+						lastState = nextState;
+						setScrolled(nextState);
+					}
+					ticking = false;
+				});
+				ticking = true;
+			}
+		};
 		window.addEventListener('scroll', onScroll, { passive: true });
 		return () => window.removeEventListener('scroll', onScroll);
 	}, []);
@@ -100,11 +117,7 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 	const handleContactClick = (e) => {
 		if (isCurrentHome) {
 			e.preventDefault();
-			const el = document.getElementById('contact');
-			if (el) {
-				el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-				window.history.pushState(null, '', '#contact');
-			}
+			scrollToContact();
 		}
 	};
 
@@ -159,11 +172,7 @@ export function SiteFooter({ brandName = PRODUCT_BRAND, companyName = COMPANY_NA
 	const handleContactClick = (e) => {
 		if (isHome) {
 			e.preventDefault();
-			const el = document.getElementById('contact');
-			if (el) {
-				el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-				window.history.pushState(null, '', '#contact');
-			}
+			scrollToContact();
 		}
 	};
 

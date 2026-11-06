@@ -30,7 +30,7 @@
 }
 
 .shelfway-site section[id] {
-	scroll-margin-top: 5rem;
+	scroll-margin-top: 6.5rem;
 }
 
 .shelfway-site .wash {
@@ -91,11 +91,11 @@
 		box-shadow var(--shelfway-motion-fast) var(--shelfway-ease);
 }
 .shelfway-site .nav-shell.is-scrolled {
-	background: color-mix(in srgb, var(--shelfway-surface) 92%, transparent);
-	backdrop-filter: blur(12px);
-	-webkit-backdrop-filter: blur(12px);
+	background: color-mix(in srgb, var(--shelfway-surface) 96%, transparent);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
 	border-bottom: 1px solid var(--shelfway-line);
-	box-shadow: 0 4px 12px color-mix(in srgb, var(--shelfway-fg) 3%, transparent);
+	box-shadow: 0 4px 12px color-mix(in srgb, var(--shelfway-fg) 4%, transparent);
 }
 .shelfway-site .nav {
 	max-width: var(--max);
