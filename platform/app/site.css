@@ -894,9 +894,9 @@
 	left: 0.15rem;
 	width: 1rem;
 	height: 1rem;
-	background: var(--shelfway-surface, #ffffff);
+	background: var(--shelfway-surface);
 	border-radius: 50%;
-	box-shadow: 0 1px 2px rgb(15 23 42 / 0.25);
+	box-shadow: 0 1px 2px color-mix(in srgb, var(--shelfway-fg) 20%, transparent);
 	transition: transform 0.25s var(--shelfway-ease);
 }
 
@@ -996,7 +996,7 @@
 	padding: 0.7rem 1.15rem;
 	border-radius: var(--radius-control);
 	background: var(--shelfway-primary);
-	color: var(--shelfway-on-primary, #ffffff);
+	color: var(--shelfway-on-primary);
 	font-weight: 700;
 	font-size: 0.88rem;
 	border: 0;

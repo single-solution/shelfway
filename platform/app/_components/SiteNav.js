@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import NextLink from 'next/link.js';
 import { usePathname } from 'next/navigation.js';
+import { Button, TextLink } from '@shelfway/ui';
 import { SignInModal } from './SignInModal.js';
 
 const Link = /** @type {any} */ (NextLink);
@@ -142,19 +143,19 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 						{session ? <Link href="/overview">Dashboard</Link> : null}
 					</nav>
 					{session ? (
-						<Link className="cta" href="/overview">
+						<Button as={Link} className="cta" href="/overview">
 							Dashboard
-						</Link>
+						</Button>
 					) : (
-						<button
+						<Button
 							type="button"
-							className="cta cursor-pointer"
+							className="cta"
 							onClick={() => {
 								setSignInNext(null);
 								setShowSignInModal(true);
 							}}>
 							Sign in
-						</button>
+						</Button>
 					)}
 				</header>
 			</div>
@@ -194,12 +195,14 @@ export function SiteFooter({ brandName = PRODUCT_BRAND, companyName = COMPANY_NA
 				{session ? (
 					<Link href="/overview">Dashboard</Link>
 				) : (
-					<button
+					<TextLink
+						as="button"
 						type="button"
+						tone="muted"
 						onClick={() => openSignInModal()}
-						className="cursor-pointer text-muted hover:text-fg transition">
+						className="cursor-pointer hover:text-fg transition">
 						Sign in
-					</button>
+					</TextLink>
 				)}
 			</nav>
 		</footer>

@@ -175,15 +175,17 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 			{suspended ? (
 				<Callout tone="danger">
 					Your account is suspended.{' '}
-					<button
+					<TextLink
+						as="button"
 						type="button"
 						onClick={() => {
 							onClose();
 							scrollToContact();
 						}}
+						tone="plain"
 						className="underline font-semibold cursor-pointer">
 						Contact support
-					</button>
+					</TextLink>
 					.
 				</Callout>
 			) : null}
@@ -243,15 +245,17 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 
 					<div className="text-center text-xs text-muted pt-1 flex items-center justify-center gap-1.5">
 						<span>Need an account?</span>
-						<button
+						<TextLink
+							as="button"
 							type="button"
 							onClick={() => {
 								onClose();
 								scrollToContact();
 							}}
-							className="text-primary hover:underline font-semibold cursor-pointer">
+							tone="primary"
+							className="font-semibold cursor-pointer">
 							Contact us
-						</button>
+						</TextLink>
 					</div>
 				</Form>
 			) : (
