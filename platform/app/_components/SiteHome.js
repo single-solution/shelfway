@@ -140,6 +140,134 @@ const COMPARE = [
 	},
 ];
 
+/** Lightweight mock cues shown beside each feature detail. */
+const FEATURE_MOCK = {
+	accounts: {
+		chrome: 'your-site - sign in',
+		title: 'Sign in',
+		rows: [
+			{ kind: 'field', label: 'Email', value: 'you@business.com' },
+			{ kind: 'field', label: 'Password', value: '********' },
+			{ kind: 'action', label: 'Continue' },
+			{ kind: 'toggle', label: 'Staff invite link', on: true },
+		],
+	},
+	ecommerce: {
+		chrome: 'your-site - shop',
+		title: 'Catalog',
+		rows: [
+			{ kind: 'tile', label: 'Item A', value: 'In stock' },
+			{ kind: 'tile', label: 'Item B', value: 'Cart ready' },
+			{ kind: 'action', label: 'Checkout' },
+			{ kind: 'toggle', label: 'Returns', on: true },
+		],
+	},
+	payments: {
+		chrome: 'your-site - pay',
+		title: 'Collect payment',
+		rows: [
+			{ kind: 'field', label: 'Amount', value: '1,500' },
+			{ kind: 'chips', label: 'Card - Wallet - Link' },
+			{ kind: 'action', label: 'Pay now' },
+			{ kind: 'toggle', label: 'Staff proof review', on: true },
+		],
+	},
+	chat: {
+		chrome: 'your-site - chat',
+		title: 'Live chat',
+		rows: [
+			{ kind: 'bubble', label: 'Visitor', value: 'Do you open Sundays?' },
+			{ kind: 'bubble-me', label: 'You', value: 'Yes - 10 to 6.' },
+			{ kind: 'toggle', label: 'AI first reply', on: true },
+			{ kind: 'action', label: 'Hand to person' },
+		],
+	},
+	notifications: {
+		chrome: 'account - messages',
+		title: 'Send update',
+		rows: [
+			{ kind: 'chips', label: 'WhatsApp - SMS - Email - Push' },
+			{ kind: 'field', label: 'Template', value: 'Order ready' },
+			{ kind: 'toggle', label: 'Quiet hours', on: true },
+			{ kind: 'action', label: 'Send' },
+		],
+	},
+	growth: {
+		chrome: 'account - growth',
+		title: 'Site measurement',
+		rows: [
+			{ kind: 'toggle', label: 'Consent banner', on: true },
+			{ kind: 'toggle', label: 'SEO helpers', on: true },
+			{ kind: 'field', label: 'Analytics', value: 'Connected' },
+			{ kind: 'action', label: 'Save' },
+		],
+	},
+};
+
+/** Illustrated surfaces - teaching the model, not live screenshots. */
+const SCREENS = [
+	{
+		id: 'portal',
+		label: 'Your account',
+		path: 'account - websites',
+		badge: 'Portal Live',
+		side: ['Overview', 'Websites', 'Credits', 'Account', 'Docs'],
+		sideOn: 1,
+		title: 'Your website home',
+		lede: 'Add features, open settings, share setup with your builder.',
+		cards: [
+			{ b: 'Site status', s: 'live', v: 'myshop.com', dot: 'ok' },
+			{ b: 'Features on', s: '4 enabled', v: 'Accounts, Chat, Pay', dot: 'teal' },
+			{ b: 'Team staff', s: '3 active', v: 'Owner, Support', dot: 'ok' },
+		],
+		rows: [
+			{ k: 'Active', t: 'Visitor accounts and sign-in on your site', s: 'Running', e: 'Open ->' },
+			{ k: 'Active', t: 'Live chat widget with AI handoff', s: '12 active today', e: 'Open ->' },
+			{ k: 'Handoff', t: 'Setup link with safe tokens', s: 'Up to date', e: 'Copy ->' },
+		],
+	},
+	{
+		id: 'settings',
+		label: 'Settings',
+		path: 'settings - feature',
+		badge: 'Instant sync',
+		side: ['Features', 'Texts', 'Connections', 'Lists', 'Policies'],
+		sideOn: 0,
+		title: 'Feature settings',
+		lede: 'What is on, what visitors read, which services you connect.',
+		cards: [
+			{ b: 'Features on', s: '6 / 6', v: 'All active', dot: 'ok' },
+			{ b: 'Custom texts', s: 'Saved', v: 'Welcome and Prompts', dot: 'teal' },
+			{ b: 'Connected', s: '3 services', v: 'WhatsApp, Stripe', dot: 'ok' },
+		],
+		rows: [
+			{ k: 'Toggle', t: 'Core options and behavior switches', s: 'Immediate', e: 'Edit ->' },
+			{ k: 'Copy', t: 'Customer-facing copy and greetings', s: 'Draft ready', e: 'Edit ->' },
+			{ k: 'Connect', t: 'Payment and notification gateways', s: 'Verified', e: 'Config ->' },
+		],
+	},
+	{
+		id: 'operate',
+		label: 'On your site',
+		path: 'site - today',
+		badge: 'Real-time',
+		side: ['Inbox', 'Payments', 'Team', 'Activity'],
+		sideOn: 0,
+		title: 'Work on the live site',
+		lede: 'Your team replies and reviews where visitors already are.',
+		cards: [
+			{ b: 'Live inbox', s: '2 waiting', v: 'Chat session open', dot: 'lime' },
+			{ b: 'Pay reviews', s: '1 pending', v: 'Proof submission', dot: 'mid' },
+			{ b: 'Staff on duty', s: 'Online now', v: 'Ready to reply', dot: 'ok' },
+		],
+		rows: [
+			{ k: 'Chat', t: 'Visitor asking about shipping times', s: 'Just now', e: 'Reply ->' },
+			{ k: 'Order', t: 'Payment verification needed #1042', s: '2m ago', e: 'Review ->' },
+			{ k: 'Staff', t: 'Support joined session #89', s: '5m ago', e: 'View ->' },
+		],
+	},
+];
+
 /**
  * @typedef {{ id: string, name: string, description?: string }} MarketingProduct
  */
@@ -149,7 +277,29 @@ const COMPARE = [
  * @param {{ productName?: string, companyName?: string, products?: MarketingProduct[], session?: any }} props
  */
 export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NAME, products = [], session = null }) {
+	const [screen, setScreen] = useState(0);
 	const [spotId, setSpotId] = useState('');
+	const [mockOverrides, setMockOverrides] = useState(/** @type {Record<string, boolean>} */ ({}));
+	const [actionFeedback, setActionFeedback] = useState('');
+	const shot = SCREENS[screen] || SCREENS[0];
+
+	const isRowOn = (/** @type {string} */ featureId, /** @type {{ label: string, on?: boolean }} */ row) => {
+		const key = `${featureId}::${row.label}`;
+		return mockOverrides[key] !== undefined ? mockOverrides[key] : Boolean(row.on);
+	};
+
+	const toggleRow = (/** @type {string} */ featureId, /** @type {{ label: string, on?: boolean }} */ row) => {
+		const key = `${featureId}::${row.label}`;
+		setMockOverrides((prev) => ({
+			...prev,
+			[key]: !isRowOn(featureId, row),
+		}));
+	};
+
+	const triggerAction = (/** @type {string} */ label) => {
+		setActionFeedback(label);
+		setTimeout(() => setActionFeedback(''), 1500);
+	};
 
 	const fromApi = products.filter((p) => p.id && p.name);
 	const catalog =
@@ -348,7 +498,67 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 						</div>
 
 						{active ? (
-							<div className="feature-panel glass hard" key={active.id}>
+							<div className="feature-panel" key={active.id}>
+								<div className="feature-mock glass hard">
+									<div className="shot-chrome">
+										<i />
+										<i />
+										<i />
+										<span className="mono">{(FEATURE_MOCK[active.id] || FEATURE_MOCK.accounts).chrome}</span>
+									</div>
+									<div className="feature-mock-body">
+										<div className="feature-mock-head">
+											<p className="feature-mock-title">{(FEATURE_MOCK[active.id] || FEATURE_MOCK.accounts).title}</p>
+											<span className="mock-live-pill mono">Live preview</span>
+										</div>
+										<ul className="feature-mock-rows">
+											{(FEATURE_MOCK[active.id] || FEATURE_MOCK.accounts).rows.map((row) => {
+												const rowKey = `${active.id}-${row.label}`;
+												const onState = row.kind === 'toggle' ? isRowOn(active.id, row) : false;
+												return (
+													<li key={rowKey} className={`fm-${row.kind}${onState ? ' is-on' : ''}`}>
+														{row.kind === 'toggle' ? (
+															<button
+																type="button"
+																role="switch"
+																aria-checked={onState}
+																className="fm-toggle-btn"
+																onClick={() => toggleRow(active.id, row)}>
+																<span>{row.label}</span>
+																<span className="fm-switch" aria-hidden="true" />
+															</button>
+														) : row.kind === 'field' ? (
+															<div className="fm-field-inner">
+																<span className="mono">{row.label}</span>
+																<strong>{row.value}</strong>
+															</div>
+														) : row.kind === 'chips' ? (
+															<span className="fm-chips">{row.label}</span>
+														) : row.kind === 'tile' ? (
+															<div className="fm-tile-inner">
+																<strong>{row.label}</strong>
+																<em>{row.value}</em>
+															</div>
+														) : row.kind === 'bubble' || row.kind === 'bubble-me' ? (
+															<div className="fm-bubble-inner">
+																<span className="mono">{row.label}</span>
+																<p>{row.value}</p>
+															</div>
+														) : (
+															<button
+																type="button"
+																className="fm-action-btn"
+																onClick={() => triggerAction(row.label)}>
+																<span>{actionFeedback === row.label ? 'Done +' : row.label}</span>
+															</button>
+														)}
+													</li>
+												);
+											})}
+										</ul>
+									</div>
+								</div>
+
 								<div className="feature-detail">
 									<p className="eyebrow">Includes</p>
 									<h3>{active.name}</h3>
@@ -389,6 +599,77 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 						<h2>Your account, your settings, then live on your site.</h2>
 						<p>You manage your business here. Whoever builds your site gets a single setup link with clear guides.</p>
 					</header>
+
+					<div className="shot-wrap reveal">
+						<div className="shot-tabs" role="tablist" aria-label="How you use it">
+							{SCREENS.map((s, i) => (
+								<button
+									key={s.id}
+									type="button"
+									role="tab"
+									aria-selected={screen === i}
+									className={`shot-tab${screen === i ? ' on' : ''}`}
+									onClick={() => setScreen(i)}>
+									{s.label}
+								</button>
+							))}
+						</div>
+						<div className="shot-frame glass hard" role="tabpanel">
+							<div className="shot-chrome">
+								<i />
+								<i />
+								<i />
+								<span className="mono">{shot.path}</span>
+							</div>
+							<div className="shot-body">
+								<aside className="shot-side">
+									<p>Menu</p>
+									<ul>
+										{shot.side.map((item, i) => (
+											<li key={item} className={i === shot.sideOn ? 'on' : undefined}>
+												{item}
+											</li>
+										))}
+									</ul>
+								</aside>
+								<div className="shot-main">
+									<div className="shot-main-header">
+										<div>
+											<h4>{shot.title}</h4>
+											<p className="shot-lede">{shot.lede}</p>
+										</div>
+										{shot.badge ? (
+											<span className="shot-badge mono">
+												<span className="live-dot" aria-hidden="true" />
+												{shot.badge}
+											</span>
+										) : null}
+									</div>
+									<div className="shot-grid">
+										{shot.cards.map((c) => (
+											<div key={c.b} className="shot-card">
+												<div>
+													<b>{c.b}</b>
+													{c.v ? <div className="card-val">{c.v}</div> : null}
+												</div>
+												<span className={`shot-status ${c.dot || 'teal'}`}>{c.s}</span>
+											</div>
+										))}
+									</div>
+									<div className="shot-rows">
+										{shot.rows.map((r) => (
+											<div key={r.t} className="shot-row">
+												<b>{r.k}</b>
+												<span>{r.t}</span>
+												{r.s ? <span className="shot-row-status mono">{r.s}</span> : null}
+												<em>{r.e}</em>
+											</div>
+										))}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 
 					<ol className="work-steps reveal">
 						{WORK_STEPS.map((r) => (
