@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link.js';
-import { Button, ButtonLink, Callout, Form, Icon, Input, TextArea, copyText } from '@shelfway/ui';
+import { Button, ButtonLink, Callout, Card, Form, Icon, Input, TextArea, copyText } from '@shelfway/ui';
 import { useEffect, useState } from 'react';
 import { COMPANY_NAME, PRODUCT_BRAND, SiteFooter, SiteHeader, openSignInModal } from './SiteNav.js';
 
@@ -815,119 +815,108 @@ function ContactSection({ brandName = PRODUCT_BRAND }) {
 				</p>
 			</header>
 
-			<div className="contact-frame glass hard reveal">
-				<div className="shot-chrome">
-					<i />
-					<i />
-					<i />
-					<span className="mono">support@shelfway.com</span>
-				</div>
-				<div className="contact-body">
-					{/* Left Column: Direct channels and reassurance */}
-					<div className="contact-channels">
-						<div className="contact-channel-item">
-							<p className="eyebrow">Direct channel</p>
-							<div className="contact-email-row">
-								<h3>support@shelfway.com</h3>
-								<button
-									type="button"
-									onClick={handleCopyEmail}
-									className="contact-copy-pill mono"
-									title="Copy email address">
-									<Icon name={copied ? 'check' : 'copy'} size={13} />
-									<span>{copied ? 'Copied' : 'Copy'}</span>
-								</button>
-							</div>
-							<p className="contact-desc">
-								Direct inbox for technical questions, merchant onboarding, and custom setup inquiries.
+			<div className="reveal grid gap-6 md:grid-cols-5 items-start mt-6">
+				{/* Direct Channel Info Card from Theme Kit */}
+				<Card
+					className="md:col-span-2 shadow-card"
+					title="Direct support"
+					subtitle="Reach our team directly for onboarding and technical guidance"
+					lead={<Icon name="message" size={18} className="text-primary" />}
+					action={
+						<Button
+							type="button"
+							variant="secondary"
+							size="sm"
+							onClick={handleCopyEmail}
+							prefix={<Icon name={copied ? 'check' : 'copy'} size={14} />}>
+							{copied ? 'Copied support@shelfway.com' : 'Copy support@shelfway.com'}
+						</Button>
+					}>
+					<div className="space-y-4 text-sm text-muted">
+						<p>All inquiries are reviewed directly by platform engineering and operations staff.</p>
+						<div className="rounded-control border border-line bg-surface-2 p-3 text-xs space-y-1">
+							<p className="font-semibold text-fg">Building for a merchant?</p>
+							<p>
+								Ask your merchant for their setup link or website token to unlock interactive docs without needing portal
+								passwords.
 							</p>
 						</div>
-
-						<ul className="handoff-bits" aria-label="Support guarantees">
-							<li>Direct engineering assistance</li>
-							<li>Replies in under 2 hours</li>
-							<li>Setup link guidance for builders</li>
-							<li>Zero password sharing needed</li>
-						</ul>
+						<p className="text-xs">
+							Typical response time: <strong className="text-fg font-medium">under 2 hours</strong> during business hours.
+						</p>
 					</div>
+				</Card>
 
-					{/* Right Column: Clean Interactive Form */}
-					<div className="contact-form-pane">
-						{submitted ? (
-							<div className="space-y-4 py-6">
-								<Callout tone="success" title="Message received">
-									Thank you for reaching out. We have received your note and our team will get back to you shortly at
-									your email.
-								</Callout>
-								<Button type="button" variant="secondary" size="sm" onClick={() => setSubmitted(false)}>
-									Send another note
+				{/* Contact Form Card from Theme Kit */}
+				<Card
+					className="md:col-span-3 shadow-card"
+					title="Send us a message"
+					subtitle="Fill out the details below and we will follow up with you by email"
+					lead={<Icon name="mail" size={18} className="text-primary" />}>
+					{submitted ? (
+						<div className="space-y-4 py-2">
+							<Callout tone="success" title="Message received">
+								Thank you for reaching out. We have received your note and our team will get back to you shortly at your
+								email.
+							</Callout>
+							<Button type="button" variant="secondary" size="sm" onClick={() => setSubmitted(false)}>
+								Send another note
+							</Button>
+						</div>
+					) : (
+						<Form onSubmit={handleSubmit} busy={busy} aria-label="Contact support">
+							<Input
+								label="Your name"
+								name="name"
+								placeholder="Jane Doe"
+								value={name}
+								onChange={(e) => {
+									setName(e.currentTarget.value);
+									if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
+								}}
+								error={errors.name}
+								required
+								hideRequiredMark
+							/>
+
+							<Input
+								label="Work email"
+								type="email"
+								name="email"
+								placeholder="jane@company.com"
+								value={email}
+								onChange={(e) => {
+									setEmail(e.currentTarget.value);
+									if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
+								}}
+								error={errors.email}
+								required
+								hideRequiredMark
+							/>
+
+							<TextArea
+								label="Message"
+								name="message"
+								placeholder="Tell us what you are looking to build, questions about products, or how we can help..."
+								value={message}
+								onChange={(e) => {
+									setMessage(e.currentTarget.value);
+									if (errors.message) setErrors((prev) => ({ ...prev, message: '' }));
+								}}
+								error={errors.message}
+								required
+								hideRequiredMark
+								rows={4}
+							/>
+
+							<div className="pt-2">
+								<Button type="submit" variant="primary" size="md" loading={busy} className="font-semibold">
+									Send message
 								</Button>
 							</div>
-						) : (
-							<Form onSubmit={handleSubmit} busy={busy} aria-label="Contact support">
-								<div className="space-y-4">
-									<Input
-										label="Your name"
-										name="name"
-										placeholder="Jane Doe"
-										value={name}
-										onChange={(e) => {
-											setName(e.currentTarget.value);
-											if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
-										}}
-										error={errors.name}
-										required
-										hideRequiredMark
-										className="h-10 text-sm"
-									/>
-
-									<Input
-										label="Work email"
-										type="email"
-										name="email"
-										placeholder="jane@company.com"
-										value={email}
-										onChange={(e) => {
-											setEmail(e.currentTarget.value);
-											if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
-										}}
-										error={errors.email}
-										required
-										hideRequiredMark
-										className="h-10 text-sm"
-									/>
-
-									<TextArea
-										label="Message"
-										name="message"
-										placeholder="Tell us what you are looking to build, questions about products, or how we can help..."
-										value={message}
-										onChange={(e) => {
-											setMessage(e.currentTarget.value);
-											if (errors.message) setErrors((prev) => ({ ...prev, message: '' }));
-										}}
-										error={errors.message}
-										required
-										hideRequiredMark
-										rows={4}
-										className="text-sm"
-									/>
-
-									<div className="pt-2">
-										<Button
-											type="submit"
-											variant="primary"
-											size="md"
-											loading={busy}
-											className="w-full sm:w-auto px-6 font-semibold">
-											Send message
-										</Button>
-									</div>
-								</div>
-							</Form>
-						)}
-					</div>
-				</div>
+						</Form>
+					)}
+				</Card>
 			</div>
 		</section>
 	);
