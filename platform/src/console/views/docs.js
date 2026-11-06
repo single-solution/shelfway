@@ -181,12 +181,6 @@ export function DocsHubView({
 		}
 	};
 
-	const openContact = () => {
-		if (typeof window !== 'undefined') {
-			window.dispatchEvent(new CustomEvent('shelfway:open-contact'));
-		}
-	};
-
 	const isUnlocked = Boolean(actor || token);
 
 	// Synchronize URL query params seamlessly without page reloads
@@ -443,12 +437,9 @@ export function DocsHubView({
 
 						<div className="text-center text-xs text-muted space-x-1.5">
 							<span>Need an account or assistance?</span>
-							<button
-								type="button"
-								onClick={openContact}
-								className="text-primary hover:underline font-semibold cursor-pointer">
+							<a href="/#contact" className="text-primary hover:underline font-semibold">
 								Contact us
-							</button>
+							</a>
 						</div>
 					</div>
 				</div>

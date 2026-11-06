@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import NextLink from 'next/link.js';
 import { usePathname } from 'next/navigation.js';
 import { SignInModal } from './SignInModal.js';
-import { ContactModal } from './ContactModal.js';
 
 const Link = /** @type {any} */ (NextLink);
 
@@ -23,24 +22,32 @@ export const openSignInModal = (next = null) => {
 };
 
 /**
- * Open the central contact modal from anywhere on the public site or docs.
+ * Smoothly scroll to the contact section at the bottom of the page,
+ * or navigate to /#contact if currently on another route.
  */
-export const openContactModal = () => {
-	if (typeof window !== 'undefined') {
-		window.dispatchEvent(new CustomEvent('shelfway:open-contact'));
+export const scrollToContact = () => {
+	if (typeof window === 'undefined') return;
+	const isHome = window.location.pathname === '/' || window.location.pathname === '';
+	if (isHome) {
+		const el = document.getElementById('contact');
+		if (el) {
+			el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			window.history.pushState(null, '', '#contact');
+			return;
+		}
 	}
+	window.location.href = '/#contact';
 };
 
 /**
  * Shared floating glass header for the public Portal surface (Website + Docs).
- * @param {{ brandName?: string, companyName?: string, isHome?: boolean, session?: any }} props
+ * @param {{ brandName?: string, isHome?: boolean, session?: any }} props
  */
-export function SiteHeader({ brandName = PRODUCT_BRAND, companyName = COMPANY_NAME, isHome = false, session = null }) {
+export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session = null }) {
 	const rawPath = usePathname();
 	const pathname = rawPath || (isHome ? '/' : '');
 	const [scrolled, setScrolled] = useState(false);
 	const [showSignInModal, setShowSignInModal] = useState(false);
-	const [showContactModal, setShowContactModal] = useState(false);
 	const [signInNext, setSignInNext] = useState(/** @type {string | null} */ (null));
 
 	useEffect(() => {
@@ -59,7 +66,7 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, companyName = COMPANY_NA
 			if (n) setSignInNext(n);
 		}
 		if (params.has('contact')) {
-			setShowContactModal(true);
+			scrollToContact();
 		}
 	}, []);
 
@@ -69,12 +76,9 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, companyName = COMPANY_NA
 			setShowSignInModal(true);
 			if (e.detail?.next) setSignInNext(e.detail.next);
 		};
-		const handleOpenContact = () => setShowContactModal(true);
 		window.addEventListener('shelfway:open-signin', handleOpenSignIn);
-		window.addEventListener('shelfway:open-contact', handleOpenContact);
 		return () => {
 			window.removeEventListener('shelfway:open-signin', handleOpenSignIn);
-			window.removeEventListener('shelfway:open-contact', handleOpenContact);
 		};
 	}, []);
 
@@ -92,12 +96,15 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, companyName = COMPANY_NA
 		}
 	};
 
-	const handleCloseContact = () => {
-		setShowContactModal(false);
-		if (typeof window !== 'undefined' && window.location.search) {
-			const url = new URL(window.location.href);
-			url.searchParams.delete('contact');
-			window.history.replaceState(null, '', url.pathname + (url.search || ''));
+	/** @param {import('react').MouseEvent} e */
+	const handleContactClick = (e) => {
+		if (isCurrentHome) {
+			e.preventDefault();
+			const el = document.getElementById('contact');
+			if (el) {
+				el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+				window.history.pushState(null, '', '#contact');
+			}
 		}
 	};
 
@@ -113,12 +120,12 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, companyName = COMPANY_NA
 						<Link href="/docs" style={isDocs ? { color: 'var(--shelfway-primary)', fontWeight: 600 } : undefined}>
 							Docs
 						</Link>
-						<button
-							type="button"
-							onClick={() => setShowContactModal(true)}
+						<a
+							href={isCurrentHome ? '#contact' : '/#contact'}
+							onClick={handleContactClick}
 							className="cursor-pointer text-muted hover:text-fg transition font-medium">
 							Contact
-						</button>
+						</a>
 						{session ? <Link href="/overview">Dashboard</Link> : null}
 					</nav>
 					{session ? (
@@ -139,7 +146,6 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, companyName = COMPANY_NA
 				</header>
 			</div>
 			<SignInModal open={showSignInModal} onClose={handleCloseSignIn} brandName={brandName} next={signInNext} />
-			<ContactModal open={showContactModal} onClose={handleCloseContact} brandName={brandName} companyName={companyName} />
 		</>
 	);
 }
@@ -149,6 +155,18 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, companyName = COMPANY_NA
  * @param {{ brandName?: string, companyName?: string, isHome?: boolean, session?: any }} props
  */
 export function SiteFooter({ brandName = PRODUCT_BRAND, companyName = COMPANY_NAME, isHome = false, session = null }) {
+	/** @param {import('react').MouseEvent} e */
+	const handleContactClick = (e) => {
+		if (isHome) {
+			e.preventDefault();
+			const el = document.getElementById('contact');
+			if (el) {
+				el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+				window.history.pushState(null, '', '#contact');
+			}
+		}
+	};
+
 	return (
 		<footer>
 			<div>
@@ -158,12 +176,12 @@ export function SiteFooter({ brandName = PRODUCT_BRAND, companyName = COMPANY_NA
 			<nav aria-label="Footer">
 				<a href={isHome ? '#products' : '/#products'}>Features</a>
 				<Link href="/docs">Docs</Link>
-				<button
-					type="button"
-					onClick={() => openContactModal()}
+				<a
+					href={isHome ? '#contact' : '/#contact'}
+					onClick={handleContactClick}
 					className="cursor-pointer text-muted hover:text-fg transition">
 					Contact
-				</button>
+				</a>
 				{session ? (
 					<Link href="/overview">Dashboard</Link>
 				) : (

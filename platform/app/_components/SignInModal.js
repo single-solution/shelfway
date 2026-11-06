@@ -5,7 +5,7 @@ import NextLink from 'next/link.js';
 import { Button, Callout, Dialog, Form, FormError, Input, OtpInput, TextLink, fieldErrors, problemCode } from '@shelfway/ui';
 import { apiFetch } from '../../src/console/client.js';
 import { homeOf } from '../../src/console/views/sign-in.js';
-import { openContactModal } from './SiteNav.js';
+import { scrollToContact } from './SiteNav.js';
 
 const Link = /** @type {any} */ (NextLink);
 
@@ -179,7 +179,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 						type="button"
 						onClick={() => {
 							onClose();
-							openContactModal();
+							scrollToContact();
 						}}
 						className="underline font-semibold cursor-pointer">
 						Contact support
@@ -247,7 +247,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 							type="button"
 							onClick={() => {
 								onClose();
-								openContactModal();
+								scrollToContact();
 							}}
 							className="text-primary hover:underline font-semibold cursor-pointer">
 							Contact us
