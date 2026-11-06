@@ -26,7 +26,7 @@ export default async function SitePage() {
 				}))
 			: [];
 	return (
-		<div className="shelfway-site bg-canvas text-fg font-sans">
+		<div className="shelfway-site flex min-h-screen flex-col bg-canvas text-fg font-sans">
 			<SiteHome
 				productName={PRODUCT_BRAND}
 				companyName={COMPANY_NAME}

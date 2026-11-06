@@ -427,6 +427,12 @@
 	margin: 0 auto;
 	padding: clamp(3.25rem, 7vw, 5rem) 0;
 }
+.shelfway-site .docs-container {
+	width: min(calc(100% - 2 * var(--gutter)), var(--max));
+	max-width: var(--max);
+	margin: 0 auto;
+	padding: clamp(1.25rem, 2.5vw, 2rem) 0 clamp(2.5rem, 5vw, 4rem);
+}
 .shelfway-site .band {
 	width: 100%;
 	max-width: none;

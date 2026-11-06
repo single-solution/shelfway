@@ -340,9 +340,6 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 
 	return (
 		<>
-			<div className="wash" aria-hidden="true" />
-			<div className="grid-hard" aria-hidden="true" />
-
 			<SiteHeader brandName={productName} isHome={true} session={session} />
 
 			<main id="top">

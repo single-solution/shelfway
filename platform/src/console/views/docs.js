@@ -342,11 +342,9 @@ export function DocsHubView({
 
 	return (
 		<ToastProvider>
-			<div className="relative flex flex-col min-h-screen bg-canvas text-fg">
-				<div className="wash" aria-hidden="true" />
-				<div className="grid-hard" aria-hidden="true" />
+			<div className="docs-container flex flex-col flex-1">
 				{/* Top Docs Toolbar */}
-				<header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-line bg-surface/90 px-4 backdrop-blur-md sm:px-6">
+				<div className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-line bg-surface/80 p-3.5 backdrop-blur-md mb-6">
 					<div className="flex items-center gap-3">
 						<p className="font-mono text-xs font-bold tracking-widest uppercase text-primary">API REFERENCE</p>
 						<span className="text-muted/60" aria-hidden="true">
@@ -386,12 +384,12 @@ export function DocsHubView({
 							<strong className="text-fg capitalize font-medium">{userRole}</strong>
 						</div>
 					</div>
-				</header>
+				</div>
 
 				{/* Two-Column Docs Explorer Layout */}
-				<div className="relative z-10 flex flex-1">
+				<div className="relative z-10 flex flex-col md:flex-row gap-6 flex-1 items-start">
 					{/* Left Mega-Menu Sticky Sidebar */}
-					<aside className="w-72 lg:w-80 shrink-0 border-r border-line bg-surface/80 backdrop-blur-xl overflow-y-auto shelfway-scroll flex flex-col p-4 space-y-6 sticky top-14 self-start max-h-[calc(100vh-3.5rem)]">
+					<aside className="w-full md:w-72 lg:w-80 shrink-0 rounded-card border border-line bg-surface/80 backdrop-blur-xl overflow-y-auto shelfway-scroll flex flex-col p-4 space-y-6 md:sticky md:top-20 self-start max-h-[calc(100vh-6rem)] shadow-card">
 						{/* Search Bar */}
 						<div>
 							<Input
@@ -560,7 +558,7 @@ export function DocsHubView({
 					</aside>
 
 					{/* Right Content Area: Interactive Swagger & Guides */}
-					<main className="flex-1 p-6 sm:p-10 space-y-8 max-w-5xl">
+					<div className="flex-1 min-w-0 w-full space-y-8">
 						{token ? (
 							<div className="rounded-card border border-primary/30 bg-primary-soft/10 p-4 shadow-card">
 								<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -610,7 +608,8 @@ export function DocsHubView({
 											Interactive Playground
 										</span>
 										<p className="text-xs text-muted">
-											Paste your website token or setup link to pre-fill live examples, widget embeds, and API snippets without signing in.
+											Paste your website token or setup link to pre-fill live examples, widget embeds, and API snippets
+											without signing in.
 										</p>
 									</div>
 									<div className="flex items-center gap-2">
@@ -1161,7 +1160,7 @@ export function DocsHubView({
 								})()}
 							</section>
 						) : null}
-					</main>
+					</div>
 				</div>
 			</div>
 		</ToastProvider>
