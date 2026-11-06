@@ -601,7 +601,7 @@ export function WebsitePageView({
 			<Dialog
 				open={Boolean(revealedPack)}
 				onClose={() => setRevealedPack(null)}
-				title="Developer Access & Website Credentials"
+				title="Website Setup & Credentials"
 				description={`Access link and environment credentials for ${website.domain}. Scoped to active products only.`}>
 				{revealedPack
 					? (() => {
@@ -630,14 +630,14 @@ export function WebsitePageView({
 											Documentation &amp; API Access Link
 										</span>
 										<p className="text-xs text-muted">
-											Share this link with whoever is coding your site. They can view interactive docs and live
-											endpoints without an account.
+											Share this link with whoever is building your website. They can view interactive docs and live
+											endpoints without signing in.
 										</p>
 										<div className="flex items-center gap-2">
 											<Input
 												readOnly
 												hideLabel
-												label="Developer Documentation Link"
+												label="Documentation & API Access Link"
 												value={docsLink}
 												className="flex-1 font-mono text-xs"
 											/>

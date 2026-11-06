@@ -164,6 +164,7 @@ export function DocsHubView({
 	const [selectedOpKey, setSelectedOpKey] = useState(/** @type {string | null} */ (initialOpKey || null));
 	const [token, setToken] = useState(initialToken || '');
 	const [website, setWebsite] = useState(initialWebsite || '');
+	const [tokenInput, setTokenInput] = useState('');
 	const [activeSnippetTab, setActiveSnippetTab] = useState('curl');
 	const [activeResponseStatus, setActiveResponseStatus] = useState('200');
 	const [searchQuery, setSearchQuery] = useState('');
@@ -179,8 +180,10 @@ export function DocsHubView({
 	 * @param {string | null} [pId]
 	 * @param {string | null} [op]
 	 * @param {string} [sec]
+	 * @param {string} [tok]
+	 * @param {string} [web]
 	 */
-	const syncUrl = (pId, op, sec) => {
+	const syncUrl = (pId, op, sec, tok = token, web = website) => {
 		if (typeof window === 'undefined') return;
 		const params = new URLSearchParams(window.location.search);
 		if (pId) params.set('product', pId);
@@ -189,15 +192,36 @@ export function DocsHubView({
 		else params.delete('op');
 		if (sec && sec !== 'products') params.set('section', sec);
 		else params.delete('section');
-		if (token) params.set('token', token);
+		if (tok) params.set('token', tok);
 		else params.delete('token');
-		if (website) params.set('website', website);
+		if (web) params.set('website', web);
 		else params.delete('website');
 		const qs = params.toString();
 		const nextUrl = `${window.location.pathname}${qs ? `?${qs}` : ''}`;
 		if (`${window.location.pathname}${window.location.search}` !== nextUrl) {
 			window.history.replaceState(null, '', nextUrl);
 		}
+	};
+
+	/** @param {string} rawInput */
+	const applyToken = (rawInput) => {
+		const raw = rawInput.trim();
+		if (!raw) return;
+		let extractedToken = raw;
+		let extractedWebsite = website;
+		if (raw.includes('token=')) {
+			try {
+				const url = new URL(raw.startsWith('http') ? raw : `https://${raw}`);
+				extractedToken = url.searchParams.get('token') || raw;
+				extractedWebsite = url.searchParams.get('website') || extractedWebsite;
+			} catch {
+				// not a parseable URL, keep raw
+			}
+		}
+		setToken(extractedToken);
+		if (extractedWebsite) setWebsite(extractedWebsite);
+		setTokenInput('');
+		syncUrl(selectedProductId, selectedOpKey, activeSection, extractedToken, extractedWebsite);
 	};
 
 	// Listen for browser forward/back buttons
@@ -266,6 +290,17 @@ export function DocsHubView({
 		);
 	}, [operations, searchQuery]);
 
+	const filteredProducts = useMemo(() => {
+		const q = searchQuery.trim().toLowerCase();
+		if (!q) return items;
+		return items.filter(
+			(p) =>
+				p.name.toLowerCase().includes(q) ||
+				p.productId.toLowerCase().includes(q) ||
+				(p.description && p.description.toLowerCase().includes(q)),
+		);
+	}, [items, searchQuery]);
+
 	/** @param {string} productId */
 	const selectProduct = (productId) => {
 		setSelectedProductId(productId);
@@ -300,7 +335,7 @@ export function DocsHubView({
 
 	const widgetScriptUrl = currentProduct?.widgetScriptUrl || '';
 	const widgetSnippet = widgetScriptUrl
-		? `<!-- Embed ${currentProduct.name} Widget on your site -->\n<script\n  src="${widgetScriptUrl}"\n  data-token="YOUR_WEBSITE_BROWSER_TOKEN"\n  ${currentProduct.widgetScriptLoading || 'async'}\n></script>`
+		? `<!-- Embed ${currentProduct.name} Widget on your site -->\n<script\n  src="${widgetScriptUrl}"\n  data-token="${token || 'YOUR_WEBSITE_BROWSER_TOKEN'}"\n  ${currentProduct.widgetScriptLoading || 'async'}\n></script>`
 		: null;
 
 	const apiBase = typeof window !== 'undefined' && window.location?.origin ? window.location.origin : 'https://api.shelfway.com';
@@ -408,7 +443,7 @@ export function DocsHubView({
 							</div>
 
 							<div className="space-y-1">
-								{items.map((prod) => {
+								{filteredProducts.map((prod) => {
 									const isSelected = selectedProductId === prod.productId;
 									const isExpanded = isSelected && activeSection === 'products';
 									return (
@@ -545,20 +580,62 @@ export function DocsHubView({
 										</p>
 									</div>
 									<div className="flex items-center gap-2">
-										<button
-											type="button"
-											className="shelfway-motion shelfway-press inline-flex h-8 items-center gap-1.5 rounded-control border border-line bg-surface px-2.5 text-xs font-medium text-fg hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-focus"
+										<Button
+											size="sm"
+											variant="secondary"
 											onClick={() => {
-												navigator.clipboard?.writeText(token);
+												copyText(token);
 												setCopiedNotice('Copied Token');
 												setTimeout(() => setCopiedNotice(''), 2000);
 											}}>
 											{copiedNotice === 'Copied Token' ? 'Copied Token!' : 'Copy Token'}
-										</button>
+										</Button>
+										<Button
+											size="sm"
+											variant="ghost"
+											onClick={() => {
+												setToken('');
+												syncUrl(selectedProductId, selectedOpKey, activeSection, '', website);
+											}}>
+											Change
+										</Button>
 									</div>
 								</div>
 							</div>
-						) : null}
+						) : (
+							<div className="rounded-card border border-line bg-surface/90 backdrop-blur-md p-4 shadow-card">
+								<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+									<div className="space-y-1">
+										<span className="font-mono text-xs font-bold uppercase tracking-wider text-muted">
+											Interactive Playground
+										</span>
+										<p className="text-xs text-muted">
+											Paste your website token or setup link to pre-fill live examples, widget embeds, and API snippets without signing in.
+										</p>
+									</div>
+									<div className="flex items-center gap-2">
+										<Input
+											hideLabel
+											label="Website token or setup link"
+											placeholder="Paste website token or link..."
+											value={tokenInput}
+											onChange={(e) => setTokenInput(e.currentTarget.value)}
+											onKeyDown={(e) => {
+												if (e.key === 'Enter') applyToken(tokenInput);
+											}}
+											className="w-60 text-xs h-8"
+										/>
+										<Button
+											size="sm"
+											variant="secondary"
+											disabled={!tokenInput.trim()}
+											onClick={() => applyToken(tokenInput)}>
+											Apply
+										</Button>
+									</div>
+								</div>
+							</div>
+						)}
 
 						{/* 1. Quickstart Section */}
 						{activeSection === 'quickstart' ? (
