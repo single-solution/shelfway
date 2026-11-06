@@ -44,7 +44,7 @@ export const DRAWER_WIDTH = Object.freeze({
  */
 export const DRAWER = Object.freeze({
 	layer: 'justify-end p-0 sm:p-3',
-	panel: 'flex h-full w-full flex-col border-line bg-surface/95 backdrop-blur-xl text-fg shadow-overlay sm:rounded-panel sm:border',
+	panel: 'flex h-full w-full flex-col border-line bg-surface/95 backdrop-blur-xl text-fg sm:rounded-panel sm:border',
 	header: `relative z-10 flex ${METRICS.drawerHeader} shrink-0 items-center gap-3 border-b border-line bg-surface/90 backdrop-blur-md px-3 sm:px-4`,
 	body: 'shelfway-scroll min-h-0 flex-1 space-y-4 px-3 py-4 sm:px-4 sm:py-5',
 	footer: `flex ${METRICS.drawerFooter} shrink-0 items-center justify-end gap-2 border-t border-line bg-surface/90 backdrop-blur-md px-3 sm:px-4`,

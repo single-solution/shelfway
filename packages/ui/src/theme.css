@@ -702,16 +702,6 @@
 	}
 }
 
-/* While any modal or drawer is active, page headers, sticky bars, and footers must never elevate */
-body[data-overlay-open] header,
-body[data-overlay-open] footer,
-body[data-overlay-open] .nav-shell,
-body[data-overlay-open] [data-shelfway-part='header'],
-body[data-overlay-open] [data-shelfway-part='footer'] {
-	z-index: 0 !important;
-	box-shadow: none !important;
-}
-
 /* light (the default): cool gray canvas, white surfaces, ink text, teal primary */
 :root {
 	color-scheme: light;

@@ -47,7 +47,6 @@ const lockScroll = (doc) => {
 	if (overlayLockCount === 0) {
 		previousOverflow = body.style.overflow;
 		body.style.overflow = 'hidden';
-		body.setAttribute('data-overlay-open', 'true');
 	}
 	overlayLockCount++;
 };
@@ -61,7 +60,6 @@ const unlockScroll = (doc) => {
 	overlayLockCount = Math.max(0, overlayLockCount - 1);
 	if (overlayLockCount === 0) {
 		body.style.overflow = previousOverflow;
-		body.removeAttribute('data-overlay-open');
 	}
 };
 
@@ -170,7 +168,7 @@ export function Drawer({
 			data-state={presence.closing ? 'closed' : 'open'}
 			data-placement="right"
 			className={cx(
-				'group fixed inset-0 z-[80] flex bg-overlay/70 backdrop-blur-md',
+				'group fixed inset-0 z-50 flex bg-overlay/70 backdrop-blur-md',
 				DRAWER.layer,
 				'animate-shelfway-fade data-[state=closed]:pointer-events-none data-[state=closed]:animate-shelfway-fade-out',
 			)}
@@ -276,7 +274,7 @@ function CenterDialog({
 			data-state={presence.closing ? 'closed' : 'open'}
 			data-placement="center"
 			className={cx(
-				'group fixed inset-0 z-[80] flex items-end justify-center bg-overlay/70 backdrop-blur-md p-0 sm:items-center sm:p-4',
+				'group fixed inset-0 z-50 flex items-end justify-center bg-overlay/70 backdrop-blur-md p-0 sm:items-center sm:p-4',
 				'animate-shelfway-fade data-[state=closed]:pointer-events-none data-[state=closed]:animate-shelfway-fade-out',
 			)}
 			onMouseDown={(event) => {
@@ -290,7 +288,7 @@ function CenterDialog({
 				aria-describedby={description ? descriptionId : undefined}
 				tabIndex={-1}
 				className={cx(
-					'flex max-h-[92vh] w-full flex-col rounded-t-card border border-line bg-surface/95 backdrop-blur-xl text-fg shadow-overlay focus:outline-none sm:rounded-card',
+					'flex max-h-[92vh] w-full flex-col rounded-t-card border border-line bg-surface/95 backdrop-blur-xl text-fg focus:outline-none sm:rounded-card',
 					'animate-shelfway-sheet group-data-[state=closed]:animate-shelfway-sheet-out sm:animate-shelfway-pop sm:group-data-[state=closed]:animate-shelfway-pop-out',
 					size === 'sm' ? 'max-w-md' : size === 'lg' ? 'max-w-3xl' : 'max-w-xl',
 				)}>

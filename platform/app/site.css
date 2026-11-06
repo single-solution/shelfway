@@ -85,7 +85,7 @@
 	backdrop-filter: blur(14px);
 	-webkit-backdrop-filter: blur(14px);
 	border-bottom: 1px solid var(--shelfway-line);
-	box-shadow: 0 8px 24px color-mix(in srgb, var(--shelfway-fg) 6%, transparent);
+	box-shadow: none;
 }
 .shelfway-site .nav {
 	max-width: var(--max);
@@ -100,11 +100,10 @@
 	background: var(--shelfway-glass-strong);
 	backdrop-filter: blur(16px);
 	-webkit-backdrop-filter: blur(16px);
-	box-shadow: var(--shelfway-shadow-1, none);
+	box-shadow: none;
 	transition:
 		border-radius var(--shelfway-motion-slow) var(--shelfway-ease),
 		padding var(--shelfway-motion-slow) var(--shelfway-ease),
-		box-shadow var(--shelfway-motion-slow) var(--shelfway-ease),
 		background var(--shelfway-motion) var(--shelfway-ease),
 		border-color var(--shelfway-motion) var(--shelfway-ease);
 }

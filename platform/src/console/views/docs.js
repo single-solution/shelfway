@@ -346,7 +346,7 @@ export function DocsHubView({
 				<div className="wash" aria-hidden="true" />
 				<div className="grid-hard" aria-hidden="true" />
 				{/* Top Docs Toolbar */}
-				<header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-surface/90 px-4 backdrop-blur-md sm:px-6 shadow-sm">
+				<header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-line bg-surface/90 px-4 backdrop-blur-md sm:px-6">
 					<div className="flex items-center gap-3">
 						<p className="font-mono text-xs font-bold tracking-widest uppercase text-primary">API REFERENCE</p>
 						<span className="text-muted/60" aria-hidden="true">
