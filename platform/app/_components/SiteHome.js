@@ -818,7 +818,7 @@ function ContactSection({ brandName = PRODUCT_BRAND }) {
 			<div className="reveal grid gap-6 md:grid-cols-5 items-start mt-6">
 				{/* Direct Channel Info Card from Theme Kit */}
 				<Card
-					className="md:col-span-2 shadow-card"
+					className="glass hard md:col-span-2"
 					title="Direct support"
 					subtitle="Reach our team directly for onboarding and technical guidance"
 					lead={<Icon name="message" size={18} className="text-primary" />}
@@ -849,7 +849,7 @@ function ContactSection({ brandName = PRODUCT_BRAND }) {
 
 				{/* Contact Form Card from Theme Kit */}
 				<Card
-					className="md:col-span-3 shadow-card"
+					className="glass hard md:col-span-3"
 					title="Send us a message"
 					subtitle="Fill out the details below and we will follow up with you by email"
 					lead={<Icon name="mail" size={18} className="text-primary" />}>
@@ -865,54 +865,59 @@ function ContactSection({ brandName = PRODUCT_BRAND }) {
 						</div>
 					) : (
 						<Form onSubmit={handleSubmit} busy={busy} aria-label="Contact support">
-							<Input
-								label="Your name"
-								name="name"
-								placeholder="Jane Doe"
-								value={name}
-								onChange={(e) => {
-									setName(e.currentTarget.value);
-									if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
-								}}
-								error={errors.name}
-								required
-								hideRequiredMark
-							/>
+							<div className="space-y-4">
+								<div className="grid gap-4 sm:grid-cols-2">
+									<Input
+										label="Your name"
+										name="name"
+										placeholder="Jane Doe"
+										value={name}
+										onChange={(e) => {
+											setName(e.currentTarget.value);
+											if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
+										}}
+										error={errors.name}
+										required
+										hideRequiredMark
+									/>
 
-							<Input
-								label="Work email"
-								type="email"
-								name="email"
-								placeholder="jane@company.com"
-								value={email}
-								onChange={(e) => {
-									setEmail(e.currentTarget.value);
-									if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
-								}}
-								error={errors.email}
-								required
-								hideRequiredMark
-							/>
+									<Input
+										label="Work email"
+										type="email"
+										name="email"
+										placeholder="jane@company.com"
+										value={email}
+										onChange={(e) => {
+											setEmail(e.currentTarget.value);
+											if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
+										}}
+										error={errors.email}
+										required
+										hideRequiredMark
+									/>
+								</div>
 
-							<TextArea
-								label="Message"
-								name="message"
-								placeholder="Tell us what you are looking to build, questions about products, or how we can help..."
-								value={message}
-								onChange={(e) => {
-									setMessage(e.currentTarget.value);
-									if (errors.message) setErrors((prev) => ({ ...prev, message: '' }));
-								}}
-								error={errors.message}
-								required
-								hideRequiredMark
-								rows={4}
-							/>
+								<TextArea
+									label="Message"
+									name="message"
+									placeholder="Tell us what you are looking to build, questions about products, or how we can help..."
+									value={message}
+									onChange={(e) => {
+										setMessage(e.currentTarget.value);
+										if (errors.message) setErrors((prev) => ({ ...prev, message: '' }));
+									}}
+									error={errors.message}
+									required
+									hideRequiredMark
+									rows={4}
+								/>
 
-							<div className="pt-2">
-								<Button type="submit" variant="primary" size="md" loading={busy} className="font-semibold">
-									Send message
-								</Button>
+								<div className="pt-1 flex flex-wrap items-center justify-between gap-3">
+									<Button type="submit" variant="primary" size="md" loading={busy} className="font-semibold px-5">
+										Send message
+									</Button>
+									<span className="text-xs text-muted">Direct technical reply to your inbox</span>
+								</div>
 							</div>
 						</Form>
 					)}

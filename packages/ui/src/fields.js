@@ -332,6 +332,7 @@ export function Input({
 export function TextArea({
 	label,
 	hideLabel,
+	hideRequiredMark,
 	help,
 	error,
 	aside,
@@ -351,6 +352,7 @@ export function TextArea({
 			{...(layout ? { layout } : {})}
 			{...(id ? { id } : {})}
 			{...(hideLabel ? { hideLabel } : {})}
+			{...(hideRequiredMark ? { hideRequiredMark } : {})}
 			required={Boolean(required)}
 			help={help}
 			error={error}
