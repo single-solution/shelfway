@@ -5,6 +5,7 @@ import NextLink from 'next/link.js';
 import { Button, Callout, Dialog, Form, FormError, Input, OtpInput, TextLink, fieldErrors, problemCode } from '@shelfway/ui';
 import { apiFetch } from '../../src/console/client.js';
 import { homeOf } from '../../src/console/views/sign-in.js';
+import { openContactModal } from './SiteNav.js';
 
 const Link = /** @type {any} */ (NextLink);
 
@@ -171,7 +172,21 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 					: 'Enter your credentials to access docs and your dashboard.'
 			}
 			size="sm">
-			{suspended ? <Callout tone="danger">Your account is suspended. Contact support.</Callout> : null}
+			{suspended ? (
+				<Callout tone="danger">
+					Your account is suspended.{' '}
+					<button
+						type="button"
+						onClick={() => {
+							onClose();
+							openContactModal();
+						}}
+						className="underline font-semibold cursor-pointer">
+						Contact support
+					</button>
+					.
+				</Callout>
+			) : null}
 
 			{!challenge ? (
 				<Form onSubmit={handleSignInSubmit} busy={busy} aria-label="Sign in">
@@ -226,8 +241,17 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 						Sign in
 					</Button>
 
-					<div className="text-center text-xs text-muted pt-1">
-						<span>Need an account? Contact support.</span>
+					<div className="text-center text-xs text-muted pt-1 flex items-center justify-center gap-1.5">
+						<span>Need an account?</span>
+						<button
+							type="button"
+							onClick={() => {
+								onClose();
+								openContactModal();
+							}}
+							className="text-primary hover:underline font-semibold cursor-pointer">
+							Contact us
+						</button>
 					</div>
 				</Form>
 			) : (

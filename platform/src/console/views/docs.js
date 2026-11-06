@@ -175,6 +175,20 @@ export function DocsHubView({
 	const isDeveloperRole = Boolean(userRole === 'owner' || userRole === 'developer' || userRole === 'support');
 	const [roleViewMode, setRoleViewMode] = useState(isDeveloperRole ? 'developer' : 'storefront');
 
+	const openSignIn = () => {
+		if (typeof window !== 'undefined') {
+			window.dispatchEvent(new CustomEvent('shelfway:open-signin'));
+		}
+	};
+
+	const openContact = () => {
+		if (typeof window !== 'undefined') {
+			window.dispatchEvent(new CustomEvent('shelfway:open-contact'));
+		}
+	};
+
+	const isUnlocked = Boolean(actor || token);
+
 	// Synchronize URL query params seamlessly without page reloads
 	/**
 	 * @param {string | null} [pId]
@@ -340,6 +354,108 @@ export function DocsHubView({
 
 	const apiBase = typeof window !== 'undefined' && window.location?.origin ? window.location.origin : 'https://api.shelfway.com';
 
+	if (!isUnlocked) {
+		return (
+			<ToastProvider>
+				<div className="docs-container flex flex-col flex-1">
+					{/* Top Docs Toolbar */}
+					<div className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-line bg-surface/80 p-3.5 backdrop-blur-md mb-6">
+						<div className="flex items-center gap-3">
+							<p className="font-mono text-xs font-bold tracking-widest uppercase text-primary">API REFERENCE</p>
+							<span className="text-muted/60" aria-hidden="true">
+								|
+							</span>
+							<span className="text-sm font-semibold text-fg tracking-tight">{brandName} Documentation Hub</span>
+						</div>
+
+						<div className="flex items-center gap-3">
+							<div className="hidden sm:flex items-center gap-1.5 text-xs text-muted border-l border-line pl-3">
+								<Icon name="lock" size={14} />
+								<span>Private Documentation</span>
+							</div>
+							<Button size="sm" variant="primary" onClick={openSignIn}>
+								Sign in
+							</Button>
+						</div>
+					</div>
+
+					{/* Locked Access Screen */}
+					<div className="mx-auto max-w-xl w-full my-6 sm:my-10 space-y-6">
+						<div className="rounded-card border border-line bg-surface/90 backdrop-blur-md p-6 sm:p-8 space-y-5 shadow-card text-center">
+							<div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary border border-primary/20">
+								<Icon name="lock" size={24} />
+							</div>
+							<div className="space-y-2">
+								<p className="font-mono text-xs font-bold tracking-widest uppercase text-primary">
+									PRIVATE DOCUMENTATION
+								</p>
+								<h1 className="font-display text-2xl font-bold tracking-tight text-fg">Sign in to view documentation</h1>
+								<p className="text-xs sm:text-sm text-muted leading-relaxed max-w-md mx-auto">
+									Shelfway documentation is private and accessible to registered merchants and authorized website
+									developers.
+								</p>
+							</div>
+							<div className="pt-2">
+								<Button variant="primary" size="lg" className="w-full sm:w-auto px-8 font-semibold" onClick={openSignIn}>
+									Sign in with merchant account
+								</Button>
+							</div>
+						</div>
+
+						{/* Developer Token Unlock Card */}
+						<div className="rounded-card border border-line bg-surface/80 backdrop-blur-md p-6 space-y-4 shadow-card">
+							<div className="space-y-1">
+								<div className="flex items-center gap-2">
+									<Icon name="key" size={16} className="text-primary" />
+									<h2 className="text-sm font-semibold text-fg">Are you building a site for a merchant?</h2>
+								</div>
+								<p className="text-xs text-muted leading-relaxed">
+									Documentation can only be shared by merchants using their own website token. Paste your setup link or
+									website token below to unlock clean and secure documentation for your site without needing merchant
+									passwords:
+								</p>
+							</div>
+							<div className="flex flex-col sm:flex-row gap-2.5">
+								<Input
+									hideLabel
+									label="Website token or setup link"
+									placeholder="Paste website token or setup link..."
+									value={tokenInput}
+									onChange={(e) => setTokenInput(e.currentTarget.value)}
+									onKeyDown={(e) => {
+										if (e.key === 'Enter') applyToken(tokenInput);
+									}}
+									className="flex-1 text-xs h-10"
+								/>
+								<Button
+									variant="secondary"
+									disabled={!tokenInput.trim()}
+									onClick={() => applyToken(tokenInput)}
+									className="font-medium shrink-0">
+									Unlock with token
+								</Button>
+							</div>
+							<p className="text-[11px] text-muted">
+								Merchants generate this token directly from:{' '}
+								<strong>Websites -&gt; [Website] -&gt; Share with developer</strong>.
+							</p>
+						</div>
+
+						<div className="text-center text-xs text-muted space-x-1.5">
+							<span>Need an account or assistance?</span>
+							<button
+								type="button"
+								onClick={openContact}
+								className="text-primary hover:underline font-semibold cursor-pointer">
+								Contact us
+							</button>
+						</div>
+					</div>
+				</div>
+			</ToastProvider>
+		);
+	}
+
 	return (
 		<ToastProvider>
 			<div className="docs-container flex flex-col flex-1">
@@ -384,11 +500,12 @@ export function DocsHubView({
 								<span>Role:</span>
 								<strong className="text-fg capitalize font-medium">{userRole}</strong>
 							</div>
-						) : (
+						) : token ? (
 							<div className="hidden sm:flex items-center gap-1.5 text-xs text-muted border-l border-line pl-3">
-								<span>Public Access</span>
+								<Icon name="key" size={14} />
+								<span>Website Token</span>
 							</div>
-						)}
+						) : null}
 					</div>
 				</div>
 

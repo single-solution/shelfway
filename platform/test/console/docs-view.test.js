@@ -58,8 +58,16 @@ describe('Docs hub views (PLAN §10 B1, B2)', () => {
 		],
 	};
 
-	it('renders DocsHubView with hero, quickstart, and product cards without error', () => {
+	it('renders clear sign-in and token gate when unauthenticated without token', () => {
 		const html = renderToString(<DocsHubView branding={branding} items={[sampleProduct]} />);
+		expect(html).toContain('Sign in to view documentation');
+		expect(html).toContain('Are you building a site for a merchant?');
+		expect(html).toContain('Unlock with token');
+		expect(html).toContain('Contact us');
+	});
+
+	it('renders DocsHubView with hero, quickstart, and product cards without error when unlocked', () => {
+		const html = renderToString(<DocsHubView branding={branding} items={[sampleProduct]} initialToken="test_token" />);
 		expect(html).toContain('Documentation Hub');
 		expect(html).toContain('Quickstart Guide');
 		expect(html).toContain('Chat');
@@ -175,7 +183,15 @@ describe('Docs hub views (PLAN §10 B1, B2)', () => {
 			],
 		};
 
-		render(<DocsHubView branding={branding} items={[fullProduct]} initialProductId="chat" />);
+		render(
+			<DocsHubView
+				branding={branding}
+				items={[fullProduct]}
+				initialProductId="chat"
+				initialToken="test_token"
+				actor={{ role: 'owner', name: 'Admin' }}
+			/>,
+		);
 
 		// Switch to Getting Started sections
 		const authBtn = byText(document.body, 'Authentication & Tokens');
