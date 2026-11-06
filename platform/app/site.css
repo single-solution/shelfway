@@ -74,7 +74,7 @@
 .shelfway-site .nav-shell {
 	position: sticky;
 	top: 0;
-	z-index: 60;
+	z-index: 20;
 	padding: 0.85rem var(--gutter) 0;
 	isolation: isolate;
 	transition: padding var(--shelfway-motion-slow) var(--shelfway-ease);
