@@ -33,8 +33,8 @@ export const scrollToContact = () => {
 		const el = document.getElementById('contact');
 		if (el) {
 			const nav = document.querySelector('.nav-shell');
-			const navHeight = nav ? nav.getBoundingClientRect().height : 80;
-			const targetY = el.getBoundingClientRect().top + window.scrollY - navHeight - 24;
+			const navHeight = nav ? nav.getBoundingClientRect().height : 72;
+			const targetY = el.getBoundingClientRect().top + window.scrollY - navHeight - 36;
 			window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
 			window.history.pushState(null, '', '#contact');
 			return;

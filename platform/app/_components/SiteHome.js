@@ -411,7 +411,7 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 					</div>
 				</div>
 
-				<section id="why" className="block">
+				<section id="why" className="site-block">
 					<header className="block-head reveal">
 						<p className="eyebrow">Why not build it all yourself</p>
 						<h2>
@@ -470,7 +470,7 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 					</div>
 				</section>
 
-				<section id="products" className="block band">
+				<section id="products" className="site-block band">
 					<header className="block-head reveal">
 						<p className="eyebrow">What you can add</p>
 						<h2>Pick the features this website needs.</h2>
@@ -599,7 +599,7 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 					</div>
 				</section>
 
-				<section id="work" className="block">
+				<section id="work" className="site-block">
 					<header className="block-head reveal">
 						<p className="eyebrow">How you use it</p>
 						<h2>Your account, your settings, then live on your site.</h2>
@@ -713,7 +713,7 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 					</div>
 				</section>
 
-				<section id="start" className="block band">
+				<section id="start" className="site-block band">
 					<header className="block-head reveal">
 						<p className="eyebrow">Common questions</p>
 						<h2>Still unsure? Start here.</h2>
@@ -801,7 +801,7 @@ function ContactSection({ brandName = PRODUCT_BRAND }) {
 	};
 
 	return (
-		<section id="contact" className="block band">
+		<section id="contact" className="site-block band">
 			<header className="block-head reveal">
 				<p className="eyebrow">Get in touch</p>
 				<h2>Talk to the {brandName} team</h2>
@@ -811,10 +811,10 @@ function ContactSection({ brandName = PRODUCT_BRAND }) {
 				</p>
 			</header>
 
-			<div className="reveal grid gap-6 md:grid-cols-5 items-stretch mt-6">
+			<div className="reveal grid gap-6 md:grid-cols-5 items-start mt-6">
 				{/* Direct Channel Info Card from Theme Kit */}
 				<Card
-					className="md:col-span-2 flex flex-col justify-between"
+					className="md:col-span-2"
 					title="Direct support"
 					subtitle="Reach our team directly for onboarding and technical guidance"
 					lead={<Icon name="message" size={18} className="text-primary" />}

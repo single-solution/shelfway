@@ -29,8 +29,13 @@
 	box-sizing: border-box;
 }
 
-.shelfway-site section[id] {
-	scroll-margin-top: 6.5rem;
+.shelfway-site section[id],
+.shelfway-site #contact,
+.shelfway-site #products,
+.shelfway-site #why,
+.shelfway-site #work,
+.shelfway-site #start {
+	scroll-margin-top: 7.5rem !important;
 }
 
 .shelfway-site .wash {
@@ -91,7 +96,7 @@
 		box-shadow var(--shelfway-motion-fast) var(--shelfway-ease);
 }
 .shelfway-site .nav-shell.is-scrolled {
-	background: color-mix(in srgb, var(--shelfway-surface) 96%, transparent);
+	background: color-mix(in srgb, var(--shelfway-surface) 98%, var(--shelfway-canvas));
 	backdrop-filter: blur(16px);
 	-webkit-backdrop-filter: blur(16px);
 	border-bottom: 1px solid var(--shelfway-line);
@@ -398,7 +403,7 @@
 	letter-spacing: 0.06em;
 	color: var(--shelfway-muted);
 }
-.shelfway-site .label {
+.shelfway-site .fit-col .label {
 	margin: 0 0 0.65rem;
 	font-family: var(--font-mono);
 	font-size: 0.62rem;
@@ -425,11 +430,16 @@
 	color: var(--shelfway-muted);
 }
 
-.shelfway-site .block {
+.shelfway-site section.site-block,
+.shelfway-site section.block {
 	width: min(calc(100% - 2 * var(--gutter)), var(--max));
 	max-width: var(--max);
 	margin: 0 auto;
 	padding: clamp(3.25rem, 7vw, 5rem) 0;
+}
+.shelfway-site #contact {
+	scroll-margin-top: 7.5rem !important;
+	padding-bottom: clamp(5rem, 10vw, 8rem);
 }
 .shelfway-site .docs-container {
 	width: min(calc(100% - 2 * var(--gutter)), var(--max));
