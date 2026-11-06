@@ -240,7 +240,7 @@ export function ActionMenu({
 										item.onSelect();
 									}}
 									className={cx(
-										'shelfway-motion flex h-8 w-full items-center gap-2.5 rounded-control px-2.5 text-left text-sm font-medium hover:bg-surface-2 focus:bg-surface-2',
+										'shelfway-motion flex h-8 w-full cursor-pointer items-center gap-2.5 rounded-control px-2.5 text-left text-sm font-medium hover:bg-surface-2 focus:bg-surface-2',
 										'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-50',
 										'disabled:hover:bg-transparent',
 										item.danger ? 'text-danger' : 'text-fg',

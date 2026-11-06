@@ -922,6 +922,57 @@
 		-moz-osx-font-smoothing: grayscale;
 		text-rendering: optimizeLegibility;
 	}
+	/* interactive elements: cursor pointer for buttons, links, tabs, summaries and interactive controls */
+	button:not(:disabled),
+	[role='button']:not([aria-disabled='true']):not([disabled]),
+	[role='tab']:not([aria-disabled='true']):not([disabled]),
+	[role='menuitem']:not([aria-disabled='true']):not([disabled]),
+	[role='menuitemradio']:not([aria-disabled='true']):not([disabled]),
+	[role='menuitemcheckbox']:not([aria-disabled='true']):not([disabled]),
+	[role='switch']:not([aria-disabled='true']):not([disabled]),
+	[role='checkbox']:not([aria-disabled='true']):not([disabled]),
+	[role='radio']:not([aria-disabled='true']):not([disabled]),
+	input[type='button']:not(:disabled),
+	input[type='submit']:not(:disabled),
+	input[type='reset']:not(:disabled),
+	input[type='checkbox']:not(:disabled),
+	input[type='radio']:not(:disabled),
+	input[type='color']:not(:disabled),
+	input[type='file']:not(:disabled),
+	select:not(:disabled),
+	summary,
+	a[href],
+	a[role='button']:not([aria-disabled='true']) {
+		cursor: pointer;
+	}
+
+	button:disabled,
+	[role='button'][aria-disabled='true'],
+	[role='button']:disabled,
+	[role='tab'][aria-disabled='true'],
+	[role='tab']:disabled,
+	[role='menuitem'][aria-disabled='true'],
+	[role='menuitem']:disabled,
+	[role='switch'][aria-disabled='true'],
+	[role='switch']:disabled,
+	[role='checkbox'][aria-disabled='true'],
+	[role='checkbox']:disabled,
+	[role='radio'][aria-disabled='true'],
+	[role='radio']:disabled,
+	input:disabled,
+	select:disabled,
+	textarea:disabled {
+		cursor: not-allowed;
+	}
+
+	label[for]:not(:has(input:disabled)):not(:has(select:disabled)):not(:has(textarea:disabled)),
+	label:has(input[type='checkbox']:not(:disabled)),
+	label:has(input[type='radio']:not(:disabled)),
+	label:has(input[type='file']:not(:disabled)),
+	label:has(input[type='color']:not(:disabled)) {
+		cursor: pointer;
+	}
+
 	::selection {
 		background-color: var(--shelfway-selection);
 	}

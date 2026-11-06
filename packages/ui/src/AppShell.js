@@ -543,7 +543,7 @@ export function AppShell({
 							type="button"
 							onClick={() => setOpen(false)}
 							aria-label="Close navigation"
-							className="shelfway-motion shelfway-press rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg">
+							className="shelfway-motion shelfway-press cursor-pointer rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg">
 							<Icon name="close" size={16} />
 						</button>
 					) : null}
@@ -587,7 +587,7 @@ export function AppShell({
 									aria-label="Expand sidebar"
 									aria-pressed={true}
 									title="Expand sidebar"
-									className="shelfway-motion shelfway-press flex size-9 items-center justify-center rounded-control text-muted hover:bg-surface-2 hover:text-fg">
+									className="shelfway-motion shelfway-press cursor-pointer flex size-9 items-center justify-center rounded-control text-muted hover:bg-surface-2 hover:text-fg">
 									<Icon name="panelLeft" size={16} />
 								</button>
 							) : null}
@@ -602,7 +602,7 @@ export function AppShell({
 									aria-label="Collapse sidebar"
 									aria-pressed={false}
 									title="Collapse sidebar"
-									className="shelfway-motion shelfway-press flex size-8 items-center justify-center rounded-control text-muted hover:bg-surface-2 hover:text-fg">
+									className="shelfway-motion shelfway-press cursor-pointer flex size-8 items-center justify-center rounded-control text-muted hover:bg-surface-2 hover:text-fg">
 									<Icon name="panelLeft" size={16} />
 								</button>
 							) : null}
@@ -667,7 +667,7 @@ export function AppShell({
 									onClick={() => setOpen(true)}
 									aria-label="Open navigation"
 									aria-expanded={open}
-									className="shelfway-motion shelfway-press shrink-0 rounded-control p-2 text-fg hover:bg-surface-2 lg:hidden">
+									className="shelfway-motion shelfway-press cursor-pointer shrink-0 rounded-control p-2 text-fg hover:bg-surface-2 lg:hidden">
 									<Icon name="menu" size={18} />
 								</button>
 								<div className="flex min-w-0 flex-1 items-center gap-2.5">

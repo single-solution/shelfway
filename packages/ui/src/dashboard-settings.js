@@ -443,7 +443,7 @@ function ResetLink({ onClick, children }) {
 		<button
 			type="button"
 			onClick={onClick}
-			className="rounded text-help font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-focus">
+			className="cursor-pointer rounded text-help font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-focus">
 			{children}
 		</button>
 	);

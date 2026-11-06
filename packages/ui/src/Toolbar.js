@@ -69,7 +69,7 @@ export const TOOLBAR_TEXTS = Object.freeze({
 });
 
 const CHIP =
-	'shelfway-motion shelfway-press inline-flex h-8 shrink-0 items-center gap-1.5 rounded-control border px-3 text-label font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
+	'shelfway-motion shelfway-press inline-flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-control border px-3 text-label font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
 const CHIP_ON = 'border-line bg-surface text-fg shelfway-hard';
 const CHIP_OFF = 'border-line bg-surface text-fg/80 hover:bg-surface-2 hover:text-fg';
 
@@ -150,7 +150,7 @@ function SearchBox({ search, words }) {
 					type="button"
 					aria-label={words.clearSearch}
 					onClick={() => clear('')}
-					className="shelfway-motion absolute inset-y-0 right-1.5 my-auto flex size-6 items-center justify-center rounded-control text-muted hover:bg-surface-2 hover:text-fg">
+					className="shelfway-motion cursor-pointer absolute inset-y-0 right-1.5 my-auto flex size-6 items-center justify-center rounded-control text-muted hover:bg-surface-2 hover:text-fg">
 					<Icon name="close" size={13} />
 				</button>
 			) : null}

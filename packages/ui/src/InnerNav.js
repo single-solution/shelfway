@@ -214,7 +214,7 @@ export function InnerNav({
 					aria-expanded={open}
 					aria-controls={menuId}
 					onClick={() => setOpen((o) => !o)}
-					className="shelfway-motion shelfway-press flex h-10 w-full items-center gap-2.5 rounded-control border border-line bg-surface px-3 text-sm font-medium text-fg">
+					className="shelfway-motion shelfway-press cursor-pointer flex h-10 w-full items-center gap-2.5 rounded-control border border-line bg-surface px-3 text-sm font-medium text-fg">
 					{current?.icon ? (
 						<span aria-hidden="true" className="text-primary">
 							<Icon name={current.icon} size={16} />

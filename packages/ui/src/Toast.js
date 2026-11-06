@@ -132,7 +132,7 @@ function ToastCard({ toast, words, onDismiss, onGone }) {
 						toast.action?.onClick();
 						onDismiss(toast.id);
 					}}
-					className="shelfway-motion shelfway-press shrink-0 rounded px-1.5 py-0.5 text-label font-medium text-primary hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-focus">
+					className="shelfway-motion shelfway-press cursor-pointer shrink-0 rounded px-1.5 py-0.5 text-label font-medium text-primary hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-focus">
 					{toast.action.label}
 				</button>
 			) : null}
@@ -140,7 +140,7 @@ function ToastCard({ toast, words, onDismiss, onGone }) {
 				type="button"
 				onClick={() => onDismiss(toast.id)}
 				aria-label={words.dismiss}
-				className="shelfway-motion shelfway-press rounded p-0.5 text-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-focus">
+				className="shelfway-motion shelfway-press cursor-pointer rounded p-0.5 text-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-focus">
 				<Icon name="close" size={14} />
 			</button>
 		</div>

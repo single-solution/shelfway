@@ -998,7 +998,7 @@ export function ChoicePicker({
 									type="button"
 									onClick={() => toggle(choice)}
 									aria-label={`${removeLabel} ${typeof label === 'string' ? label : choice}`}
-									className="shelfway-motion rounded-full p-0.5 hover:bg-surface focus-visible:outline-2 focus-visible:outline-focus">
+									className="shelfway-motion cursor-pointer rounded-full p-0.5 hover:bg-surface focus-visible:outline-2 focus-visible:outline-focus">
 									<Icon name="close" size={12} />
 								</button>
 							</span>
@@ -1026,7 +1026,7 @@ export function ChoicePicker({
 						<button
 							type="button"
 							onClick={addOwn}
-							className="shelfway-motion flex w-full items-center gap-2.5 rounded-control px-2 py-1.5 text-left text-sm font-medium text-primary hover:bg-surface-2">
+							className="shelfway-motion cursor-pointer flex w-full items-center gap-2.5 rounded-control px-2 py-1.5 text-left text-sm font-medium text-primary hover:bg-surface-2">
 							<Icon name="plus" size={14} />
 							{addOwnLabel(typed)}
 						</button>

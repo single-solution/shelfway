@@ -213,7 +213,7 @@ export function Drawer({
 								type="button"
 								onClick={onClose}
 								aria-label={closeLabel}
-								className="shelfway-motion shelfway-press rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:bg-surface-2">
+								className="shelfway-motion shelfway-press cursor-pointer rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:bg-surface-2">
 								<Icon name="close" size={16} />
 							</button>
 						) : null}
@@ -314,7 +314,7 @@ function CenterDialog({
 							type="button"
 							onClick={onClose}
 							aria-label={closeLabel}
-							className="shelfway-motion shelfway-press rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:bg-surface-2">
+							className="shelfway-motion shelfway-press cursor-pointer rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:bg-surface-2">
 							<Icon name="close" size={16} />
 						</button>
 					) : null}

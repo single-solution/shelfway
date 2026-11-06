@@ -121,7 +121,7 @@ export function ShellMenuButton({ texts }) {
 			type="button"
 			onClick={openNav}
 			aria-label={texts?.menu ?? PAGE_TEXTS.menu}
-			className="shelfway-motion shelfway-press shrink-0 rounded-control p-2 text-fg hover:bg-surface-2 lg:hidden">
+			className="shelfway-motion shelfway-press cursor-pointer shrink-0 rounded-control p-2 text-fg hover:bg-surface-2 lg:hidden">
 			<Icon name="menu" size={18} />
 		</button>
 	);
@@ -206,7 +206,7 @@ export function Fact({ fact, linkAs }) {
 				onClick={fact.onClick}
 				className={cx(
 					FACT,
-					'shelfway-motion shelfway-press focus-visible:outline-2 focus-visible:outline-focus',
+					'shelfway-motion shelfway-press cursor-pointer focus-visible:outline-2 focus-visible:outline-focus',
 					fact.active ? 'border-line bg-surface text-fg shelfway-hard' : 'hover:bg-surface-2',
 				)}>
 				{body}
@@ -263,7 +263,7 @@ export function InfoButton({ label, children }) {
 				aria-expanded={open}
 				{...(open ? { 'aria-controls': id } : {})}
 				onClick={() => setOpen((o) => !o)}
-				className="shelfway-motion shelfway-press flex size-8 items-center justify-center rounded-control text-muted hover:bg-surface-2 hover:text-fg focus-visible:outline-2 focus-visible:outline-focus">
+				className="shelfway-motion shelfway-press cursor-pointer flex size-8 items-center justify-center rounded-control text-muted hover:bg-surface-2 hover:text-fg focus-visible:outline-2 focus-visible:outline-focus">
 				<Icon name="info" size={16} />
 			</button>
 			{open ? (

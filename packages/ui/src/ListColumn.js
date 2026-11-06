@@ -348,7 +348,7 @@ export function ListColumn({
 												selection.toggle?.(id);
 											}}
 											className={cx(
-												'shelfway-motion shelfway-press flex size-5 items-center justify-center rounded-full border',
+												'shelfway-motion shelfway-press cursor-pointer flex size-5 items-center justify-center rounded-full border',
 												chosen
 													? 'border-primary bg-primary text-on-primary'
 													: 'border-line-strong bg-surface text-transparent hover:border-fg',
@@ -371,7 +371,7 @@ export function ListColumn({
 													event.stopPropagation();
 													selection.start?.(id);
 												}}
-												className="shelfway-motion shelfway-press absolute inset-0 flex size-5 items-center justify-center rounded-full border border-line-strong bg-surface text-transparent opacity-0 hover:border-fg group-hover/check:opacity-100 group-focus-within/check:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-focus">
+												className="shelfway-motion shelfway-press cursor-pointer absolute inset-0 flex size-5 items-center justify-center rounded-full border border-line-strong bg-surface text-transparent opacity-0 hover:border-fg group-hover/check:opacity-100 group-focus-within/check:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-focus">
 												<Icon name="check" size={12} />
 											</button>
 										</div>

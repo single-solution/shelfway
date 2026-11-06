@@ -356,7 +356,7 @@ export function Badge({ tone = 'neutral', kind, children, dot = false, icon, cla
 					type="button"
 					aria-label={removeLabel ?? 'Remove'}
 					onClick={onRemove}
-					className="shelfway-motion shelfway-press -mr-1 rounded-full p-0.5 opacity-70 hover:bg-surface-3 hover:opacity-100 focus-visible:outline-2 focus-visible:outline-focus">
+					className="shelfway-motion shelfway-press cursor-pointer -mr-1 rounded-full p-0.5 opacity-70 hover:bg-surface-3 hover:opacity-100 focus-visible:outline-2 focus-visible:outline-focus">
 					<Icon name="close" size={11} />
 				</button>
 			) : null}

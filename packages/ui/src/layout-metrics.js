@@ -138,7 +138,7 @@ export const LIST = Object.freeze({
 	slide: 'pointer-events-none absolute inset-x-0 top-0 -z-10 rounded-control border border-line bg-surface shelfway-hard opacity-0',
 	slideMove: 'transition-[transform,height,opacity] duration-(--shelfway-motion) ease-shelfway',
 	/** a filter chip, off and on — hard corners (not pills) */
-	chip: 'shelfway-motion shelfway-press inline-flex h-7 shrink-0 items-center gap-1.5 rounded-control border border-line px-2.5 text-micro font-medium focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus',
+	chip: 'shelfway-motion shelfway-press inline-flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-control border border-line px-2.5 text-micro font-medium focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus',
 	chipOff: 'bg-canvas text-muted hover:bg-surface hover:text-fg',
 	chipOn: 'border-line bg-surface text-fg shelfway-hard',
 });

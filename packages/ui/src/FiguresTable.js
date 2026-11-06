@@ -317,7 +317,7 @@ export function FiguresTable({
 											type="button"
 											title={words.sortBy(typeof column.header === 'string' ? column.header : column.key)}
 											onClick={() => toggleSort(column.key)}
-											className="shelfway-motion inline-flex items-center gap-1 rounded hover:text-fg focus-visible:outline-2 focus-visible:outline-focus">
+											className="shelfway-motion inline-flex cursor-pointer items-center gap-1 rounded hover:text-fg focus-visible:outline-2 focus-visible:outline-focus">
 											{column.header}
 											<Icon
 												name={active && current ? (current.dir === 'asc' ? 'arrowUp' : 'arrowDown') : 'sort'}

@@ -403,7 +403,7 @@ const TAB_STRIP = 'shelfway-scroll flex w-fit max-w-full min-w-0 gap-0.5 rounded
 /** @param {boolean} on */
 const tabLook = (on) =>
 	cx(
-		'shelfway-motion inline-flex h-7 shrink-0 items-center rounded-control px-3 text-label font-medium focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus',
+		'shelfway-motion inline-flex h-7 shrink-0 cursor-pointer items-center rounded-control px-3 text-label font-medium focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus',
 		on ? 'bg-surface text-fg ring-1 ring-line-soft' : 'text-muted hover:text-fg',
 	);
 
@@ -453,7 +453,7 @@ export function Disclosure({ title, description, badge, defaultOpen = false, for
 				aria-expanded={shown}
 				aria-controls={shown ? id : undefined}
 				onClick={() => setOpen(!shown)}
-				className="shelfway-motion flex min-h-12 w-full items-center gap-2.5 rounded-card px-5 py-3 text-left hover:bg-surface-2/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus">
+				className="shelfway-motion flex min-h-12 w-full cursor-pointer items-center gap-2.5 rounded-card px-5 py-3 text-left hover:bg-surface-2/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus">
 				<span aria-hidden="true" className={cx('shelfway-motion text-muted', shown && 'rotate-90')}>
 					<Icon name="chevronRight" size={16} />
 				</span>
@@ -477,7 +477,7 @@ export const NEXT_STEP_TEXTS = Object.freeze({ dismiss: 'Dismiss' });
 
 /** The one action of a hint: its words, and where it goes (`href`) or what it does (`onClick`). */
 const NEXT_STEP_ACTION =
-	'shelfway-motion shelfway-press inline-flex shrink-0 items-center gap-1 rounded-sm font-semibold underline-offset-2 hover:underline ' +
+	'shelfway-motion shelfway-press inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-sm font-semibold underline-offset-2 hover:underline ' +
 	'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
 
 /**
@@ -522,7 +522,7 @@ export function NextStep({ icon = 'bulb', tone = 'accent', children, action, onD
 					aria-label={words.dismiss}
 					title={words.dismiss}
 					onClick={onDismiss}
-					className="shelfway-motion shelfway-press -mr-1 inline-flex size-6 shrink-0 items-center justify-center rounded-control hover:bg-fg/10 focus-visible:outline-2 focus-visible:outline-focus">
+					className="shelfway-motion shelfway-press -mr-1 inline-flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-control hover:bg-fg/10 focus-visible:outline-2 focus-visible:outline-focus">
 					<Icon name="close" size={13} />
 				</button>
 			) : null}
