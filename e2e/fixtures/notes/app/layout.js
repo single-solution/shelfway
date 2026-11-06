@@ -31,7 +31,11 @@ export default function RootLayout({ children }) {
 			<head>
 				<ThemeScript />
 			</head>
-			<body className="min-h-screen bg-canvas font-sans text-fg antialiased">{children}</body>
+			<body className="min-h-screen bg-canvas font-sans text-fg antialiased">
+				<div className="wash" aria-hidden="true" />
+				<div className="grid-hard" aria-hidden="true" />
+				{children}
+			</body>
 		</html>
 	);
 }

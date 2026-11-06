@@ -307,7 +307,9 @@ export function DocsHubView({
 
 	return (
 		<ToastProvider>
-			<div className="flex flex-col min-h-screen bg-canvas text-fg">
+			<div className="relative flex flex-col min-h-screen bg-canvas text-fg">
+				<div className="wash" aria-hidden="true" />
+				<div className="grid-hard" aria-hidden="true" />
 				{/* Top Docs Toolbar */}
 				<header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-surface/90 px-4 backdrop-blur-md sm:px-6 shadow-sm">
 					<div className="flex items-center gap-3">
@@ -352,7 +354,7 @@ export function DocsHubView({
 				</header>
 
 				{/* Two-Column Docs Explorer Layout */}
-				<div className="flex flex-1">
+				<div className="relative z-10 flex flex-1">
 					{/* Left Mega-Menu Sticky Sidebar */}
 					<aside className="w-72 lg:w-80 shrink-0 border-r border-line bg-surface/80 backdrop-blur-xl overflow-y-auto shelfway-scroll flex flex-col p-4 space-y-6 sticky top-14 self-start max-h-[calc(100vh-3.5rem)]">
 						{/* Search Bar */}
