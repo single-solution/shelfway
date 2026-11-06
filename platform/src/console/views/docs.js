@@ -154,12 +154,12 @@ export function DocsHubView({
 	actor = null,
 	initialProductId = '',
 	initialOpKey = '',
-	initialSection = 'products',
+	initialSection = 'quickstart',
 	initialToken = '',
 	initialWebsite = '',
 }) {
 	const brandName = branding?.name || 'Shelfway';
-	const [activeSection, setActiveSection] = useState(initialSection || 'products');
+	const [activeSection, setActiveSection] = useState(initialSection || (initialProductId ? 'products' : 'quickstart'));
 	const [selectedProductId, setSelectedProductId] = useState(initialProductId || items[0]?.productId || 'chat');
 	const [selectedOpKey, setSelectedOpKey] = useState(/** @type {string | null} */ (initialOpKey || null));
 	const [token, setToken] = useState(initialToken || '');
@@ -171,8 +171,8 @@ export function DocsHubView({
 	const [cachedDetails, setCachedDetails] = useState(/** @type {Record<string, any>} */ ({}));
 	const [copiedNotice, setCopiedNotice] = useState('');
 
-	const userRole = actor?.role || (actor?.admin ? 'owner' : 'merchant');
-	const isDeveloperRole = userRole === 'owner' || userRole === 'developer' || userRole === 'support';
+	const userRole = actor?.role || (actor?.admin ? 'owner' : null);
+	const isDeveloperRole = Boolean(userRole === 'owner' || userRole === 'developer' || userRole === 'support');
 	const [roleViewMode, setRoleViewMode] = useState(isDeveloperRole ? 'developer' : 'storefront');
 
 	// Synchronize URL query params seamlessly without page reloads
@@ -378,11 +378,17 @@ export function DocsHubView({
 							</button>
 						</div>
 
-						<div className="hidden sm:flex items-center gap-1.5 text-xs text-muted border-l border-line pl-3">
-							<Icon name="user" size={14} />
-							<span>Role:</span>
-							<strong className="text-fg capitalize font-medium">{userRole}</strong>
-						</div>
+						{actor && userRole ? (
+							<div className="hidden sm:flex items-center gap-1.5 text-xs text-muted border-l border-line pl-3">
+								<Icon name="user" size={14} />
+								<span>Role:</span>
+								<strong className="text-fg capitalize font-medium">{userRole}</strong>
+							</div>
+						) : (
+							<div className="hidden sm:flex items-center gap-1.5 text-xs text-muted border-l border-line pl-3">
+								<span>Public Access</span>
+							</div>
+						)}
 					</div>
 				</div>
 
@@ -687,6 +693,57 @@ export function DocsHubView({
 										<li>Call backend REST APIs from your server backend using your private Server Bearer Token.</li>
 									</ol>
 								</div>
+
+								{/* Ready Storefront Products */}
+								{items.length > 0 ? (
+									<div className="space-y-4 pt-2">
+										<div className="flex items-center justify-between">
+											<h2 className="text-base font-semibold text-fg">Ready Storefront Products</h2>
+											<span className="text-xs text-muted font-mono">{items.length} products available</span>
+										</div>
+										<div className="grid gap-3 sm:grid-cols-2">
+											{items.map((p) => (
+												<div
+													key={p.productId}
+													className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-4 space-y-3 shadow-card flex flex-col justify-between">
+													<div className="space-y-2">
+														<div className="flex items-center justify-between">
+															<span className="font-semibold text-sm text-fg">{p.name}</span>
+															<span className="text-[10px] font-mono text-muted">{`v${p.version}`}</span>
+														</div>
+														<p className="text-xs text-muted leading-relaxed line-clamp-2">{p.description}</p>
+														{p.features && p.features.length > 0 ? (
+															<div className="flex flex-wrap gap-1.5 pt-1">
+																{p.features.slice(0, 3).map((f) => (
+																	<span
+																		key={f.key}
+																		className="text-[10px] font-mono bg-surface-2 text-fg/80 border border-line px-1.5 py-0.5 rounded">
+																		{f.name}
+																	</span>
+																))}
+															</div>
+														) : null}
+													</div>
+													<div className="flex items-center justify-between pt-2 border-t border-line text-xs">
+														<button
+															type="button"
+															onClick={() => selectProduct(p.productId)}
+															className="text-primary hover:underline font-medium cursor-pointer">
+															{`Explore ${p.name} APIs ->`}
+														</button>
+														<a
+															href={`/docs/${p.productId}/openapi.json`}
+															target="_blank"
+															rel="noopener noreferrer"
+															className="font-mono text-[11px] text-muted hover:text-fg">
+															OpenAPI
+														</a>
+													</div>
+												</div>
+											))}
+										</div>
+									</div>
+								) : null}
 							</section>
 						) : null}
 

@@ -30,7 +30,7 @@ export default async function DocsPage({ searchParams }) {
 	const session = await consoleSession();
 	const [branding, api] = await Promise.all([consoleBranding(), consoleApi()]);
 	const loaded = await loadDocsHub(api);
-	const initialProduct = one(q.product) || (loaded.ok && loaded.items[0]?.productId ? loaded.items[0].productId : 'chat');
+	const initialProduct = one(q.product) || '';
 	const initialOp = one(q.op) || '';
 	const initialSection = one(q.section) || (initialProduct ? 'products' : 'quickstart');
 	const initialToken = one(q.token) || '';
