@@ -815,119 +815,118 @@ function ContactSection({ brandName = PRODUCT_BRAND }) {
 				</p>
 			</header>
 
-			<div className="contact-grid reveal">
-				{/* Direct Contact Card */}
-				<div className="contact-card glass hard">
-					<div className="contact-card-info">
-						<div>
-							<p className="contact-item-label">Direct Channel</p>
-							<div className="flex items-center gap-2 mt-1">
-								<h3 className="contact-item-value text-base sm:text-lg">support@shelfway.com</h3>
+			<div className="contact-frame glass hard reveal">
+				<div className="shot-chrome">
+					<i />
+					<i />
+					<i />
+					<span className="mono">support@shelfway.com</span>
+				</div>
+				<div className="contact-body">
+					{/* Left Column: Direct channels and reassurance */}
+					<div className="contact-channels">
+						<div className="contact-channel-item">
+							<p className="eyebrow">Direct channel</p>
+							<div className="contact-email-row">
+								<h3>support@shelfway.com</h3>
 								<button
 									type="button"
 									onClick={handleCopyEmail}
-									className="text-xs text-primary hover:underline font-mono cursor-pointer flex items-center gap-1"
+									className="contact-copy-pill mono"
 									title="Copy email address">
-									<Icon name={copied ? 'check' : 'copy'} size={14} />
+									<Icon name={copied ? 'check' : 'copy'} size={13} />
 									<span>{copied ? 'Copied' : 'Copy'}</span>
 								</button>
 							</div>
-							<p className="contact-item-desc">
-								Direct inbox for technical questions, merchant assistance, and custom inquiries.
+							<p className="contact-desc">
+								Direct inbox for technical questions, merchant onboarding, and custom setup inquiries.
 							</p>
 						</div>
 
-						<div>
-							<p className="contact-item-label">Response Time</p>
-							<p className="contact-item-desc text-fg font-medium mt-1">Under 2 hours during business hours.</p>
-							<p className="contact-item-desc">All inquiries are handled directly by engineering and operations staff.</p>
-						</div>
-
-						<div>
-							<p className="contact-item-label">Building for a merchant?</p>
-							<p className="contact-item-desc mt-1">
-								If you are building a storefront, you do not need account credentials. Ask your merchant for their setup
-								link or website token to unlock interactive docs and sandbox endpoints.
-							</p>
-						</div>
+						<ul className="handoff-bits" aria-label="Support guarantees">
+							<li>Direct engineering assistance</li>
+							<li>Replies in under 2 hours</li>
+							<li>Setup link guidance for builders</li>
+							<li>Zero password sharing needed</li>
+						</ul>
 					</div>
-				</div>
 
-				{/* Contact Form Card */}
-				<div className="contact-card-form glass hard">
-					{submitted ? (
-						<div className="space-y-4 py-6">
-							<Callout tone="success" title="Message received">
-								Thank you for reaching out. We have received your note and our team will get back to you shortly at your
-								email.
-							</Callout>
-							<Button type="button" variant="secondary" size="sm" onClick={() => setSubmitted(false)}>
-								Send another note
-							</Button>
-						</div>
-					) : (
-						<Form onSubmit={handleSubmit} busy={busy} aria-label="Contact support">
-							<div className="space-y-4">
-								<Input
-									label="Your name"
-									name="name"
-									placeholder="Jane Doe"
-									value={name}
-									onChange={(e) => {
-										setName(e.currentTarget.value);
-										if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
-									}}
-									error={errors.name}
-									required
-									hideRequiredMark
-									className="h-10 text-sm"
-								/>
-
-								<Input
-									label="Work email"
-									type="email"
-									name="email"
-									placeholder="jane@company.com"
-									value={email}
-									onChange={(e) => {
-										setEmail(e.currentTarget.value);
-										if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
-									}}
-									error={errors.email}
-									required
-									hideRequiredMark
-									className="h-10 text-sm"
-								/>
-
-								<TextArea
-									label="Message"
-									name="message"
-									placeholder="Tell us what you are looking to build, questions about products, or how we can help..."
-									value={message}
-									onChange={(e) => {
-										setMessage(e.currentTarget.value);
-										if (errors.message) setErrors((prev) => ({ ...prev, message: '' }));
-									}}
-									error={errors.message}
-									required
-									hideRequiredMark
-									rows={4}
-									className="text-sm"
-								/>
-
-								<div className="pt-2">
-									<Button
-										type="submit"
-										variant="primary"
-										size="md"
-										loading={busy}
-										className="w-full sm:w-auto px-6 font-semibold">
-										Send message
-									</Button>
-								</div>
+					{/* Right Column: Clean Interactive Form */}
+					<div className="contact-form-pane">
+						{submitted ? (
+							<div className="space-y-4 py-6">
+								<Callout tone="success" title="Message received">
+									Thank you for reaching out. We have received your note and our team will get back to you shortly at
+									your email.
+								</Callout>
+								<Button type="button" variant="secondary" size="sm" onClick={() => setSubmitted(false)}>
+									Send another note
+								</Button>
 							</div>
-						</Form>
-					)}
+						) : (
+							<Form onSubmit={handleSubmit} busy={busy} aria-label="Contact support">
+								<div className="space-y-4">
+									<Input
+										label="Your name"
+										name="name"
+										placeholder="Jane Doe"
+										value={name}
+										onChange={(e) => {
+											setName(e.currentTarget.value);
+											if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
+										}}
+										error={errors.name}
+										required
+										hideRequiredMark
+										className="h-10 text-sm"
+									/>
+
+									<Input
+										label="Work email"
+										type="email"
+										name="email"
+										placeholder="jane@company.com"
+										value={email}
+										onChange={(e) => {
+											setEmail(e.currentTarget.value);
+											if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
+										}}
+										error={errors.email}
+										required
+										hideRequiredMark
+										className="h-10 text-sm"
+									/>
+
+									<TextArea
+										label="Message"
+										name="message"
+										placeholder="Tell us what you are looking to build, questions about products, or how we can help..."
+										value={message}
+										onChange={(e) => {
+											setMessage(e.currentTarget.value);
+											if (errors.message) setErrors((prev) => ({ ...prev, message: '' }));
+										}}
+										error={errors.message}
+										required
+										hideRequiredMark
+										rows={4}
+										className="text-sm"
+									/>
+
+									<div className="pt-2">
+										<Button
+											type="submit"
+											variant="primary"
+											size="md"
+											loading={busy}
+											className="w-full sm:w-auto px-6 font-semibold">
+											Send message
+										</Button>
+									</div>
+								</div>
+							</Form>
+						)}
+					</div>
 				</div>
 			</div>
 		</section>
