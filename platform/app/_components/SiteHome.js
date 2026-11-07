@@ -349,9 +349,6 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 
 	return (
 		<>
-			<div className="wash" aria-hidden="true" />
-			<div className="grid-hard" aria-hidden="true" />
-
 			<SiteHeader brandName={productName} isHome={true} session={session} />
 
 			<main id="top">
@@ -414,61 +411,63 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 					</div>
 				</div>
 
-				<section id="why" className="site-block">
-					<header className="block-head reveal">
-						<p className="eyebrow">Why not build it all yourself</p>
-						<h2>
-							Those features take months.
-							<span className="accent"> {productName} already has them.</span>
-						</h2>
-						<p>
-							Most teams spend forever on sign-in, payments, chat, and messages. With {productName} you turn those on for
-							your website and spend time on what customers actually see.
-						</p>
-					</header>
-					<div className="why-split reveal">
-						<article className="glass hard burden">
-							<span className="mono muted">Build it yourself</span>
-							<p>Every layer stays on you: build, host, fix, and hand secrets around. Time and risk compound.</p>
-						</article>
-						<div className="vs mono">vs</div>
-						<article className="glass hard hot">
-							<span className="mono lime">With {productName}</span>
-							<p>You keep the look. We provide the features, your account, and one simple setup link.</p>
-						</article>
-					</div>
-					<div className="compare-pair reveal">
-						<div className="compare-card diy-card glass hard">
-							<p className="compare-card-h mono">If you build it yourself</p>
-							<ul>
-								{COMPARE.map((row) => (
-									<li key={`diy-${row.need}`}>
-										<span className="mark" aria-hidden="true">
-											x
-										</span>
-										<div>
-											<strong>{row.need}</strong>
-											<p>{row.diy}</p>
-										</div>
-									</li>
-								))}
-							</ul>
+				<section id="why" className="band">
+					<div className="site-container">
+						<header className="block-head reveal">
+							<p className="eyebrow">Why not build it all yourself</p>
+							<h2>
+								Those features take months.
+								<span className="accent"> {productName} already has them.</span>
+							</h2>
+							<p>
+								Most teams spend forever on sign-in, payments, chat, and messages. With {productName} you turn those on
+								for your website and spend time on what customers actually see.
+							</p>
+						</header>
+						<div className="why-split reveal">
+							<article className="glass hard burden">
+								<span className="mono muted">Build it yourself</span>
+								<p>Every layer stays on you: build, host, fix, and hand secrets around. Time and risk compound.</p>
+							</article>
+							<div className="vs mono">vs</div>
+							<article className="glass hard hot">
+								<span className="mono lime">With {productName}</span>
+								<p>You keep the look. We provide the features, your account, and one simple setup link.</p>
+							</article>
 						</div>
-						<div className="compare-card us-card glass hard">
-							<p className="compare-card-h mono">With {productName}</p>
-							<ul>
-								{COMPARE.map((row) => (
-									<li key={`us-${row.need}`}>
-										<span className="mark" aria-hidden="true">
-											+
-										</span>
-										<div>
-											<strong>{row.need}</strong>
-											<p>{row.us}</p>
-										</div>
-									</li>
-								))}
-							</ul>
+						<div className="compare-pair reveal">
+							<div className="compare-card diy-card glass hard">
+								<p className="compare-card-h mono">If you build it yourself</p>
+								<ul>
+									{COMPARE.map((row) => (
+										<li key={`diy-${row.need}`}>
+											<span className="mark" aria-hidden="true">
+												x
+											</span>
+											<div>
+												<strong>{row.need}</strong>
+												<p>{row.diy}</p>
+											</div>
+										</li>
+									))}
+								</ul>
+							</div>
+							<div className="compare-card us-card glass hard">
+								<p className="compare-card-h mono">With {productName}</p>
+								<ul>
+									{COMPARE.map((row) => (
+										<li key={`us-${row.need}`}>
+											<span className="mark" aria-hidden="true">
+												+
+											</span>
+											<div>
+												<strong>{row.need}</strong>
+												<p>{row.us}</p>
+											</div>
+										</li>
+									))}
+								</ul>
+							</div>
 						</div>
 					</div>
 				</section>
@@ -479,241 +478,245 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 							<p className="eyebrow">What you can add</p>
 							<h2>Pick the features this website needs.</h2>
 							<p>
-								Not only for shops - services, community, or content work too. Tap one to see what it includes and what you
-								can customize.
+								Not only for shops - services, community, or content work too. Tap one to see what it includes and what
+								you can customize.
 							</p>
 						</header>
 
 						<div className="feature-stage reveal">
-						<div className="feature-rail" role="tablist" aria-label="Features">
-							{catalog.map((p, i) => {
-								const copy = PRODUCT_COPY[p.id];
-								const blurb = copy?.blurb || 'Ready on your website';
-								return (
-									<button
-										key={p.id}
-										type="button"
-										role="tab"
-										aria-selected={activeId === p.id}
-										className={`feature-tab${activeId === p.id ? ' on' : ''}`}
-										onClick={() => setSpotId(p.id)}>
-										<span className="mono">{String(i + 1).padStart(2, '0')}</span>
-										<span className="feature-tab-copy">
-											<strong>{p.name}</strong>
-											<em>{blurb}</em>
-										</span>
-									</button>
-								);
-							})}
-						</div>
-
-						{active ? (
-							<div className="feature-panel" key={active.id}>
-								<div className="feature-mock glass hard">
-									<div className="shot-chrome">
-										<i />
-										<i />
-										<i />
-										<span className="mono">{(FEATURE_MOCK[active.id] || FEATURE_MOCK.accounts).chrome}</span>
-									</div>
-									<div className="feature-mock-body">
-										<div className="feature-mock-head">
-											<p className="feature-mock-title">{(FEATURE_MOCK[active.id] || FEATURE_MOCK.accounts).title}</p>
-											<span className="mock-live-pill mono">Live preview</span>
-										</div>
-										<ul className="feature-mock-rows">
-											{(FEATURE_MOCK[active.id] || FEATURE_MOCK.accounts).rows.map((row) => {
-												const rowKey = `${active.id}-${row.label}`;
-												const onState = row.kind === 'toggle' ? isRowOn(active.id, row) : false;
-												return (
-													<li key={rowKey} className={`fm-${row.kind}${onState ? ' is-on' : ''}`}>
-														{row.kind === 'toggle' ? (
-															<button
-																type="button"
-																role="switch"
-																aria-checked={onState}
-																className="fm-toggle-btn"
-																onClick={() => toggleRow(active.id, row)}>
-																<span>{row.label}</span>
-																<span className="fm-switch" aria-hidden="true" />
-															</button>
-														) : row.kind === 'field' ? (
-															<div className="fm-field-inner">
-																<span className="mono">{row.label}</span>
-																<strong>{row.value}</strong>
-															</div>
-														) : row.kind === 'chips' ? (
-															<span className="fm-chips">{row.label}</span>
-														) : row.kind === 'tile' ? (
-															<div className="fm-tile-inner">
-																<strong>{row.label}</strong>
-																<em>{row.value}</em>
-															</div>
-														) : row.kind === 'bubble' || row.kind === 'bubble-me' ? (
-															<div className="fm-bubble-inner">
-																<span className="mono">{row.label}</span>
-																<p>{row.value}</p>
-															</div>
-														) : (
-															<button
-																type="button"
-																className="fm-action-btn"
-																onClick={() => triggerAction(row.label)}>
-																<span>{actionFeedback === row.label ? 'Done +' : row.label}</span>
-															</button>
-														)}
-													</li>
-												);
-											})}
-										</ul>
-									</div>
-								</div>
-
-								<div className="feature-detail">
-									<p className="eyebrow">Includes</p>
-									<h3>{active.name}</h3>
-									<p>{activeCopy?.more || active.description || `Add ${active.name} when you need it.`}</p>
-									<ul className="gets">
-										{(
-											activeCopy?.gets || [
-												'Ready on your site',
-												'Settings in your account',
-												'Step-by-step setup guides',
-											]
-										).map((g) => (
-											<li key={g}>{g}</li>
-										))}
-									</ul>
-									{activeCopy?.for ? (
-										<p className="spot-for">
-											<span className="mono">For</span> {activeCopy.for}
-										</p>
-									) : null}
-									{activeCopy?.use ? (
-										<p className="spot-use">
-											<span className="mono">Customize</span> {activeCopy.use}
-										</p>
-									) : null}
-									<Link className="product-docs" href="/docs">
-										{active.name} docs -&gt;
-									</Link>
-								</div>
+							<div className="feature-rail" role="tablist" aria-label="Features">
+								{catalog.map((p, i) => {
+									const copy = PRODUCT_COPY[p.id];
+									const blurb = copy?.blurb || 'Ready on your website';
+									return (
+										<button
+											key={p.id}
+											type="button"
+											role="tab"
+											aria-selected={activeId === p.id}
+											className={`feature-tab${activeId === p.id ? ' on' : ''}`}
+											onClick={() => setSpotId(p.id)}>
+											<span className="mono">{String(i + 1).padStart(2, '0')}</span>
+											<span className="feature-tab-copy">
+												<strong>{p.name}</strong>
+												<em>{blurb}</em>
+											</span>
+										</button>
+									);
+								})}
 							</div>
-						) : null}
-					</div>
+
+							{active ? (
+								<div className="feature-panel" key={active.id}>
+									<div className="feature-mock glass hard">
+										<div className="shot-chrome">
+											<i />
+											<i />
+											<i />
+											<span className="mono">{(FEATURE_MOCK[active.id] || FEATURE_MOCK.accounts).chrome}</span>
+										</div>
+										<div className="feature-mock-body">
+											<div className="feature-mock-head">
+												<p className="feature-mock-title">
+													{(FEATURE_MOCK[active.id] || FEATURE_MOCK.accounts).title}
+												</p>
+												<span className="mock-live-pill mono">Live preview</span>
+											</div>
+											<ul className="feature-mock-rows">
+												{(FEATURE_MOCK[active.id] || FEATURE_MOCK.accounts).rows.map((row) => {
+													const rowKey = `${active.id}-${row.label}`;
+													const onState = row.kind === 'toggle' ? isRowOn(active.id, row) : false;
+													return (
+														<li key={rowKey} className={`fm-${row.kind}${onState ? ' is-on' : ''}`}>
+															{row.kind === 'toggle' ? (
+																<button
+																	type="button"
+																	role="switch"
+																	aria-checked={onState}
+																	className="fm-toggle-btn"
+																	onClick={() => toggleRow(active.id, row)}>
+																	<span>{row.label}</span>
+																	<span className="fm-switch" aria-hidden="true" />
+																</button>
+															) : row.kind === 'field' ? (
+																<div className="fm-field-inner">
+																	<span className="mono">{row.label}</span>
+																	<strong>{row.value}</strong>
+																</div>
+															) : row.kind === 'chips' ? (
+																<span className="fm-chips">{row.label}</span>
+															) : row.kind === 'tile' ? (
+																<div className="fm-tile-inner">
+																	<strong>{row.label}</strong>
+																	<em>{row.value}</em>
+																</div>
+															) : row.kind === 'bubble' || row.kind === 'bubble-me' ? (
+																<div className="fm-bubble-inner">
+																	<span className="mono">{row.label}</span>
+																	<p>{row.value}</p>
+																</div>
+															) : (
+																<button
+																	type="button"
+																	className="fm-action-btn"
+																	onClick={() => triggerAction(row.label)}>
+																	<span>{actionFeedback === row.label ? 'Done +' : row.label}</span>
+																</button>
+															)}
+														</li>
+													);
+												})}
+											</ul>
+										</div>
+									</div>
+
+									<div className="feature-detail">
+										<p className="eyebrow">Includes</p>
+										<h3>{active.name}</h3>
+										<p>{activeCopy?.more || active.description || `Add ${active.name} when you need it.`}</p>
+										<ul className="gets">
+											{(
+												activeCopy?.gets || [
+													'Ready on your site',
+													'Settings in your account',
+													'Step-by-step setup guides',
+												]
+											).map((g) => (
+												<li key={g}>{g}</li>
+											))}
+										</ul>
+										{activeCopy?.for ? (
+											<p className="spot-for">
+												<span className="mono">For</span> {activeCopy.for}
+											</p>
+										) : null}
+										{activeCopy?.use ? (
+											<p className="spot-use">
+												<span className="mono">Customize</span> {activeCopy.use}
+											</p>
+										) : null}
+										<Link className="product-docs" href="/docs">
+											{active.name} docs -&gt;
+										</Link>
+									</div>
+								</div>
+							) : null}
+						</div>
 					</div>
 				</section>
 
-				<section id="work" className="site-block">
-					<header className="block-head reveal">
-						<p className="eyebrow">How you use it</p>
-						<h2>Your account, your settings, then live on your site.</h2>
-						<p>You manage your business here. Whoever builds your site gets a single setup link with clear guides.</p>
-					</header>
+				<section id="work" className="band">
+					<div className="site-container">
+						<header className="block-head reveal">
+							<p className="eyebrow">How you use it</p>
+							<h2>Your account, your settings, then live on your site.</h2>
+							<p>You manage your business here. Whoever builds your site gets a single setup link with clear guides.</p>
+						</header>
 
-					<div className="shot-wrap reveal">
-						<div className="shot-tabs" role="tablist" aria-label="How you use it">
-							{SCREENS.map((s, i) => (
-								<button
-									key={s.id}
-									type="button"
-									role="tab"
-									aria-selected={screen === i}
-									className={`shot-tab${screen === i ? ' on' : ''}`}
-									onClick={() => setScreen(i)}>
-									{s.label}
-								</button>
-							))}
-						</div>
-						<div className="shot-frame glass hard" role="tabpanel">
-							<div className="shot-chrome">
-								<i />
-								<i />
-								<i />
-								<span className="mono">{shot.path}</span>
+						<div className="shot-wrap reveal">
+							<div className="shot-tabs" role="tablist" aria-label="How you use it">
+								{SCREENS.map((s, i) => (
+									<button
+										key={s.id}
+										type="button"
+										role="tab"
+										aria-selected={screen === i}
+										className={`shot-tab${screen === i ? ' on' : ''}`}
+										onClick={() => setScreen(i)}>
+										{s.label}
+									</button>
+								))}
 							</div>
-							<div className="shot-body">
-								<aside className="shot-side">
-									<p>Menu</p>
-									<ul>
-										{shot.side.map((item, i) => (
-											<li key={item} className={i === shot.sideOn ? 'on' : undefined}>
-												{item}
-											</li>
-										))}
-									</ul>
-								</aside>
-								<div className="shot-main">
-									<div className="shot-main-header">
-										<div>
-											<h4>{shot.title}</h4>
-											<p className="shot-lede">{shot.lede}</p>
+							<div className="shot-frame glass hard" role="tabpanel">
+								<div className="shot-chrome">
+									<i />
+									<i />
+									<i />
+									<span className="mono">{shot.path}</span>
+								</div>
+								<div className="shot-body">
+									<aside className="shot-side">
+										<p>Menu</p>
+										<ul>
+											{shot.side.map((item, i) => (
+												<li key={item} className={i === shot.sideOn ? 'on' : undefined}>
+													{item}
+												</li>
+											))}
+										</ul>
+									</aside>
+									<div className="shot-main">
+										<div className="shot-main-header">
+											<div>
+												<h4>{shot.title}</h4>
+												<p className="shot-lede">{shot.lede}</p>
+											</div>
+											{shot.badge ? (
+												<span className="shot-badge mono">
+													<span className="live-dot" aria-hidden="true" />
+													{shot.badge}
+												</span>
+											) : null}
 										</div>
-										{shot.badge ? (
-											<span className="shot-badge mono">
-												<span className="live-dot" aria-hidden="true" />
-												{shot.badge}
-											</span>
-										) : null}
-									</div>
-									<div className="shot-grid">
-										{shot.cards.map((c) => (
-											<div key={c.b} className="shot-card">
-												<div>
-													<b>{c.b}</b>
-													{c.v ? <div className="card-val">{c.v}</div> : null}
+										<div className="shot-grid">
+											{shot.cards.map((c) => (
+												<div key={c.b} className="shot-card">
+													<div>
+														<b>{c.b}</b>
+														{c.v ? <div className="card-val">{c.v}</div> : null}
+													</div>
+													<span className={`shot-status ${c.dot || 'teal'}`}>{c.s}</span>
 												</div>
-												<span className={`shot-status ${c.dot || 'teal'}`}>{c.s}</span>
-											</div>
-										))}
-									</div>
-									<div className="shot-rows">
-										{shot.rows.map((r) => (
-											<div key={r.t} className="shot-row">
-												<b>{r.k}</b>
-												<span>{r.t}</span>
-												{r.s ? <span className="shot-row-status mono">{r.s}</span> : null}
-												<em>{r.e}</em>
-											</div>
-										))}
+											))}
+										</div>
+										<div className="shot-rows">
+											{shot.rows.map((r) => (
+												<div key={r.t} className="shot-row">
+													<b>{r.k}</b>
+													<span>{r.t}</span>
+													{r.s ? <span className="shot-row-status mono">{r.s}</span> : null}
+													<em>{r.e}</em>
+												</div>
+											))}
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-					</div>
 
-					<ol className="work-steps reveal">
-						{WORK_STEPS.map((r) => (
-							<li key={r.k} className="glass hard">
-								<div className="work-head">
-									<span className="mono work-n">{r.n}</span>
-									<span className="mono work-k">{r.k}</span>
-								</div>
-								<h3>{r.t}</h3>
-								<p>{r.d}</p>
-							</li>
-						))}
-					</ol>
+						<ol className="work-steps reveal">
+							{WORK_STEPS.map((r) => (
+								<li key={r.k} className="glass hard">
+									<div className="work-head">
+										<span className="mono work-n">{r.n}</span>
+										<span className="mono work-k">{r.k}</span>
+									</div>
+									<h3>{r.t}</h3>
+									<p>{r.d}</p>
+								</li>
+							))}
+						</ol>
 
-					<div className="handoff glass hard reveal">
-						<div className="handoff-copy">
-							<p className="eyebrow">Zero friction handoff</p>
-							<h3>One setup link. Ready guides. No starting from zero.</h3>
-							<p>
-								Share the setup link directly from your account. It connects directly to your site, turns on the features,
-								and provides full guides. Secure keys stay organized without sharing account passwords.
-							</p>
-						</div>
-						<ul className="handoff-bits" aria-label="What the setup link covers">
-							<li>Website address and connections</li>
-							<li>Features enabled for your site</li>
-							<li>Interactive guides and ready examples</li>
-							<li>Secure keys stay protected</li>
-						</ul>
-						<div className="handoff-action">
-							<ButtonLink href="/docs" variant="secondary" size="md">
-								Browse docs -&gt;
-							</ButtonLink>
+						<div className="handoff glass hard reveal">
+							<div className="handoff-copy">
+								<p className="eyebrow">Zero friction handoff</p>
+								<h3>One setup link. Ready guides. No starting from zero.</h3>
+								<p>
+									Share the setup link directly from your account. It connects directly to your site, turns on the
+									features, and provides full guides. Secure keys stay organized without sharing account passwords.
+								</p>
+							</div>
+							<ul className="handoff-bits" aria-label="What the setup link covers">
+								<li>Website address and connections</li>
+								<li>Features enabled for your site</li>
+								<li>Interactive guides and ready examples</li>
+								<li>Secure keys stay protected</li>
+							</ul>
+							<div className="handoff-action">
+								<ButtonLink href="/docs" variant="secondary" size="md">
+									Browse docs -&gt;
+								</ButtonLink>
+							</div>
 						</div>
 					</div>
 				</section>
@@ -814,116 +817,117 @@ function ContactSection({ brandName = PRODUCT_BRAND }) {
 					<p className="eyebrow">Get in touch</p>
 					<h2>Talk to the {brandName} team</h2>
 					<p>
-						Have questions about onboarding, connecting your products, custom pricing, or developer setup? Send us a note and
-						we will reply promptly.
+						Have questions about onboarding, connecting your products, custom pricing, or developer setup? Send us a note
+						and we will reply promptly.
 					</p>
 				</header>
 
 				<div className="reveal grid gap-6 md:grid-cols-5 items-start mt-6">
-				{/* Direct Channel Info Card from Theme Kit */}
-				<Card
-					className="md:col-span-2"
-					title="Direct support"
-					subtitle="Reach our team directly for onboarding and technical guidance"
-					lead={<Icon name="message" size={18} className="text-primary" />}
-					action={
-						<Button
-							type="button"
-							variant="secondary"
-							size="sm"
-							onClick={handleCopyEmail}
-							prefix={<Icon name={copied ? 'check' : 'copy'} size={14} />}>
-							{copied ? 'Copied support@shelfway.com' : 'Copy support@shelfway.com'}
-						</Button>
-					}>
-					<div className="space-y-4 text-sm text-muted">
-						<p>All inquiries are reviewed directly by platform engineering and operations staff.</p>
-						<div className="rounded-control border border-line bg-surface-2 p-3 text-xs space-y-1">
-							<p className="font-semibold text-fg">Building for a merchant?</p>
-							<p>
-								Ask your merchant for their setup link or website token to unlock interactive docs without needing portal
-								passwords.
+					{/* Direct Channel Info Card from Theme Kit */}
+					<Card
+						className="md:col-span-2"
+						title="Direct support"
+						subtitle="Reach our team directly for onboarding and technical guidance"
+						lead={<Icon name="message" size={18} className="text-primary" />}
+						action={
+							<Button
+								type="button"
+								variant="secondary"
+								size="sm"
+								onClick={handleCopyEmail}
+								prefix={<Icon name={copied ? 'check' : 'copy'} size={14} />}>
+								{copied ? 'Copied support@shelfway.com' : 'Copy support@shelfway.com'}
+							</Button>
+						}>
+						<div className="space-y-4 text-sm text-muted">
+							<p>All inquiries are reviewed directly by platform engineering and operations staff.</p>
+							<div className="rounded-control border border-line bg-surface-2 p-3 text-xs space-y-1">
+								<p className="font-semibold text-fg">Building for a merchant?</p>
+								<p>
+									Ask your merchant for their setup link or website token to unlock interactive docs without needing
+									portal passwords.
+								</p>
+							</div>
+							<p className="text-xs">
+								Typical response time: <strong className="text-fg font-medium">under 2 hours</strong> during business
+								hours.
 							</p>
 						</div>
-						<p className="text-xs">
-							Typical response time: <strong className="text-fg font-medium">under 2 hours</strong> during business hours.
-						</p>
-					</div>
-				</Card>
+					</Card>
 
-				{/* Contact Form Card from Theme Kit */}
-				<Card
-					className="md:col-span-3"
-					title="Send us a message"
-					subtitle="Fill out the details below and we will follow up with you by email"
-					lead={<Icon name="mail" size={18} className="text-primary" />}>
-					{submitted ? (
-						<div className="space-y-4 py-2">
-							<Callout tone="success" title="Message received">
-								Thank you for reaching out. We have received your note and our team will get back to you shortly at your
-								email.
-							</Callout>
-							<Button type="button" variant="secondary" size="sm" onClick={() => setSubmitted(false)}>
-								Send another note
-							</Button>
-						</div>
-					) : (
-						<Form onSubmit={handleSubmit} busy={busy} aria-label="Contact support">
-							<Input
-								label="Your name"
-								name="name"
-								placeholder="Jane Doe"
-								value={name}
-								onChange={(e) => {
-									setName(e.currentTarget.value);
-									if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
-								}}
-								error={errors.name}
-								required
-								hideRequiredMark
-							/>
-
-							<Input
-								label="Work email"
-								type="email"
-								name="email"
-								placeholder="jane@company.com"
-								value={email}
-								onChange={(e) => {
-									setEmail(e.currentTarget.value);
-									if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
-								}}
-								error={errors.email}
-								required
-								hideRequiredMark
-							/>
-
-							<TextArea
-								label="Message"
-								name="message"
-								placeholder="Tell us what you are looking to build, questions about products, or how we can help..."
-								value={message}
-								onChange={(e) => {
-									setMessage(e.currentTarget.value);
-									if (errors.message) setErrors((prev) => ({ ...prev, message: '' }));
-								}}
-								error={errors.message}
-								required
-								hideRequiredMark
-								rows={4}
-								wide
-							/>
-
-							<div className="pt-2 flex flex-wrap items-center justify-between gap-3">
-								<Button type="submit" variant="primary" size="md" loading={busy} className="font-semibold px-5">
-									Send message
+					{/* Contact Form Card from Theme Kit */}
+					<Card
+						className="md:col-span-3"
+						title="Send us a message"
+						subtitle="Fill out the details below and we will follow up with you by email"
+						lead={<Icon name="mail" size={18} className="text-primary" />}>
+						{submitted ? (
+							<div className="space-y-4 py-2">
+								<Callout tone="success" title="Message received">
+									Thank you for reaching out. We have received your note and our team will get back to you shortly at
+									your email.
+								</Callout>
+								<Button type="button" variant="secondary" size="sm" onClick={() => setSubmitted(false)}>
+									Send another note
 								</Button>
-								<span className="text-xs text-muted">Direct technical reply to your inbox</span>
 							</div>
-						</Form>
-					)}
-				</Card>
-			</div>
+						) : (
+							<Form onSubmit={handleSubmit} busy={busy} aria-label="Contact support">
+								<Input
+									label="Your name"
+									name="name"
+									placeholder="Jane Doe"
+									value={name}
+									onChange={(e) => {
+										setName(e.currentTarget.value);
+										if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
+									}}
+									error={errors.name}
+									required
+									hideRequiredMark
+								/>
+
+								<Input
+									label="Work email"
+									type="email"
+									name="email"
+									placeholder="jane@company.com"
+									value={email}
+									onChange={(e) => {
+										setEmail(e.currentTarget.value);
+										if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
+									}}
+									error={errors.email}
+									required
+									hideRequiredMark
+								/>
+
+								<TextArea
+									label="Message"
+									name="message"
+									placeholder="Tell us what you are looking to build, questions about products, or how we can help..."
+									value={message}
+									onChange={(e) => {
+										setMessage(e.currentTarget.value);
+										if (errors.message) setErrors((prev) => ({ ...prev, message: '' }));
+									}}
+									error={errors.message}
+									required
+									hideRequiredMark
+									rows={4}
+									wide
+								/>
+
+								<div className="pt-2 flex flex-wrap items-center justify-between gap-3">
+									<Button type="submit" variant="primary" size="md" loading={busy} className="font-semibold px-5">
+										Send message
+									</Button>
+									<span className="text-xs text-muted">Direct technical reply to your inbox</span>
+								</div>
+							</Form>
+						)}
+					</Card>
+				</div>
 			</div>
 		</section>
 	);

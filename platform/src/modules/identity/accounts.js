@@ -156,7 +156,7 @@ export const createAccounts = (deps) => {
 					...(cleanCode === undefined ? {} : { code: cleanCode }),
 					...(cleanRecovery === undefined ? {} : { recoveryCode: cleanRecovery }),
 				},
-				{ allowSameStep: true, window: 2 },
+				{ allowSameStep: true, window: 4 },
 			);
 			if (!passed) return failAttempt(ctx, key, meta, BAD_CODE);
 		}
@@ -223,7 +223,7 @@ export const createAccounts = (deps) => {
 					...(cleanCode === undefined ? {} : { code: cleanCode }),
 					...(cleanRecovery === undefined ? {} : { recoveryCode: cleanRecovery }),
 				},
-				{ allowSameStep: true, window: 2 },
+				{ allowSameStep: true, window: 4 },
 			);
 			if (passed) {
 				await ctx.loginThrottle.recordSuccess({ account: key });
@@ -324,7 +324,7 @@ export const createAccounts = (deps) => {
 					...(cleanCode === undefined ? {} : { code: cleanCode }),
 					...(cleanRecovery === undefined ? {} : { recoveryCode: cleanRecovery }),
 				},
-				{ allowSameStep: true, window: 2 },
+				{ allowSameStep: true, window: 4 },
 			);
 			if (!passed) return failSignIn(kind, doc, doc.email, meta, BAD_CODE);
 			if (!(await repo.consumeToken('two_step', challenge)))
@@ -588,16 +588,7 @@ export const createAccounts = (deps) => {
 		 */
 		sendStepUpOtp: async (kind, id, meta = {}) => {
 			const doc = await loadLogin(kind, id);
-			const existing = await repo.peekTokenBySubject('step_up_otp', `${kind}:${id}`);
-			// If an OTP was already issued in the last 15 seconds, avoid redundant issuance and duplicate email delivery
-			if (existing && existing.data?.otp && existing.expireAt.getTime() - ctx.now() > 585_000) {
-				return { sent: true };
-			}
-			// If an existing OTP is still valid for > 1 minute, reuse the same code so previous emails stay valid
-			const otp =
-				existing && existing.data?.otp && existing.expireAt.getTime() > ctx.now() + 60_000
-					? String(existing.data.otp)
-					: String(Math.floor(100000 + Math.random() * 900000));
+			const otp = String(Math.floor(100000 + Math.random() * 900000));
 			const tokenPlaintext = newToken(ctx.randomBytes);
 			await repo.dropTokens('step_up_otp', `${kind}:${id}`);
 			await repo.issueToken('step_up_otp', {
@@ -674,7 +665,7 @@ export const createAccounts = (deps) => {
 			const key = throttleKey(kind, doc.email);
 			await throttleGate(ctx, key, meta);
 			const cleanCode = typeof code === 'string' ? code.replace(/[\s-]/g, '') : code;
-			const result = verifyTotp(secret, cleanCode, { now: ctx.now, window: 2 });
+			const result = verifyTotp(secret, cleanCode, { now: ctx.now, window: 4 });
 			if (!result.ok) return failAttempt(ctx, key, meta, BAD_CODE);
 			const { codes, hashes } = generateRecoveryCodes({ secret: ctx.config.sessionSecret, randomBytes: ctx.randomBytes });
 			const enabled = await logins(kind).updateOne(

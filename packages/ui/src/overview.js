@@ -266,7 +266,10 @@ function SetupRow({ step, labels, LinkTag }) {
 			{step.label}
 		</TextLink>
 	) : step.onSelect ? (
-		<button type="button" onClick={step.onSelect} className="cursor-pointer text-left font-medium text-fg hover:text-primary hover:underline">
+		<button
+			type="button"
+			onClick={step.onSelect}
+			className="cursor-pointer text-left font-medium text-fg hover:text-primary hover:underline">
 			{step.label}
 		</button>
 	) : (

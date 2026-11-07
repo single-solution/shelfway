@@ -245,16 +245,22 @@ export const totpAad = (subject) => ({ subject, purpose: 'totp' });
 
 /**
  * Open a stored two-step secret; null when it was sealed under another `ENCRYPTION_KEY` (the person then signs in
- * with a recovery code, or an Owner turns two-step off, PLAN 0.4.8).
+ * with a recovery code, or an Owner turns two-step off, PLAN 0.4.8). If unsealed base32 is encountered (e.g. legacy
+ * accounts created before sealing), returns the sanitized base32 secret.
  * @param {ModuleContext} ctx
  * @param {string} sealed
  * @param {string} subject
  * @returns {string | null}
  */
 export const openTotpSecret = (ctx, sealed, subject) => {
+	if (typeof sealed !== 'string' || !sealed) return null;
 	try {
 		return ctx.secretBox.openText(sealed, { aad: totpAad(subject) });
 	} catch {
+		const clean = sealed.trim().toUpperCase().replace(/\s+/g, '');
+		if (/^[A-Z2-7=]{16,64}$/.test(clean)) {
+			return clean;
+		}
 		return null;
 	}
 };
@@ -269,10 +275,12 @@ export const openTotpSecret = (ctx, sealed, subject) => {
  * @param {{ allowSameStep?: boolean, window?: number }} [options]
  * @returns {Promise<boolean>}
  */
-export const checkSecondFactor = async (ctx, collection, account, input, { allowSameStep = false, window = 2 } = {}) => {
+export const checkSecondFactor = async (ctx, collection, account, input, { allowSameStep = false, window = 4 } = {}) => {
 	if (!account.totp) return false;
 	if (input.code !== undefined) {
-		const secret = openTotpSecret(ctx, account.totp.secret, String(account._id));
+		const rawSealed = typeof account.totp === 'string' ? account.totp : account.totp?.secret;
+		if (!rawSealed) return false;
+		const secret = openTotpSecret(ctx, rawSealed, String(account._id));
 		if (secret === null) return false;
 		const lastStep = typeof account.totp.lastStep === 'number' ? account.totp.lastStep : null;
 		const result = verifyTotp(secret, input.code, { now: ctx.now, lastStep, allowSameStep, window });
