@@ -349,6 +349,9 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 
 	return (
 		<>
+			<div className="wash" aria-hidden="true" />
+			<div className="grid-hard" aria-hidden="true" />
+
 			<SiteHeader brandName={productName} isHome={true} session={session} />
 
 			<main id="top">
@@ -470,17 +473,18 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 					</div>
 				</section>
 
-				<section id="products" className="site-block band">
-					<header className="block-head reveal">
-						<p className="eyebrow">What you can add</p>
-						<h2>Pick the features this website needs.</h2>
-						<p>
-							Not only for shops - services, community, or content work too. Tap one to see what it includes and what you
-							can customize.
-						</p>
-					</header>
+				<section id="products" className="band">
+					<div className="site-container">
+						<header className="block-head reveal">
+							<p className="eyebrow">What you can add</p>
+							<h2>Pick the features this website needs.</h2>
+							<p>
+								Not only for shops - services, community, or content work too. Tap one to see what it includes and what you
+								can customize.
+							</p>
+						</header>
 
-					<div className="feature-stage reveal">
+						<div className="feature-stage reveal">
 						<div className="feature-rail" role="tablist" aria-label="Features">
 							{catalog.map((p, i) => {
 								const copy = PRODUCT_COPY[p.id];
@@ -596,6 +600,7 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 								</div>
 							</div>
 						) : null}
+					</div>
 					</div>
 				</section>
 
@@ -713,32 +718,34 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 					</div>
 				</section>
 
-				<section id="start" className="site-block band">
-					<header className="block-head reveal">
-						<p className="eyebrow">Common questions</p>
-						<h2>Still unsure? Start here.</h2>
-					</header>
-					<dl className="faq reveal">
-						{FAQ.map((f) => (
-							<div className="faq-item" key={f.q}>
-								<dt>{f.q}</dt>
-								<dd>{f.a}</dd>
-							</div>
-						))}
-					</dl>
-					<div className="hero-actions reveal" style={{ marginTop: '1.75rem' }}>
-						{session ? (
-							<ButtonLink href="/overview" variant="primary" size="lg">
-								Open Dashboard
+				<section id="start" className="band">
+					<div className="site-container">
+						<header className="block-head reveal">
+							<p className="eyebrow">Common questions</p>
+							<h2>Still unsure? Start here.</h2>
+						</header>
+						<dl className="faq reveal">
+							{FAQ.map((f) => (
+								<div className="faq-item" key={f.q}>
+									<dt>{f.q}</dt>
+									<dd>{f.a}</dd>
+								</div>
+							))}
+						</dl>
+						<div className="hero-actions reveal" style={{ marginTop: '1.75rem' }}>
+							{session ? (
+								<ButtonLink href="/overview" variant="primary" size="lg">
+									Open Dashboard
+								</ButtonLink>
+							) : (
+								<Button type="button" variant="primary" size="lg" onClick={() => openSignInModal()}>
+									Sign in
+								</Button>
+							)}
+							<ButtonLink href="/docs" variant="secondary" size="lg">
+								Browse docs
 							</ButtonLink>
-						) : (
-							<Button type="button" variant="primary" size="lg" onClick={() => openSignInModal()}>
-								Sign in
-							</Button>
-						)}
-						<ButtonLink href="/docs" variant="secondary" size="lg">
-							Browse docs
-						</ButtonLink>
+						</div>
 					</div>
 				</section>
 
@@ -801,17 +808,18 @@ function ContactSection({ brandName = PRODUCT_BRAND }) {
 	};
 
 	return (
-		<section id="contact" className="site-block band">
-			<header className="block-head reveal">
-				<p className="eyebrow">Get in touch</p>
-				<h2>Talk to the {brandName} team</h2>
-				<p>
-					Have questions about onboarding, connecting your products, custom pricing, or developer setup? Send us a note and
-					we will reply promptly.
-				</p>
-			</header>
+		<section id="contact" className="band">
+			<div className="site-container">
+				<header className="block-head reveal">
+					<p className="eyebrow">Get in touch</p>
+					<h2>Talk to the {brandName} team</h2>
+					<p>
+						Have questions about onboarding, connecting your products, custom pricing, or developer setup? Send us a note and
+						we will reply promptly.
+					</p>
+				</header>
 
-			<div className="reveal grid gap-6 md:grid-cols-5 items-start mt-6">
+				<div className="reveal grid gap-6 md:grid-cols-5 items-start mt-6">
 				{/* Direct Channel Info Card from Theme Kit */}
 				<Card
 					className="md:col-span-2"
@@ -915,6 +923,7 @@ function ContactSection({ brandName = PRODUCT_BRAND }) {
 						</Form>
 					)}
 				</Card>
+			</div>
 			</div>
 		</section>
 	);

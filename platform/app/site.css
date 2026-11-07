@@ -19,7 +19,7 @@
 	margin: 0;
 	font-family: var(--font-sans);
 	color: var(--shelfway-fg);
-	background: var(--shelfway-canvas);
+	background: transparent;
 	line-height: 1.5;
 	/* clip avoids creating a scrollport that kills position:sticky on the nav */
 	overflow-x: clip;
@@ -38,7 +38,8 @@
 	scroll-margin-top: 7.5rem !important;
 }
 
-.shelfway-site .wash {
+.shelfway-site .wash,
+.wash {
 	pointer-events: none;
 	position: fixed;
 	inset: 0;
@@ -55,17 +56,18 @@
 	transform: translateZ(0);
 	contain: strict;
 }
-.shelfway-site .grid-hard {
+.shelfway-site .grid-hard,
+.grid-hard {
 	pointer-events: none;
 	position: fixed;
 	inset: 0;
 	z-index: 0;
 	background-image:
-		linear-gradient(color-mix(in srgb, var(--shelfway-fg) 6%, transparent) 1px, transparent 1px),
-		linear-gradient(90deg, color-mix(in srgb, var(--shelfway-fg) 6%, transparent) 1px, transparent 1px);
+		linear-gradient(color-mix(in srgb, var(--shelfway-fg) 7%, transparent) 1px, transparent 1px),
+		linear-gradient(90deg, color-mix(in srgb, var(--shelfway-fg) 7%, transparent) 1px, transparent 1px);
 	background-size: 40px 40px;
-	mask-image: radial-gradient(ellipse at 50% 15%, #000 25%, transparent 75%);
-	-webkit-mask-image: radial-gradient(ellipse at 50% 15%, #000 25%, transparent 75%);
+	mask-image: radial-gradient(ellipse at 50% 20%, #000 40%, rgba(0, 0, 0, 0.45) 100%);
+	-webkit-mask-image: radial-gradient(ellipse at 50% 20%, #000 40%, rgba(0, 0, 0, 0.45) 100%);
 	transform: translateZ(0);
 	contain: strict;
 }
@@ -430,16 +432,16 @@
 	color: var(--shelfway-muted);
 }
 
+.shelfway-site .site-container,
 .shelfway-site section.site-block,
 .shelfway-site section.block {
 	width: min(calc(100% - 2 * var(--gutter)), var(--max));
 	max-width: var(--max);
 	margin: 0 auto;
-	padding: clamp(3.25rem, 7vw, 5rem) 0;
 }
-.shelfway-site #contact {
-	scroll-margin-top: 7.5rem !important;
-	padding-bottom: clamp(5rem, 10vw, 8rem);
+.shelfway-site section.site-block,
+.shelfway-site section.block {
+	padding: clamp(3.25rem, 7vw, 5rem) 0;
 }
 .shelfway-site .docs-container {
 	width: min(calc(100% - 2 * var(--gutter)), var(--max));
@@ -449,13 +451,15 @@
 }
 .shelfway-site .band {
 	width: 100%;
-	max-width: none;
+	max-width: 100%;
 	background: color-mix(in srgb, var(--shelfway-surface) 45%, transparent);
 	border-block: 1px solid var(--shelfway-line);
-	padding-left: max(var(--gutter), calc((100% - var(--max)) / 2));
-	padding-right: max(var(--gutter), calc((100% - var(--max)) / 2));
 	padding-top: clamp(3.25rem, 7vw, 5rem);
 	padding-bottom: clamp(3.25rem, 7vw, 5rem);
+}
+.shelfway-site #contact.band {
+	scroll-margin-top: 7.5rem !important;
+	padding-bottom: clamp(5rem, 10vw, 8rem);
 }
 .shelfway-site .block-head {
 	max-width: 38rem;

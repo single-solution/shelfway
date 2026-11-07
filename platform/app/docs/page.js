@@ -39,7 +39,9 @@ export default async function DocsPage({ searchParams }) {
 	const brandName = branding?.name || PRODUCT_BRAND;
 
 	return (
-		<div className="shelfway-site flex min-h-screen flex-col bg-canvas text-fg font-sans">
+		<div className="shelfway-site flex min-h-screen flex-col bg-transparent text-fg font-sans">
+			<div className="wash" aria-hidden="true" />
+			<div className="grid-hard" aria-hidden="true" />
 			<SiteHeader brandName={brandName} session={session.ok ? session : null} />
 			<main className="flex-1">
 				<DocsHubView
