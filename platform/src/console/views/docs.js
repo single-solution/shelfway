@@ -813,7 +813,7 @@ export function DocsHubView({
 											{items.map((p) => (
 												<div
 													key={p.productId}
-													className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-4 space-y-3 shadow-card flex flex-col justify-between">
+													className="rounded-card border border-line bg-surface/80 backdrop-blur-xl p-4 space-y-3 shadow-card hard flex flex-col justify-between">
 													<div className="space-y-2">
 														<div className="flex items-center justify-between">
 															<span className="font-semibold text-sm text-fg">{p.name}</span>
@@ -870,7 +870,7 @@ export function DocsHubView({
 								</div>
 
 								<div className="space-y-4">
-									<div className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-5 space-y-3 shadow-card">
+									<div className="rounded-card border border-line bg-surface/80 backdrop-blur-xl p-5 space-y-3 shadow-card hard">
 										<div className="flex items-center justify-between">
 											<span className="font-semibold text-sm text-primary">Browser Token (Public Client-side)</span>
 											<span className="text-[10px] font-mono bg-primary/10 text-primary px-2 py-0.5 rounded font-bold">
@@ -887,7 +887,7 @@ export function DocsHubView({
 										/>
 									</div>
 
-									<div className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-5 space-y-3 shadow-card">
+									<div className="rounded-card border border-line bg-surface/80 backdrop-blur-xl p-5 space-y-3 shadow-card hard">
 										<div className="flex items-center justify-between">
 											<span className="font-semibold text-sm text-emerald-600 dark:text-emerald-400">
 												Server Token (Private Backend Secret)
@@ -964,17 +964,31 @@ export function DocsHubView({
 								{/* Features & Capabilities */}
 								{currentProduct.features && currentProduct.features.length > 0 ? (
 									<div className="space-y-3">
-										<h2 className="text-sm font-semibold">Capabilities &amp; Feature Switches</h2>
+										<div className="flex items-center justify-between">
+											<h2 className="text-sm font-semibold">Capabilities &amp; Feature Switches</h2>
+											{token ? (
+												<span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-medium">
+													Active on {website || 'connected website'}
+												</span>
+											) : null}
+										</div>
 										<div className="grid gap-2.5 sm:grid-cols-2">
 											{currentProduct.features.map((/** @type {any} */ f) => (
 												<div
 													key={f.key}
-													className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-3.5 space-y-1 shadow-card">
-													<div className="flex items-center justify-between">
+													className="rounded-card border border-line bg-surface/80 backdrop-blur-xl p-3.5 space-y-1 shadow-card hard">
+													<div className="flex items-center justify-between gap-2">
 														<span className="text-xs font-semibold text-fg">{f.name}</span>
-														<code className="text-[10px] text-muted font-mono bg-surface-2 px-1.5 py-0.5 rounded">
-															{f.key}
-														</code>
+														{token ? (
+															<span className="inline-flex items-center gap-1 font-mono text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+																<span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+																Active
+															</span>
+														) : (
+															<code className="text-[10px] text-muted font-mono bg-surface-2 px-1.5 py-0.5 rounded">
+																{f.key}
+															</code>
+														)}
 													</div>
 													{f.description ? <p className="text-xs text-muted">{f.description}</p> : null}
 												</div>
@@ -982,6 +996,50 @@ export function DocsHubView({
 										</div>
 									</div>
 								) : null}
+
+								{/* AI Assistant Context & Prompt */}
+								<div className="rounded-card border border-primary/40 bg-surface/80 backdrop-blur-xl p-4 space-y-3 shadow-card hard">
+									<div className="flex flex-wrap items-center justify-between gap-2">
+										<div className="flex items-center gap-2">
+											<Icon name="sparkle" size={16} className="text-primary" />
+											<span className="font-semibold text-sm text-fg">AI Assistant &amp; Developer Prompt</span>
+										</div>
+										<Button
+											size="sm"
+											variant="secondary"
+											onClick={() => {
+												const aiContext = [
+													`# Shelfway ${currentProduct.name} API Integration Guide`,
+													`Website Domain: ${website || 'your-store.shelfway.com'}`,
+													`API Base: ${apiBase}`,
+													`Product ID: ${currentProduct.productId}`,
+													`Docs URL: ${apiBase}/docs?product=${currentProduct.productId}`,
+													`OpenAPI Spec: ${apiBase}/docs/${currentProduct.productId}/openapi.json`,
+													'',
+													'## Active Capabilities',
+													...(currentProduct.features || []).map(
+														(/** @type {any} */ f) => `- ${f.name} (${f.key}): ${f.description || ''}`,
+													),
+													'',
+													'## Authentication',
+													`Bearer Token: ${token || 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}`,
+													`Browser Token: ${token || 'YOUR_WEBSITE_BROWSER_TOKEN'}`,
+													'',
+													'## Integration Rules',
+													'1. All endpoints return RFC 7807/9457 problems on failure.',
+													'2. Always send Content-Type: application/json.',
+													'3. Use exact casing for JSON keys matching the OpenAPI spec.',
+												].join('\n');
+												copyText(aiContext);
+											}}>
+											Copy AI Prompt
+										</Button>
+									</div>
+									<p className="text-xs text-muted leading-relaxed">
+										Copy full capability context, token authorization headers, and schema specification to paste into
+										Claude, Cursor, or AI coding assistants.
+									</p>
+								</div>
 
 								{/* Endpoints Table Overview (Swagger-style) */}
 								<div className="space-y-3">

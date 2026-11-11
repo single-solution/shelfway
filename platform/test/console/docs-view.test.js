@@ -241,6 +241,9 @@ describe('Docs hub views (PLAN §10 B1, B2)', () => {
 		if (backBtn) click(backBtn);
 		expect(document.body.textContent).toContain('Available API Operations');
 
+		const copyAiBtn = byText(document.body, 'Copy AI Prompt');
+		if (copyAiBtn) click(copyAiBtn);
+
 		cleanup();
 	});
 });
