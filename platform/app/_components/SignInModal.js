@@ -24,6 +24,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * }} props
  */
 export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null, onSuccess }) {
+	const [name, setName] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [busy, setBusy] = useState(false);
@@ -34,9 +35,17 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 	const [totpCode, setTotpCode] = useState('');
 	const [recoveryCode, setRecoveryCode] = useState('');
 	const [useRecovery, setUseRecovery] = useState(false);
+	const [firstAdminAvailable, setFirstAdminAvailable] = useState(false);
 
 	useEffect(() => {
-		if (!open) {
+		if (open) {
+			void apiFetch('/v1/auth/first-admin', { redirectOn401: false }).then((res) => {
+				if (res.ok && res.data?.available === true) {
+					setFirstAdminAvailable(true);
+				}
+			});
+		} else {
+			setName('');
 			setEmail('');
 			setPassword('');
 			setProblem(null);
@@ -45,6 +54,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 			setTotpCode('');
 			setRecoveryCode('');
 			setUseRecovery(false);
+			setFirstAdminAvailable(false);
 			busyRef.current = false;
 		}
 	}, [open]);
@@ -156,20 +166,78 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 		}
 	};
 
+	const handleCreateFirstAdminSubmit = async () => {
+		if (busyRef.current) return;
+		const trimmedName = name.trim();
+		const trimmedEmail = email.trim();
+		/** @type {Record<string, string>} */
+		const localErrors = {};
+		if (!trimmedName) {
+			localErrors.name = 'Full name is required.';
+		}
+		if (!trimmedEmail) {
+			localErrors.email = 'Email address is required.';
+		} else if (!EMAIL_REGEX.test(trimmedEmail)) {
+			localErrors.email = 'Enter a valid email address.';
+		}
+		if (!password) {
+			localErrors.password = 'Password is required.';
+		} else if (password.length < 12) {
+			localErrors.password = 'Password must be at least 12 characters.';
+		}
+		setErrors(localErrors);
+		if (Object.keys(localErrors).length > 0) return;
+
+		busyRef.current = true;
+		setBusy(true);
+		setProblem(null);
+		try {
+			const result = await apiFetch('/v1/auth/first-admin', {
+				method: 'POST',
+				body: { name: trimmedName, email: trimmedEmail, password },
+				redirectOn401: false,
+			});
+			if (!result.ok) {
+				setProblem(result.problem);
+				setErrors(fieldErrors(result.problem));
+				return;
+			}
+			onClose();
+			window.location.assign('/admin');
+		} finally {
+			busyRef.current = false;
+			setBusy(false);
+		}
+	};
+
 	const suspended = problemCode(problem) === 'merchant_suspended';
 
 	return (
 		<Dialog
 			open={open}
 			onClose={onClose}
-			title={challenge ? 'Two-step verification' : `Sign in to ${brandName}`}
-			eyebrow={challenge ? 'TWO-STEP VERIFICATION' : 'PORTAL ACCESS'}
+			title={
+				firstAdminAvailable
+					? 'Create First Admin'
+					: challenge
+						? 'Two-step verification'
+						: `Sign in to ${brandName}`
+			}
+			eyebrow={
+				firstAdminAvailable
+					? 'INITIAL SYSTEM SETUP'
+					: challenge
+						? 'TWO-STEP VERIFICATION'
+						: 'PORTAL ACCESS'
+			}
 			description={
-				challenge
-					? useRecovery
-						? 'Enter one of your backup recovery codes.'
-						: 'Enter the 6-digit code from your authenticator app.'
-					: 'Enter your credentials to access docs and your dashboard.'
+				firstAdminAvailable
+					? 'No admin account exists yet. Enter your details to create the Owner account and initialize the platform.'
+					: challenge
+						? useRecovery
+							? 'Enter one of your backup recovery codes.'
+							: 'Enter the 6-digit code from your authenticator app.'
+						: 'Enter your credentials to access docs and your dashboard.'
 			}
 			size="sm">
 			{suspended ? (
@@ -190,7 +258,67 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 				</Callout>
 			) : null}
 
-			{!challenge ? (
+			{firstAdminAvailable ? (
+				<Form onSubmit={handleCreateFirstAdminSubmit} busy={busy} aria-label="Create First Admin">
+					<Input
+						label="Full name"
+						name="name"
+						placeholder="Admin Name"
+						value={name}
+						onChange={(e) => {
+							setName(e.currentTarget.value);
+							if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
+						}}
+						error={errors.name}
+						required
+						hideRequiredMark
+						autoFocus
+						className="h-10 text-sm"
+					/>
+
+					<Input
+						label="Email address"
+						type="email"
+						name="email"
+						autoComplete="username"
+						inputMode="email"
+						placeholder="admin@company.com"
+						value={email}
+						onChange={(e) => {
+							setEmail(e.currentTarget.value);
+							if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
+						}}
+						error={errors.email}
+						required
+						hideRequiredMark
+						className="h-10 text-sm"
+					/>
+
+					<Input
+						label="Password"
+						type="password"
+						name="password"
+						autoComplete="new-password"
+						placeholder="At least 12 characters"
+						help="Must be at least 12 characters."
+						value={password}
+						onChange={(e) => {
+							setPassword(e.currentTarget.value);
+							if (errors.password) setErrors((prev) => ({ ...prev, password: '' }));
+						}}
+						error={errors.password}
+						required
+						hideRequiredMark
+						className="h-10 text-sm"
+					/>
+
+					<FormError problem={problem} fields={['name', 'email', 'password']} />
+
+					<Button type="submit" block loading={busy} variant="primary" size="md" className="h-10 font-semibold">
+						Create Owner &amp; Access Admin
+					</Button>
+				</Form>
+			) : !challenge ? (
 				<Form onSubmit={handleSignInSubmit} busy={busy} aria-label="Sign in">
 					<Input
 						label="Email address"
