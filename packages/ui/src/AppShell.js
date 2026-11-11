@@ -636,7 +636,7 @@ export function AppShell({
 							data-rail={rail || undefined}
 							className={cx(
 								// menus open upward over the page from the rail
-								'relative z-30 hidden h-full shrink-0 border-r border-line bg-surface/80 backdrop-blur-md [view-transition-name:shelfway-sidebar] lg:block',
+								'relative z-30 hidden h-full shrink-0 border-r border-line bg-surface/80 backdrop-blur-xl [view-transition-name:shelfway-sidebar] lg:block',
 								'transition-[width] duration-(--shelfway-motion) ease-shelfway',
 								rail ? 'w-16' : 'w-[15.5rem]',
 							)}>
@@ -655,13 +655,13 @@ export function AppShell({
 									role="dialog"
 									aria-modal="true"
 									aria-label="Navigation"
-									className="h-full w-60 max-w-[85vw] animate-shelfway-drawer rounded-panel border border-line bg-surface/90 backdrop-blur-md group-data-[state=closed]:animate-shelfway-drawer-out">
+									className="h-full w-60 max-w-[85vw] animate-shelfway-drawer rounded-panel border border-line bg-surface/80 backdrop-blur-xl group-data-[state=closed]:animate-shelfway-drawer-out">
 									{sidebar(false, true)}
 								</div>
 							</div>
 						) : null}
 						<div className="group/main flex h-full min-w-0 flex-1 flex-col shelfway-grid-wash">
-							<header className="flex h-12 shrink-0 items-center gap-2 border-b border-line bg-surface/80 backdrop-blur-md px-2 group-has-[[data-shelfway-page]]/main:hidden [view-transition-name:shelfway-topbar] sm:gap-3 sm:px-3">
+							<header className="flex h-12 shrink-0 items-center gap-2 border-b border-line bg-surface/80 backdrop-blur-xl px-2 group-has-[[data-shelfway-page]]/main:hidden [view-transition-name:shelfway-topbar] sm:gap-3 sm:px-3">
 								<button
 									type="button"
 									onClick={() => setOpen(true)}

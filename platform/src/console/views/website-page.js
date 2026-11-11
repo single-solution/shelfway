@@ -152,6 +152,8 @@ export function WebsitePageView({
 	const [cards, setCardsState] = useState(initialCards);
 	useEffect(() => setCardsState(initialCards), [initialCards]);
 	const [dialog, setDialog] = useState(/** @type {null | 'add' | 'removeWebsite'} */ (null));
+	const openAddDialog = () => setDialog('add');
+	const closeDialog = () => setDialog(null);
 	const [removing, setRemoving] = useState(/** @type {ProductCard | null} */ (null));
 	const [busy, setBusy] = useState(false);
 	const [problem, setProblem] = useState(/** @type {import('@shelfway/ui/problems').Problem | null} */ (null));
@@ -179,7 +181,16 @@ export function WebsitePageView({
 	const productId = parsed?.kind === 'product' ? parsed.id : null;
 	const shown = productId ? (cards.find((c) => c.productId === productId) ?? null) : null;
 	// pages of their own (not the product-rows home)
-	const own = kind === 'settings' ? 'settings' : kind === 'setup' ? 'setup' : null;
+	const own =
+		kind === 'settings'
+			? 'settings'
+			: kind === 'setup'
+				? 'setup'
+				: kind === 'orders'
+					? 'orders'
+					: kind === 'customers'
+						? 'customers'
+						: null;
 	const onSetup = own === 'setup' && setupState.sheet !== null;
 
 	const redirected = useRef('');
@@ -458,7 +469,18 @@ export function WebsitePageView({
 				]
 			: []),
 	];
-	const current = parsed?.kind === 'settings' ? `settings/${parsed.section}` : own === 'setup' ? 'setup' : 'overview';
+	const current =
+		parsed?.kind === 'settings'
+			? `settings/${parsed.section}`
+			: own === 'setup'
+				? 'setup'
+				: own === 'orders'
+					? 'orders'
+					: own === 'customers'
+						? 'customers'
+						: parsed?.kind === 'products'
+							? 'products'
+							: 'overview';
 
 	/** @type {import('react').ReactNode} */
 	let body = null;
@@ -493,7 +515,67 @@ export function WebsitePageView({
 				settingsHref={hrefOf('settings')}
 			/>
 		);
-	else if (onHome) {
+	else if (!error && own === 'orders') {
+		const ecom = cards.find((c) => c.productId === 'ecommerce');
+		body = (
+			<div className="space-y-6">
+				<Card
+					title="Store Orders & Fulfillment"
+					subtitle={`Manage checkouts, deliveries, invoices and returns for ${website.domain}.`}
+					lead={<IconBadge product="ecommerce" size="sm" />}
+					status={ecom ? { tone: productTone(ecom), label: productStatusLabel(ecom) } : undefined}
+					actions={
+						ecom && can.open ? (
+							<Button variant="primary" size="sm" loading={opening === 'ecommerce'} onClick={() => askOpen(ecom)}>
+								Open Orders Admin
+							</Button>
+						) : can.manage ? (
+							<Button size="sm" icon={<Icon name="plus" size={14} />} onClick={openAddDialog}>
+								Add Ecommerce
+							</Button>
+						) : undefined
+					}>
+					<p className="text-xs text-muted leading-relaxed">
+						{ecom
+							? 'Orders flow through the connected Ecommerce engine with multi-currency checkout, delivery zone calculation, manual payment verification, and automated notification triggers.'
+							: 'Connect the Ecommerce micro-product to process store orders, issue invoices, track delivery stages, and handle returns.'}
+					</p>
+				</Card>
+			</div>
+		);
+	} else if (!error && own === 'customers') {
+		const acc = cards.find((c) => c.productId === 'accounts') ?? cards.find((c) => c.productId === 'ecommerce');
+		body = (
+			<div className="space-y-6">
+				<Card
+					title="Store Customers & Members"
+					subtitle={`Shopper profiles, login accounts, and customer loyalty for ${website.domain}.`}
+					lead={<IconBadge product={acc ? acc.productId : 'accounts'} size="sm" />}
+					status={acc ? { tone: productTone(acc), label: productStatusLabel(acc) } : undefined}
+					actions={
+						acc && can.open ? (
+							<Button
+								variant="primary"
+								size="sm"
+								loading={opening === (acc ? acc.productId : '')}
+								onClick={() => acc && askOpen(acc)}>
+								Open Customers Admin
+							</Button>
+						) : can.manage ? (
+							<Button size="sm" icon={<Icon name="plus" size={14} />} onClick={openAddDialog}>
+								Add Accounts
+							</Button>
+						) : undefined
+					}>
+					<p className="text-xs text-muted leading-relaxed">
+						{acc
+							? 'Customer accounts, saved addresses, role pricing tiers, and loyalty points are managed across connected headless storefront widgets and customer consoles.'
+							: 'Connect the Accounts micro-product to allow customers to register, save addresses, sign in via OTP or passkeys, and request wholesale membership.'}
+					</p>
+				</Card>
+			</div>
+		);
+	} else if (onHome || parsed?.kind === 'products') {
 		sections = [
 			{
 				id: 'products',
@@ -570,10 +652,10 @@ export function WebsitePageView({
 				merchantId={merchantId}
 				website={website}
 				products={(addable ?? []).filter((p) => !cards.some((c) => c.productId === p.productId))}
-				onClose={() => setDialog(null)}
+				onClose={closeDialog}
 				onAdded={(card) => {
 					setCards([...cards, card].sort((a, b) => a.productId.localeCompare(b.productId)));
-					setDialog(null);
+					closeDialog();
 					toast.show({ title: WEBSITE.productAdded(card.name) });
 					nav.go(hrefOf(`products/${card.productId}`));
 				}}
@@ -802,7 +884,7 @@ export function WebsitePageView({
 			</TypedConfirmDialog>
 			<TypedConfirmDialog
 				open={dialog === 'removeWebsite'}
-				onClose={() => setDialog(null)}
+				onClose={closeDialog}
 				onConfirm={() => void removeWebsite()}
 				expected={website.domain}
 				busy={busy}

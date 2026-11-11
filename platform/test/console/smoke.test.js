@@ -8,7 +8,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import { closeMongoClients } from '../../src/testing.js';
 import * as loaders from '../../src/console/loaders.js';
-import { routes } from '../../src/console/paths.js';
+import { api, routes } from '../../src/console/paths.js';
 import { adminApi, adminRoutes } from '../../src/console/admin/paths.js';
 import { websitePartOf, sectionOf } from '../../src/console/website-parts.js';
 import { ADMIN, CONSOLE, MORE, PRODUCTS, PROFILE, SETUP, WEBSITE, WEBSITE_SETTINGS } from '../../src/texts/console.js';
@@ -218,6 +218,11 @@ describe('merchant console smoke', () => {
 		expect(contactLine({ channels: [] })).toBe('support');
 		expect(contactLine(null)).toBe('support');
 		expect(routes.website('web_1')).toBe('/websites/web_1');
+		expect(routes.docsProductOpenapi('chat')).toBe('/docs/chat/openapi.json');
+		expect(routes.docsOpenapi()).toBe('/docs/openapi.json');
+		expect(api.docsProductOpenapi('chat')).toBe('/v1/docs/chat/openapi.json');
+		expect(api.docsOpenapi()).toBe('/v1/docs/openapi.json');
+		expect(api.tokens('mer_1', 'web_1')).toBe('/v1/merchants/mer_1/websites/web_1/tokens');
 		expect(merchantSections('/websites/web_1')[0]?.items.map((i) => [i.label, i.current])).toEqual([
 			['Overview', false],
 			['Websites', true],

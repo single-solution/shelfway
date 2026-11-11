@@ -11,9 +11,6 @@ export const SETTINGS_SECTIONS = /** @type {const} */ (['business', 'brand', 're
 /** The parts that are legacy peer apps to redirect to website home (PLAN §1, §10 A1). */
 export const LEGACY_PEER_REDIRECTS = /** @type {const} */ (['install', 'usage', 'changes']);
 
-/** The parts that are one page each, without a deeper level. */
-const SINGLE = /** @type {const} */ (['setup']);
-
 /**
  * The part of the address: the segments after the website joined by `/`.
  * @param {string | undefined} part
@@ -25,7 +22,7 @@ export const websitePartOf = (part, sub) => [part, sub].filter(Boolean).join('/'
  * What a part of the address shows, or null when there is no such page. A bare `settings` shows the first section.
  * Legacy peer apps (install, usage, changes) return redirect to home.
  * @param {string} path the part, as `websitePartOf` gives it
- * @returns {{ kind: 'overview' | 'setup' } | { kind: 'redirect', to: string } | { kind: 'product', id: string } |
+ * @returns {{ kind: 'overview' | 'setup' | 'orders' | 'customers' | 'products' } | { kind: 'redirect', to: string } | { kind: 'product', id: string } |
  *   { kind: 'settings', section: string } | null}
  */
 export const parseWebsitePart = (path) => {
@@ -33,13 +30,15 @@ export const parseWebsitePart = (path) => {
 	const [head = '', ...rest] = path.split('/');
 	const tail = rest.join('/');
 	if (LEGACY_PEER_REDIRECTS.includes(/** @type {any} */ (head))) return { kind: 'redirect', to: '' };
-	if (head === 'products') return tail && !tail.includes('/') ? { kind: 'product', id: tail } : null;
+	if ((head === 'developer' || head === 'setup') && !tail) return { kind: 'setup' };
+	if (head === 'products') return tail && !tail.includes('/') ? { kind: 'product', id: tail } : { kind: 'products' };
+	if (head === 'orders' && !tail) return { kind: 'orders' };
+	if (head === 'customers' && !tail) return { kind: 'customers' };
 	if (head === 'settings') {
 		if (!tail) return { kind: 'settings', section: SETTINGS_SECTIONS[0] };
 		return /** @type {readonly string[]} */ (SETTINGS_SECTIONS).includes(tail) ? { kind: 'settings', section: tail } : null;
 	}
-	const single = SINGLE.find((kind) => kind === head);
-	return single && !tail ? { kind: single } : null;
+	return null;
 };
 
 /**

@@ -980,10 +980,9 @@ export function DocsHubView({
 													<div className="flex items-center justify-between gap-2">
 														<span className="text-xs font-semibold text-fg">{f.name}</span>
 														{token ? (
-															<span className="inline-flex items-center gap-1 font-mono text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
-																<span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+															<Badge tone="success" dot>
 																Active
-															</span>
+															</Badge>
 														) : (
 															<code className="text-[10px] text-muted font-mono bg-surface-2 px-1.5 py-0.5 rounded">
 																{f.key}
@@ -1022,8 +1021,8 @@ export function DocsHubView({
 													),
 													'',
 													'## Authentication',
-													`Bearer Token: ${token || 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}`,
-													`Browser Token: ${token || 'YOUR_WEBSITE_BROWSER_TOKEN'}`,
+													`Authorization Header: Bearer ${token || 'YOUR_WEBSITE_SERVER_TOKEN'}`,
+													`Browser Client Token: ${token || 'YOUR_WEBSITE_BROWSER_TOKEN'}`,
 													'',
 													'## Integration Rules',
 													'1. All endpoints return RFC 7807/9457 problems on failure.',

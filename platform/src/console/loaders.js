@@ -248,7 +248,7 @@ export const loadWebsitePage = async (api, merchantId, websiteId, part) => {
 		loadWebsiteRows(api, merchantId),
 		api.get(paths.billing(merchantId)),
 		loadWebsiteSettings(api, merchantId, websiteId),
-		part === 'setup' ? loadSetup(api, merchantId, websiteId) : null,
+		part === 'setup' || part === 'developer' ? loadSetup(api, merchantId, websiteId) : null,
 		api.get(paths.catalogProducts({ status: 'active' })).catch(() => null),
 	]);
 	if (websites.failed) return websites.failed;

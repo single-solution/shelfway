@@ -240,6 +240,7 @@ describe('Docs hub views (PLAN §10 B1, B2)', () => {
 		const backBtn = byText(document.body, '<- Back to Chat Overview');
 		if (backBtn) click(backBtn);
 		expect(document.body.textContent).toContain('Available API Operations');
+		expect(document.body.textContent).toContain('Active');
 
 		const copyAiBtn = byText(document.body, 'Copy AI Prompt');
 		if (copyAiBtn) click(copyAiBtn);

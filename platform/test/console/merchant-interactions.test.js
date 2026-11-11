@@ -436,6 +436,13 @@ describe('merchant console interactions (jsdom): sign-in, Account, Overview, web
 			</PathnameContext.Provider>,
 		);
 		expect(shows('child') && shows('Credits are running low') && shows('help@shelfway.test') && shows('Acme')).toBe(true);
+		// store admin workspace links are present for the active website
+		expect(document.querySelector(`nav a[href="/websites/${site.websiteId}"]`)).not.toBeNull();
+		expect(document.querySelector(`nav a[href="/websites/${site.websiteId}/orders"]`)).not.toBeNull();
+		expect(document.querySelector(`nav a[href="/websites/${site.websiteId}/products"]`)).not.toBeNull();
+		expect(document.querySelector(`nav a[href="/websites/${site.websiteId}/customers"]`)).not.toBeNull();
+		expect(document.querySelector(`nav a[href="/websites/${site.websiteId}/setup"]`)).not.toBeNull();
+		expect(document.querySelector(`nav a[href="/websites/${site.websiteId}/settings"]`)).not.toBeNull();
 		// the balance is a link at the bottom of the sidebar, and Usage and credits carries an attention dot while it is low
 		expect(document.querySelector('a[title="Credit balance"]')?.getAttribute('href')).toBe('/credits');
 		expect(document.querySelector('nav a[href="/credits"] [data-shelfway-dot]')?.getAttribute('title')).toBe(

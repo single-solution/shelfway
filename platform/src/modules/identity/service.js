@@ -313,9 +313,18 @@ export const createIdentityService = (ctx, options = {}) => {
 					featuresOn: item.featuresOn ?? [],
 				});
 			}
+			let browserClientToken = null;
+			for (const item of products) {
+				if (item.browserToken) {
+					browserClientToken = item.browserToken;
+					break;
+				}
+			}
 			await deps.audit(actor, 'pack.generated', { type: 'website', id: websiteId, merchantId, websiteId }, { meta });
 			return {
 				websiteId,
+				SHELFWAY_WEBSITE_ID: websiteId,
+				browserClientToken,
 				docsHubUrl,
 				domain: website.domain,
 				products,

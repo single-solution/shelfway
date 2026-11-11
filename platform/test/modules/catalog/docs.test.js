@@ -161,6 +161,8 @@ describe('Docs hub (PLAN §10 B1, B2, B3)', () => {
 
 		const packRes = await owner.post(`/v1/merchants/${merchant.merchantId}/websites/${websiteId}/pack`, { code });
 		expect(packRes.status).toBe(200);
+		expect(packRes.json?.websiteId).toBe(websiteId);
+		expect(packRes.json?.SHELFWAY_WEBSITE_ID).toBe(websiteId);
 		expect(packRes.json?.docsHubUrl).toBe(`${PLATFORM_URL}/docs`);
 		expect(packRes.json?.products).toHaveLength(1);
 		const p = packRes.json?.products[0];

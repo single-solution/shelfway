@@ -112,6 +112,8 @@ const creditsMark = (billing) => {
 export const merchantSections = (pathname, billing = null) => {
 	/** @param {string} href */
 	const is = (href) => pathname === href || pathname.startsWith(`${href}/`);
+	const currentWebsiteId = /^\/websites\/([^/?#]+)/.exec(pathname)?.[1] ?? '';
+	const storePrefix = currentWebsiteId ? `/websites/${currentWebsiteId}` : '';
 	return [
 		{
 			label: '',
@@ -147,6 +149,57 @@ export const merchantSections = (pathname, billing = null) => {
 				},
 			],
 		},
+		...(storePrefix
+			? [
+					/** @type {import('@shelfway/ui').NavSection} */ ({
+						label: 'Store Admin',
+						items: [
+							{
+								href: storePrefix,
+								label: 'Overview',
+								kind: 'overview',
+								icon: 'home',
+								current: pathname === storePrefix,
+							},
+							{
+								href: `${storePrefix}/orders`,
+								label: 'Orders',
+								kind: 'product',
+								icon: 'receipt',
+								current: is(`${storePrefix}/orders`),
+							},
+							{
+								href: `${storePrefix}/products`,
+								label: 'Products',
+								kind: 'product',
+								icon: 'box',
+								current: is(`${storePrefix}/products`),
+							},
+							{
+								href: `${storePrefix}/customers`,
+								label: 'Customers',
+								kind: 'merchant',
+								icon: 'users',
+								current: is(`${storePrefix}/customers`),
+							},
+							{
+								href: `${storePrefix}/setup`,
+								label: 'Developer & Keys',
+								kind: 'developer',
+								icon: 'code',
+								current: is(`${storePrefix}/setup`),
+							},
+							{
+								href: `${storePrefix}/settings`,
+								label: 'Settings',
+								kind: 'settings',
+								icon: 'sliders',
+								current: is(`${storePrefix}/settings`),
+							},
+						],
+					}),
+				]
+			: []),
 	];
 };
 

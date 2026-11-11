@@ -279,8 +279,12 @@ describe('website page (jsdom)', () => {
 			expect(buttons('Share with developer')).toHaveLength(1);
 			await press('Share with developer');
 			expect(shows('Developer pack')).toBe(true);
-			await ownerBrowser.api.post('/v1/me/step-up-otp', {});
-			const packOtp = await until(() => world.lastOtp(owner.email));
+			await settle(2);
+			let packOtp = world.lastOtp(owner.email);
+			if (!packOtp) {
+				await ownerBrowser.api.post('/v1/me/step-up-otp', {});
+				packOtp = await until(() => world.lastOtp(owner.email));
+			}
 			fillDialog('Two-step or recovery code', String(packOtp));
 			await pressDialog('Download developer pack');
 			const packCall = await ownerBrowser.waitCall(
@@ -289,6 +293,8 @@ describe('website page (jsdom)', () => {
 				(/** @type {any} */ st) => st === 200,
 			);
 			expect(packCall.body).toMatchObject({
+				websiteId,
+				SHELFWAY_WEBSITE_ID: websiteId,
 				docsHubUrl: expect.stringContaining('/docs'),
 				domain: 'shop.example.com',
 				products: expect.arrayContaining([
@@ -603,6 +609,34 @@ describe('website page (jsdom)', () => {
 		withToasts(<WebsitePageView {...props} part="usage" />);
 		await settle(2);
 		expect(testRouter.push).toHaveBeenLastCalledWith('/websites/web_1');
+		cleanup();
+		withToasts(<WebsitePageView {...props} part="orders" />);
+		expect(shows('Store Orders & Fulfillment')).toBe(true);
+		expect(shows('Add Ecommerce')).toBe(true);
+		cleanup();
+		withToasts(<WebsitePageView {...props} part="customers" />);
+		expect(shows('Store Customers & Members')).toBe(true);
+		expect(shows('Add Accounts')).toBe(true);
+		cleanup();
+		withToasts(
+			<WebsitePageView
+				{...props}
+				part="orders"
+				cards={[{ productId: 'ecommerce', name: 'Ecommerce', status: 'active', featuresOn: ['orders'], dailyCost: 0 }]}
+				can={{ ...props.can, open: true }}
+			/>,
+		);
+		expect(shows('Open Orders Admin')).toBe(true);
+		cleanup();
+		withToasts(
+			<WebsitePageView
+				{...props}
+				part="customers"
+				cards={[{ productId: 'accounts', name: 'Accounts', status: 'active', featuresOn: ['auth'], dailyCost: 0 }]}
+				can={{ ...props.can, open: true }}
+			/>,
+		);
+		expect(shows('Open Customers Admin')).toBe(true);
 	});
 
 	it('shows `Cannot be shown: regenerate` and other token failures', async () => {
