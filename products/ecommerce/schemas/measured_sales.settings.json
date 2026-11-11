@@ -1,5 +1,57 @@
 {
 	"type": "object",
 	"additionalProperties": false,
-	"properties": {}
+	"properties": {
+		"defaultUnit": {
+			"type": "string",
+			"title": "Default measurement unit",
+			"description": "Default unit for measured items (e.g. m for meter, kg for kilogram, sqft for square foot, yd for yard, tola, carat, hr).",
+			"default": "m",
+			"maxLength": 20
+		},
+		"defaultDecimals": {
+			"type": "integer",
+			"title": "Default decimal places",
+			"description": "Number of decimal places shown to shoppers (e.g. 2 for 1.25 m, 3 for 0.125 kg).",
+			"default": 2,
+			"minimum": 0,
+			"maximum": 3
+		},
+		"defaultStep": {
+			"type": "number",
+			"title": "Default quantity step",
+			"description": "The incremental amount by which shoppers increase or decrease quantity (e.g. 0.1 m or 0.25 m).",
+			"default": 0.1,
+			"minimum": 0.001,
+			"maximum": 1000
+		},
+		"defaultMinQuantity": {
+			"type": "number",
+			"title": "Minimum purchase quantity",
+			"description": "The minimum measured quantity a shopper can add to cart.",
+			"default": 1,
+			"minimum": 0.001,
+			"maximum": 10000
+		},
+		"defaultMaxQuantity": {
+			"type": "number",
+			"title": "Maximum purchase quantity",
+			"description": "The maximum measured quantity a shopper can add to cart.",
+			"default": 100,
+			"minimum": 0.001,
+			"maximum": 100000
+		},
+		"showUnitPriceInCatalog": {
+			"type": "boolean",
+			"title": "Show unit price in catalog",
+			"description": "Display price per standard unit (e.g. $12.00 / meter) on product cards and listings.",
+			"default": true
+		},
+		"enableFractionalStock": {
+			"type": "boolean",
+			"title": "Track fractional inventory",
+			"description": "Count stock in thousandths of the measured unit for exact fractional inventory tracking.",
+			"default": true
+		}
+	}
 }

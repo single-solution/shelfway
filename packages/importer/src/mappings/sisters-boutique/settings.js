@@ -324,6 +324,13 @@ export const settingsPlan = (values) => {
 				'loyalty.expiryRule': 'at_earn',
 				// the suite default (E47; store mapping to review when the owner asks)
 				'loyalty.memberFlag': 'off',
+				// role pricing (E19; `apps/web/src/app/checkout/_components/CheckoutPanels.tsx`:466)
+				'role_pricing.applyOnDiscountedItems': false,
+				'role_pricing.stackWithCoupons': false,
+				'role_pricing.showOriginalPrice': true,
+				'role_pricing.minimumWholesaleOrder': 0,
+				'role_pricing.wholesaleBadgeLabel': 'Wholesale Member',
+				'role_pricing.enableVolumeTiers': true,
 				// alerts on placement, status changes and cancels (`apps/admin/src/app/api/orders/[id]/route.ts`:336-342); the
 				// status changes are each status's staffAlert in the order flow below (E36)
 				'staff_alerts.events': ['placed', 'canceled'],

@@ -1,5 +1,45 @@
 {
 	"type": "object",
 	"additionalProperties": false,
-	"properties": {}
+	"properties": {
+		"applyOnDiscountedItems": {
+			"type": "boolean",
+			"title": "Apply role discount on already discounted items",
+			"description": "When turned off, role discounts apply only to full-price products, not items already on promotional sale.",
+			"default": false
+		},
+		"stackWithCoupons": {
+			"type": "boolean",
+			"title": "Stack role prices with coupons",
+			"description": "Allow customers with role pricing to also redeem promotional discount coupons at checkout.",
+			"default": false
+		},
+		"showOriginalPrice": {
+			"type": "boolean",
+			"title": "Show original price comparison",
+			"description": "Display strikethrough retail price alongside wholesale role price to signed-in wholesale members.",
+			"default": true
+		},
+		"minimumWholesaleOrder": {
+			"type": "integer",
+			"title": "Minimum wholesale order amount",
+			"description": "Minimum order subtotal (in minor currency units) required before wholesale role prices take effect. 0 = no minimum.",
+			"default": 0,
+			"minimum": 0,
+			"maximum": 1000000000
+		},
+		"wholesaleBadgeLabel": {
+			"type": "string",
+			"title": "Role discount badge label",
+			"description": "Text shown on product cards, cart line items, and invoice summaries indicating wholesale role pricing.",
+			"default": "Wholesale Member",
+			"maxLength": 60
+		},
+		"enableVolumeTiers": {
+			"type": "boolean",
+			"title": "Enable volume quantity tiers",
+			"description": "Allow role-based volume tier discounts when buying in bulk quantities.",
+			"default": true
+		}
+	}
 }

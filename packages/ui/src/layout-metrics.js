@@ -161,11 +161,11 @@ export const pageBody = ({ toolbar = false, footer = false }) =>
 
 /** The card and the summary tile, shared by the real ones (`Card`, `Stat`) and their skeletons. */
 export const CARD = Object.freeze({
-	box: 'min-w-0 rounded-card border border-line bg-surface/95 backdrop-blur-md shadow-card transition-all shelfway-motion',
+	box: 'min-w-0 rounded-card border border-line bg-surface/80 backdrop-blur-md shadow-card transition-all shelfway-motion hover:shadow-[4px_4px_0_color-mix(in_srgb,var(--shelfway-primary)_20%,transparent)] hover:border-line-strong hover:-translate-x-0.5 hover:-translate-y-0.5',
 	header: 'flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 pt-3.5',
 	body: 'p-4',
 	bodyWithHeader: 'px-4 pt-2.5 pb-4',
-	tile: '@container min-w-0 rounded-card border border-line bg-surface/95 backdrop-blur-md px-4 py-3.5 shadow-card shelfway-lift',
+	tile: '@container min-w-0 rounded-card border border-line bg-surface/80 backdrop-blur-md px-4 py-3.5 shadow-card shelfway-lift hover:shadow-[4px_4px_0_color-mix(in_srgb,var(--shelfway-primary)_20%,transparent)] hover:border-line-strong',
 });
 
 /**

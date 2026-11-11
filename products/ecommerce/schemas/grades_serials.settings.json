@@ -1,5 +1,46 @@
 {
 	"type": "object",
 	"additionalProperties": false,
-	"properties": {}
+	"properties": {
+		"requireSerialOnFulfillment": {
+			"type": "boolean",
+			"title": "Require serial number or IMEI on fulfillment",
+			"description": "Orders containing serialized items cannot be marked packed or shipped until unit serial numbers or IMEIs are assigned.",
+			"default": true
+		},
+		"validateImeiChecksum": {
+			"type": "boolean",
+			"title": "Validate IMEI checksums",
+			"description": "Enforce standard 15-digit Luhn algorithm verification when typing or scanning device IMEIs.",
+			"default": true
+		},
+		"allowManualSerialEntry": {
+			"type": "boolean",
+			"title": "Allow manual serial entry",
+			"description": "Permit staff to manually type unit numbers or IMEIs during fulfillment if not picked from pre-scanned inventory.",
+			"default": true
+		},
+		"defaultReturnDays": {
+			"type": "integer",
+			"title": "Default return window (days)",
+			"description": "Standard return period for graded items unless overridden by a specific condition grade.",
+			"default": 14,
+			"minimum": 0,
+			"maximum": 365
+		},
+		"defaultWarrantyDays": {
+			"type": "integer",
+			"title": "Default warranty coverage (days)",
+			"description": "Standard warranty period for graded items unless overridden by a specific condition grade.",
+			"default": 90,
+			"minimum": 0,
+			"maximum": 3650
+		},
+		"showConditionGlossary": {
+			"type": "boolean",
+			"title": "Show condition glossary on storefront",
+			"description": "Publish condition grade definitions, inspection criteria, and warranty terms on product pages.",
+			"default": true
+		}
+	}
 }

@@ -1,5 +1,32 @@
 {
 	"type": "object",
 	"additionalProperties": false,
-	"properties": {}
+	"properties": {
+		"maxCouponsPerOrder": {
+			"type": "integer",
+			"title": "Maximum coupons per checkout",
+			"description": "How many coupon codes a customer can apply to a single order.",
+			"default": 1,
+			"minimum": 1,
+			"maximum": 5
+		},
+		"allowStackingWithSales": {
+			"type": "boolean",
+			"title": "Stack coupons on discounted items",
+			"description": "Allow coupon discounts to apply on items that already have a promotional sale price.",
+			"default": false
+		},
+		"requireAccountToRedeem": {
+			"type": "boolean",
+			"title": "Require sign-in to redeem coupons",
+			"description": "Require customers to create or sign in to their account to use discount codes.",
+			"default": false
+		},
+		"caseSensitiveCodes": {
+			"type": "boolean",
+			"title": "Case-sensitive coupon codes",
+			"description": "Match coupon codes with exact letter casing instead of converting to uppercase.",
+			"default": false
+		}
+	}
 }

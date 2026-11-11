@@ -592,7 +592,7 @@ export function DocsHubView({
 														<span>Overview &amp; Embed</span>
 													</button>
 
-													{filteredOperations.slice(0, 40).map((/** @type {any} */ op) => {
+													{filteredOperations.map((/** @type {any} */ op) => {
 														const opKey = `${op.method}:${op.path}`;
 														const isOpActive = selectedOpKey === opKey;
 														return (
@@ -991,7 +991,7 @@ export function DocsHubView({
 									</div>
 
 									<div className="rounded-card border border-line bg-surface/95 backdrop-blur-md overflow-hidden divide-y divide-line shadow-card">
-										{operations.slice(0, 50).map((/** @type {any} */ op) => {
+										{operations.map((/** @type {any} */ op) => {
 											const opKey = `${op.method}:${op.path}`;
 											return (
 												<button
@@ -1231,6 +1231,8 @@ export function DocsHubView({
 									{activeSnippetTab === 'curl' ? (
 										<CodeBlock
 											code={`curl -X ${currentOperation.method} "${apiBase}${currentOperation.path}" \\\n  -H "Authorization: ${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}" \\\n  -H "Content-Type: application/json"${
+												website ? ` \\\n  -H "Origin: https://${website}"` : ''
+											}${
 												currentOperation.requestBody
 													? ` \\\n  -d '${JSON.stringify(
 															sampleFromSchema(
@@ -1244,7 +1246,7 @@ export function DocsHubView({
 										/>
 									) : activeSnippetTab === 'fetch' ? (
 										<CodeBlock
-											code={`const response = await fetch("${apiBase}${currentOperation.path}", {\n  method: "${currentOperation.method}",\n  headers: {\n    "Authorization": "${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}",\n    "Content-Type": "application/json"\n  }${
+											code={`const response = await fetch("${apiBase}${currentOperation.path}", {\n  method: "${currentOperation.method}",\n  headers: {\n    "Authorization": "${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}",\n    "Content-Type": "application/json"${website ? `,\n    "Origin": "https://${website}"` : ''}\n  }${
 												currentOperation.requestBody
 													? `,\n  body: JSON.stringify(${JSON.stringify(
 															sampleFromSchema(

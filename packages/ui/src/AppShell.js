@@ -631,7 +631,7 @@ export function AppShell({
 						className="sr-only z-[70] rounded-control bg-primary px-3 py-2 text-sm font-semibold text-on-primary focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
 						Skip to content
 					</a>
-					<div className="relative z-10 flex min-h-0 min-w-0 flex-1 overflow-hidden rounded-panel border border-line bg-surface/95 shadow-overlay backdrop-blur-md">
+					<div className="relative z-10 flex min-h-0 min-w-0 flex-1 overflow-hidden rounded-panel border border-line bg-surface/80 shadow-overlay backdrop-blur-xl">
 						<aside
 							data-rail={rail || undefined}
 							className={cx(
@@ -655,7 +655,7 @@ export function AppShell({
 									role="dialog"
 									aria-modal="true"
 									aria-label="Navigation"
-									className="h-full w-60 max-w-[85vw] animate-shelfway-drawer rounded-panel border border-line bg-surface/95 backdrop-blur-md group-data-[state=closed]:animate-shelfway-drawer-out">
+									className="h-full w-60 max-w-[85vw] animate-shelfway-drawer rounded-panel border border-line bg-surface/90 backdrop-blur-md group-data-[state=closed]:animate-shelfway-drawer-out">
 									{sidebar(false, true)}
 								</div>
 							</div>

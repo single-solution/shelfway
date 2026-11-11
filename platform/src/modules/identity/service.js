@@ -304,6 +304,7 @@ export const createIdentityService = (ctx, options = {}) => {
 				products.push({
 					id: item.productId,
 					name: catProduct.name ?? item.name ?? item.productId,
+					endpoint: catProduct.baseUrl || null,
 					docs: `${docsHubUrl}/${item.productId}`,
 					openapi: `${docsHubUrl}/${item.productId}/openapi.json`,
 					widget: catProduct.widgetScriptUrl || null,

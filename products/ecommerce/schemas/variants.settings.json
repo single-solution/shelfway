@@ -1,5 +1,32 @@
 {
 	"type": "object",
 	"additionalProperties": false,
-	"properties": {}
+	"properties": {
+		"trackStockPerVariant": {
+			"type": "boolean",
+			"title": "Track inventory per variant",
+			"description": "Maintain separate stock counts and low-inventory thresholds for each individual size, color, or option combination.",
+			"default": true
+		},
+		"allowOutOfStockPurchases": {
+			"type": "boolean",
+			"title": "Allow backorders on variants",
+			"description": "Permit shoppers to purchase variants even when the physical inventory count is zero.",
+			"default": false
+		},
+		"maxVariantsPerProduct": {
+			"type": "integer",
+			"title": "Maximum variants per product",
+			"description": "Upper limit of variant combinations permitted on a single catalog item.",
+			"default": 100,
+			"minimum": 1,
+			"maximum": 500
+		},
+		"hideUnavailableOptions": {
+			"type": "boolean",
+			"title": "Hide discontinued variant combinations",
+			"description": "Do not show options on storefront selectors that have zero stock and no reorder planned.",
+			"default": false
+		}
+	}
 }

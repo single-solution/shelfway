@@ -35,7 +35,8 @@ export default async function DocsPage({ searchParams }) {
 	const initialSection = one(q.section) || (initialProduct ? 'products' : 'quickstart');
 	const initialToken = one(q.token) || '';
 	const initialWebsite = one(q.website) || '';
-	const productDetail = initialProduct ? await loadDocsProduct(api, initialProduct) : null;
+	const productToLoad = initialProduct || (loaded.ok && loaded.items[0]?.productId) || '';
+	const productDetail = productToLoad ? await loadDocsProduct(api, productToLoad) : null;
 	const brandName = branding?.name || PRODUCT_BRAND;
 
 	return (

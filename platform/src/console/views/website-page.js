@@ -547,7 +547,7 @@ export function WebsitePageView({
 				facts={facts}
 				actions={actions}
 				info={kind === 'settings' ? T.intro : WEBSITE.pageInfo}
-				{...(own !== null
+				{...(own !== null || !list
 					? {
 							nav: {
 								groups: groups.map((group) => ({
@@ -605,23 +605,39 @@ export function WebsitePageView({
 				description={`Access link and environment credentials for ${website.domain}. Scoped to active products only.`}>
 				{revealedPack
 					? (() => {
-							const browserToken =
-								revealedPack.products?.find((/** @type {any} */ p) => p.browserToken)?.browserToken || '';
-							const serverToken = revealedPack.products?.find((/** @type {any} */ p) => p.serverToken)?.serverToken || '';
-							const docsLink =
-								typeof window !== 'undefined'
-									? `${window.location.origin}/docs?website=${encodeURIComponent(website.domain)}${
-											browserToken ? `&token=${encodeURIComponent(browserToken)}` : ''
-										}`
-									: '';
-							const envSnippet = [
-								`NEXT_PUBLIC_SHELFWAY_DOMAIN="${typeof window !== 'undefined' ? window.location.origin : 'https://shelfway.com'}"`,
+							const activeProducts = revealedPack.products || [];
+							const browserToken = activeProducts.find((/** @type {any} */ p) => p.browserToken)?.browserToken || '';
+							const originUrl =
+								typeof window !== 'undefined' && window.location.origin ? window.location.origin : 'https://shelfway.com';
+							const docsLink = `${originUrl}/docs?website=${encodeURIComponent(website.domain)}${
+								browserToken ? `&token=${encodeURIComponent(browserToken)}` : ''
+							}`;
+
+							const envLines = [
+								`# Shelfway Environment Configuration for ${website.domain}`,
+								`NEXT_PUBLIC_SHELFWAY_DOMAIN="${originUrl}"`,
 								`NEXT_PUBLIC_SHELFWAY_WEBSITE_DOMAIN="${website.domain}"`,
-								browserToken ? `NEXT_PUBLIC_SHELFWAY_CLIENT_TOKEN="${browserToken}"` : null,
-								serverToken ? `SHELFWAY_SERVER_TOKEN="${serverToken}"` : null,
-							]
-								.filter(Boolean)
-								.join('\n');
+								`SHELFWAY_WEBSITE_ID="${website.id}"`,
+							];
+							if (browserToken) {
+								envLines.push(`NEXT_PUBLIC_SHELFWAY_CLIENT_TOKEN="${browserToken}"`);
+							}
+							envLines.push('');
+							envLines.push('# Active Product Tokens & Endpoints');
+							for (const p of activeProducts) {
+								const key = String(p.id)
+									.toUpperCase()
+									.replace(/[^A-Z0-9]/g, '_');
+								if (p.serverToken) {
+									envLines.push(`SHELFWAY_${key}_SERVER_TOKEN="${p.serverToken}"`);
+								}
+								if (p.browserToken) {
+									envLines.push(`NEXT_PUBLIC_SHELFWAY_${key}_CLIENT_TOKEN="${p.browserToken}"`);
+								}
+								const ep = p.endpoint || `${originUrl}/v1/${p.id}`;
+								envLines.push(`SHELFWAY_${key}_ENDPOINT="${ep}"`);
+							}
+							const envSnippet = envLines.join('\n');
 
 							return (
 								<div className="space-y-4 pt-1">
@@ -652,6 +668,75 @@ export function WebsitePageView({
 											</Button>
 										</div>
 									</div>
+
+									{activeProducts.length > 0 ? (
+										<div className="space-y-2">
+											<span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted">
+												Active Product Endpoints &amp; Credentials
+											</span>
+											<div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+												{activeProducts.map((/** @type {any} */ p) => {
+													const ep = p.endpoint || `${originUrl}/v1/${p.id}`;
+													const productDocs = `${originUrl}/docs?website=${encodeURIComponent(website.domain)}&product=${p.id}${p.browserToken ? `&token=${encodeURIComponent(p.browserToken)}` : ''}`;
+													return (
+														<div
+															key={p.id}
+															className="rounded-control border border-line bg-surface/60 p-2.5 space-y-1.5 text-xs">
+															<div className="flex items-center justify-between gap-2">
+																<div className="flex items-center gap-2">
+																	<IconBadge product={p.id} size="xs" />
+																	<span className="font-semibold text-fg">{p.name}</span>
+																	<span className="font-mono text-[11px] text-muted">({p.id})</span>
+																</div>
+																<a
+																	href={productDocs}
+																	target="_blank"
+																	rel="noopener noreferrer"
+																	className="font-medium text-primary hover:underline text-[11px]">
+																	Docs &amp; Swagger
+																</a>
+															</div>
+															<div className="space-y-1 font-mono text-[11px] text-muted">
+																<div className="truncate">Endpoint: {ep}</div>
+																{p.serverToken ? (
+																	<div className="flex items-center justify-between gap-2">
+																		<span className="truncate">
+																			Server: {p.serverToken.slice(0, 10)}...{p.serverToken.slice(-6)}
+																		</span>
+																		<Button
+																			size="sm"
+																			variant="ghost"
+																			onClick={() => {
+																				copyText(p.serverToken);
+																				toast.show({ title: `${p.name} server token copied` });
+																			}}>
+																			Copy Server
+																		</Button>
+																	</div>
+																) : null}
+																{p.browserToken ? (
+																	<div className="flex items-center justify-between gap-2">
+																		<span className="truncate">
+																			Client: {p.browserToken.slice(0, 10)}...{p.browserToken.slice(-6)}
+																		</span>
+																		<Button
+																			size="sm"
+																			variant="ghost"
+																			onClick={() => {
+																				copyText(p.browserToken);
+																				toast.show({ title: `${p.name} client token copied` });
+																			}}>
+																			Copy Client
+																		</Button>
+																	</div>
+																) : null}
+															</div>
+														</div>
+													);
+												})}
+											</div>
+										</div>
+									) : null}
 
 									<div className="space-y-1.5">
 										<div className="flex items-center justify-between">
