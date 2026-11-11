@@ -1,5 +1,19 @@
 {
 	"type": "object",
 	"additionalProperties": false,
-	"properties": {}
+	"properties": {
+		"fulfillmentStrategy": {
+			"type": "string",
+			"title": "Default fulfillment routing",
+			"description": "How multi-location orders select fulfillment source.",
+			"enum": ["primary_first", "closest_location", "split_if_needed"],
+			"default": "primary_first"
+		},
+		"allowBackorders": {
+			"type": "boolean",
+			"title": "Allow backorders across locations",
+			"description": "Allow checkout when aggregate stock across all locations is zero.",
+			"default": false
+		}
+	}
 }

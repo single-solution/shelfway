@@ -1,5 +1,18 @@
 {
 	"type": "object",
 	"additionalProperties": false,
-	"properties": {}
+	"properties": {
+		"showSavingsBadge": {
+			"type": "boolean",
+			"title": "Show bundle savings badge",
+			"description": "Display savings percentage or discount badge on bundled products.",
+			"default": true
+		},
+		"autoApplyInCart": {
+			"type": "boolean",
+			"title": "Auto-apply bundle discounts in cart",
+			"description": "Automatically detect when qualifying items for a bundle are present in cart and apply savings.",
+			"default": true
+		}
+	}
 }

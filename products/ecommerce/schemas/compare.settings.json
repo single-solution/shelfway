@@ -1,5 +1,20 @@
 {
 	"type": "object",
 	"additionalProperties": false,
-	"properties": {}
+	"properties": {
+		"maxCompareItems": {
+			"type": "integer",
+			"title": "Maximum items to compare",
+			"description": "How many products a shopper can compare side-by-side at once.",
+			"default": 4,
+			"minimum": 2,
+			"maximum": 8
+		},
+		"highlightDifferences": {
+			"type": "boolean",
+			"title": "Highlight differing specifications",
+			"description": "Visually accentuate spec attributes that differ between compared items.",
+			"default": true
+		}
+	}
 }

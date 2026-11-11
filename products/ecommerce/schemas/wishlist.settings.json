@@ -1,5 +1,26 @@
 {
 	"type": "object",
 	"additionalProperties": false,
-	"properties": {}
+	"properties": {
+		"allowGuestWishlist": {
+			"type": "boolean",
+			"title": "Allow guest wishlists",
+			"description": "Allow visitors to save products locally in their browser without signing in.",
+			"default": true
+		},
+		"maxWishlistItems": {
+			"type": "integer",
+			"title": "Maximum items per wishlist",
+			"description": "Upper limit of saved items per shopper wishlist.",
+			"default": 100,
+			"minimum": 1,
+			"maximum": 500
+		},
+		"notifyOnPriceDrop": {
+			"type": "boolean",
+			"title": "Notify on price drop",
+			"description": "Send alert notifications to shoppers when items on their wishlist go on promotional discount.",
+			"default": true
+		}
+	}
 }

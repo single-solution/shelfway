@@ -315,6 +315,7 @@ export const createIdentityService = (ctx, options = {}) => {
 			}
 			await deps.audit(actor, 'pack.generated', { type: 'website', id: websiteId, merchantId, websiteId }, { meta });
 			return {
+				websiteId,
 				docsHubUrl,
 				domain: website.domain,
 				products,

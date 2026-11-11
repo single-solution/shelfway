@@ -617,7 +617,7 @@ export function WebsitePageView({
 								`# Shelfway Environment Configuration for ${website.domain}`,
 								`NEXT_PUBLIC_SHELFWAY_DOMAIN="${originUrl}"`,
 								`NEXT_PUBLIC_SHELFWAY_WEBSITE_DOMAIN="${website.domain}"`,
-								`SHELFWAY_WEBSITE_ID="${website.id}"`,
+								`SHELFWAY_WEBSITE_ID="${website.websiteId || website.id}"`,
 							];
 							if (browserToken) {
 								envLines.push(`NEXT_PUBLIC_SHELFWAY_CLIENT_TOKEN="${browserToken}"`);
