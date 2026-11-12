@@ -420,8 +420,8 @@
 /* Glass surface from website */
 @utility shelfway-glass {
 	background: var(--shelfway-glass);
-	backdrop-filter: blur(16px);
-	-webkit-backdrop-filter: blur(16px);
+	backdrop-filter: var(--shelfway-glass-blur, blur(10px));
+	-webkit-backdrop-filter: var(--shelfway-glass-blur, blur(10px));
 	border: 1px solid var(--shelfway-line);
 }
 
@@ -525,8 +525,8 @@
 
 .glass {
 	background: var(--shelfway-glass);
-	backdrop-filter: blur(16px);
-	-webkit-backdrop-filter: blur(16px);
+	backdrop-filter: var(--shelfway-glass-blur, blur(10px));
+	-webkit-backdrop-filter: var(--shelfway-glass-blur, blur(10px));
 	border: 1px solid var(--shelfway-line);
 }
 

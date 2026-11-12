@@ -544,22 +544,22 @@ export function WebsitePageView({
 				</Card>
 
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-					<div className="p-3.5 rounded-lg border border-line bg-surface/60 backdrop-blur-sm space-y-1">
+					<div className="p-3.5 rounded-lg border border-line bg-surface space-y-1">
 						<span className="text-[11px] font-mono uppercase tracking-wider text-muted">Awaiting Payment</span>
 						<p className="text-lg font-bold text-fg">Manual Slips</p>
 						<p className="text-[11px] text-muted">Bank &amp; wallet transfer slips awaiting staff review</p>
 					</div>
-					<div className="p-3.5 rounded-lg border border-line bg-surface/60 backdrop-blur-sm space-y-1">
+					<div className="p-3.5 rounded-lg border border-line bg-surface space-y-1">
 						<span className="text-[11px] font-mono uppercase tracking-wider text-muted">Processing &amp; Packing</span>
 						<p className="text-lg font-bold text-fg">Fulfillment</p>
 						<p className="text-[11px] text-muted">Serialized IMEIs &amp; fabric meter cuts</p>
 					</div>
-					<div className="p-3.5 rounded-lg border border-line bg-surface/60 backdrop-blur-sm space-y-1">
+					<div className="p-3.5 rounded-lg border border-line bg-surface space-y-1">
 						<span className="text-[11px] font-mono uppercase tracking-wider text-muted">Dispatched</span>
 						<p className="text-lg font-bold text-fg">In Transit</p>
 						<p className="text-[11px] text-muted">Courier tracking numbers linked</p>
 					</div>
-					<div className="p-3.5 rounded-lg border border-line bg-surface/60 backdrop-blur-sm space-y-1">
+					<div className="p-3.5 rounded-lg border border-line bg-surface space-y-1">
 						<span className="text-[11px] font-mono uppercase tracking-wider text-muted">Completed</span>
 						<p className="text-lg font-bold text-fg">Delivered</p>
 						<p className="text-[11px] text-muted">Return window active per policy</p>
@@ -626,17 +626,17 @@ export function WebsitePageView({
 				</Card>
 
 				<div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-					<div className="p-3.5 rounded-lg border border-line bg-surface/60 backdrop-blur-sm space-y-1">
+					<div className="p-3.5 rounded-lg border border-line bg-surface space-y-1">
 						<span className="text-[11px] font-mono uppercase tracking-wider text-muted">Retail Shoppers</span>
 						<p className="text-lg font-bold text-fg">Direct Customers</p>
 						<p className="text-[11px] text-muted">Phone or email sign-in with OTP verification</p>
 					</div>
-					<div className="p-3.5 rounded-lg border border-line bg-surface/60 backdrop-blur-sm space-y-1">
+					<div className="p-3.5 rounded-lg border border-line bg-surface space-y-1">
 						<span className="text-[11px] font-mono uppercase tracking-wider text-muted">VIP &amp; Wholesale</span>
 						<p className="text-lg font-bold text-fg">Approved Tiers</p>
 						<p className="text-[11px] text-muted">B2B wholesale pricing and volume discounts</p>
 					</div>
-					<div className="p-3.5 rounded-lg border border-line bg-surface/60 backdrop-blur-sm space-y-1">
+					<div className="p-3.5 rounded-lg border border-line bg-surface space-y-1">
 						<span className="text-[11px] font-mono uppercase tracking-wider text-muted">Guest Checkouts</span>
 						<p className="text-lg font-bold text-fg">Instant Buyers</p>
 						<p className="text-[11px] text-muted">Fast checkout converted to accounts on order completion</p>

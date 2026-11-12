@@ -288,7 +288,7 @@ function CenterDialog({
 				aria-describedby={description ? descriptionId : undefined}
 				tabIndex={-1}
 				className={cx(
-					'flex max-h-[92vh] w-full flex-col rounded-t-card border border-line bg-surface/95 backdrop-blur-xl text-fg focus:outline-none sm:rounded-card',
+					'flex max-h-[92vh] w-full flex-col rounded-t-card border border-line bg-surface text-fg focus:outline-none sm:rounded-card',
 					'animate-shelfway-sheet group-data-[state=closed]:animate-shelfway-sheet-out sm:animate-shelfway-pop sm:group-data-[state=closed]:animate-shelfway-pop-out',
 					size === 'sm' ? 'max-w-md' : size === 'lg' ? 'max-w-3xl' : 'max-w-xl',
 				)}>

@@ -624,19 +624,17 @@ export function AppShell({
 						'[--shelfway-pane-left:0.5rem] [--shelfway-pane-right:0.5rem] sm:[--shelfway-pane-left:0.625rem] sm:[--shelfway-pane-right:0.625rem]',
 						rail ? 'lg:[--shelfway-pane-left:5.125rem]' : 'lg:[--shelfway-pane-left:16.625rem]',
 					)}>
-					<div className="wash" aria-hidden="true" />
-					<div className="grid-hard" aria-hidden="true" />
 					<a
 						href={`#${mainId}`}
 						className="sr-only z-[70] rounded-control bg-primary px-3 py-2 text-sm font-semibold text-on-primary focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
 						Skip to content
 					</a>
-					<div className="relative z-10 flex min-h-0 min-w-0 flex-1 overflow-hidden rounded-panel border border-line bg-surface/80 shadow-overlay backdrop-blur-xl">
+					<div className="relative z-10 flex min-h-0 min-w-0 flex-1 overflow-hidden rounded-panel border border-line bg-surface shadow-overlay">
 						<aside
 							data-rail={rail || undefined}
 							className={cx(
 								// menus open upward over the page from the rail
-								'relative z-30 hidden h-full shrink-0 border-r border-line bg-surface/80 backdrop-blur-xl [view-transition-name:shelfway-sidebar] lg:block',
+								'relative z-30 hidden h-full shrink-0 border-r border-line bg-surface [view-transition-name:shelfway-sidebar] lg:block',
 								'transition-[width] duration-(--shelfway-motion) ease-shelfway',
 								rail ? 'w-16' : 'w-[15.5rem]',
 							)}>
@@ -655,13 +653,13 @@ export function AppShell({
 									role="dialog"
 									aria-modal="true"
 									aria-label="Navigation"
-									className="h-full w-60 max-w-[85vw] animate-shelfway-drawer rounded-panel border border-line bg-surface/80 backdrop-blur-xl group-data-[state=closed]:animate-shelfway-drawer-out">
+									className="h-full w-60 max-w-[85vw] animate-shelfway-drawer rounded-panel border border-line bg-surface shadow-overlay group-data-[state=closed]:animate-shelfway-drawer-out">
 									{sidebar(false, true)}
 								</div>
 							</div>
 						) : null}
 						<div className="group/main flex h-full min-w-0 flex-1 flex-col shelfway-grid-wash">
-							<header className="flex h-12 shrink-0 items-center gap-2 border-b border-line bg-surface/80 backdrop-blur-xl px-2 group-has-[[data-shelfway-page]]/main:hidden [view-transition-name:shelfway-topbar] sm:gap-3 sm:px-3">
+							<header className="flex h-12 shrink-0 items-center gap-2 border-b border-line bg-surface px-2 group-has-[[data-shelfway-page]]/main:hidden [view-transition-name:shelfway-topbar] sm:gap-3 sm:px-3">
 								<button
 									type="button"
 									onClick={() => setOpen(true)}

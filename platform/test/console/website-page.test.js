@@ -277,14 +277,13 @@ describe('website page (jsdom)', () => {
 			// ---------------------------------------------------------------- Developer pack: OTP step-up -> pack JSON (A2 + A5)
 			withToasts(<AdminWebsiteView detail={detail} admin={owner} />);
 			expect(buttons('Share with developer')).toHaveLength(1);
+			const prevPackOtp = world.lastOtp(owner.email);
 			await press('Share with developer');
 			expect(shows('Developer pack')).toBe(true);
-			await settle(2);
-			let packOtp = world.lastOtp(owner.email);
-			if (!packOtp) {
-				await ownerBrowser.api.post('/v1/me/step-up-otp', {});
-				packOtp = await until(() => world.lastOtp(owner.email));
-			}
+			const packOtp = await until(() => {
+				const curr = world.lastOtp(owner.email);
+				return curr && curr !== prevPackOtp ? curr : null;
+			});
 			fillDialog('Two-step or recovery code', String(packOtp));
 			await pressDialog('Download developer pack');
 			const packCall = await ownerBrowser.waitCall(

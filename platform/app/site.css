@@ -53,7 +53,6 @@
 			var(--shelfway-canvas) 45%,
 			var(--shelfway-surface-2) 100%
 		);
-	transform: translateZ(0);
 	contain: strict;
 }
 .shelfway-site .grid-hard,
@@ -66,7 +65,6 @@
 		linear-gradient(color-mix(in srgb, var(--shelfway-fg) 7%, transparent) 1px, transparent 1px),
 		linear-gradient(90deg, color-mix(in srgb, var(--shelfway-fg) 7%, transparent) 1px, transparent 1px);
 	background-size: 40px 40px;
-	transform: translateZ(0);
 	contain: strict;
 }
 
@@ -83,27 +81,24 @@
 	box-shadow: 4px 4px 0 color-mix(in srgb, var(--shelfway-primary) 18%, transparent);
 }
 
-/* nav: sticky bar - stays visible while scrolling with solid frosted backdrop to prevent text bleed-through */
+/* nav: sticky bar - stays visible while scrolling with solid backdrop to prevent text bleed-through */
 .shelfway-site .nav-shell {
 	position: sticky;
 	top: 0;
 	z-index: 50;
 	width: 100%;
-	background: color-mix(in srgb, var(--shelfway-canvas) 92%, var(--shelfway-surface));
-	backdrop-filter: blur(20px);
-	-webkit-backdrop-filter: blur(20px);
+	background: color-mix(in srgb, var(--shelfway-canvas) 96%, var(--shelfway-surface));
 	border-bottom: 1px solid var(--shelfway-line);
-	box-shadow: 0 4px 16px color-mix(in srgb, var(--shelfway-fg) 4%, transparent);
+	box-shadow: 0 2px 8px color-mix(in srgb, var(--shelfway-fg) 3%, transparent);
 	padding: 0.65rem 0;
 	isolation: isolate;
 	transition:
-		background var(--shelfway-motion-fast) var(--shelfway-ease),
 		border-color var(--shelfway-motion-fast) var(--shelfway-ease),
 		box-shadow var(--shelfway-motion-fast) var(--shelfway-ease);
 }
 .shelfway-site .nav-shell.is-scrolled {
-	background: color-mix(in srgb, var(--shelfway-canvas) 96%, var(--shelfway-surface));
-	box-shadow: 0 4px 20px color-mix(in srgb, var(--shelfway-fg) 8%, transparent);
+	background: color-mix(in srgb, var(--shelfway-canvas) 98%, var(--shelfway-surface));
+	box-shadow: 0 4px 16px color-mix(in srgb, var(--shelfway-fg) 6%, transparent);
 }
 .shelfway-site .nav {
 	max-width: var(--max);
@@ -455,6 +450,14 @@
 	border-block: 1px solid var(--shelfway-line);
 	padding-top: clamp(3.25rem, 7vw, 5rem);
 	padding-bottom: clamp(3.25rem, 7vw, 5rem);
+	content-visibility: auto;
+	contain-intrinsic-size: auto 600px;
+}
+.shelfway-site .compare-card,
+.shelfway-site .shot-frame,
+.shelfway-site .feature-stage,
+.shelfway-site .handoff {
+	contain: layout style;
 }
 .shelfway-site .band + .band {
 	border-top: none;

@@ -30,7 +30,7 @@ const VARIANTS = {
 	primary:
 		'border border-primary bg-primary text-on-primary hover:bg-primary-hover hover:border-primary-hover hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_color-mix(in_srgb,var(--shelfway-primary)_35%,transparent)] active:translate-x-0 active:translate-y-0 active:shadow-none',
 	secondary:
-		'border border-line bg-surface/90 backdrop-blur-sm text-fg hover:bg-surface-2 hover:border-line-strong hover:-translate-y-px active:translate-y-0',
+		'border border-line bg-surface text-fg hover:bg-surface-2 hover:border-line-strong hover:-translate-y-px active:translate-y-0',
 	ghost: 'border border-transparent text-fg/80 hover:border-line hover:bg-surface-2 hover:text-fg',
 	danger:
 		'border border-danger bg-danger text-on-danger hover:bg-danger-hover hover:border-danger-hover hover:-translate-y-px active:translate-y-0',
