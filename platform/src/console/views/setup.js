@@ -21,7 +21,7 @@ import {
 	Card,
 	CheckboxGroup,
 	CodeBlock,
-	Drawer,
+	Dialog,
 	EmptyState,
 	FieldGrid,
 	FormError,
@@ -598,7 +598,7 @@ function ProfileDialog({ manage, profile, settingsHref, onClose, onSaved }) {
 		onSaved(result.data);
 	};
 	return (
-		<Drawer open onClose={onClose} title={PROFILE.title} description={PROFILE.intro} size="lg">
+		<Dialog placement="center" open onClose={onClose} title={PROFILE.title} description={PROFILE.intro} size="lg">
 			<div className="space-y-5">
 				<FieldGrid>
 					{CHOICES.map((question) => (
@@ -660,7 +660,7 @@ function ProfileDialog({ manage, profile, settingsHref, onClose, onSaved }) {
 					{PROFILE.save}
 				</Button>
 			</div>
-		</Drawer>
+		</Dialog>
 	);
 }
 
@@ -843,7 +843,8 @@ function CreateLinkDialog({ manage, onClose, onCreated }) {
 		onCreated(result.data.link);
 	};
 	return (
-		<Drawer
+		<Dialog
+			placement="center"
 			open
 			onClose={onClose}
 			title={url ? SETUP.linkReady : SETUP.createLink}
@@ -882,7 +883,7 @@ function CreateLinkDialog({ manage, onClose, onCreated }) {
 					</Button>
 				</div>
 			)}
-		</Drawer>
+		</Dialog>
 	);
 }
 

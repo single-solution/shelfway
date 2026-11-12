@@ -12,7 +12,6 @@ import {
 	Card,
 	CodeBlock,
 	Dialog,
-	Drawer,
 	EmptyState,
 	Form,
 	FormError,
@@ -182,7 +181,8 @@ function InviteDrawer({ open, onClose, onInvited, twoStepOn = false }) {
 
 	return (
 		<>
-			<Drawer
+			<Dialog
+				placement="center"
 				open={open}
 				onClose={onClose}
 				title={ADMIN.inviteTitle}
@@ -216,7 +216,7 @@ function InviteDrawer({ open, onClose, onInvited, twoStepOn = false }) {
 					<RadioGroup legend={ADMIN.role} cards value={role} onChange={setRole} options={[...ROLE_CARDS]} />
 					<FormError problem={problem} fields={['email', 'role']} />
 				</Form>
-			</Drawer>
+			</Dialog>
 			<ConfirmChange
 				open={asking !== null}
 				title={ADMIN.inviteTitle}
@@ -413,7 +413,8 @@ function AdminPageView({ current, me, list, activityInitial, onReload, onInvite 
 				}}
 				sections={sections}
 			/>
-			<Drawer
+			<Dialog
+				placement="center"
 				open={dialog === 'email'}
 				onClose={() => setDialog(null)}
 				title={ADMIN.correctEmail}
@@ -448,8 +449,9 @@ function AdminPageView({ current, me, list, activityInitial, onReload, onInvite 
 					/>
 					<FormError problem={problem} fields={['email']} />
 				</Form>
-			</Drawer>
-			<Drawer
+			</Dialog>
+			<Dialog
+				placement="center"
 				open={dialog === 'role'}
 				onClose={() => setDialog(null)}
 				title={ADMIN.changeRole}
@@ -463,7 +465,7 @@ function AdminPageView({ current, me, list, activityInitial, onReload, onInvite 
 					<RadioGroup legend={ADMIN.role} cards value={role} onChange={setRole} options={[...ROLE_CARDS]} />
 					<FormError problem={problem} fields={['role']} />
 				</Form>
-			</Drawer>
+			</Dialog>
 			<ConfirmChange
 				open={asking || dialog === 'twoStep' || dialog === 'remove' || dialog === 'copy'}
 				title={

@@ -20,7 +20,7 @@ import { AdminsView } from '../../src/console/admin/views/admins.js';
 import { MyAccountView } from '../../src/console/admin/views/account.js';
 import { SettingsView } from '../../src/console/admin/views/settings.js';
 import { FinanceView, MerchantCredits } from '../../src/console/admin/views/finance.js';
-import { ProductsView, featureNames } from '../../src/console/admin/views/products.js';
+import { ProductsView, featureNames, ConnectProductDialog } from '../../src/console/admin/views/products.js';
 import { startMongo } from '../helpers.js';
 import { createWorld } from './merchant-harness.js';
 
@@ -500,5 +500,7 @@ describe('admin console smoke', () => {
 		expect(featureNames(features, ['notes', 'gone'])).toBe('Notes, gone');
 		expect(featureNames(features, [])).toBe('None');
 		expect(featureNames(undefined, ['x'])).toBe('x');
+		const connectHtml = text(ssr(<ConnectProductDialog open onClose={() => {}} onDone={() => {}} />));
+		expect(connectHtml).toContain('Connect');
 	});
 });

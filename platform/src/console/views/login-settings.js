@@ -13,7 +13,7 @@ import {
 	Callout,
 	Checkbox,
 	CodeBlock,
-	Drawer,
+	Dialog,
 	EmptyState,
 	FieldLayoutContext,
 	Form,
@@ -751,7 +751,7 @@ export function ActivityTable({
 				</div>
 			)}
 			{details ? (
-				<Drawer open={Boolean(open)} onClose={() => setOpen(null)} title={MORE.entryTitle}>
+				<Dialog placement="center" open={Boolean(open)} onClose={() => setOpen(null)} title={MORE.entryTitle}>
 					{open ? (
 						<div className="space-y-4">
 							<KeyValueList
@@ -766,7 +766,7 @@ export function ActivityTable({
 							<Changes entry={open} />
 						</div>
 					) : null}
-				</Drawer>
+				</Dialog>
 			) : null}
 		</>
 	);

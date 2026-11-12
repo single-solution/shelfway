@@ -18,7 +18,7 @@ import {
 	Callout,
 	CheckboxGroup,
 	ChoicePicker,
-	Drawer,
+	Dialog,
 	EmptyState,
 	FormError,
 	Icon,
@@ -640,7 +640,8 @@ export function BusinessSection(props) {
 					/>
 				</SettingList>
 			</SettingsCard>
-			<Drawer
+			<Dialog
+				placement="center"
 				open={drawer === 'address'}
 				onClose={() => setDrawer(null)}
 				title={B.addressDrawer}
@@ -663,8 +664,9 @@ export function BusinessSection(props) {
 						onChange={(event) => form.change(['address', part], valueOf(event))}
 					/>
 				))}
-			</Drawer>
-			<Drawer
+			</Dialog>
+			<Dialog
+				placement="center"
 				open={drawer === 'hours'}
 				onClose={() => setDrawer(null)}
 				title={B.hoursDrawer}
@@ -672,7 +674,7 @@ export function BusinessSection(props) {
 				size="lg"
 				footer={<Done onClose={() => setDrawer(null)} />}>
 				<HoursEditor hours={d.hours} onChange={(next) => form.change(['hours'], next)} error={form.error} />
-			</Drawer>
+			</Dialog>
 		</SectionForm>
 	);
 }
@@ -1060,7 +1062,8 @@ export function RegionSection(props) {
 					/>
 				</SettingList>
 			</SettingsCard>
-			<Drawer
+			<Dialog
+				placement="center"
 				open={drawer === 'symbols'}
 				onClose={() => setDrawer(null)}
 				title={R.symbolsDrawer}
@@ -1091,8 +1094,9 @@ export function RegionSection(props) {
 						</>
 					)}
 				/>
-			</Drawer>
-			<Drawer
+			</Dialog>
+			<Dialog
+				placement="center"
 				open={drawer === 'regions'}
 				onClose={() => setDrawer(null)}
 				title={R.regionsDrawer}
@@ -1125,7 +1129,7 @@ export function RegionSection(props) {
 						</>
 					)}
 				/>
-			</Drawer>
+			</Dialog>
 		</SectionForm>
 	);
 }
@@ -1249,7 +1253,8 @@ export function PagesSection(props) {
 					) : null}
 				</SettingList>
 			</SettingsCard>
-			<Drawer
+			<Dialog
+				placement="center"
 				open={open !== null && open !== undefined}
 				onClose={() => setEditing(null)}
 				title={P.documentDrawer}
@@ -1280,7 +1285,7 @@ export function PagesSection(props) {
 						/>
 					</>
 				) : null}
-			</Drawer>
+			</Dialog>
 		</SectionForm>
 	);
 }
@@ -1397,7 +1402,8 @@ export function TeamSection(props) {
 					/>
 				</SettingList>
 			</SettingsCard>
-			<Drawer
+			<Dialog
+				placement="center"
 				open={person !== null && person !== undefined}
 				onClose={() => setEditing(null)}
 				title={M.personDrawer}
@@ -1431,7 +1437,7 @@ export function TeamSection(props) {
 						/>
 					</>
 				) : null}
-			</Drawer>
+			</Dialog>
 		</SectionForm>
 	);
 }

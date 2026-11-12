@@ -356,7 +356,7 @@ export function SetupChecklist({ title, progress, steps, labels, linkAs, id, cla
 				aria-valuemax={counted.length}
 				aria-valuenow={done}>
 				<div
-					className="h-full rounded-full bg-success-solid transition-[width] duration-(--shelfway-motion-slow) ease-shelfway"
+					className="h-full rounded-full bg-success-solid transition-[width] duration-300 ease-out"
 					style={{ width: `${counted.length === 0 ? 100 : Math.round((done / counted.length) * 100)}%` }}
 				/>
 			</div>

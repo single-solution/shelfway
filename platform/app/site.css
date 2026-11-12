@@ -44,6 +44,8 @@
 	position: fixed;
 	inset: 0;
 	z-index: 0;
+	transform: translateZ(0);
+	will-change: transform;
 	background:
 		radial-gradient(1000px 520px at 8% -8%, color-mix(in srgb, var(--shelfway-primary) 14%, transparent), transparent 55%),
 		radial-gradient(700px 400px at 100% 5%, color-mix(in srgb, var(--shelfway-success) 8%, transparent), transparent 45%),
@@ -61,6 +63,8 @@
 	position: fixed;
 	inset: 0;
 	z-index: 0;
+	transform: translateZ(0);
+	will-change: transform;
 	background-image:
 		linear-gradient(color-mix(in srgb, var(--shelfway-fg) 7%, transparent) 1px, transparent 1px),
 		linear-gradient(90deg, color-mix(in srgb, var(--shelfway-fg) 7%, transparent) 1px, transparent 1px);
@@ -210,12 +214,8 @@
 	--d: 3;
 }
 .shelfway-site .reveal {
-	opacity: 0;
-	transform: translateY(14px);
-	transition:
-		opacity 0.35s var(--shelfway-ease),
-		transform 0.35s var(--shelfway-ease);
-	transition-delay: calc(var(--d, 0) * 0.05s);
+	opacity: 1;
+	transform: none;
 }
 .shelfway-site .reveal.in {
 	opacity: 1;

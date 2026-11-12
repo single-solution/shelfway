@@ -117,7 +117,8 @@ export const useFocusTrap = (ref, open, onClose) => {
 /**
  * @typedef {{ open: boolean, onClose: () => void, title: ReactNode, eyebrow?: ReactNode, description?: ReactNode, children?: ReactNode,
  *   footer?: ReactNode, size?: 'sm' | 'md' | 'lg', closeLabel?: string, dismissible?: boolean,
- *   placement?: 'right' | 'center', icon?: ReactNode }} OverlayProps
+ *   placement?: 'right' | 'center', icon?: ReactNode, status?: import('./Page.js').PageStatus[],
+ *   actions?: import('./Page.js').PageActions, loading?: boolean, skeleton?: ReactNode }} OverlayProps
  */
 
 /**
@@ -255,6 +256,10 @@ function CenterDialog({
 	children,
 	footer,
 	size,
+	status,
+	actions,
+	loading = false,
+	skeleton,
 	closeLabel = 'Close',
 	dismissible = true,
 	icon,
@@ -262,6 +267,7 @@ function CenterDialog({
 	const ref = useRef(/** @type {HTMLDivElement | null} */ (null));
 	const titleId = useId();
 	const descriptionId = useId();
+	const narrow = useNarrow();
 	const close = () => {
 		if (dismissible) onClose();
 	};
@@ -286,13 +292,14 @@ function CenterDialog({
 				aria-modal="true"
 				aria-labelledby={titleId}
 				aria-describedby={description ? descriptionId : undefined}
+				aria-busy={loading || undefined}
 				tabIndex={-1}
 				className={cx(
 					'flex max-h-[92vh] w-full flex-col rounded-t-card border border-line bg-surface text-fg focus:outline-none sm:rounded-card',
 					'animate-shelfway-sheet group-data-[state=closed]:animate-shelfway-sheet-out sm:animate-shelfway-pop sm:group-data-[state=closed]:animate-shelfway-pop-out',
 					size === 'sm' ? 'max-w-md' : size === 'lg' ? 'max-w-3xl' : 'max-w-xl',
 				)}>
-				<div className="flex items-start justify-between gap-4 px-6 pt-6 pb-1">
+				<div className="flex items-start justify-between gap-4 px-6 pt-6 pb-2">
 					<div className="flex items-start gap-3 min-w-0">
 						{icon ? <div className="shrink-0 mt-0.5">{icon}</div> : null}
 						<div className="min-w-0">
@@ -309,18 +316,34 @@ function CenterDialog({
 							) : null}
 						</div>
 					</div>
-					{dismissible ? (
-						<button
-							type="button"
-							onClick={onClose}
-							aria-label={closeLabel}
-							className="shelfway-motion shelfway-press cursor-pointer rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:bg-surface-2">
-							<Icon name="close" size={16} />
-						</button>
-					) : null}
+					<div className="ml-auto flex shrink-0 items-center gap-2">
+						{status && status.length > 0 ? (
+							<div className="flex shrink-0 items-center gap-1.5">
+								{status.map((pill, i) => (
+									<StatusPill key={i} status={pill.status} {...(pill.title ? { title: pill.title } : {})}>
+										{pill.label}
+									</StatusPill>
+								))}
+							</div>
+						) : null}
+						{actions ? <HeaderActions actions={actions} narrow={narrow} /> : null}
+						{dismissible ? (
+							<button
+								type="button"
+								onClick={onClose}
+								aria-label={closeLabel}
+								className="shelfway-motion shelfway-press cursor-pointer rounded-control p-1.5 text-muted hover:bg-surface-2 hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:bg-surface-2">
+								<Icon name="close" size={16} />
+							</button>
+						) : null}
+					</div>
 				</div>
 				<div className="shelfway-scroll min-h-0 flex-1 space-y-4 px-6 py-4">
-					<FieldLayoutContext.Provider value="stack">{children}</FieldLayoutContext.Provider>
+					{loading ? (
+						(skeleton ?? <DrawerBodySkeleton />)
+					) : (
+						<FieldLayoutContext.Provider value="stack">{children}</FieldLayoutContext.Provider>
+					)}
 				</div>
 				{footer ? (
 					<div className="flex flex-wrap items-center justify-end gap-2 border-t border-line px-6 py-4">{footer}</div>

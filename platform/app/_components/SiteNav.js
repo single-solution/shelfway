@@ -5,6 +5,7 @@ import NextLink from 'next/link.js';
 import { usePathname } from 'next/navigation.js';
 import { Button, TextLink } from '@shelfway/ui';
 import { SignInModal } from './SignInModal.js';
+import { apiFetch } from '../../src/console/client.js';
 
 const Link = /** @type {any} */ (NextLink);
 
@@ -53,6 +54,32 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 	const [scrolled, setScrolled] = useState(false);
 	const [showSignInModal, setShowSignInModal] = useState(false);
 	const [signInNext, setSignInNext] = useState(/** @type {string | null} */ (null));
+	const [activeSession, setActiveSession] = useState(session);
+
+	useEffect(() => {
+		setActiveSession(session);
+	}, [session]);
+
+	useEffect(() => {
+		if (session) return;
+		let cancelled = false;
+		apiFetch('/v1/me', { redirectOn401: false }).then((res) => {
+			if (!cancelled && res.ok && res.data) {
+				const d = res.data;
+				const isAdm = d.kind === 'admin';
+				setActiveSession({
+					ok: true,
+					kind: d.kind,
+					admin: isAdm ? d.admin : undefined,
+					merchantId: d.merchant?.merchantId,
+					name: d.admin?.name || d.actor?.name || d.merchant?.name || (isAdm ? 'Admin' : 'Merchant'),
+				});
+			}
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, [session]);
 
 	useEffect(() => {
 		let ticking = false;
@@ -102,6 +129,9 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 
 	const isCurrentHome = isHome || pathname === '/';
 	const isDocs = pathname === '/docs' || pathname.startsWith('/docs/');
+	const isAdmin = Boolean(activeSession?.admin || activeSession?.kind === 'admin');
+	const dashboardHref = isAdmin ? '/admin' : '/overview';
+	const dashboardLabel = isAdmin ? 'Admin' : 'Console';
 
 	const handleCloseSignIn = () => {
 		setShowSignInModal(false);
@@ -140,11 +170,11 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 							className="cursor-pointer text-muted hover:text-fg transition font-medium">
 							Contact
 						</a>
-						{session ? <Link href="/overview">Dashboard</Link> : null}
+						{activeSession ? <Link href={dashboardHref}>{dashboardLabel}</Link> : null}
 					</nav>
-					{session ? (
-						<Button as={Link} className="cta" href="/overview">
-							Dashboard
+					{activeSession ? (
+						<Button as={Link} className="cta" href={dashboardHref}>
+							{isAdmin ? 'Admin Console' : 'Console'}
 						</Button>
 					) : (
 						<Button
@@ -169,6 +199,10 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
  * @param {{ brandName?: string, companyName?: string, isHome?: boolean, session?: any }} props
  */
 export function SiteFooter({ brandName = PRODUCT_BRAND, companyName = COMPANY_NAME, isHome = false, session = null }) {
+	const isAdmin = Boolean(session?.admin || session?.kind === 'admin');
+	const dashboardHref = isAdmin ? '/admin' : '/overview';
+	const dashboardLabel = isAdmin ? 'Admin' : 'Console';
+
 	/** @param {import('react').MouseEvent} e */
 	const handleContactClick = (e) => {
 		if (isHome) {
@@ -193,7 +227,7 @@ export function SiteFooter({ brandName = PRODUCT_BRAND, companyName = COMPANY_NA
 					Contact
 				</a>
 				{session ? (
-					<Link href="/overview">Dashboard</Link>
+					<Link href={dashboardHref}>{dashboardLabel}</Link>
 				) : (
 					<TextLink
 						as="button"

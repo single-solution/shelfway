@@ -13,7 +13,7 @@ import {
 	BarChart,
 	Button,
 	Card,
-	Drawer,
+	Dialog,
 	EmptyState,
 	FiguresTable,
 	Form,
@@ -116,7 +116,8 @@ export function AddCreditsDialog({ merchant, balance, onClose, onAdded }) {
 		}
 	};
 	return (
-		<Drawer
+		<Dialog
+			placement="center"
 			open
 			onClose={onClose}
 			title={reviewing ? F.confirmTitle : `${BILLING.addCredits} · ${merchant.name}`}
@@ -175,7 +176,7 @@ export function AddCreditsDialog({ merchant, balance, onClose, onAdded }) {
 				</Form>
 			)}
 			<FormError problem={problem} />
-		</Drawer>
+		</Dialog>
 	);
 }
 
@@ -263,7 +264,8 @@ function PickMerchantDialog({ merchants, initial = null, onClose, onPicked }) {
 		}
 	};
 	return (
-		<Drawer
+		<Dialog
+			placement="center"
 			open
 			onClose={onClose}
 			title={BILLING.addCredits}
@@ -280,7 +282,7 @@ function PickMerchantDialog({ merchants, initial = null, onClose, onPicked }) {
 				options={merchants}
 			/>
 			{problem ? <p className="mt-3 text-sm text-danger">{describeProblem(problem)}</p> : null}
-		</Drawer>
+		</Dialog>
 	);
 }
 

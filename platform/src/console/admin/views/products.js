@@ -12,7 +12,7 @@ import {
 	Button,
 	Callout,
 	Card,
-	Drawer,
+	Dialog,
 	EmptyState,
 	Form,
 	FormError,
@@ -69,6 +69,26 @@ function usePhone() {
 }
 
 /**
+ * Connect a product dialog, centered in the modal overlay.
+ * @param {{ open: boolean, onClose: () => void, onDone: (product: any) => void }} props
+ */
+export function ConnectProductDialog({ open, onClose, onDone }) {
+	return (
+		<ConnectDialog
+			open={open}
+			title={PRODUCTS.add}
+			description={PRODUCTS.addHelp}
+			submitLabel={PRODUCTS.connect}
+			urlRequired
+			path={adminApi.connect()}
+			conflict={PRODUCTS.alreadyConnected}
+			onClose={onClose}
+			onDone={onDone}
+		/>
+	);
+}
+
+/**
  * The connect form of Add product and Reconnect, in a drawer: the product URL (optional on Reconnect) and the connect
  * secret.
  * @param {{ open: boolean, title: string, description: string, submitLabel: string, urlRequired: boolean,
@@ -106,7 +126,8 @@ function ConnectDialog({ open, title, description, submitLabel, urlRequired, pat
 	const refused = conflict && problem && problemCode(problem) === 'conflict' ? conflict : null;
 
 	return (
-		<Drawer
+		<Dialog
+			placement="center"
 			open={open}
 			onClose={onClose}
 			title={title}
@@ -152,7 +173,7 @@ function ConnectDialog({ open, title, description, submitLabel, urlRequired, pat
 					<FormError problem={problem} fields={['url', 'secret']} />
 				)}
 			</Form>
-		</Drawer>
+		</Dialog>
 	);
 }
 

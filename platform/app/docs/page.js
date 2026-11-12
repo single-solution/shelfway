@@ -1,5 +1,6 @@
 import { connection } from 'next/server';
-import { consoleApi, consoleBranding, consoleSession, one } from '../(console)/_lib/server.js';
+import { consoleApi, consoleBranding, one } from '../(console)/_lib/server.js';
+import { platformSession } from '../_lib/server.js';
 import { loadDocsHub, loadDocsProduct } from '../../src/console/loaders.js';
 import { DocsHubView } from '../../src/console/views/docs.js';
 import { SiteFooter, SiteHeader } from '../_components/SiteNav.js';
@@ -27,7 +28,7 @@ export async function generateMetadata({ searchParams }) {
 export default async function DocsPage({ searchParams }) {
 	await connection();
 	const q = (await searchParams) || {};
-	const session = await consoleSession();
+	const session = await platformSession();
 	const [branding, api] = await Promise.all([consoleBranding(), consoleApi()]);
 	const loaded = await loadDocsHub(api);
 	const initialProduct = one(q.product) || '';
@@ -48,7 +49,7 @@ export default async function DocsPage({ searchParams }) {
 					items={loaded.ok ? loaded.items : []}
 					activeProductDetail={productDetail?.ok ? productDetail.product : null}
 					actor={
-						session.ok ? session.me || session.actor || (session.admin ? { role: 'owner', name: 'Admin' } : null) : null
+						session.ok ? session.actor || session.me || (session.admin ? { role: 'owner', name: 'Admin' } : null) : null
 					}
 					initialProductId={initialProduct}
 					initialOpKey={initialOp}

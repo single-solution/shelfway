@@ -224,6 +224,10 @@ describe('admin console interactions (jsdom)', () => {
 		cleanup();
 		render(<OverviewView {...await admin.loadOverview(ownerBrowser.api)} admin={me} />);
 		expect(shows('Email sending is not set up') && shows('Setup links and low-balance emails are skipped')).toBe(true);
+		await press('Add merchant');
+		await pressInDialog('Cancel');
+		await press('Connect a product');
+		await pressInDialog('Cancel');
 		cleanup();
 
 		// ---------------------------------------------------------------- merchants: search, bulk, Add merchant

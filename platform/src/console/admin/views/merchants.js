@@ -16,7 +16,6 @@ import {
 	CodeBlock,
 	ConfirmDialog,
 	Dialog,
-	Drawer,
 	EmptyState,
 	Form,
 	FormError,
@@ -253,7 +252,8 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 	const formId = useId();
 	return (
 		<>
-			<Drawer
+			<Dialog
+				placement="center"
 				open={open && !unmailedLink}
 				onClose={onClose}
 				title={ADMIN.addMerchant}
@@ -330,7 +330,7 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 					/>
 					<FormError problem={problem} fields={['name', 'ownerName', 'email', 'phone', 'address', 'country']} />
 				</Form>
-			</Drawer>
+			</Dialog>
 			{unmailedLink ? (
 				<CopyLinkDialog
 					link={unmailedLink}
@@ -685,7 +685,7 @@ function MerchantPageView({ detail, admin, list, onAddMerchant }) {
 				<></>
 			</Page>
 
-			<Drawer open={dialog === 'edit'} onClose={closeDialog} title={ADMIN.editMerchant}>
+			<Dialog placement="center" open={dialog === 'edit'} onClose={closeDialog} title={ADMIN.editMerchant}>
 				<MerchantFieldsForm
 					merchant={merchant}
 					path={adminApi.merchant(merchantId)}
@@ -697,7 +697,7 @@ function MerchantPageView({ detail, admin, list, onAddMerchant }) {
 						closeDialog();
 					}}
 				/>
-			</Drawer>
+			</Dialog>
 			<ConfirmDialog
 				open={dialog === 'suspend' || dialog === 'resume'}
 				onClose={closeDialog}

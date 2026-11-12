@@ -1,4 +1,5 @@
-import { consoleApi, consoleSession } from './(console)/_lib/server.js';
+import { consoleApi } from './(console)/_lib/server.js';
+import { platformSession } from './_lib/server.js';
 import { loadDocsHub } from '../src/console/loaders.js';
 import { COMPANY_NAME, PRODUCT_BRAND } from './_components/brand.js';
 import { SiteHome } from './_components/SiteHome.js';
@@ -15,7 +16,7 @@ export async function generateMetadata() {
 }
 
 export default async function SitePage() {
-	const [session, api] = await Promise.all([consoleSession(), consoleApi()]);
+	const [session, api] = await Promise.all([platformSession(), consoleApi()]);
 	const docs = await loadDocsHub(api).catch(() => null);
 	const products =
 		docs?.ok && Array.isArray(docs.items)

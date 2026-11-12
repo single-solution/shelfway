@@ -424,17 +424,6 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 								for your website and spend time on what customers actually see.
 							</p>
 						</header>
-						<div className="why-split reveal">
-							<article className="glass hard burden">
-								<span className="mono muted">Build it yourself</span>
-								<p>Every layer stays on you: build, host, fix, and hand secrets around. Time and risk compound.</p>
-							</article>
-							<div className="vs mono">vs</div>
-							<article className="glass hard hot">
-								<span className="mono lime">With {productName}</span>
-								<p>You keep the look. We provide the features, your account, and one simple setup link.</p>
-							</article>
-						</div>
 						<div className="compare-pair reveal">
 							<div className="compare-card diy-card glass hard">
 								<p className="compare-card-h mono">If you build it yourself</p>

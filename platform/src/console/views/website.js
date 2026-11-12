@@ -11,7 +11,7 @@ import {
 	Button,
 	Callout,
 	CodeBlock,
-	Drawer,
+	Dialog,
 	Form,
 	FormError,
 	IconBadge,
@@ -45,7 +45,7 @@ import { confirmationErrors, factorOf, twoStepOnOf } from './common.js';
 export function MerchantUsageDialog({ merchantId, title, onClose }) {
 	const result = useOnce(api.usage(merchantId));
 	return (
-		<Drawer open onClose={onClose} size="lg" title={title}>
+		<Dialog placement="center" open onClose={onClose} size="lg" title={title}>
 			{!result ? (
 				<Skeleton lines={4} />
 			) : !result.ok ? (
@@ -53,7 +53,7 @@ export function MerchantUsageDialog({ merchantId, title, onClose }) {
 			) : (
 				<UsageView usage={result.data} chartTitle={BILLING.usageChart} />
 			)}
-		</Drawer>
+		</Dialog>
 	);
 }
 
@@ -124,7 +124,7 @@ export function AddWebsiteDialog({ open, merchantId, onClose, onAdded }) {
 		onAdded(result.data.website);
 	};
 	return (
-		<Drawer open={open} onClose={onClose} title={WEBSITE.addWebsite} description={WEBSITE.domainHelp}>
+		<Dialog placement="center" open={open} onClose={onClose} title={WEBSITE.addWebsite} description={WEBSITE.domainHelp}>
 			<Form onSubmit={submit} busy={busy} aria-label={WEBSITE.addWebsite}>
 				<Input
 					label={WEBSITE.domain}
@@ -145,7 +145,7 @@ export function AddWebsiteDialog({ open, merchantId, onClose, onAdded }) {
 					{WEBSITE.addWebsite}
 				</Button>
 			</Form>
-		</Drawer>
+		</Dialog>
 	);
 }
 
@@ -173,7 +173,12 @@ export function AddProductDrawer({ open, merchantId, website, products, onClose,
 		onAdded(result.data.product);
 	};
 	return (
-		<Drawer open={open} onClose={onClose} title={WEBSITE.addProductTo(website.domain)} description={WEBSITE.addProductHelp}>
+		<Dialog
+			placement="center"
+			open={open}
+			onClose={onClose}
+			title={WEBSITE.addProductTo(website.domain)}
+			description={WEBSITE.addProductHelp}>
 			{products.length === 0 ? (
 				<p className="text-sm text-muted">{WEBSITE.noneToAdd}</p>
 			) : (
@@ -199,7 +204,7 @@ export function AddProductDrawer({ open, merchantId, website, products, onClose,
 				</div>
 			)}
 			<FormError problem={problem} />
-		</Drawer>
+		</Dialog>
 	);
 }
 

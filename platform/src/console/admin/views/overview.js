@@ -41,6 +41,7 @@ import { adminApi, adminRoutes } from '../paths.js';
 import { AdminProblem, adminCan } from './shell.js';
 import { AddCreditsDialog } from './finance.js';
 import { AddMerchantDialog } from './merchants.js';
+import { ConnectProductDialog } from './products.js';
 
 /** At most this many merchants are listed under "Needs you"; the rest are one link away. */
 const NEEDS_MERCHANTS = 5;
@@ -63,6 +64,7 @@ export function OverviewView(props) {
 	const nav = useNavigation();
 	const toast = useToast();
 	const [adding, setAdding] = useState(false);
+	const [connecting, setConnecting] = useState(false);
 	const [crediting, setCrediting] = useState(/** @type {any} */ (null));
 	const [launching, setLaunching] = useState(/** @type {any | null} */ (null));
 	const launchStepUp = Boolean(props.admin?.launchStepUp);
@@ -147,7 +149,11 @@ export function OverviewView(props) {
 	const needCount = needs.length + Math.max(0, attention.length - NEEDS_MERCHANTS);
 
 	const steps = [
-		{ key: 'product', done: products.length > 0, href: linked ? adminRoutes.products() : null },
+		{
+			key: 'product',
+			done: products.length > 0,
+			...(linked ? { onClick: () => setConnecting(true), href: adminRoutes.products() } : {}),
+		},
 		{ key: 'active', done: products.some((p) => p.status === 'active'), href: linked ? adminRoutes.products() : null },
 		{ key: 'merchant', done: (o.merchants ?? 0) > 0, onClick: canAddMerchant ? () => setAdding(true) : null },
 		{ key: 'website', done: (o.websites ?? 0) > 0, href: adminRoutes.merchants() },
@@ -171,8 +177,6 @@ export function OverviewView(props) {
 				}
 				facts={[
 					...(needCount > 0 ? [{ label: ADMIN.needs.title, value: needCount, tone: /** @type {const} */ ('warning') }] : []),
-					{ label: ADMIN.merchantsTitle, value: o.merchants ?? 0, href: adminRoutes.merchants() },
-					{ label: ADMIN.websitesLabel, value: website },
 				]}
 				{...(canAddMerchant
 					? {
@@ -213,140 +217,156 @@ export function OverviewView(props) {
 						/>
 					) : null}
 					<StatGrid>
+						<Stat label={ADMIN.merchantsTitle} value={o.merchants ?? 0} icon="users" />
+						<Stat label={ADMIN.websitesLabel} value={website} icon="globe" />
 						<Stat label={ADMIN.creditsThisMonth} value={formatCredits(earned)} icon="coins" kind="credit" />
 						<Stat
 							label={MORE.creditsAdded}
-							value={typeof props.creditsAdded === 'number' ? formatCredits(props.creditsAdded) : '—'}
+							value={typeof props.creditsAdded === 'number' ? formatCredits(props.creditsAdded) : '-'}
 							icon="wallet"
 							kind="credit"
 						/>
 					</StatGrid>
-					<Card title={ADMIN.creditsChart}>
-						<BarChart
-							label={ADMIN.creditsChart}
-							data={creditDayBars(totalDays(products))}
-							format={formatChartCredits}
-							height={132}
-						/>
-					</Card>
-					<Card
-						padded={false}
-						title={ADMIN.merchantsTitle}
-						subtitle={merchants.length > 0 ? ADMIN.merchantsIntro : undefined}
-						actions={
-							merchants.length > 0 ? (
-								<ButtonLink as={Link} href={adminRoutes.merchants()} variant="secondary" size="sm">
-									{ADMIN.viewMerchants}
-								</ButtonLink>
-							) : null
-						}>
-						{merchants.length === 0 ? (
-							<EmptyState
-								compact
-								icon="users"
-								kind="merchant"
-								title={ADMIN.noMerchants}
-								description={ADMIN.noMerchantsYetHelp}
-								action={
-									canAddMerchant ? (
-										<Button size="sm" onClick={() => setAdding(true)} icon={<Icon name="plus" size={14} />}>
-											{ADMIN.addMerchant}
-										</Button>
-									) : null
-								}
-							/>
-						) : (
-							<div className="divide-y divide-line-soft">
-								{merchants.map((m) => {
-									const b = billing[m.merchantId] ?? null;
-									const pill = merchantPill(b?.status ?? m.status);
-									return (
-										<Row
-											key={m.merchantId}
-											linkAs={Link}
-											href={adminRoutes.merchant(m.merchantId)}
-											lead={{ avatar: m.name }}
-											title={m.name}
-											meta={m.email}
-											status={{
-												tone: pill.status === 'active' ? 'success' : pill.status === 'error' ? 'danger' : 'warning',
-												label: pill.label,
-											}}
-											value={b ? formatCredits(b.balance) : '—'}
-										/>
-									);
-								})}
-							</div>
-						)}
-					</Card>
-					<Card
-						padded={false}
-						title={ADMIN.productsTitle}
-						subtitle={products.length > 0 ? ADMIN.productColumns.earned : undefined}
-						actions={
-							linked && products.length > 0 ? (
-								<ButtonLink as={Link} href={adminRoutes.products()} variant="secondary" size="sm">
-									{MORE.viewAll}
-								</ButtonLink>
-							) : null
-						}>
-						{products.length === 0 ? (
-							<EmptyState
-								compact
-								icon="box"
-								kind="product"
-								title={ADMIN.noProducts}
-								action={
-									linked ? (
-										<ButtonLink as={Link} href={adminRoutes.products()} variant="secondary" size="sm">
-											{ADMIN.connectProduct}
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+						<div className="space-y-4">
+							<Card
+								padded={false}
+								title={ADMIN.merchantsTitle}
+								subtitle={merchants.length > 0 ? ADMIN.merchantsIntro : undefined}
+								actions={
+									merchants.length > 0 ? (
+										<ButtonLink as={Link} href={adminRoutes.merchants()} variant="secondary" size="sm">
+											{ADMIN.viewMerchants}
 										</ButtonLink>
 									) : null
-								}
-							/>
-						) : (
-							<div className="divide-y divide-line-soft">
-								{products.map((p) => (
-									<Row
-										key={p.productId}
-										linkAs={Link}
-										href={linked ? adminRoutes.product(p.productId) : undefined}
-										lead={<IconBadge product={p.productId} size="sm" />}
-										title={p.name}
-										meta={p.websites ? `${p.websites} ${ADMIN.productColumns.websites.toLowerCase()}` : undefined}
-										status={{
-											tone: p.status === 'active' ? 'success' : 'neutral',
-											label: PRODUCTS.status[/** @type {'active'} */ (p.status)] ?? p.status,
-										}}
-										value={formatCredits(p.earnedThisMonth ?? 0)}
-										trailing={
-											linked ? (
-												<ActionMenu
-													floating
-													label={`Actions for ${p.name}`}
-													items={[
-														{ label: MORE.viewProduct, onSelect: () => nav.go(adminRoutes.product(p.productId)) },
-														{ label: PRODUCTS.openAsAdmin, onSelect: () => void handleOpen(p) },
-													]}
-												/>
+								}>
+								{merchants.length === 0 ? (
+									<EmptyState
+										compact
+										icon="users"
+										kind="merchant"
+										title={ADMIN.noMerchants}
+										description={ADMIN.noMerchantsYetHelp}
+										action={
+											canAddMerchant ? (
+												<Button size="sm" onClick={() => setAdding(true)} icon={<Icon name="plus" size={14} />}>
+													{ADMIN.addMerchant}
+												</Button>
 											) : null
 										}
 									/>
-								))}
-							</div>
-						)}
-					</Card>
-					<Card
-						flow
-						title={ADMIN.recentActivity}
-						subtitle={ADMIN.recentActivityIntro}
-						actions={
-							<ButtonLink as={Link} href={adminRoutes.activity()} variant="secondary" size="sm">
-								{MORE.viewAll}
-							</ButtonLink>
-						}>
-						<ActivityTimeline items={o.recentActivity ?? []} empty={MORE.noActivity} />
-					</Card>
+								) : (
+									<div className="divide-y divide-line-soft">
+										{merchants.map((m) => {
+											const b = billing[m.merchantId] ?? null;
+											const pill = merchantPill(b?.status ?? m.status);
+											return (
+												<Row
+													key={m.merchantId}
+													linkAs={Link}
+													href={adminRoutes.merchant(m.merchantId)}
+													lead={{ avatar: m.name }}
+													title={m.name}
+													meta={m.email}
+													status={{
+														tone:
+															pill.status === 'active'
+																? 'success'
+																: pill.status === 'error'
+																	? 'danger'
+																	: 'warning',
+														label: pill.label,
+													}}
+													value={b ? formatCredits(b.balance) : '-'}
+												/>
+											);
+										})}
+									</div>
+								)}
+							</Card>
+							<Card title={ADMIN.creditsChart}>
+								<BarChart
+									label={ADMIN.creditsChart}
+									data={creditDayBars(totalDays(products))}
+									format={formatChartCredits}
+									height={132}
+								/>
+							</Card>
+						</div>
+						<div className="space-y-4">
+							<Card
+								padded={false}
+								title={ADMIN.productsTitle}
+								subtitle={products.length > 0 ? ADMIN.productColumns.earned : undefined}
+								actions={
+									linked && products.length > 0 ? (
+										<ButtonLink as={Link} href={adminRoutes.products()} variant="secondary" size="sm">
+											{MORE.viewAll}
+										</ButtonLink>
+									) : null
+								}>
+								{products.length === 0 ? (
+									<EmptyState
+										compact
+										icon="box"
+										kind="product"
+										title={ADMIN.noProducts}
+										action={
+											linked ? (
+												<Button size="sm" onClick={() => setConnecting(true)} icon={<Icon name="plus" size={14} />}>
+													{ADMIN.connectProduct}
+												</Button>
+											) : null
+										}
+									/>
+								) : (
+									<div className="divide-y divide-line-soft">
+										{products.map((p) => (
+											<Row
+												key={p.productId}
+												linkAs={Link}
+												href={linked ? adminRoutes.product(p.productId) : undefined}
+												lead={<IconBadge product={p.productId} size="sm" />}
+												title={p.name}
+												meta={p.websites ? `${p.websites} ${ADMIN.productColumns.websites.toLowerCase()}` : undefined}
+												status={{
+													tone: p.status === 'active' ? 'success' : 'neutral',
+													label: PRODUCTS.status[/** @type {'active'} */ (p.status)] ?? p.status,
+												}}
+												value={formatCredits(p.earnedThisMonth ?? 0)}
+												trailing={
+													linked ? (
+														<ActionMenu
+															floating
+															label={`Actions for ${p.name}`}
+															items={[
+																{
+																	label: MORE.viewProduct,
+																	onSelect: () => nav.go(adminRoutes.product(p.productId)),
+																},
+																{ label: PRODUCTS.openAsAdmin, onSelect: () => void handleOpen(p) },
+															]}
+														/>
+													) : null
+												}
+											/>
+										))}
+									</div>
+								)}
+							</Card>
+							<Card
+								flow
+								title={ADMIN.recentActivity}
+								subtitle={ADMIN.recentActivityIntro}
+								actions={
+									<ButtonLink as={Link} href={adminRoutes.activity()} variant="secondary" size="sm">
+										{MORE.viewAll}
+									</ButtonLink>
+								}>
+								<ActivityTimeline items={o.recentActivity ?? []} empty={MORE.noActivity} />
+							</Card>
+						</div>
+					</div>
 				</div>
 			</Page>
 			<ConfirmOtp
@@ -365,6 +385,15 @@ export function OverviewView(props) {
 				onCreated={(merchant) => {
 					setAdding(false);
 					if (merchant?.merchantId) nav.go(adminRoutes.merchant(merchant.merchantId));
+				}}
+			/>
+			<ConnectProductDialog
+				open={connecting}
+				onClose={() => setConnecting(false)}
+				onDone={(product) => {
+					setConnecting(false);
+					if (product?.productId) nav.go(adminRoutes.product(product.productId));
+					else window.location.reload();
 				}}
 			/>
 			{crediting ? (
