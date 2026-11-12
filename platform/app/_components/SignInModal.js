@@ -216,20 +216,8 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 		<Dialog
 			open={open}
 			onClose={onClose}
-			title={
-				firstAdminAvailable
-					? 'Create First Admin'
-					: challenge
-						? 'Two-step verification'
-						: `Sign in to ${brandName}`
-			}
-			eyebrow={
-				firstAdminAvailable
-					? 'INITIAL SYSTEM SETUP'
-					: challenge
-						? 'TWO-STEP VERIFICATION'
-						: 'PORTAL ACCESS'
-			}
+			title={firstAdminAvailable ? 'Create First Admin' : challenge ? 'Two-step verification' : `Sign in to ${brandName}`}
+			eyebrow={firstAdminAvailable ? 'INITIAL SYSTEM SETUP' : challenge ? 'TWO-STEP VERIFICATION' : 'PORTAL ACCESS'}
 			description={
 				firstAdminAvailable
 					? 'No admin account exists yet. Enter your details to create the Owner account and initialize the platform.'

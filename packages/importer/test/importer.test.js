@@ -36,7 +36,7 @@ describe('mappings', () => {
 
 	it('are checked', () => {
 		// only store mappings ship with the command; the test mappings are passed in by tests
-		expect(Object.keys(MAPPINGS)).toEqual(['sisters-boutique']);
+		expect(Object.keys(MAPPINGS)).toEqual(['sisters-boutique', 'ibrahim-mobiles', 'chandni-traders']);
 		expect(Object.isFrozen(FIXTURE_MAPPING.steps[0])).toBe(true);
 		expect(() => defineMapping(/** @type {any} */ (null))).toThrow(/object/);
 		expect(() => defineMapping({ name: 'Bad Name', description: '', steps: [step] })).toThrow(/names/);

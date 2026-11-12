@@ -3,9 +3,13 @@
  * as it moves: `sisters-boutique`). The test mappings (`@shelfway/importer/fixture`) are not among them: tests pass them in.
  * @module
  */
+import { CHANDNI_TRADERS_MAPPING } from './chandni-traders/index.js';
+import { IBRAHIM_MOBILES_MAPPING } from './ibrahim-mobiles/index.js';
 import { SISTERS_BOUTIQUE_MAPPING } from './sisters-boutique/index.js';
 
 /** @type {Readonly<Record<string, import('../mapping.js').Mapping>>} */
 export const MAPPINGS = Object.freeze({
 	[SISTERS_BOUTIQUE_MAPPING.name]: SISTERS_BOUTIQUE_MAPPING,
+	[IBRAHIM_MOBILES_MAPPING.name]: IBRAHIM_MOBILES_MAPPING,
+	[CHANDNI_TRADERS_MAPPING.name]: CHANDNI_TRADERS_MAPPING,
 });

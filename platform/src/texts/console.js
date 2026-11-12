@@ -99,6 +99,8 @@ export const TWO_STEP = Object.freeze({
 		'If you lose your phone, each of these codes lets you in once, instead of a two-step code. They are shown only now: keep them somewhere safe.',
 	codesLabel: 'Recovery codes',
 	codesSaved: 'I have stored the recovery codes safely',
+	downloadCodes: 'Download codes (.txt)',
+	downloadAndContinue: 'Download & Continue',
 	done: 'Done',
 	turnOff: 'Turn two-step off',
 	turnOffHelp: 'Enter your password and a two-step or recovery code.',

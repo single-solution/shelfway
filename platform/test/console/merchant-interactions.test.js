@@ -16,7 +16,7 @@ import * as loaders from '../../src/console/loaders.js';
 import { apiFetch, signInAgain, takeFragmentToken, useResource } from '../../src/console/client.js';
 import { AccountView } from '../../src/console/views/account.js';
 import { LocalTime } from '@shelfway/ui';
-import { ActivityTable, ActivityTimeline, QrCode } from '../../src/console/views/login-settings.js';
+import { ActivityTable, ActivityTimeline, QrCode, downloadRecoveryCodes } from '../../src/console/views/login-settings.js';
 import {
 	ConfirmEmailView,
 	ForgotPasswordView,
@@ -566,6 +566,26 @@ describe('merchant console interactions (jsdom): sign-in, Account, Overview, web
 			);
 		} finally {
 			spy.mockRestore();
+		}
+	});
+
+	it('downloadRecoveryCodes formats and triggers file download of backup recovery codes', () => {
+		const createObjectURL = vi.fn().mockReturnValue('blob:test');
+		const revokeObjectURL = vi.fn();
+		const origCreate = URL.createObjectURL;
+		const origRevoke = URL.revokeObjectURL;
+		URL.createObjectURL = createObjectURL;
+		URL.revokeObjectURL = revokeObjectURL;
+		const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+		try {
+			downloadRecoveryCodes(['abc12-34567', 'xyz89-01234']);
+			expect(createObjectURL).toHaveBeenCalled();
+			expect(clickSpy).toHaveBeenCalled();
+			expect(revokeObjectURL).toHaveBeenCalledWith('blob:test');
+		} finally {
+			URL.createObjectURL = origCreate;
+			URL.revokeObjectURL = origRevoke;
+			clickSpy.mockRestore();
 		}
 	});
 });

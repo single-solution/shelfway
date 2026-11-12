@@ -164,20 +164,75 @@ export function TwoStepSetup({ onDone }) {
 }
 
 /**
+ * Download recovery codes as a clean .txt file.
+ * @param {string[]} codes
+ */
+export const downloadRecoveryCodes = (codes) => {
+	if (typeof window === 'undefined' || typeof document === 'undefined') return;
+	const timestamp = new Date().toISOString().slice(0, 10);
+	const lines = [
+		'========================================',
+		'       Shelfway Recovery Codes          ',
+		`       Generated: ${timestamp}         `,
+		'========================================',
+		'',
+		'Keep these codes in a safe, secure place.',
+		'Each code can only be used once if you lose',
+		'access to your authenticator app.',
+		'',
+		...codes.map((c, i) => `${String(i + 1).padStart(2, ' ')}. ${c}`),
+		'',
+		'========================================',
+	].join('\n');
+	if (typeof URL.createObjectURL === 'function') {
+		const blob = new Blob([lines], { type: 'text/plain;charset=utf-8' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = `shelfway-recovery-codes-${timestamp}.txt`;
+		document.body.appendChild(a);
+		a.click();
+		a.remove();
+		URL.revokeObjectURL(url);
+	}
+};
+
+/**
  * The recovery codes, shown once.
  * @param {{ codes: string[], saved: boolean, setSaved: (v: boolean) => void, onDone: () => void }} props
  */
 function RecoveryCodes({ codes, saved, setSaved, onDone }) {
+	const handleDownloadAndContinue = () => {
+		downloadRecoveryCodes(codes);
+		setSaved(true);
+		onDone();
+	};
+
+	const handleDownloadOnly = () => {
+		downloadRecoveryCodes(codes);
+		setSaved(true);
+	};
+
 	return (
 		<div className="space-y-4">
 			<Callout tone="warning" live={false} title={TWO_STEP.codesTitle}>
 				{TWO_STEP.codesHelp}
 			</Callout>
 			<CodeBlock code={codes.join('\n')} label={TWO_STEP.codesLabel} secret wrap={false} />
-			<Checkbox label={TWO_STEP.codesSaved} checked={saved} onChange={(e) => setSaved(e.currentTarget.checked)} />
-			<Button disabled={!saved} onClick={onDone}>
-				{TWO_STEP.done}
-			</Button>
+			<div className="flex flex-wrap items-center gap-2.5 pt-1">
+				<Button variant="primary" onClick={handleDownloadAndContinue}>
+					{TWO_STEP.downloadAndContinue}
+				</Button>
+				<Button variant="secondary" onClick={handleDownloadOnly}>
+					{TWO_STEP.downloadCodes}
+				</Button>
+			</div>
+			<div className="pt-2 border-t border-line/40 flex items-center justify-between gap-4">
+				<Checkbox label={TWO_STEP.codesSaved} checked={saved} onChange={(e) => setSaved(e.currentTarget.checked)} />
+				<Button disabled={!saved} onClick={onDone} size="sm" variant="ghost">
+					{TWO_STEP.done}
+				</Button>
+			</div>
 		</div>
 	);
 }

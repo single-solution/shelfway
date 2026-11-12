@@ -492,9 +492,11 @@ export function DocsHubView({
 								<strong className="text-fg capitalize font-medium">{userRole}</strong>
 							</div>
 						) : token ? (
-							<div className="hidden sm:flex items-center gap-1.5 text-xs text-muted border-l border-line pl-3">
-								<Icon name="key" size={14} />
-								<span>Website Token</span>
+							<div className="hidden sm:flex items-center gap-2 text-xs text-muted border-l border-line pl-3">
+								<Icon name="key" size={14} className="text-primary" />
+								<Badge tone="success" dot>
+									{website || 'Website Token'}
+								</Badge>
 							</div>
 						) : null}
 					</div>
