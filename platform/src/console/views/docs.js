@@ -489,6 +489,7 @@ const UNIVERSAL_PRODUCTS = [
  *   actor?: any,
  *   initialProductId?: string,
  *   initialOpKey?: string,
+ *   initialView?: string,
  *   initialSection?: string,
  *   initialToken?: string,
  *   initialWebsite?: string,
@@ -497,16 +498,26 @@ const UNIVERSAL_PRODUCTS = [
 export function DocsHubView({
 	branding,
 	items = [],
-	activeProductDetail = null,
 	actor = null,
 	initialProductId = '',
 	initialOpKey = '',
-	initialSection = 'quickstart',
+	initialView = 'store',
+	initialSection = '',
 	initialToken = '',
 	initialWebsite = '',
 }) {
 	const brandName = branding?.name || 'Shelfway';
-	const [activeSection, setActiveSection] = useState(initialSection || (initialProductId ? 'products' : 'quickstart'));
+	const [viewMode, setViewMode] = useState(
+		initialView === 'product' || initialSection?.startsWith('sdk-') ? 'product' : 'store',
+	);
+	const [activeSection, setActiveSection] = useState(
+		initialSection ||
+			(initialProductId
+				? 'products'
+				: initialView === 'product' || initialSection?.startsWith('sdk-')
+					? 'sdk-cli'
+					: 'quickstart'),
+	);
 	const [selectedProductId, setSelectedProductId] = useState(initialProductId || items[0]?.productId || 'chat');
 	const [selectedOpKey, setSelectedOpKey] = useState(/** @type {string | null} */ (initialOpKey || null));
 	const [token, setToken] = useState(initialToken || '');
@@ -515,7 +526,6 @@ export function DocsHubView({
 	const [activeSnippetTab, setActiveSnippetTab] = useState('curl');
 	const [activeResponseStatus, setActiveResponseStatus] = useState('200');
 	const [searchQuery, setSearchQuery] = useState('');
-	const [cachedDetails, setCachedDetails] = useState(/** @type {Record<string, any>} */ ({}));
 	const [copiedNotice, setCopiedNotice] = useState('');
 	const [clientActor, setClientActor] = useState(/** @type {any} */ (null));
 
@@ -542,7 +552,6 @@ export function DocsHubView({
 	const userRole = effectiveActor?.role || (effectiveActor?.admin ? 'owner' : null);
 	const isUnlocked = Boolean(token || effectiveActor);
 	const isProductRoleAllowed = !userRole || ['owner', 'developer', 'support', 'admin'].includes(userRole);
-	const [roleViewMode, setRoleViewMode] = useState('storefront');
 
 	const catalogItems = useMemo(() => {
 		if (items && items.length > 0) {
@@ -570,18 +579,21 @@ export function DocsHubView({
 	 * @param {string | null} [pId]
 	 * @param {string | null} [op]
 	 * @param {string} [sec]
+	 * @param {string} [view]
 	 * @param {string} [tok]
 	 * @param {string} [web]
 	 */
-	const syncUrl = (pId, op, sec, tok = token, web = website) => {
+	const syncUrl = (pId, op, sec, view = viewMode, tok = token, web = website) => {
 		if (typeof window === 'undefined') return;
 		const params = new URLSearchParams(window.location.search);
 		if (pId) params.set('product', pId);
 		else params.delete('product');
 		if (op) params.set('op', op);
 		else params.delete('op');
-		if (sec && sec !== 'products') params.set('section', sec);
+		if (sec && sec !== 'products' && sec !== 'quickstart') params.set('section', sec);
 		else params.delete('section');
+		if (view && view !== 'store') params.set('view', view);
+		else params.delete('view');
 		if (tok) params.set('token', tok);
 		else params.delete('token');
 		if (web) params.set('website', web);
@@ -611,7 +623,7 @@ export function DocsHubView({
 		setToken(extractedToken);
 		if (extractedWebsite) setWebsite(extractedWebsite);
 		setTokenInput('');
-		syncUrl(selectedProductId, selectedOpKey, activeSection, extractedToken, extractedWebsite);
+		syncUrl(selectedProductId, selectedOpKey, activeSection, viewMode, extractedToken, extractedWebsite);
 	};
 
 	// Listen for browser forward/back buttons
@@ -620,11 +632,13 @@ export function DocsHubView({
 			const params = new URLSearchParams(window.location.search);
 			const p = params.get('product') || items[0]?.productId || 'chat';
 			const o = params.get('op') || null;
-			const s = params.get('section') || 'products';
+			const v = params.get('view') || (params.get('section')?.startsWith('sdk-') ? 'product' : 'store');
+			const s = params.get('section') || (v === 'product' ? 'sdk-cli' : 'products');
 			const t = params.get('token') || '';
 			const w = params.get('website') || '';
 			setSelectedProductId(p);
 			setSelectedOpKey(o);
+			setViewMode(v === 'product' ? 'product' : 'store');
 			setActiveSection(s);
 			setToken(t);
 			setWebsite(w);
@@ -633,39 +647,19 @@ export function DocsHubView({
 		return () => window.removeEventListener('popstate', onPopState);
 	}, [items]);
 
-	// Populate initial cached detail if passed from server
-	useEffect(() => {
-		if (activeProductDetail?.productId) {
-			setCachedDetails((prev) => ({ ...prev, [activeProductDetail.productId]: activeProductDetail }));
-		}
-	}, [activeProductDetail]);
-
-	// Fetch product detail (with operations & components) when selected if not yet cached
-	useEffect(() => {
-		if (!selectedProductId || cachedDetails[selectedProductId]) return;
-		let cancelled = false;
-		apiFetch(`/v1/docs/${encodeURIComponent(selectedProductId)}`).then((res) => {
-			if (!cancelled && res.ok && res.data?.product) {
-				setCachedDetails((prev) => ({ ...prev, [selectedProductId]: res.data.product }));
-			}
-		});
-		return () => {
-			cancelled = true;
-		};
-	}, [selectedProductId, cachedDetails]);
-
 	const currentProduct = useMemo(() => {
-		return (
-			cachedDetails[selectedProductId] ||
-			catalogItems.find((p) => p.productId === selectedProductId) ||
-			catalogItems[0] ||
-			null
-		);
-	}, [cachedDetails, selectedProductId, catalogItems]);
+		return catalogItems.find((p) => p.productId === selectedProductId) || catalogItems[0] || null;
+	}, [selectedProductId, catalogItems]);
 
 	const operations = useMemo(() => {
-		return /** @type {any[]} */ (currentProduct?.operations || []);
-	}, [currentProduct]);
+		const allOps = /** @type {any[]} */ (currentProduct?.operations || []);
+		if (viewMode === 'store') {
+			const storeOps = allOps.filter((op) => op.auth === 'browser' || op.auth === 'visitor' || !op.auth);
+			return storeOps.length > 0 ? storeOps : allOps;
+		}
+		const prodOps = allOps.filter((op) => op.auth === 'server' || op.auth === 'ticket' || Boolean(op.permission));
+		return prodOps.length > 0 ? prodOps : allOps;
+	}, [currentProduct, viewMode]);
 
 	const currentOperation = useMemo(() => {
 		if (!selectedOpKey) return null;
@@ -690,28 +684,18 @@ export function DocsHubView({
 		};
 	}, [currentOperation, currentProduct, activeResponseStatus]);
 
-	// Filtered operations based on search query and Store vs Product roleViewMode
+	// Filtered operations based on search query
 	const filteredOperations = useMemo(() => {
 		const q = searchQuery.trim().toLowerCase();
-		let ops = operations;
-		if (roleViewMode === 'storefront') {
-			const storeOps = operations.filter(
-				(op) => op.auth === 'browser' || op.auth === 'visitor' || !op.auth || op.feature === 'always',
-			);
-			if (storeOps.length > 0) ops = storeOps;
-		} else if (roleViewMode === 'developer') {
-			const prodOps = operations.filter((op) => op.auth === 'server' || op.auth === 'ticket' || Boolean(op.permission));
-			if (prodOps.length > 0) ops = prodOps;
-		}
-		if (!q) return ops;
-		return ops.filter(
+		if (!q) return operations;
+		return operations.filter(
 			(/** @type {any} */ op) =>
 				op.path.toLowerCase().includes(q) ||
 				op.method.toLowerCase().includes(q) ||
 				(op.summary && op.summary.toLowerCase().includes(q)) ||
 				(op.description && op.description.toLowerCase().includes(q)),
 		);
-	}, [operations, searchQuery, roleViewMode]);
+	}, [operations, searchQuery]);
 
 	const filteredProducts = useMemo(() => {
 		const q = searchQuery.trim().toLowerCase();
@@ -729,21 +713,21 @@ export function DocsHubView({
 		setSelectedProductId(productId);
 		setSelectedOpKey(null);
 		setActiveSection('products');
-		syncUrl(productId, null, 'products');
+		syncUrl(productId, null, 'products', viewMode);
 	};
 
 	/** @param {string | null} opKey */
 	const selectOperation = (opKey) => {
 		setSelectedOpKey(opKey);
 		setActiveSection('products');
-		syncUrl(selectedProductId, opKey, 'products');
+		syncUrl(selectedProductId, opKey, 'products', viewMode);
 	};
 
 	/** @param {string} section */
 	const selectSection = (section) => {
 		setActiveSection(section);
 		setSelectedOpKey(null);
-		syncUrl(selectedProductId, null, section);
+		syncUrl(selectedProductId, null, section, viewMode);
 	};
 
 	/**
@@ -763,6 +747,70 @@ export function DocsHubView({
 
 	const apiBase = typeof window !== 'undefined' && window.location?.origin ? window.location.origin : 'https://api.shelfway.com';
 
+	if (!isUnlocked) {
+		return (
+			<ToastProvider>
+				<div className="docs-container flex flex-col items-center justify-center min-h-[60vh] py-12 px-4">
+					<div className="w-full max-w-md rounded-card border border-line bg-surface p-6 shadow-card space-y-5">
+						<div className="flex items-center gap-3">
+							<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+								<Icon name="key" size={20} />
+							</div>
+							<div>
+								<h1 className="text-base font-semibold text-fg">Documentation Access Restricted</h1>
+								<p className="text-xs text-muted">Authentication Required</p>
+							</div>
+						</div>
+
+						<p className="text-xs text-muted leading-relaxed">
+							Shelfway universal Swagger documentation and API specifications are restricted to authenticated users. Enter
+							your user unique token or setup link to access the documentation.
+						</p>
+
+						<div className="space-y-3">
+							<Input
+								label="User unique token"
+								hideLabel
+								placeholder="Paste user unique token or setup link..."
+								value={tokenInput}
+								onChange={(e) => setTokenInput(e.currentTarget.value)}
+								onKeyDown={(e) => {
+									if (e.key === 'Enter') applyToken(tokenInput);
+								}}
+								prefix={<Icon name="key" size={14} />}
+								className="text-xs h-9"
+							/>
+							<Button
+								type="button"
+								variant="primary"
+								size="md"
+								className="w-full justify-center"
+								disabled={!tokenInput.trim()}
+								onClick={() => applyToken(tokenInput)}>
+								Unlock Documentation
+							</Button>
+						</div>
+
+						<div className="pt-4 border-t border-line flex items-center justify-between text-xs text-muted">
+							<span>Have an account?</span>
+							<Button
+								type="button"
+								variant="secondary"
+								size="sm"
+								onClick={() => {
+									if (typeof window !== 'undefined') {
+										window.dispatchEvent(new CustomEvent('shelfway:open-signin', { detail: { next: null } }));
+									}
+								}}>
+								Sign In
+							</Button>
+						</div>
+					</div>
+				</div>
+			</ToastProvider>
+		);
+	}
+
 	return (
 		<ToastProvider>
 			<div className="docs-container flex flex-col flex-1">
@@ -778,52 +826,66 @@ export function DocsHubView({
 							<button
 								type="button"
 								onClick={() => {
-									setRoleViewMode('storefront');
+									setViewMode('store');
+									setSelectedOpKey(null);
 									if (activeSection.startsWith('sdk-')) selectSection('quickstart');
+									syncUrl(
+										selectedProductId,
+										null,
+										activeSection.startsWith('sdk-') ? 'quickstart' : activeSection,
+										'store',
+									);
 								}}
 								className={`rounded-[calc(var(--radius-control)-2px)] px-3 py-1 font-medium transition ${
-									roleViewMode === 'storefront'
-										? 'bg-surface text-fg shadow-xs font-semibold'
-										: 'text-muted hover:text-fg'
+									viewMode === 'store' ? 'bg-surface text-fg shadow-xs font-semibold' : 'text-muted hover:text-fg'
 								}`}>
-								Storefront APIs
+								Store
 							</button>
 							<button
 								type="button"
 								onClick={() => {
-									setRoleViewMode('developer');
-									if (!activeSection.startsWith('sdk-')) selectSection('sdk-cli');
+									setViewMode('product');
+									setSelectedOpKey(null);
+									if (!activeSection.startsWith('sdk-') && activeSection !== 'products') selectSection('sdk-cli');
+									syncUrl(
+										selectedProductId,
+										null,
+										activeSection.startsWith('sdk-') ? activeSection : 'products',
+										'product',
+									);
 								}}
 								className={`rounded-[calc(var(--radius-control)-2px)] px-3 py-1 font-medium transition ${
-									roleViewMode === 'developer'
-										? 'bg-surface text-fg shadow-xs font-semibold'
-										: 'text-muted hover:text-fg'
+									viewMode === 'product' ? 'bg-surface text-fg shadow-xs font-semibold' : 'text-muted hover:text-fg'
 								}`}>
-								Product Developer SDK
+								Product
 							</button>
 						</div>
 
-						{isUnlocked ? (
-							(actor || effectiveActor) && userRole ? (
-								<div className="hidden sm:flex items-center gap-1.5 text-xs text-muted border-l border-line pl-3">
-									<Icon name="user" size={14} />
-									<span>Role:</span>
-									<strong className="text-fg capitalize font-medium">{userRole}</strong>
-								</div>
-							) : token ? (
-								<div className="hidden sm:flex items-center gap-2 text-xs text-muted border-l border-line pl-3">
-									<Icon name="key" size={14} className="text-primary" />
-									<Badge tone="success" dot>
-										{website || 'User Token'}
-									</Badge>
-								</div>
-							) : null
-						) : (
+						{(actor || effectiveActor) && userRole ? (
 							<div className="hidden sm:flex items-center gap-1.5 text-xs text-muted border-l border-line pl-3">
-								<Icon name="lock" size={14} className="text-muted" />
-								<span>Locked</span>
+								<Icon name="user" size={14} />
+								<span>Role:</span>
+								<strong className="text-fg capitalize font-medium">{userRole}</strong>
 							</div>
-						)}
+						) : token ? (
+							<div className="hidden sm:flex items-center gap-2 text-xs text-muted border-l border-line pl-3">
+								<Icon name="key" size={14} className="text-primary" />
+								<Badge tone="success" dot>
+									{website || 'User Token'}
+								</Badge>
+							</div>
+						) : null}
+
+						<Button
+							size="sm"
+							variant="ghost"
+							onClick={() => {
+								setToken('');
+								setClientActor(null);
+								syncUrl(null, null, '', 'store', '', '');
+							}}>
+							Lock / Switch Token
+						</Button>
 					</div>
 				</div>
 
@@ -846,39 +908,43 @@ export function DocsHubView({
 						</div>
 
 						{/* Section: Getting Started */}
-						<div className="space-y-1">
-							<p className="px-2 text-[10px] font-mono font-bold uppercase tracking-widest text-muted">Getting Started</p>
-							<button
-								type="button"
-								onClick={() => selectSection('quickstart')}
-								className={`flex w-full items-center gap-2 rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
-									activeSection === 'quickstart'
-										? 'bg-primary/10 text-primary font-semibold shadow-xs'
-										: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
-								}`}>
-								<Icon name="info" size={15} />
-								<span>Quickstart Guide</span>
-							</button>
-							<button
-								type="button"
-								onClick={() => selectSection('tokens')}
-								className={`flex w-full items-center gap-2 rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
-									activeSection === 'tokens'
-										? 'bg-primary/10 text-primary font-semibold shadow-xs'
-										: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
-								}`}>
-								<Icon name="key" size={15} />
-								<span>Authentication &amp; Tokens</span>
-							</button>
-						</div>
+						{viewMode === 'store' ? (
+							<div className="space-y-1">
+								<p className="px-2 text-[10px] font-mono font-bold uppercase tracking-widest text-muted">
+									Getting Started
+								</p>
+								<button
+									type="button"
+									onClick={() => selectSection('quickstart')}
+									className={`flex w-full items-center gap-2 rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
+										activeSection === 'quickstart'
+											? 'bg-primary/10 text-primary font-semibold shadow-xs'
+											: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
+									}`}>
+									<Icon name="info" size={15} />
+									<span>Quickstart Guide</span>
+								</button>
+								<button
+									type="button"
+									onClick={() => selectSection('tokens')}
+									className={`flex w-full items-center gap-2 rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
+										activeSection === 'tokens'
+											? 'bg-primary/10 text-primary font-semibold shadow-xs'
+											: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
+									}`}>
+									<Icon name="key" size={15} />
+									<span>Authentication &amp; Tokens</span>
+								</button>
+							</div>
+						) : null}
 
-						{/* Section: Catalog Products & Endpoints (Storefront View) */}
+						{/* Section: Catalog Products & Endpoints */}
 						<div className="space-y-2">
 							<div className="flex items-center justify-between px-2">
 								<p className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted">
-									Products &amp; APIs
+									{viewMode === 'store' ? 'Storefront APIs' : 'Product APIs'}
 								</p>
-								<span className="text-[10px] text-muted font-mono">{items.length} products</span>
+								<span className="text-[10px] text-muted font-mono">{catalogItems.length} products</span>
 							</div>
 
 							<div className="space-y-1">
@@ -970,7 +1036,7 @@ export function DocsHubView({
 						</div>
 
 						{/* Section: Product Developer SDK */}
-						{roleViewMode === 'developer' ? (
+						{viewMode === 'product' && isProductRoleAllowed ? (
 							<div className="space-y-1 pt-3 border-t border-line">
 								<div className="flex items-center justify-between px-2">
 									<p className="text-[10px] font-mono font-bold uppercase tracking-widest text-primary">
@@ -1000,86 +1066,50 @@ export function DocsHubView({
 
 					{/* Right Content Area: Interactive Swagger & Guides */}
 					<div className="flex-1 min-w-0 w-full space-y-8">
-						{isUnlocked ? (
-							<div className="rounded-card border border-primary/30 bg-primary-soft/10 p-4 shadow-card">
-								<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-									<div className="space-y-1">
-										<div className="flex items-center gap-2">
-											<span className="font-mono text-xs font-bold uppercase tracking-wider text-primary">
-												Authenticated Documentation
-											</span>
-											<span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-surface border border-line text-fg">
-												{effectiveActor ? `${effectiveActor.name} (${userRole || 'user'})` : website || 'User Token'}
-											</span>
-										</div>
-										<p className="text-xs text-muted">
-											Interactive code snippets below are pre-filled with your scoped credentials.
-										</p>
-									</div>
+						<div className="rounded-card border border-primary/30 bg-primary-soft/10 p-4 shadow-card">
+							<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+								<div className="space-y-1">
 									<div className="flex items-center gap-2">
-										{token ? (
-											<Button
-												size="sm"
-												variant="secondary"
-												onClick={() => {
-													copyText(token);
-													setCopiedNotice('Copied Token');
-													setTimeout(() => setCopiedNotice(''), 2000);
-												}}>
-												{copiedNotice === 'Copied Token' ? 'Copied Token!' : 'Copy Token'}
-											</Button>
-										) : null}
+										<span className="font-mono text-xs font-bold uppercase tracking-wider text-primary">
+											Authenticated Documentation
+										</span>
+										<span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-surface border border-line text-fg">
+											{effectiveActor ? `${effectiveActor.name} (${userRole || 'user'})` : website || 'User Token'}
+										</span>
+									</div>
+									<p className="text-xs text-muted">
+										Interactive code snippets below are pre-filled with your scoped credentials.
+									</p>
+								</div>
+								<div className="flex items-center gap-2">
+									{token ? (
 										<Button
 											size="sm"
-											variant="ghost"
+											variant="secondary"
 											onClick={() => {
-												setToken('');
-												syncUrl(selectedProductId, selectedOpKey, activeSection, '', website);
+												copyText(token);
+												setCopiedNotice('Copied Token');
+												setTimeout(() => setCopiedNotice(''), 2000);
 											}}>
-											Lock / Change
+											{copiedNotice === 'Copied Token' ? 'Copied Token!' : 'Copy Token'}
 										</Button>
-									</div>
-								</div>
-							</div>
-						) : (
-							<div className="rounded-card border border-primary/40 bg-surface p-5 shadow-card space-y-3">
-								<div className="flex items-start gap-3">
-									<div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-										<Icon name="key" size={18} />
-									</div>
-									<div className="space-y-1">
-										<h2 className="text-sm font-semibold text-fg">Documentation Access Restricted</h2>
-										<p className="text-xs text-muted leading-relaxed">
-											API specifications and interactive Swagger testing are restricted to authenticated users. Enter
-											your user unique token or setup link to unlock documentation.
-										</p>
-									</div>
-								</div>
-								<div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
-									<Input
-										hideLabel
-										label="User unique token or link"
-										placeholder="Paste user unique token or setup link..."
-										value={tokenInput}
-										onChange={(e) => setTokenInput(e.currentTarget.value)}
-										onKeyDown={(e) => {
-											if (e.key === 'Enter') applyToken(tokenInput);
-										}}
-										className="w-full sm:w-80 text-xs h-9"
-									/>
+									) : null}
 									<Button
 										size="sm"
-										variant="primary"
-										disabled={!tokenInput.trim()}
-										onClick={() => applyToken(tokenInput)}>
-										Unlock Documentation
+										variant="ghost"
+										onClick={() => {
+											setToken('');
+											setClientActor(null);
+											syncUrl(selectedProductId, selectedOpKey, activeSection, viewMode, '', website);
+										}}>
+										Lock / Change
 									</Button>
 								</div>
 							</div>
-						)}
+						</div>
 
 						{/* Role Restricted Banner for Product APIs */}
-						{roleViewMode === 'developer' && !isProductRoleAllowed ? (
+						{viewMode === 'product' && !isProductRoleAllowed ? (
 							<div className="rounded-card border border-warning/40 bg-surface p-6 space-y-3 shadow-card">
 								<div className="flex items-center gap-2 text-warning font-semibold text-sm">
 									<Icon name="shield" size={18} />
@@ -1095,10 +1125,12 @@ export function DocsHubView({
 										size="sm"
 										variant="secondary"
 										onClick={() => {
-											setRoleViewMode('storefront');
+											setViewMode('store');
+											setSelectedOpKey(null);
 											selectSection('quickstart');
+											syncUrl(selectedProductId, null, 'quickstart', 'store');
 										}}>
-										Switch to Storefront APIs
+										Switch to Store Documentation
 									</Button>
 								</div>
 							</div>
@@ -1115,16 +1147,7 @@ export function DocsHubView({
 									<p className="text-sm text-muted leading-relaxed max-w-3xl">
 										Shelfway connects modular products (Accounts, Notifications, Chat, Payments, Ecommerce, Growth) to
 										merchants' websites. Storefront builders connect directly to our public widget scripts and backend
-										REST APIs using credentials from the merchant's setup link or Developer Pack. Universal OpenAPI 3.1
-										specification is available at{' '}
-										<a
-											href="/docs/openapi.json"
-											target="_blank"
-											rel="noopener noreferrer"
-											className="text-primary hover:underline font-mono">
-											/docs/openapi.json
-										</a>
-										.
+										REST APIs using credentials from the merchant's setup link or website tokens.
 									</p>
 								</div>
 
@@ -1202,13 +1225,7 @@ export function DocsHubView({
 															className="text-primary hover:underline font-medium cursor-pointer">
 															{`Explore ${p.name} APIs ->`}
 														</button>
-														<a
-															href={`/docs/${p.productId}/openapi.json`}
-															target="_blank"
-															rel="noopener noreferrer"
-															className="font-mono text-[11px] text-muted hover:text-fg">
-															OpenAPI
-														</a>
+														<span className="font-mono text-[11px] text-muted">{`v${p.version}`}</span>
 													</div>
 												</div>
 											))}
@@ -1387,20 +1404,9 @@ export function DocsHubView({
 										</div>
 
 										<div className="flex items-center gap-2">
-											<a
-												href={currentProduct.docsUrl || `/docs?product=${currentProduct.productId}`}
-												className="hidden"
-												tabIndex={-1}>
-												{currentProduct.docsUrl}
-											</a>
-											<a
-												href={currentProduct.openapiUrl || `/docs/${currentProduct.productId}/openapi.json`}
-												target="_blank"
-												rel="noopener noreferrer"
-												className="inline-flex items-center gap-1.5 rounded-control border border-line bg-surface px-3.5 py-2 text-xs font-medium text-fg hover:bg-surface-2 transition shadow-xs">
-												<Icon name="external" size={14} />
-												<span>OpenAPI Spec</span>
-											</a>
+											<span className="font-mono text-xs bg-surface-2 text-muted px-2 py-0.5 rounded border border-line">
+												Universal Spec
+											</span>
 										</div>
 									</div>
 
@@ -1470,7 +1476,6 @@ export function DocsHubView({
 														`API Base: ${apiBase}`,
 														`Product ID: ${currentProduct.productId}`,
 														`Docs URL: ${apiBase}/docs?product=${currentProduct.productId}`,
-														`OpenAPI Spec: ${apiBase}/docs/${currentProduct.productId}/openapi.json`,
 														'',
 														'## Active Capabilities',
 														...(currentProduct.features || []).map(

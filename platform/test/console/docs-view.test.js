@@ -58,12 +58,13 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		],
 	};
 
-	it('renders public DocsHubView with hero, quickstart, and product cards when unauthenticated', () => {
+	it('locks DocsHubView with authentication gate when unauthenticated without token', () => {
 		const html = renderToString(<DocsHubView branding={branding} items={[sampleProduct]} />);
-		expect(html).toContain('Documentation Hub');
-		expect(html).toContain('Quickstart Guide');
-		expect(html).toContain('Chat');
-		expect(html).toContain('Storefront APIs');
+		expect(html).toContain('Documentation Access Restricted');
+		expect(html).toContain('Authentication Required');
+		expect(html).toContain('User unique token');
+		expect(html).toContain('Unlock Documentation');
+		expect(html).not.toContain('Quickstart Guide');
 	});
 
 	it('renders DocsHubView with hero, quickstart, and product cards without error when unlocked', () => {
@@ -73,9 +74,8 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		expect(html).toContain('Chat');
 		expect(html).toContain('v1.0.0');
 		expect(html).toContain('AI Assistant');
-		expect(html).toContain('/docs/chat');
-		expect(html).toContain('/docs/chat/openapi.json');
-		expect(html).toContain('/docs/openapi.json');
+		expect(html).toContain('Storefront APIs');
+		expect(html).toContain('Ready Storefront Products');
 	});
 
 	it('loads docs hub and product detail via loaders', async () => {
@@ -109,7 +109,12 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 
 	it('renders with developer role showing Product Developer SDK section', () => {
 		const html = renderToString(
-			<DocsHubView branding={branding} items={[sampleProduct]} actor={{ role: 'owner', name: 'Admin' }} />,
+			<DocsHubView
+				branding={branding}
+				items={[sampleProduct]}
+				actor={{ role: 'owner', name: 'Admin' }}
+				initialView="product"
+			/>,
 		);
 		expect(html).toContain('Product Developer SDK');
 		expect(html).toContain('Role:');
@@ -202,14 +207,14 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		if (quickstartBtn) click(quickstartBtn);
 		expect(document.body.textContent).toContain('Everyday Development Path');
 
-		// Switch role view mode
-		const devModeBtn = byText(document.body, 'Product Developer SDK');
+		// Switch role view mode: Store vs Product
+		const devModeBtn = byText(document.body, 'Product', 'button');
 		if (devModeBtn) click(devModeBtn);
 		const cliBtn = byText(document.body, 'CLI');
 		if (cliBtn) click(cliBtn);
 		expect(document.body.textContent).toContain('CLI Reference');
 
-		const storefrontBtn = byText(document.body, 'Storefront APIs');
+		const storefrontBtn = byText(document.body, 'Store', 'button');
 		if (storefrontBtn) click(storefrontBtn);
 
 		// Switch back to products section by clicking Chat in sidebar
@@ -319,7 +324,7 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 			/>,
 		);
 
-		const devModeBtn = byText(document.body, 'Product Developer SDK');
+		const devModeBtn = byText(document.body, 'Product', 'button');
 		if (devModeBtn) click(devModeBtn);
 
 		expect(document.body.textContent).toContain('Role Restricted Access');
@@ -337,5 +342,52 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		expect(html).toContain('Notifications');
 		expect(html).toContain('Growth');
 		expect(html).toContain('Ready Storefront Products');
+	});
+
+	it('parses full URL with token and website params and preserves token across view modes', async () => {
+		render(<DocsHubView branding={branding} items={[sampleProduct]} />);
+		expect(document.body.textContent).toContain('Documentation Access Restricted');
+
+		const tokenInput = document.querySelector('input[placeholder*="user unique token"]');
+		if (tokenInput) {
+			type(tokenInput, 'https://mysite.com/setup?token=tok_parsed_999&website=mysite.com');
+		}
+
+		const unlockBtn = byText(document.body, 'Unlock Documentation', 'button');
+		click(unlockBtn);
+
+		expect(document.body.textContent).toContain('Authenticated Documentation');
+		expect(document.body.textContent).toContain('mysite.com');
+
+		// Switch to Product mode and verify website / token is preserved
+		const prodBtn = byText(document.body, 'Product', 'button');
+		click(prodBtn);
+		expect(document.body.textContent).toContain('mysite.com');
+
+		// Click lock button and verify documentation is restricted again
+		const lockBtn = byText(document.body, 'Lock / Switch Token', 'button');
+		click(lockBtn);
+		expect(document.body.textContent).toContain('Documentation Access Restricted');
+
+		cleanup();
+	});
+
+	it('restricts finance role from Product Developer SDK view', async () => {
+		render(
+			<DocsHubView
+				branding={branding}
+				items={[sampleProduct]}
+				actor={{ role: 'finance', name: 'Finance Agent' }}
+				initialSection="quickstart"
+			/>,
+		);
+
+		const prodBtn = byText(document.body, 'Product', 'button');
+		click(prodBtn);
+
+		expect(document.body.textContent).toContain('Role Restricted Access');
+		expect(document.body.textContent).toContain('require Developer or Owner privileges');
+
+		cleanup();
 	});
 });

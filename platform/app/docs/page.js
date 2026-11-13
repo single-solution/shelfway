@@ -1,7 +1,6 @@
 import { connection } from 'next/server';
-import { consoleApi, consoleBranding, one } from '../(console)/_lib/server.js';
+import { consoleBranding, one } from '../(console)/_lib/server.js';
 import { platformSession } from '../_lib/server.js';
-import { loadDocsHub, loadDocsProduct } from '../../src/console/loaders.js';
 import { DocsHubView } from '../../src/console/views/docs.js';
 import { SiteFooter, SiteHeader } from '../_components/SiteNav.js';
 import { COMPANY_NAME, PRODUCT_BRAND } from '../_components/brand.js';
@@ -19,7 +18,7 @@ export async function generateMetadata({ searchParams }) {
 			: product
 				? `${product.charAt(0).toUpperCase() + product.slice(1)} API Documentation - ${PRODUCT_BRAND}`
 				: `Documentation Hub - ${PRODUCT_BRAND}`,
-		description: `Interactive Swagger explorer, OpenAPI 3.1 specifications, and SDK guides for ${PRODUCT_BRAND} products.`,
+		description: `Interactive Swagger explorer and universal API documentation for ${PRODUCT_BRAND} store and product services.`,
 		robots: { index: true, follow: true },
 	};
 }
@@ -28,39 +27,38 @@ export async function generateMetadata({ searchParams }) {
 export default async function DocsPage({ searchParams }) {
 	await connection();
 	const q = (await searchParams) || {};
-	const session = await platformSession().catch(() => ({ ok: false }));
-	const [branding, api] = await Promise.all([consoleBranding().catch(() => null), consoleApi().catch(() => null)]);
-	const loaded = api ? await loadDocsHub(api).catch(() => ({ ok: false, items: [] })) : { ok: false, items: [] };
+	const [session, branding] = await Promise.all([
+		platformSession().catch(() => ({ ok: false })),
+		consoleBranding().catch(() => null),
+	]);
 	const initialProduct = one(q.product) || '';
 	const initialOp = one(q.op) || '';
-	const initialSection = one(q.section) || (initialProduct ? 'products' : 'quickstart');
+	const initialView = one(q.view) === 'product' || one(q.section)?.startsWith('sdk-') ? 'product' : 'store';
+	const initialSection = one(q.section) || '';
 	const initialToken = one(q.token) || '';
 	const initialWebsite = one(q.website) || '';
-	const productToLoad = initialProduct || (loaded.ok && loaded.items[0]?.productId) || '';
-	const productDetail = productToLoad && api ? await loadDocsProduct(api, productToLoad).catch(() => null) : null;
 	const brandName = branding?.name || PRODUCT_BRAND;
 
 	return (
 		<div className="shelfway-site flex min-h-screen flex-col bg-transparent text-fg font-sans">
-			<SiteHeader brandName={brandName} session={session.ok ? session : null} />
+			<SiteHeader brandName={brandName} session={session?.ok ? session : null} />
 			<main className="flex-1">
 				<DocsHubView
 					branding={branding}
-					items={loaded.ok ? loaded.items : []}
-					activeProductDetail={productDetail?.ok ? productDetail.product : null}
 					actor={
-						session.ok
+						session?.ok
 							? session.actor || session.me || (session.admin ? { role: 'owner', name: 'Admin', admin: true } : null)
 							: null
 					}
 					initialProductId={initialProduct}
 					initialOpKey={initialOp}
+					initialView={initialView}
 					initialSection={initialSection}
 					initialToken={initialToken}
 					initialWebsite={initialWebsite}
 				/>
 			</main>
-			<SiteFooter brandName={brandName} companyName={COMPANY_NAME} session={session.ok ? session : null} />
+			<SiteFooter brandName={brandName} companyName={COMPANY_NAME} session={session?.ok ? session : null} />
 		</div>
 	);
 }
