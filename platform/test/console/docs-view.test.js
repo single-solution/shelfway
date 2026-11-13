@@ -73,7 +73,7 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		expect(html).toContain('Documentation Hub');
 		expect(html).toContain('Quickstart Guide');
 		expect(html).toContain('Chat');
-		expect(html).toContain('v1.0.0');
+		expect(html).not.toContain('v1.0.0');
 		expect(html).toContain('AI Assistant');
 		expect(html).toContain('Storefront APIs');
 		expect(html).toContain('Ready Storefront Products');
@@ -228,20 +228,26 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		if (opBtn) click(opBtn);
 		expect(document.body.textContent).toContain('Post a chat message to a conversation');
 
+		// Switch to Code Snippets tab
+		const snippetTab = byText(document.body, 'Code Snippets', 'button');
+		if (snippetTab) click(snippetTab);
+
 		// Switch code snippet tabs
-		const jsTab = byText(document.body, 'JavaScript');
+		const jsTab = byText(document.body, 'JavaScript', 'button');
 		if (jsTab) click(jsTab);
 		expect(document.body.textContent).toContain('fetch(');
 
-		const curlTab = byText(document.body, 'cURL');
+		const curlTab = byText(document.body, 'cURL', 'button');
 		if (curlTab) click(curlTab);
 		expect(document.body.textContent).toContain('curl -X POST');
 
-		// Back to product overview via sidebar
-		const overviewBtn = byText(document.body, 'Overview & Embed');
-		if (overviewBtn) click(overviewBtn);
+		// Back to product overview via clicking Chat in sidebar
+		const sidebar = document.querySelector('aside');
+		const chatProductNav = byText(sidebar || document.body, 'Chat');
+		if (chatProductNav) click(chatProductNav);
 		expect(document.body.textContent).toContain('Available API Operations');
 		expect(document.body.textContent).toContain('Active');
+		expect(document.body.textContent).not.toContain('Overview & Embed');
 
 		const copyAiBtn = byText(document.body, 'Copy AI Prompt');
 		if (copyAiBtn) click(copyAiBtn);
@@ -396,8 +402,8 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 			/>,
 		);
 
-		// Chat operations should be visible in sidebar
-		expect(document.body.textContent).toContain('Overview & Embed');
+		// Chat operations should be visible in sidebar (without separate Overview & Embed button)
+		expect(document.body.textContent).not.toContain('Overview & Embed');
 		expect(document.body.textContent).toContain('/messages');
 
 		// Click Quickstart Guide - sidebar operations must NOT collapse or be lost
@@ -406,7 +412,7 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 
 		expect(document.body.textContent).toContain('Everyday Development Path');
 		// Sidebar still contains the expanded operations
-		expect(document.body.textContent).toContain('Overview & Embed');
+		expect(document.body.textContent).not.toContain('Overview & Embed');
 		expect(document.body.textContent).toContain('/messages');
 
 		// Click an SDK guide - operations still stay visible in sidebar
@@ -414,7 +420,7 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		if (cliBtn) click(cliBtn);
 
 		expect(document.body.textContent).toContain('CLI Reference');
-		expect(document.body.textContent).toContain('Overview & Embed');
+		expect(document.body.textContent).not.toContain('Overview & Embed');
 		expect(document.body.textContent).toContain('/messages');
 
 		cleanup();
@@ -449,7 +455,7 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		expect(html).toContain('/live/webhook');
 	});
 
-	it('SiteHeader renders section links and separate portal links with Docs and Dashboard', () => {
+	it('SiteHeader renders section links and portal docs link with unified Dashboard CTA', () => {
 		const { container } = render(<SiteHeader brandName="Shelfway" isHome={true} session={null} />);
 
 		// Section links
@@ -463,11 +469,23 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		// Divider separating sections from portal links
 		expect(container.querySelector('.nav-divider')).not.toBeNull();
 
-		// Portal links
+		// Portal links only contain Docs (no duplicate Dashboard link)
 		const portalSection = container.querySelector('.nav-portal-links');
 		expect(portalSection).not.toBeNull();
 		expect(portalSection?.textContent).toContain('Docs');
-		expect(portalSection?.textContent).toContain('Dashboard');
+		expect(portalSection?.textContent).not.toContain('Dashboard');
+
+		// Unauthenticated CTA button is Sign in
+		expect(container.textContent).toContain('Sign in');
+
+		// Authenticated CTA button is unified Dashboard (replacing Admin Console, without duplicate dashboard link)
+		const { container: loggedInContainer } = render(
+			<SiteHeader brandName="Shelfway" isHome={true} session={{ ok: true, admin: { role: 'owner' } }} />,
+		);
+		const ctaBtn = loggedInContainer.querySelector('.cta');
+		expect(ctaBtn?.textContent).toBe('Dashboard');
+		expect(ctaBtn?.getAttribute('href')).toBe('/admin');
+		expect(loggedInContainer.textContent).not.toContain('Admin Console');
 
 		cleanup();
 	});
@@ -540,11 +558,11 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 			/>,
 		);
 
-		// Check restored 2nd header
+		// Check sidebar header and verify no redundant 2nd header
 		expect(container.textContent).toContain('Documentation Hub');
 		expect(container.textContent).not.toContain('Authenticated Documentation');
 		expect(container.textContent).not.toContain('(Role: owner)');
-		expect(container.textContent).toContain('Interactive code snippets below are pre-filled with your scoped credentials.');
+		expect(container.textContent).not.toContain('Interactive code snippets below are pre-filled');
 		expect(container.textContent).toContain('mysite.shelfway.com');
 
 		// Verify redundant Copy Token and Lock / Change buttons are completely removed
@@ -620,7 +638,8 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 					expect(container.textContent).toContain('Start visitor chat conversation');
 					expect(container.textContent).not.toContain('(Role: owner)');
 					expect(container.textContent).not.toContain('Ready-to-Use Code Snippet');
-					expect(container.textContent).toContain('Parameters');
+					// 0 parameters endpoint does not show Parameters section
+					expect(container.textContent).not.toContain('Parameters (0)');
 					expect(container.textContent).toContain('Request Body');
 					expect(container.textContent).toContain('Responses');
 					expect(container.textContent).toContain('Code Snippets');
@@ -740,42 +759,50 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 			/>,
 		);
 
-		// 1. Header card is strictly for API name and description (no method badge, no path, no user role)
-		const headerCard = container.querySelector('.rounded-card.border-primary\\/30');
-		expect(headerCard).not.toBeNull();
-		expect(headerCard?.textContent).toContain('Start visitor chat conversation');
-		expect(headerCard?.textContent).not.toContain('Super Admin');
-		expect(headerCard?.textContent).not.toContain('Role: owner');
-		expect(headerCard?.querySelector('code')).toBeNull();
+		// 1. Swagger endpoint card contains API name, description, method, path, and badge (no separate 2nd header)
+		const endpointCard = container.querySelector('.rounded-card.border-line.hard');
+		expect(endpointCard).not.toBeNull();
+		expect(endpointCard?.textContent).toContain('Start visitor chat conversation');
+		expect(endpointCard?.textContent).toContain('Initiate a new live conversation from the storefront widget.');
+		expect(endpointCard?.textContent).toContain('POST');
+		expect(endpointCard?.textContent).toContain('/v1/conversations');
+		expect(endpointCard?.textContent).toContain('Storefront (Browser)');
+		expect(endpointCard?.textContent).toContain('Copy URL');
+		expect(container.textContent).not.toContain('Super Admin');
+		expect(container.textContent).not.toContain('Role: owner');
 
-		// 2. Swagger endpoint bar below the header
-		const endpointBar = container.querySelector('.rounded-card.border-line.hard');
-		expect(endpointBar).not.toBeNull();
-		expect(endpointBar?.textContent).toContain('POST');
-		expect(endpointBar?.textContent).toContain('/v1/conversations');
-		expect(endpointBar?.textContent).toContain('Storefront (Browser)');
-		expect(endpointBar?.textContent).toContain('Copy URL');
+		// 2. Parameters section is not rendered when there are 0 parameters
+		expect(container.textContent).not.toContain('Parameters (0)');
 
-		// 3. Parameters section
-		expect(container.textContent).toContain('Parameters');
-
-		// 4. Request body section with input parameters and types
+		// 3. Unified console tabs: Request Body, Responses, Code Snippets
 		expect(container.textContent).toContain('Request Body');
+		expect(container.textContent).toContain('Responses');
+		expect(container.textContent).toContain('Code Snippets');
+
+		// 4. Request Body tab is active by default for POST
 		expect(container.textContent).toContain('application/json');
 		expect(container.textContent).toContain('message');
 		expect(container.textContent).toContain('Initial message from visitor');
 
-		// 5. Responses section with status and output structure
-		expect(container.textContent).toContain('Responses');
-		expect(container.textContent).toContain('200');
-		expect(container.textContent).toContain('conversationId');
+		// 5. Switch to Responses tab
+		const respTab = byText(container, 'Responses', 'button');
+		expect(respTab).not.toBeNull();
+		if (respTab) {
+			click(respTab);
+			expect(container.textContent).toContain('200 OK');
+			expect(container.textContent).toContain('conversationId');
+		}
 
-		// 6. Code snippets tabs without "Ready-to-Use Code Snippet" label
-		expect(container.textContent).toContain('Code Snippets');
-		expect(container.textContent).not.toContain('Ready-to-Use Code Snippet');
-		expect(container.textContent).toContain('cURL');
-		expect(container.textContent).toContain('JavaScript');
-		expect(container.textContent).toContain('Python');
+		// 6. Switch to Code Snippets tab
+		const snippetTab = byText(container, 'Code Snippets', 'button');
+		expect(snippetTab).not.toBeNull();
+		if (snippetTab) {
+			click(snippetTab);
+			expect(container.textContent).not.toContain('Ready-to-Use Code Snippet');
+			expect(container.textContent).toContain('cURL');
+			expect(container.textContent).toContain('JavaScript');
+			expect(container.textContent).toContain('Python');
+		}
 
 		cleanup();
 	});
@@ -840,7 +867,9 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 			/>,
 		);
 
-		// Verified that snippet code block contains pre-resolved token
+		// Switch to Code Snippets tab and verify code block contains pre-resolved token
+		const snippetTab = byText(container, 'Code Snippets', 'button');
+		if (snippetTab) click(snippetTab);
 		expect(container.textContent).toContain('Bearer tok_developer_usr_dev_456');
 
 		// Click Share Docs and verify URL has the token
@@ -920,7 +949,12 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		expect(opBtn?.className).toContain('w-full');
 		expect(opBtn?.className).toContain('justify-between');
 
-		// 2. Check Swagger Responses card has status badge and description
+		// 2. Switch to Responses tab in unified console
+		const respTab = byText(container, 'Responses', 'button');
+		expect(respTab).not.toBeNull();
+		if (respTab) click(respTab);
+
+		// Check Swagger Responses card has status badge and description
 		expect(container.textContent).toContain('200 OK');
 		expect(container.textContent).toContain('Conversation initiated successfully');
 		expect(container.textContent).not.toContain('HTTP 200 Response Payload');
@@ -946,7 +980,9 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 			expect(container.textContent).toContain('conversationId');
 		}
 
-		// 6. Check Code Snippets do NOT have redundant labels
+		// 6. Switch to Code Snippets tab and check Code Snippets do NOT have redundant labels
+		const snippetTab = byText(container, 'Code Snippets', 'button');
+		if (snippetTab) click(snippetTab);
 		expect(container.textContent).toContain('cURL');
 		expect(container.textContent).not.toContain('cURL Command');
 		expect(container.textContent).not.toContain('JavaScript Fetch Example');
@@ -1026,6 +1062,10 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 				initialToken="test_token"
 			/>,
 		);
+
+		// Switch to Responses tab in unified console
+		const respTab = byText(container, 'Responses', 'button');
+		if (respTab) click(respTab);
 
 		expect(container.textContent).toContain('201 Created');
 		expect(container.textContent).toContain('Item created');
@@ -1143,12 +1183,7 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 			expect(sidebar.textContent).toContain('/conversations/:id/reply');
 		}
 
-		// Responses check: no redundant "HTTP Status & Output Structure" label
-		expect(container.textContent).not.toContain('HTTP Status & Output Structure');
-		expect(container.textContent).toContain('200 OK');
-		expect(container.textContent).toContain('Conversation created');
-
-		// Request Body checks: view switcher between Parameters & Types and Example JSON
+		// Request Body checks: view switcher between Parameters & Types and Example JSON (active by default for POST)
 		expect(container.textContent).toContain('Parameters & Types');
 		expect(container.textContent).toContain('Example JSON');
 		expect(container.textContent).toContain('visitorId');
@@ -1160,6 +1195,13 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 			click(reqJsonBtn);
 			expect(container.textContent).toContain('"visitorId"');
 		}
+
+		// Responses check: switch to Responses tab in unified console
+		const respTab = byText(container, 'Responses', 'button');
+		if (respTab) click(respTab);
+		expect(container.textContent).not.toContain('HTTP Status & Output Structure');
+		expect(container.textContent).toContain('200 OK');
+		expect(container.textContent).toContain('Conversation created');
 
 		cleanup();
 	});

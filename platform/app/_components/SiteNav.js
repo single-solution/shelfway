@@ -158,15 +158,6 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 		}
 	};
 
-	/** @param {import('react').MouseEvent} e */
-	const handleDashboardClick = (e) => {
-		if (!activeSession) {
-			e.preventDefault();
-			setSignInNext(dashboardHref);
-			setShowSignInModal(true);
-		}
-	};
-
 	return (
 		<>
 			<div className={`nav-shell${scrolled ? ' is-scrolled' : ''}`}>
@@ -193,21 +184,11 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 							<Link href="/docs" style={isDocs ? { color: 'var(--shelfway-primary)', fontWeight: 600 } : undefined}>
 								Docs
 							</Link>
-							<Link
-								href={dashboardHref}
-								onClick={handleDashboardClick}
-								style={
-									pathname.startsWith('/admin') || pathname.startsWith('/overview') || pathname.startsWith('/websites')
-										? { color: 'var(--shelfway-primary)', fontWeight: 600 }
-										: undefined
-								}>
-								Dashboard
-							</Link>
 						</div>
 					</nav>
 					{activeSession ? (
 						<ButtonLink as={Link} className="cta" href={dashboardHref}>
-							{isAdmin ? 'Admin Console' : 'Console'}
+							Dashboard
 						</ButtonLink>
 					) : (
 						<Button
@@ -234,7 +215,7 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 export function SiteFooter({ brandName = PRODUCT_BRAND, companyName = COMPANY_NAME, isHome = false, session = null }) {
 	const isAdmin = Boolean(session?.admin || session?.kind === 'admin');
 	const dashboardHref = isAdmin ? '/admin' : '/overview';
-	const dashboardLabel = isAdmin ? 'Admin' : 'Console';
+	const dashboardLabel = 'Dashboard';
 
 	/** @param {import('react').MouseEvent} e */
 	const handleContactClick = (e) => {

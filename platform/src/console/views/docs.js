@@ -1535,6 +1535,7 @@ export function DocsHubView({
 	const [activeResponseStatus, setActiveResponseStatus] = useState('200');
 	const [responseViewTab, setResponseViewTab] = useState('example');
 	const [requestBodyViewTab, setRequestBodyViewTab] = useState('schema');
+	const [activeOpTab, setActiveOpTab] = useState('request');
 	const [searchQuery, setSearchQuery] = useState('');
 	const [copiedNotice, setCopiedNotice] = useState('');
 	const [clientActor, setClientActor] = useState(/** @type {any} */ (null));
@@ -1800,6 +1801,11 @@ export function DocsHubView({
 		return operations.find((/** @type {any} */ op) => `${op.method}:${op.path}` === selectedOpKey) || null;
 	}, [operations, selectedOpKey]);
 
+	const hasRequestBody = Boolean(
+		currentOperation?.requestBody || (currentOperation && ['POST', 'PUT', 'PATCH'].includes(currentOperation.method)),
+	);
+	const effectiveOpTab = activeOpTab === 'request' && !hasRequestBody ? 'response' : activeOpTab;
+
 	const allParameters = useMemo(() => {
 		if (!currentOperation) return [];
 		const rawParams = Array.isArray(currentOperation.parameters) ? currentOperation.parameters : [];
@@ -2056,6 +2062,18 @@ export function DocsHubView({
 					<aside className="w-full md:w-72 lg:w-80 shrink-0 rounded-card border border-line bg-surface flex flex-col md:sticky md:top-20 self-start max-h-[calc(100vh-6rem)] shadow-card overflow-hidden">
 						{/* Scrollable menu body */}
 						<div className="flex-1 overflow-y-auto shelfway-scroll p-4 space-y-6">
+							{/* Sidebar Header Title */}
+							<div className="px-1 flex items-center justify-between gap-2">
+								<span className="text-xs font-bold tracking-tight text-fg font-mono uppercase truncate">
+									{brandName} Documentation Hub
+								</span>
+								{website ? (
+									<span className="font-mono text-[10px] text-muted px-1.5 py-0.5 rounded bg-surface-2 border border-line shrink-0">
+										{website}
+									</span>
+								) : null}
+							</div>
+
 							{/* Search Bar */}
 							<div>
 								<Input
@@ -2220,7 +2238,6 @@ export function DocsHubView({
 														<span className="truncate">{prod.name}</span>
 													</div>
 													<div className="flex items-center gap-1.5 shrink-0 ml-auto">
-														<span className="text-[10px] text-muted font-mono">{`v${prod.version}`}</span>
 														<Icon
 															name={isExpanded ? 'chevronDown' : 'chevronRight'}
 															size={12}
@@ -2232,21 +2249,6 @@ export function DocsHubView({
 												{/* Product operations accordion list */}
 												{isExpanded ? (
 													<div className="space-y-0.5 py-1">
-														<Button
-															block
-															type="button"
-															variant="ghost"
-															size="sm"
-															onClick={() => selectOperation('', prod.productId)}
-															className={`w-full !flex !items-center !justify-start gap-1.5 rounded px-2.5 py-1.5 text-[11px] text-left transition ${
-																isSelected && !selectedOpKey && activeSection === 'products'
-																	? 'bg-surface-2 text-primary font-semibold'
-																	: 'text-muted hover:text-fg'
-															}`}>
-															<Icon name="info" size={13} />
-															<span>Overview &amp; Embed</span>
-														</Button>
-
 														{storefrontOps.map(renderOpButton)}
 
 														{storefrontOps.length > 0 && staffOps.length > 0 ? (
@@ -2327,40 +2329,7 @@ export function DocsHubView({
 					</aside>
 
 					{/* Right Content Area: Interactive Swagger & Guides */}
-					<div className="flex-1 min-w-0 w-full space-y-8">
-						{/* Detail Header Container */}
-						<div className="rounded-card border border-primary/30 bg-primary/5 p-4 shadow-card">
-							<div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-								<div className="space-y-1.5 flex-1 min-w-0">
-									{activeSection === 'products' && currentOperation ? (
-										<>
-											<h1 className="text-lg md:text-xl font-bold text-fg tracking-tight">
-												{currentOperation.summary || currentOperation.path}
-											</h1>
-											{currentOperation.description ? (
-												<p className="text-xs text-muted leading-relaxed">{currentOperation.description}</p>
-											) : null}
-										</>
-									) : (
-										<>
-											<div className="flex flex-wrap items-center gap-2">
-												<span className="text-sm font-semibold text-fg tracking-tight">
-													{brandName} Documentation Hub
-												</span>
-												{website ? (
-													<span className="font-mono text-xs text-muted px-2 py-0.5 rounded bg-surface border border-line">
-														{website}
-													</span>
-												) : null}
-											</div>
-											<p className="text-xs text-muted">
-												Interactive code snippets below are pre-filled with your scoped credentials.
-											</p>
-										</>
-									)}
-								</div>
-							</div>
-						</div>
+					<div className="flex-1 min-w-0 w-full space-y-6">
 						{/* Role Restricted Banner when accessing restricted SDK guides without permissions */}
 						{activeSection.startsWith('sdk-') && !isProductRoleAllowed ? (
 							<div className="rounded-card border border-warning/40 bg-surface p-6 space-y-3 shadow-card">
@@ -2453,7 +2422,6 @@ export function DocsHubView({
 													<div className="space-y-2">
 														<div className="flex items-center justify-between">
 															<span className="font-semibold text-sm text-fg">{p.name}</span>
-															<span className="text-[10px] font-mono text-muted">{`v${p.version}`}</span>
 														</div>
 														<p className="text-xs text-muted leading-relaxed line-clamp-2">{p.description}</p>
 														{p.features && p.features.length > 0 ? (
@@ -2477,7 +2445,6 @@ export function DocsHubView({
 															className="text-primary hover:underline font-medium cursor-pointer p-0 h-auto">
 															{`Explore ${p.name} APIs ->`}
 														</Button>
-														<span className="font-mono text-[11px] text-muted">{`v${p.version}`}</span>
 													</div>
 												</div>
 											))}
@@ -2607,9 +2574,6 @@ export function DocsHubView({
 										</p>
 										<div className="flex items-center gap-2.5">
 											<h1 className="font-display text-3xl font-bold tracking-tight text-fg">{currentProduct.name}</h1>
-											<span className="font-mono text-xs bg-surface-2 text-muted px-2 py-0.5 rounded border border-line">
-												v{currentProduct.version}
-											</span>
 											<span className="font-mono text-xs bg-success-soft text-on-success-soft px-2 py-0.5 rounded font-semibold border border-success/30">
 												active
 											</span>
@@ -2757,55 +2721,66 @@ export function DocsHubView({
 						{/* 5. Single Operation Interactive Swagger Documentation */}
 						{activeSection === 'products' && currentOperation ? (
 							<section className="space-y-6">
-								{/* Swagger Endpoint Bar */}
-								<div className="rounded-card border border-line bg-surface p-3.5 shadow-card hard flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-									<div className="flex flex-wrap items-center gap-2.5 min-w-0">
-										<span
-											className={`font-mono text-xs px-2.5 py-1 rounded font-bold uppercase shrink-0 ${methodColor(
-												currentOperation.method,
-											)}`}>
-											{currentOperation.method}
-										</span>
-										<code className="font-mono text-sm sm:text-base font-semibold text-fg truncate">
-											{currentOperation.path}
-										</code>
-									</div>
-									<div className="flex flex-wrap items-center gap-2 shrink-0">
-										{(() => {
-											const isStorefront =
-												currentOperation.auth === 'browser' ||
-												currentOperation.auth === 'visitor' ||
-												!currentOperation.auth;
-											const hasAccess = isStorefront || isProductRoleAllowed;
-											return (
-												<>
-													<span
-														className={`font-mono text-[11px] px-2 py-0.5 rounded uppercase font-bold shrink-0 ${
-															isStorefront
-																? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10'
-																: hasAccess
-																	? 'text-primary bg-primary/10'
-																	: 'text-amber-600 dark:text-amber-400 bg-amber-500/10'
-														}`}>
-														{isStorefront ? 'Storefront (Browser)' : 'Staff (Server)'}
-													</span>
-													{currentOperation.permission ? (
-														<span className="font-mono text-[11px] text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded font-semibold shrink-0">
-															Perm: {currentOperation.permission}
+								{/* Swagger Endpoint Card */}
+								<div className="rounded-card border border-line bg-surface p-4 shadow-card hard space-y-2.5">
+									<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+										<div className="flex flex-wrap items-center gap-2.5 min-w-0">
+											<span
+												className={`font-mono text-xs px-2.5 py-1 rounded font-bold uppercase shrink-0 ${methodColor(
+													currentOperation.method,
+												)}`}>
+												{currentOperation.method}
+											</span>
+											<code className="font-mono text-sm sm:text-base font-semibold text-fg truncate">
+												{currentOperation.path}
+											</code>
+										</div>
+										<div className="flex flex-wrap items-center gap-2 shrink-0">
+											{(() => {
+												const isStorefront =
+													currentOperation.auth === 'browser' ||
+													currentOperation.auth === 'visitor' ||
+													!currentOperation.auth;
+												const hasAccess = isStorefront || isProductRoleAllowed;
+												return (
+													<>
+														<span
+															className={`font-mono text-[11px] px-2 py-0.5 rounded uppercase font-bold shrink-0 ${
+																isStorefront
+																	? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10'
+																	: hasAccess
+																		? 'text-primary bg-primary/10'
+																		: 'text-amber-600 dark:text-amber-400 bg-amber-500/10'
+															}`}>
+															{isStorefront ? 'Storefront (Browser)' : 'Staff (Server)'}
 														</span>
-													) : null}
-												</>
-											);
-										})()}
-										<Button
-											type="button"
-											variant="ghost"
-											size="sm"
-											onClick={() => copyText(`${apiBase}${currentOperation.path}`)}
-											className="text-xs text-muted hover:text-fg h-7 px-2"
-											icon={<Icon name="copy" size={13} />}>
-											Copy URL
-										</Button>
+														{currentOperation.permission ? (
+															<span className="font-mono text-[11px] text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded font-semibold shrink-0">
+																Perm: {currentOperation.permission}
+															</span>
+														) : null}
+													</>
+												);
+											})()}
+											<Button
+												type="button"
+												variant="ghost"
+												size="sm"
+												onClick={() => copyText(`${apiBase}${currentOperation.path}`)}
+												className="text-xs text-muted hover:text-fg h-7 px-2"
+												icon={<Icon name="copy" size={13} />}>
+												Copy URL
+											</Button>
+										</div>
+									</div>
+
+									<div className="pt-2 border-t border-line/40">
+										<h1 className="text-base sm:text-lg font-bold text-fg tracking-tight">
+											{currentOperation.summary || currentOperation.path}
+										</h1>
+										{currentOperation.description ? (
+											<p className="text-xs text-muted leading-relaxed mt-0.5">{currentOperation.description}</p>
+										) : null}
 									</div>
 								</div>
 
@@ -2831,15 +2806,15 @@ export function DocsHubView({
 									return null;
 								})()}
 
-								{/* Parameters Specification */}
-								<div className="space-y-3">
-									<div className="flex items-center justify-between">
-										<h3 className="text-sm font-semibold flex items-center gap-2">
-											<span>Parameters</span>
-											<span className="text-xs font-mono text-muted">({allParameters.length})</span>
-										</h3>
-									</div>
-									{allParameters.length > 0 ? (
+								{/* Parameters Specification - only rendered when parameters exist */}
+								{allParameters.length > 0 ? (
+									<div className="space-y-3">
+										<div className="flex items-center justify-between">
+											<h3 className="text-sm font-semibold flex items-center gap-2">
+												<span>Parameters</span>
+												<span className="text-xs font-mono text-muted">({allParameters.length})</span>
+											</h3>
+										</div>
 										<div
 											className="rounded-card border border-line bg-surface overflow-hidden shadow-card"
 											role="table"
@@ -2894,35 +2869,48 @@ export function DocsHubView({
 												))}
 											</div>
 										</div>
-									) : (
-										<p className="text-xs text-muted italic">No query or path parameters required.</p>
-									)}
-								</div>
+									</div>
+								) : null}
 
-								{/* Request Body Specification (for mutations) */}
-								{currentOperation.requestBody || ['POST', 'PUT', 'PATCH'].includes(currentOperation.method) ? (
-									<div className="space-y-3">
-										<div className="flex items-center justify-between">
-											<h3 className="text-sm font-semibold flex items-center gap-2">
-												<span>Request Body</span>
-											</h3>
+								{/* Interactive Specification & Console (Request Body, Responses, Code Snippets) */}
+								<div className="rounded-card border border-line bg-surface overflow-hidden shadow-card">
+									{/* Top Tab Bar: Request Body | Responses | Code Snippets */}
+									<div className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-surface-2/60 px-4 py-2.5">
+										<div className="flex items-center gap-1">
+											{hasRequestBody ? (
+												<Button
+													type="button"
+													size="sm"
+													variant={effectiveOpTab === 'request' ? 'primary' : 'ghost'}
+													onClick={() => setActiveOpTab('request')}
+													className="font-medium text-xs">
+													Request Body
+												</Button>
+											) : null}
+											<Button
+												type="button"
+												size="sm"
+												variant={effectiveOpTab === 'response' ? 'primary' : 'ghost'}
+												onClick={() => setActiveOpTab('response')}
+												className="font-medium text-xs">
+												Responses
+											</Button>
+											<Button
+												type="button"
+												size="sm"
+												variant={effectiveOpTab === 'snippet' ? 'primary' : 'ghost'}
+												onClick={() => setActiveOpTab('snippet')}
+												className="font-medium text-xs">
+												Code Snippets
+											</Button>
 										</div>
 
-										<div className="rounded-card border border-line bg-surface overflow-hidden shadow-card">
-											{/* Top of Request Body card */}
-											<div className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-surface-2/60 px-4 py-3">
-												<div className="flex items-center gap-2">
-													<span className="font-mono text-xs text-muted bg-surface border border-line px-2 py-0.5 rounded">
-														application/json
-													</span>
-													<span className="text-xs text-muted">
-														{requestBodyProperties.length > 0
-															? `${requestBodyProperties.length} accepted fields`
-															: 'JSON payload'}
-													</span>
-												</div>
-
-												{/* View switcher between "Parameters & Types" and "Example JSON" */}
+										{/* Contextual Sub-controls for the active tab */}
+										{effectiveOpTab === 'request' ? (
+											<div className="flex items-center gap-2">
+												<span className="font-mono text-[11px] text-muted bg-surface border border-line px-2 py-0.5 rounded hidden sm:inline-block">
+													application/json
+												</span>
 												<div className="flex items-center rounded bg-surface p-0.5 text-xs border border-line">
 													<Button
 														type="button"
@@ -2942,114 +2930,23 @@ export function DocsHubView({
 													</Button>
 												</div>
 											</div>
-
-											<div className="p-4">
-												{requestBodyViewTab === 'schema' ? (
-													requestBodyProperties.length > 0 ? (
-														<div
-															className="rounded-control border border-line bg-surface overflow-hidden"
-															role="table"
-															aria-label="Request Body Parameters">
-															<div
-																className="grid grid-cols-12 border-b border-line bg-surface-2 p-2.5 text-xs font-semibold text-muted"
-																role="row">
-																<div className="col-span-3" role="columnheader">
-																	Parameter
-																</div>
-																<div className="col-span-2" role="columnheader">
-																	Type
-																</div>
-																<div className="col-span-2" role="columnheader">
-																	Required
-																</div>
-																<div className="col-span-5" role="columnheader">
-																	Description
-																</div>
-															</div>
-															<div className="divide-y divide-line text-xs" role="rowgroup">
-																{requestBodyProperties.map((prop) => (
-																	<div
-																		key={prop.name}
-																		className="grid grid-cols-12 p-2.5 items-center hover:bg-surface-2/50 transition"
-																		role="row">
-																		<div className="col-span-3 font-mono font-medium text-fg" role="cell">
-																			{prop.name}
-																		</div>
-																		<div className="col-span-2 font-mono text-primary font-medium" role="cell">
-																			{prop.type}
-																		</div>
-																		<div className="col-span-2" role="cell">
-																			{prop.required ? (
-																				<span className="text-danger font-bold">required</span>
-																			) : (
-																				<span className="text-muted">optional</span>
-																			)}
-																		</div>
-																		<div className="col-span-5 text-muted" role="cell">
-																			{prop.description || (prop.example ? `Example: ${prop.example}` : '-')}
-																		</div>
-																	</div>
-																))}
-															</div>
-														</div>
-													) : (
-														<p className="text-xs text-muted italic">
-															No schema properties defined in specification.
-														</p>
-													)
-												) : (
-													<CodeBlock code={JSON.stringify(sampleRequestPayload || {}, null, 2)} />
-												)}
-											</div>
-										</div>
-									</div>
-								) : null}
-
-								{/* Responses Specification (Swagger tabs & Output Structure) */}
-								<div className="space-y-3">
-									<div className="flex items-center justify-between">
-										<h3 className="text-sm font-semibold">Responses</h3>
-										{responseStatuses.length > 1 ? (
-											<div className="flex items-center gap-1.5">
-												{responseStatuses.map((status) => (
-													<Button
-														key={status}
-														type="button"
-														size="sm"
-														variant={effectiveResponseStatus === status ? 'primary' : 'secondary'}
-														onClick={() => setActiveResponseStatus(status)}
-														className="font-mono text-xs">
-														{status}
-													</Button>
-												))}
-											</div>
-										) : null}
-									</div>
-
-									{sampleResponsePayload ? (
-										<div className="rounded-card border border-line bg-surface overflow-hidden shadow-card">
-											{/* Top of response card: Status badge + response description + view switcher */}
-											<div className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-surface-2/60 px-4 py-3">
-												<div className="flex items-center gap-2.5">
-													<Badge
-														tone={
-															effectiveResponseStatus.startsWith('2')
-																? 'success'
-																: effectiveResponseStatus.startsWith('4')
-																	? 'warning'
-																	: effectiveResponseStatus.startsWith('5')
-																		? 'danger'
-																		: 'neutral'
-														}
-														className="font-mono font-bold">
-														{statusLabel(effectiveResponseStatus)}
-													</Badge>
-													<span className="text-xs font-medium text-fg">
-														{sampleResponsePayload.description || `HTTP ${effectiveResponseStatus} Response`}
-													</span>
-												</div>
-
-												{/* View switcher between "Example JSON" and "Schema / Types" */}
+										) : effectiveOpTab === 'response' ? (
+											<div className="flex flex-wrap items-center gap-2">
+												{responseStatuses.length > 1 ? (
+													<div className="flex items-center gap-1">
+														{responseStatuses.map((status) => (
+															<Button
+																key={status}
+																type="button"
+																size="sm"
+																variant={effectiveResponseStatus === status ? 'secondary' : 'ghost'}
+																onClick={() => setActiveResponseStatus(status)}
+																className="font-mono text-xs">
+																{status}
+															</Button>
+														))}
+													</div>
+												) : null}
 												<div className="flex items-center rounded bg-surface p-0.5 text-xs border border-line">
 													<Button
 														type="button"
@@ -3069,131 +2966,213 @@ export function DocsHubView({
 													</Button>
 												</div>
 											</div>
+										) : (
+											<div className="flex items-center rounded bg-surface p-0.5 text-xs border border-line">
+												<Button
+													type="button"
+													size="sm"
+													variant={activeSnippetTab === 'curl' ? 'secondary' : 'ghost'}
+													onClick={() => setActiveSnippetTab('curl')}
+													className="font-medium text-xs">
+													cURL
+												</Button>
+												<Button
+													type="button"
+													size="sm"
+													variant={activeSnippetTab === 'fetch' ? 'secondary' : 'ghost'}
+													onClick={() => setActiveSnippetTab('fetch')}
+													className="font-medium text-xs">
+													JavaScript
+												</Button>
+												<Button
+													type="button"
+													size="sm"
+													variant={activeSnippetTab === 'python' ? 'secondary' : 'ghost'}
+													onClick={() => setActiveSnippetTab('python')}
+													className="font-medium text-xs">
+													Python
+												</Button>
+											</div>
+										)}
+									</div>
 
-											{/* Inside response card */}
-											<div className="p-4">
-												{responseViewTab === 'example' ? (
-													sampleResponsePayload.payload !== null && sampleResponsePayload.payload !== undefined ? (
-														<CodeBlock code={JSON.stringify(sampleResponsePayload.payload, null, 2)} />
-													) : (
-														<p className="text-xs text-muted italic font-mono">
-															{effectiveResponseStatus === '204'
-																? 'HTTP 204 No Content (No response body returned)'
-																: 'No example payload defined.'}
-														</p>
-													)
-												) : responseBodyProperties.length > 0 ? (
+									{/* Tab Body Content */}
+									<div className="p-4">
+										{effectiveOpTab === 'request' ? (
+											requestBodyViewTab === 'schema' ? (
+												requestBodyProperties.length > 0 ? (
 													<div
 														className="rounded-control border border-line bg-surface overflow-hidden"
 														role="table"
-														aria-label="Response Output Structure">
+														aria-label="Request Body Parameters">
 														<div
 															className="grid grid-cols-12 border-b border-line bg-surface-2 p-2.5 text-xs font-semibold text-muted"
 															role="row">
-															<div className="col-span-4" role="columnheader">
-																Field
-															</div>
 															<div className="col-span-3" role="columnheader">
+																Parameter
+															</div>
+															<div className="col-span-2" role="columnheader">
 																Type
+															</div>
+															<div className="col-span-2" role="columnheader">
+																Required
 															</div>
 															<div className="col-span-5" role="columnheader">
 																Description
 															</div>
 														</div>
 														<div className="divide-y divide-line text-xs" role="rowgroup">
-															{responseBodyProperties.map((prop) => (
+															{requestBodyProperties.map((prop) => (
 																<div
 																	key={prop.name}
 																	className="grid grid-cols-12 p-2.5 items-center hover:bg-surface-2/50 transition"
 																	role="row">
-																	<div className="col-span-4 font-mono font-medium text-fg" role="cell">
+																	<div className="col-span-3 font-mono font-medium text-fg" role="cell">
 																		{prop.name}
 																	</div>
-																	<div className="col-span-3 font-mono text-primary font-medium" role="cell">
+																	<div className="col-span-2 font-mono text-primary font-medium" role="cell">
 																		{prop.type}
 																	</div>
+																	<div className="col-span-2" role="cell">
+																		{prop.required ? (
+																			<span className="text-danger font-bold">required</span>
+																		) : (
+																			<span className="text-muted">optional</span>
+																		)}
+																	</div>
 																	<div className="col-span-5 text-muted" role="cell">
-																		{prop.description || '-'}
+																		{prop.description || (prop.example ? `Example: ${prop.example}` : '-')}
 																	</div>
 																</div>
 															))}
 														</div>
 													</div>
 												) : (
-													<p className="text-xs text-muted italic">
-														No schema properties defined for this response.
-													</p>
+													<p className="text-xs text-muted italic">No schema properties defined in specification.</p>
+												)
+											) : (
+												<CodeBlock code={JSON.stringify(sampleRequestPayload || {}, null, 2)} />
+											)
+										) : effectiveOpTab === 'response' ? (
+											sampleResponsePayload ? (
+												<div className="space-y-3">
+													<div className="flex items-center gap-2.5">
+														<Badge
+															tone={
+																effectiveResponseStatus.startsWith('2')
+																	? 'success'
+																	: effectiveResponseStatus.startsWith('4')
+																		? 'warning'
+																		: effectiveResponseStatus.startsWith('5')
+																			? 'danger'
+																			: 'neutral'
+															}
+															className="font-mono font-bold">
+															{statusLabel(effectiveResponseStatus)}
+														</Badge>
+														<span className="text-xs font-medium text-fg">
+															{sampleResponsePayload.description || `HTTP ${effectiveResponseStatus} Response`}
+														</span>
+													</div>
+
+													{responseViewTab === 'example' ? (
+														sampleResponsePayload.payload !== null &&
+														sampleResponsePayload.payload !== undefined ? (
+															<CodeBlock code={JSON.stringify(sampleResponsePayload.payload, null, 2)} />
+														) : (
+															<p className="text-xs text-muted italic font-mono">
+																{effectiveResponseStatus === '204'
+																	? 'HTTP 204 No Content (No response body returned)'
+																	: 'No example payload defined.'}
+															</p>
+														)
+													) : responseBodyProperties.length > 0 ? (
+														<div
+															className="rounded-control border border-line bg-surface overflow-hidden"
+															role="table"
+															aria-label="Response Output Structure">
+															<div
+																className="grid grid-cols-12 border-b border-line bg-surface-2 p-2.5 text-xs font-semibold text-muted"
+																role="row">
+																<div className="col-span-4" role="columnheader">
+																	Field
+																</div>
+																<div className="col-span-3" role="columnheader">
+																	Type
+																</div>
+																<div className="col-span-5" role="columnheader">
+																	Description
+																</div>
+															</div>
+															<div className="divide-y divide-line text-xs" role="rowgroup">
+																{responseBodyProperties.map((prop) => (
+																	<div
+																		key={prop.name}
+																		className="grid grid-cols-12 p-2.5 items-center hover:bg-surface-2/50 transition"
+																		role="row">
+																		<div className="col-span-4 font-mono font-medium text-fg" role="cell">
+																			{prop.name}
+																		</div>
+																		<div className="col-span-3 font-mono text-primary font-medium" role="cell">
+																			{prop.type}
+																		</div>
+																		<div className="col-span-5 text-muted" role="cell">
+																			{prop.description || '-'}
+																		</div>
+																	</div>
+																))}
+															</div>
+														</div>
+													) : (
+														<p className="text-xs text-muted italic">
+															No schema properties defined for this response.
+														</p>
+													)}
+												</div>
+											) : (
+												<p className="text-xs text-muted italic">
+													No response specification defined for this operation.
+												</p>
+											)
+										) : (
+											<div>
+												{activeSnippetTab === 'curl' ? (
+													<CodeBlock
+														code={`curl -X ${currentOperation.method} "${apiBase}${currentOperation.path}" \\\n  -H "Authorization: ${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}" \\\n  -H "Content-Type: application/json"${
+															website ? ` \\\n  -H "Origin: https://${website}"` : ''
+														}${
+															currentOperation.requestBody ||
+															['POST', 'PUT', 'PATCH'].includes(currentOperation.method)
+																? ` \\\n  -d '${JSON.stringify(sampleRequestPayload || {})}'`
+																: ''
+														}`}
+													/>
+												) : activeSnippetTab === 'fetch' ? (
+													<CodeBlock
+														code={`const response = await fetch("${apiBase}${currentOperation.path}", {\n  method: "${currentOperation.method}",\n  headers: {\n    "Authorization": "${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}",\n    "Content-Type": "application/json"${website ? `,\n    "Origin": "https://${website}"` : ''}\n  }${
+															currentOperation.requestBody ||
+															['POST', 'PUT', 'PATCH'].includes(currentOperation.method)
+																? `,\n  body: JSON.stringify(${JSON.stringify(sampleRequestPayload || {}, null, 2)})`
+																: ''
+														}\n});\nconst data = await response.json();\nconsole.log(data);`}
+													/>
+												) : (
+													<CodeBlock
+														code={`import requests\n\nurl = "${apiBase}${currentOperation.path}"\nheaders = {\n    "Authorization": "${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}",\n    "Content-Type": "application/json"\n}\n${
+															currentOperation.requestBody ||
+															['POST', 'PUT', 'PATCH'].includes(currentOperation.method)
+																? `payload = ${JSON.stringify(
+																		sampleRequestPayload || {},
+																		null,
+																		4,
+																	)}\nresponse = requests.${currentOperation.method.toLowerCase()}(url, json=payload, headers=headers)`
+																: `response = requests.${currentOperation.method.toLowerCase()}(url, headers=headers)`
+														}\nprint(response.json())`}
+													/>
 												)}
 											</div>
-										</div>
-									) : (
-										<p className="text-xs text-muted italic">No response specification defined for this operation.</p>
-									)}
-								</div>
-
-								{/* Code Snippets (cURL, JavaScript, Python) */}
-								<div className="space-y-3 pt-4 border-t border-line">
-									<div className="flex items-center justify-between">
-										<h3 className="text-sm font-semibold">Code Snippets</h3>
-										<div className="flex items-center rounded bg-surface-2 p-0.5 text-xs border border-line">
-											<Button
-												type="button"
-												size="sm"
-												variant={activeSnippetTab === 'curl' ? 'secondary' : 'ghost'}
-												onClick={() => setActiveSnippetTab('curl')}
-												className="font-medium text-xs">
-												cURL
-											</Button>
-											<Button
-												type="button"
-												size="sm"
-												variant={activeSnippetTab === 'fetch' ? 'secondary' : 'ghost'}
-												onClick={() => setActiveSnippetTab('fetch')}
-												className="font-medium text-xs">
-												JavaScript
-											</Button>
-											<Button
-												type="button"
-												size="sm"
-												variant={activeSnippetTab === 'python' ? 'secondary' : 'ghost'}
-												onClick={() => setActiveSnippetTab('python')}
-												className="font-medium text-xs">
-												Python
-											</Button>
-										</div>
+										)}
 									</div>
-
-									{activeSnippetTab === 'curl' ? (
-										<CodeBlock
-											code={`curl -X ${currentOperation.method} "${apiBase}${currentOperation.path}" \\\n  -H "Authorization: ${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}" \\\n  -H "Content-Type: application/json"${
-												website ? ` \\\n  -H "Origin: https://${website}"` : ''
-											}${
-												currentOperation.requestBody || ['POST', 'PUT', 'PATCH'].includes(currentOperation.method)
-													? ` \\\n  -d '${JSON.stringify(sampleRequestPayload || {})}'`
-													: ''
-											}`}
-										/>
-									) : activeSnippetTab === 'fetch' ? (
-										<CodeBlock
-											code={`const response = await fetch("${apiBase}${currentOperation.path}", {\n  method: "${currentOperation.method}",\n  headers: {\n    "Authorization": "${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}",\n    "Content-Type": "application/json"${website ? `,\n    "Origin": "https://${website}"` : ''}\n  }${
-												currentOperation.requestBody || ['POST', 'PUT', 'PATCH'].includes(currentOperation.method)
-													? `,\n  body: JSON.stringify(${JSON.stringify(sampleRequestPayload || {}, null, 2)})`
-													: ''
-											}\n});\nconst data = await response.json();\nconsole.log(data);`}
-										/>
-									) : (
-										<CodeBlock
-											code={`import requests\n\nurl = "${apiBase}${currentOperation.path}"\nheaders = {\n    "Authorization": "${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}",\n    "Content-Type": "application/json"\n}\n${
-												currentOperation.requestBody || ['POST', 'PUT', 'PATCH'].includes(currentOperation.method)
-													? `payload = ${JSON.stringify(
-															sampleRequestPayload || {},
-															null,
-															4,
-														)}\nresponse = requests.${currentOperation.method.toLowerCase()}(url, json=payload, headers=headers)`
-													: `response = requests.${currentOperation.method.toLowerCase()}(url, headers=headers)`
-											}\nprint(response.json())`}
-										/>
-									)}
 								</div>
 							</section>
 						) : null}
