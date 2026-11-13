@@ -741,11 +741,20 @@ export function DocsHubView({
 		if (typeof window === 'undefined') return;
 		const url = new URL(window.location.href);
 		if (token) url.searchParams.set('token', token);
+		else url.searchParams.delete('token');
 		if (website) url.searchParams.set('website', website);
+		else url.searchParams.delete('website');
 		if (selectedProductId) url.searchParams.set('product', selectedProductId);
+		else url.searchParams.delete('product');
 		if (selectedOpKey) url.searchParams.set('op', selectedOpKey);
 		else url.searchParams.delete('op');
-		if (activeSection && activeSection !== 'products') url.searchParams.set('section', activeSection);
+		if (activeSection && activeSection !== 'products' && activeSection !== 'quickstart') {
+			url.searchParams.set('section', activeSection);
+		} else {
+			url.searchParams.delete('section');
+		}
+		if (viewMode && viewMode !== 'store') url.searchParams.set('view', viewMode);
+		else url.searchParams.delete('view');
 		copyText(url.toString());
 		setCopiedNotice('Copied Share Link');
 		setTimeout(() => setCopiedNotice(''), 2500);
@@ -790,13 +799,25 @@ export function DocsHubView({
 	const filteredProducts = useMemo(() => {
 		const q = searchQuery.trim().toLowerCase();
 		if (!q) return catalogItems;
-		return catalogItems.filter(
-			(p) =>
+		return catalogItems.filter((p) => {
+			if (
 				p.name.toLowerCase().includes(q) ||
 				p.productId.toLowerCase().includes(q) ||
-				(p.description && p.description.toLowerCase().includes(q)),
-		);
-	}, [catalogItems, searchQuery]);
+				(p.description && p.description.toLowerCase().includes(q))
+			) {
+				return true;
+			}
+			const prodDetail = liveProductDetails[p.productId];
+			const ops = (prodDetail?.operations && prodDetail.operations.length > 0 ? prodDetail.operations : p.operations) || [];
+			return ops.some(
+				(/** @type {any} */ op) =>
+					op.path?.toLowerCase().includes(q) ||
+					op.method?.toLowerCase().includes(q) ||
+					(op.summary && op.summary.toLowerCase().includes(q)) ||
+					(op.description && op.description.toLowerCase().includes(q)),
+			);
+		});
+	}, [catalogItems, liveProductDetails, searchQuery]);
 
 	/** @param {string} productId */
 	const selectProduct = (productId) => {
@@ -815,14 +836,22 @@ export function DocsHubView({
 		syncUrl(productId, null, 'products', viewMode);
 	};
 
-	/** @param {string | null} opKey */
-	const selectOperation = (opKey) => {
-		setSelectedOpKey(opKey);
-		setActiveSection('products');
-		if (selectedProductId) {
-			setExpandedProductIds((prev) => new Set(prev).add(selectedProductId));
+	/**
+	 * @param {string | null} opKey
+	 * @param {string} [productId]
+	 */
+	const selectOperation = (opKey, productId) => {
+		const targetProductId = productId || selectedProductId;
+		if (productId && productId !== selectedProductId) {
+			setSelectedProductId(productId);
 		}
-		syncUrl(selectedProductId, opKey, 'products', viewMode);
+		const normalizedOpKey = opKey || null;
+		setSelectedOpKey(normalizedOpKey);
+		setActiveSection('products');
+		if (targetProductId) {
+			setExpandedProductIds((prev) => new Set(prev).add(targetProductId));
+		}
+		syncUrl(targetProductId, normalizedOpKey, 'products', viewMode);
 	};
 
 	/** @param {string} section */
@@ -916,264 +945,304 @@ export function DocsHubView({
 	return (
 		<ToastProvider>
 			<div className="docs-container flex flex-col flex-1">
-				{/* Top Docs Toolbar */}
-				<div className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-line bg-surface p-3.5 mb-6">
-					<div className="flex flex-wrap items-center gap-3">
-						<span className="text-sm font-semibold text-fg tracking-tight">{brandName} Documentation Hub</span>
-						<Badge tone="success" dot>
-							Authenticated Documentation
-						</Badge>
-						{(actor || effectiveActor) && userRole ? (
-							<div className="flex items-center gap-1.5 text-xs text-muted border-l border-line pl-3">
-								<Icon name="user" size={14} />
-								<span>Role:</span>
-								<strong className="text-fg capitalize font-medium">{userRole}</strong>
-							</div>
-						) : null}
-						{token ? (
-							<div className="flex items-center gap-2 text-xs text-muted border-l border-line pl-3">
-								<Icon name="key" size={14} className="text-primary" />
-								<Badge tone="success" dot>
-									{website || 'User Token'}
-								</Badge>
-							</div>
-						) : null}
-					</div>
-
-					<div className="flex items-center gap-2">
-						{token ? (
-							<Button
-								size="sm"
-								variant="secondary"
-								onClick={() => {
-									copyText(token);
-									setCopiedNotice('Copied Token');
-									setTimeout(() => setCopiedNotice(''), 2000);
-								}}>
-								{copiedNotice === 'Copied Token' ? 'Copied Token!' : 'Copy Token'}
-							</Button>
-						) : null}
-
-						<Button
-							size="sm"
-							variant="primary"
-							onClick={handleShareDocs}
-							icon={<Icon name={copiedNotice === 'Copied Share Link' ? 'check' : 'link'} size={14} />}>
-							{copiedNotice === 'Copied Share Link' ? 'Copied Share Link!' : 'Share Docs'}
-						</Button>
-					</div>
-				</div>
-
 				{/* Two-Column Docs Explorer Layout */}
 				<div className="relative z-10 flex flex-col md:flex-row gap-6 flex-1 items-start">
 					{/* Left Mega-Menu Sticky Sidebar */}
-					<aside className="w-full md:w-72 lg:w-80 shrink-0 rounded-card border border-line bg-surface overflow-y-auto shelfway-scroll flex flex-col p-4 space-y-6 md:sticky md:top-20 self-start max-h-[calc(100vh-6rem)] shadow-card">
-						{/* Search Bar */}
-						<div>
-							<Input
-								label="Search endpoints or guides"
-								hideLabel
-								type="search"
-								placeholder="Search endpoints or guides..."
-								value={searchQuery}
-								onChange={(e) => setSearchQuery(e.currentTarget.value)}
-								prefix={<Icon name="search" size={14} />}
-								className="text-xs h-9 bg-surface"
-							/>
-						</div>
-
-						{/* Section: Getting Started */}
-						<div className="space-y-1">
-							<p className="px-2 text-[10px] font-mono font-bold uppercase tracking-widest text-muted">Getting Started</p>
-							<Button
-								type="button"
-								variant="ghost"
-								size="sm"
-								onClick={() => selectSection('quickstart')}
-								className={`flex w-full items-center justify-start gap-2 rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
-									activeSection === 'quickstart'
-										? 'bg-primary/10 text-primary font-semibold shadow-xs'
-										: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
-								}`}>
-								<Icon name="info" size={15} />
-								<span>Quickstart Guide</span>
-							</Button>
-							<Button
-								type="button"
-								variant="ghost"
-								size="sm"
-								onClick={() => selectSection('tokens')}
-								className={`flex w-full items-center justify-start gap-2 rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
-									activeSection === 'tokens'
-										? 'bg-primary/10 text-primary font-semibold shadow-xs'
-										: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
-								}`}>
-								<Icon name="key" size={15} />
-								<span>Authentication &amp; Tokens</span>
-							</Button>
-						</div>
-
-						{/* Section: Catalog Products & Endpoints */}
-						<div className="space-y-2">
-							<div className="flex items-center justify-between px-2">
-								<p className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted">
-									Storefront APIs &amp; Endpoints
-								</p>
-								<span className="text-[10px] text-muted font-mono">{catalogItems.length} products</span>
+					<aside className="w-full md:w-72 lg:w-80 shrink-0 rounded-card border border-line bg-surface flex flex-col md:sticky md:top-20 self-start max-h-[calc(100vh-6rem)] shadow-card overflow-hidden">
+						{/* Scrollable menu body */}
+						<div className="flex-1 overflow-y-auto shelfway-scroll p-4 space-y-6">
+							{/* Search Bar */}
+							<div>
+								<Input
+									label="Search endpoints or guides"
+									hideLabel
+									type="search"
+									placeholder="Search endpoints or guides..."
+									value={searchQuery}
+									onChange={(e) => setSearchQuery(e.currentTarget.value)}
+									prefix={<Icon name="search" size={14} />}
+									className="text-xs h-9 bg-surface"
+								/>
 							</div>
 
+							{/* Section: Getting Started */}
 							<div className="space-y-1">
-								{filteredProducts.length === 0 ? (
-									<div className="rounded border border-dashed border-line px-2.5 py-3 text-center space-y-1">
-										<p className="text-[11px] font-medium text-fg">No products connected</p>
-										{effectiveActor?.admin ? (
-											<a
-												href="/admin/products"
-												className="text-[10px] text-primary hover:underline block font-semibold">
-												+ Connect product
-											</a>
-										) : null}
-									</div>
-								) : null}
-								{filteredProducts.map((prod) => {
-									const isSelected = selectedProductId === prod.productId;
-									const isExpanded = expandedProductIds.has(prod.productId);
-									return (
-										<div key={prod.productId} className="space-y-0.5">
-											<Button
-												type="button"
-												variant="ghost"
-												size="sm"
-												onClick={() => selectProduct(prod.productId)}
-												className={`flex w-full items-center justify-between rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
-													isSelected && !selectedOpKey && activeSection === 'products'
-														? 'bg-primary/10 text-primary font-semibold shadow-xs'
-														: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
-												}`}>
-												<div className="flex items-center gap-2 truncate">
-													<span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-surface-2 font-mono text-[10px] text-primary font-bold border border-line">
-														{prod.name.slice(0, 1)}
-													</span>
-													<span className="truncate">{prod.name}</span>
-												</div>
-												<span className="text-[10px] text-muted font-mono">{`v${prod.version}`}</span>
-											</Button>
-
-											{/* Mega-menu sub-list of product operations */}
-											{isExpanded ? (
-												<div className="ml-4 pl-2 border-l border-line space-y-0.5 py-1">
-													<Button
-														type="button"
-														variant="ghost"
-														size="sm"
-														onClick={() => selectOperation('')}
-														className={`flex w-full items-center justify-start gap-1.5 rounded px-2 py-1.5 text-[11px] transition ${
-															!selectedOpKey
-																? 'bg-surface-2 text-primary font-semibold'
-																: 'text-muted hover:text-fg'
-														}`}>
-														<Icon name="info" size={13} />
-														<span>Overview &amp; Embed</span>
-													</Button>
-
-													{filteredOperations.map((/** @type {any} */ op) => {
-														const opKey = `${op.method}:${op.path}`;
-														const isOpActive = selectedOpKey === opKey;
-														const isStorefront = op.auth === 'browser' || op.auth === 'visitor' || !op.auth;
-														const hasAccess = isStorefront || isProductRoleAllowed;
-														return (
-															<Button
-																key={opKey}
-																type="button"
-																variant="ghost"
-																size="sm"
-																onClick={() => selectOperation(opKey)}
-																className={`flex w-full items-center justify-between gap-1.5 rounded px-2 py-1.5 text-[11px] truncate transition ${
-																	isOpActive
-																		? 'bg-surface-2 text-primary font-semibold shadow-xs'
-																		: 'text-muted hover:text-fg'
-																}`}
-																title={`${op.method} ${op.path}`}>
-																<div className="flex items-center gap-1.5 truncate">
-																	<span
-																		className={`font-mono text-[9px] px-1.5 py-0.5 rounded font-bold ${methodColor(
-																			op.method,
-																		)}`}>
-																		{op.method}
-																	</span>
-																	<span className="truncate font-mono">{op.path.replace(/^\/v1/, '')}</span>
-																</div>
-																<span
-																	className={`font-mono text-[8px] px-1 rounded uppercase font-bold shrink-0 ${
-																		isStorefront
-																			? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10'
-																			: hasAccess
-																				? 'text-primary bg-primary/10'
-																				: 'text-amber-600 dark:text-amber-400 bg-amber-500/10'
-																	}`}>
-																	{isStorefront ? 'Store' : hasAccess ? 'Staff' : 'Restricted'}
-																</span>
-															</Button>
-														);
-													})}
-
-													{filteredOperations.length > 40 ? (
-														<p className="px-2 py-1 text-[10px] text-muted italic">
-															+{filteredOperations.length - 40} more endpoints in spec
-														</p>
-													) : null}
-												</div>
-											) : null}
-										</div>
-									);
-								})}
-							</div>
-						</div>
-
-						{/* Section: Product Developer SDK */}
-						<div className="space-y-1 pt-3 border-t border-line">
-							<div className="flex items-center justify-between px-2">
-								<p className="text-[10px] font-mono font-bold uppercase tracking-widest text-primary">
-									Product Developer SDK
+								<p className="px-2 text-[10px] font-mono font-bold uppercase tracking-widest text-muted">
+									Getting Started
 								</p>
-								<span
-									className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ${
-										isProductRoleAllowed
-											? 'text-primary bg-primary/10'
-											: 'text-amber-600 dark:text-amber-400 bg-amber-500/10'
-									}`}>
-									{isProductRoleAllowed ? 'CORE' : 'RESTRICTED'}
-								</span>
-							</div>
-							{STATIC_SDK_GUIDES.map((guide) => (
 								<Button
-									key={guide.id}
 									type="button"
 									variant="ghost"
 									size="sm"
-									onClick={() => selectSection(`sdk-${guide.id}`)}
-									className={`flex w-full items-center justify-between rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
-										activeSection === `sdk-${guide.id}`
+									onClick={() => selectSection('quickstart')}
+									className={`flex w-full items-center justify-start gap-2 rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
+										activeSection === 'quickstart'
 											? 'bg-primary/10 text-primary font-semibold shadow-xs'
 											: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
 									}`}>
-									<div className="flex items-center gap-2">
-										<Icon name="code" size={15} />
-										<span className="truncate">{guide.title.split(' ')[0]}</span>
-									</div>
-									<span
-										className={`text-[9px] font-mono font-semibold ${
-											isProductRoleAllowed ? 'text-primary' : 'text-amber-600 dark:text-amber-400'
-										}`}>
-										{isProductRoleAllowed ? 'Dev' : 'Restricted'}
-									</span>
+									<Icon name="info" size={15} />
+									<span>Quickstart Guide</span>
 								</Button>
-							))}
+								<Button
+									type="button"
+									variant="ghost"
+									size="sm"
+									onClick={() => selectSection('tokens')}
+									className={`flex w-full items-center justify-start gap-2 rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
+										activeSection === 'tokens'
+											? 'bg-primary/10 text-primary font-semibold shadow-xs'
+											: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
+									}`}>
+									<Icon name="key" size={15} />
+									<span>Authentication &amp; Tokens</span>
+								</Button>
+							</div>
+
+							{/* Section: Catalog Products & Endpoints */}
+							<div className="space-y-2">
+								<div className="flex items-center justify-between px-2">
+									<p className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted">
+										Storefront APIs &amp; Endpoints
+									</p>
+									<span className="text-[10px] text-muted font-mono">{catalogItems.length} products</span>
+								</div>
+
+								<div className="space-y-1">
+									{filteredProducts.length === 0 ? (
+										<div className="rounded border border-dashed border-line px-2.5 py-3 text-center space-y-1">
+											<p className="text-[11px] font-medium text-fg">No products connected</p>
+											{effectiveActor?.admin ? (
+												<a
+													href="/admin/products"
+													className="text-[10px] text-primary hover:underline block font-semibold">
+													+ Connect product
+												</a>
+											) : null}
+										</div>
+									) : null}
+									{filteredProducts.map((prod) => {
+										const isSelected = selectedProductId === prod.productId;
+										const prodDetail = liveProductDetails[prod.productId];
+										const prodRawOps =
+											(prodDetail?.operations && prodDetail.operations.length > 0
+												? prodDetail.operations
+												: prod.operations) || [];
+										const q = searchQuery.trim().toLowerCase();
+										const prodFilteredOps = q
+											? prodRawOps.filter(
+													(/** @type {any} */ op) =>
+														op.path?.toLowerCase().includes(q) ||
+														op.method?.toLowerCase().includes(q) ||
+														(op.summary && op.summary.toLowerCase().includes(q)) ||
+														(op.description && op.description.toLowerCase().includes(q)),
+												)
+											: prodRawOps;
+										const isExpanded =
+											expandedProductIds.has(prod.productId) || (Boolean(q) && prodFilteredOps.length > 0);
+
+										return (
+											<div key={prod.productId} className="space-y-0.5">
+												<Button
+													type="button"
+													variant="ghost"
+													size="sm"
+													onClick={() => selectProduct(prod.productId)}
+													className={`flex w-full items-center justify-between rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
+														isSelected && !selectedOpKey && activeSection === 'products'
+															? 'bg-primary/10 text-primary font-semibold shadow-xs'
+															: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
+													}`}>
+													<div className="flex items-center gap-2 truncate">
+														<span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-surface-2 font-mono text-[10px] text-primary font-bold border border-line">
+															{prod.name.slice(0, 1)}
+														</span>
+														<span className="truncate">{prod.name}</span>
+													</div>
+													<span className="text-[10px] text-muted font-mono">{`v${prod.version}`}</span>
+												</Button>
+
+												{/* Mega-menu sub-list of product operations */}
+												{isExpanded ? (
+													<div className="ml-4 pl-2 border-l border-line space-y-0.5 py-1">
+														<Button
+															type="button"
+															variant="ghost"
+															size="sm"
+															onClick={() => selectOperation('', prod.productId)}
+															className={`flex w-full items-center justify-start gap-1.5 rounded px-2 py-1.5 text-[11px] transition ${
+																isSelected && !selectedOpKey && activeSection === 'products'
+																	? 'bg-surface-2 text-primary font-semibold'
+																	: 'text-muted hover:text-fg'
+															}`}>
+															<Icon name="info" size={13} />
+															<span>Overview &amp; Embed</span>
+														</Button>
+
+														{prodFilteredOps.map((/** @type {any} */ op) => {
+															const opKey = `${op.method}:${op.path}`;
+															const isOpActive =
+																isSelected && selectedOpKey === opKey && activeSection === 'products';
+															const isStorefront = op.auth === 'browser' || op.auth === 'visitor' || !op.auth;
+															const hasAccess = isStorefront || isProductRoleAllowed;
+															return (
+																<Button
+																	key={opKey}
+																	type="button"
+																	variant="ghost"
+																	size="sm"
+																	onClick={() => selectOperation(opKey, prod.productId)}
+																	className={`flex w-full items-center justify-between gap-1.5 rounded px-2 py-1.5 text-[11px] truncate transition ${
+																		isOpActive
+																			? 'bg-surface-2 text-primary font-semibold shadow-xs'
+																			: 'text-muted hover:text-fg'
+																	}`}
+																	title={`${op.method} ${op.path}`}>
+																	<div className="flex items-center gap-1.5 truncate">
+																		<span
+																			className={`font-mono text-[9px] px-1.5 py-0.5 rounded font-bold ${methodColor(
+																				op.method,
+																			)}`}>
+																			{op.method}
+																		</span>
+																		<span className="truncate font-mono">{op.path.replace(/^\/v1/, '')}</span>
+																	</div>
+																	<span
+																		className={`font-mono text-[8px] px-1 rounded uppercase font-bold shrink-0 ${
+																			isStorefront
+																				? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10'
+																				: hasAccess
+																					? 'text-primary bg-primary/10'
+																					: 'text-amber-600 dark:text-amber-400 bg-amber-500/10'
+																		}`}>
+																		{isStorefront ? 'Store' : hasAccess ? 'Staff' : 'Restricted'}
+																	</span>
+																</Button>
+															);
+														})}
+
+														{prodFilteredOps.length > 40 ? (
+															<p className="px-2 py-1 text-[10px] text-muted italic">
+																+{prodFilteredOps.length - 40} more endpoints in spec
+															</p>
+														) : null}
+													</div>
+												) : null}
+											</div>
+										);
+									})}
+								</div>
+							</div>
+
+							{/* Section: Product Developer SDK */}
+							<div className="space-y-1 pt-3 border-t border-line">
+								<div className="flex items-center justify-between px-2">
+									<p className="text-[10px] font-mono font-bold uppercase tracking-widest text-primary">
+										Product Developer SDK
+									</p>
+									<span
+										className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ${
+											isProductRoleAllowed
+												? 'text-primary bg-primary/10'
+												: 'text-amber-600 dark:text-amber-400 bg-amber-500/10'
+										}`}>
+										{isProductRoleAllowed ? 'CORE' : 'RESTRICTED'}
+									</span>
+								</div>
+								{STATIC_SDK_GUIDES.map((guide) => (
+									<Button
+										key={guide.id}
+										type="button"
+										variant="ghost"
+										size="sm"
+										onClick={() => selectSection(`sdk-${guide.id}`)}
+										className={`flex w-full items-center justify-between rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
+											activeSection === `sdk-${guide.id}`
+												? 'bg-primary/10 text-primary font-semibold shadow-xs'
+												: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
+										}`}>
+										<div className="flex items-center gap-2">
+											<Icon name="code" size={15} />
+											<span className="truncate">{guide.title.split(' ')[0]}</span>
+										</div>
+										<span
+											className={`text-[9px] font-mono font-semibold ${
+												isProductRoleAllowed ? 'text-primary' : 'text-amber-600 dark:text-amber-400'
+											}`}>
+											{isProductRoleAllowed ? 'Dev' : 'Restricted'}
+										</span>
+									</Button>
+								))}
+							</div>
+						</div>
+
+						{/* Fixed Footer in Sidebar with Share Button */}
+						<div className="p-3 border-t border-line bg-surface/95 backdrop-blur-xs shrink-0">
+							<Button
+								type="button"
+								size="sm"
+								variant="primary"
+								className="w-full justify-center"
+								onClick={handleShareDocs}
+								icon={<Icon name={copiedNotice === 'Copied Share Link' ? 'check' : 'link'} size={14} />}>
+								{copiedNotice === 'Copied Share Link' ? 'Copied Share Link!' : 'Share Docs'}
+							</Button>
 						</div>
 					</aside>
 
 					{/* Right Content Area: Interactive Swagger & Guides */}
 					<div className="flex-1 min-w-0 w-full space-y-8">
+						{/* Authenticated Context Detail Header */}
+						<div className="rounded-card border border-primary/30 bg-primary/5 p-4 shadow-card">
+							<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+								<div className="space-y-1">
+									<div className="flex flex-wrap items-center gap-2">
+										<span className="text-xs font-semibold text-fg tracking-tight">{brandName} Documentation Hub</span>
+										<Badge tone="success" dot>
+											Authenticated Documentation
+										</Badge>
+										<span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-surface border border-line text-fg">
+											{effectiveActor
+												? `${effectiveActor.name} (Role: ${userRole || 'user'})`
+												: website || 'User Token'}
+										</span>
+										{website && effectiveActor ? (
+											<span className="font-mono text-xs text-muted px-2 py-0.5 rounded bg-surface border border-line">
+												{website}
+											</span>
+										) : null}
+									</div>
+									<p className="text-xs text-muted">
+										Interactive code snippets below are pre-filled with your scoped credentials.
+									</p>
+								</div>
+								<div className="flex items-center gap-2">
+									{token ? (
+										<Button
+											type="button"
+											size="sm"
+											variant="secondary"
+											onClick={() => {
+												copyText(token);
+												setCopiedNotice('Copied Token');
+												setTimeout(() => setCopiedNotice(''), 2000);
+											}}>
+											{copiedNotice === 'Copied Token' ? 'Copied Token!' : 'Copy Token'}
+										</Button>
+									) : null}
+									<Button
+										type="button"
+										size="sm"
+										variant="ghost"
+										onClick={() => {
+											setToken('');
+											setClientActor(null);
+											syncUrl(selectedProductId, selectedOpKey, activeSection, viewMode, '', website);
+										}}>
+										Lock / Change
+									</Button>
+								</div>
+							</div>
+						</div>
 						{/* Role Restricted Banner when accessing restricted SDK guides without permissions */}
 						{activeSection.startsWith('sdk-') && !isProductRoleAllowed ? (
 							<div className="rounded-card border border-warning/40 bg-surface p-6 space-y-3 shadow-card">
@@ -1532,12 +1601,12 @@ export function DocsHubView({
 								{/* Endpoints Table Overview (Swagger-style) */}
 								<div className="space-y-3">
 									<div className="flex items-center justify-between">
-										<h2 className="text-sm font-semibold">Available API Operations ({operations.length})</h2>
+										<h2 className="text-sm font-semibold">Available API Operations ({filteredOperations.length})</h2>
 										<span className="text-xs text-muted">Click any operation to view interactive Swagger docs</span>
 									</div>
 
 									<div className="rounded-card border border-line bg-surface overflow-hidden divide-y divide-line shadow-card">
-										{operations.map((/** @type {any} */ op) => {
+										{filteredOperations.map((/** @type {any} */ op) => {
 											const opKey = `${op.method}:${op.path}`;
 											return (
 												<Button

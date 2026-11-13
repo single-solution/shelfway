@@ -469,4 +469,123 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 
 		cleanup();
 	});
+
+	it('renders distinct operations per product in the sidebar and supports fixed footer share button', async () => {
+		const accountsProduct = {
+			productId: 'accounts',
+			name: 'Accounts',
+			version: '1.0.0',
+			description: 'Visitor authentication, shopper profiles, staff access.',
+			status: /** @type {const} */ ('active'),
+			operations: [
+				{
+					method: 'POST',
+					path: '/v1/auth/sign-in',
+					summary: 'Request shopper sign-in code',
+					auth: 'browser',
+					permission: '',
+					feature: 'auth',
+					description: '',
+				},
+				{
+					method: 'GET',
+					path: '/v1/users',
+					summary: 'List customer accounts',
+					auth: 'server',
+					permission: 'users.read',
+					feature: 'staff',
+					description: '',
+				},
+			],
+		};
+
+		const chatProduct = {
+			productId: 'chat',
+			name: 'Chat',
+			version: '1.0.0',
+			description: 'Real-time visitor chat.',
+			status: /** @type {const} */ ('active'),
+			operations: [
+				{
+					method: 'POST',
+					path: '/v1/conversations',
+					summary: 'Start visitor chat conversation',
+					auth: 'browser',
+					permission: '',
+					feature: 'always',
+					description: '',
+				},
+				{
+					method: 'GET',
+					path: '/v1/inbox',
+					summary: 'List active conversations for operator',
+					auth: 'server',
+					permission: 'chat.read',
+					feature: 'inbox',
+					description: '',
+				},
+			],
+		};
+
+		const { container } = render(
+			<DocsHubView
+				branding={branding}
+				items={[accountsProduct, chatProduct]}
+				initialProductId="accounts"
+				initialToken="scoped_sec_token_888"
+				initialWebsite="mysite.shelfway.com"
+				actor={{ role: 'owner', name: 'Merchant Owner' }}
+			/>,
+		);
+
+		// Check restored 2nd header
+		expect(container.textContent).toContain('Authenticated Documentation');
+		expect(container.textContent).toContain('Merchant Owner (Role: owner)');
+		expect(container.textContent).toContain('Interactive code snippets below are pre-filled with your scoped credentials.');
+		expect(container.textContent).toContain('mysite.shelfway.com');
+
+		// Check Copy Token button in restored header
+		const copyTokenBtn = byText(container, 'Copy Token', 'button');
+		expect(copyTokenBtn).not.toBeNull();
+		if (copyTokenBtn) {
+			click(copyTokenBtn);
+			expect(container.textContent).toContain('Copied Token');
+		}
+
+		// Expand Chat as well as Accounts
+		const chatBtn = byText(container, 'Chat');
+		if (chatBtn) click(chatBtn);
+
+		const accountsBtn = byText(container, 'Accounts');
+		if (accountsBtn) click(accountsBtn);
+
+		// In the DOM, each product's expanded operations must be distinct
+		const sidebar = container.querySelector('aside');
+		expect(sidebar).not.toBeNull();
+		if (sidebar) {
+			expect(sidebar.textContent).toContain('/auth/sign-in');
+			expect(sidebar.textContent).toContain('/users');
+			expect(sidebar.textContent).toContain('/conversations');
+			expect(sidebar.textContent).toContain('/inbox');
+
+			// Check fixed footer Share Docs button
+			const shareDocsBtn = byText(sidebar, 'Share Docs');
+			expect(shareDocsBtn).not.toBeNull();
+			if (shareDocsBtn) {
+				click(shareDocsBtn);
+				expect(sidebar.textContent).toContain('Copied Share Link');
+			}
+		}
+
+		// Search filtering: search for "sign-in"
+		const searchInput = container.querySelector('input[placeholder*="Search"]');
+		if (searchInput) {
+			type(searchInput, 'sign-in');
+			// Accounts has sign-in, Chat does not
+			expect(sidebar?.textContent).toContain('/auth/sign-in');
+			expect(sidebar?.textContent).not.toContain('/conversations');
+		}
+
+		cleanup();
+	});
 });
