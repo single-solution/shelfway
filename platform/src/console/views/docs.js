@@ -1856,36 +1856,43 @@ export function DocsHubView({
 		return reqSchema ? sampleFromSchema(reqSchema, currentProduct?.components) : {};
 	}, [currentOperation, currentProduct]);
 
+	const responseStatuses = useMemo(() => Object.keys(currentOperation?.responses || {}), [currentOperation]);
+
+	const effectiveResponseStatus = useMemo(() => {
+		if (responseStatuses.length === 0) return '200';
+		return (responseStatuses.includes(activeResponseStatus) ? activeResponseStatus : responseStatuses[0]) || '200';
+	}, [responseStatuses, activeResponseStatus]);
+
 	const sampleResponsePayload = useMemo(() => {
-		if (!currentOperation?.responses) return null;
-		const resp = currentOperation.responses[activeResponseStatus] || Object.values(currentOperation.responses)[0];
+		if (!currentOperation?.responses || responseStatuses.length === 0) return null;
+		const resp = currentOperation.responses[effectiveResponseStatus];
 		if (!resp) return null;
 		const respSchema = resp.content?.['application/json']?.schema || resp.content?.['application/problem+json']?.schema;
+		const isNoContent = effectiveResponseStatus === '204' || (!respSchema && !resp.content);
 		return {
 			description: resp.description,
 			payload: respSchema
 				? sampleFromSchema(respSchema, currentProduct?.components)
-				: { message: resp.description || 'Success' },
+				: isNoContent
+					? null
+					: { message: resp.description || 'Success' },
 		};
-	}, [currentOperation, currentProduct, activeResponseStatus]);
+	}, [currentOperation, currentProduct, effectiveResponseStatus, responseStatuses]);
 
 	const responseBodyProperties = useMemo(() => {
-		if (!currentOperation?.responses) return [];
-		const resp = currentOperation.responses[activeResponseStatus] || Object.values(currentOperation.responses)[0];
+		if (!currentOperation?.responses || responseStatuses.length === 0) return [];
+		const resp = currentOperation.responses[effectiveResponseStatus];
 		if (!resp) return [];
 		const respSchema = resp.content?.['application/json']?.schema || resp.content?.['application/problem+json']?.schema;
 		if (!respSchema) return [];
 		return extractSchemaProperties(respSchema, currentProduct?.components);
-	}, [currentOperation, currentProduct, activeResponseStatus]);
+	}, [currentOperation, currentProduct, effectiveResponseStatus, responseStatuses]);
 
 	useEffect(() => {
-		if (currentOperation?.responses) {
-			const statuses = Object.keys(currentOperation.responses);
-			if (statuses.length > 0 && !statuses.includes(activeResponseStatus)) {
-				setActiveResponseStatus(statuses[0] || '200');
-			}
+		if (responseStatuses.length > 0 && !responseStatuses.includes(activeResponseStatus)) {
+			setActiveResponseStatus(responseStatuses[0] || '200');
 		}
-	}, [currentOperation, activeResponseStatus]);
+	}, [responseStatuses, activeResponseStatus]);
 
 	// Filtered operations based on search query
 	const filteredOperations = useMemo(() => {
@@ -2978,14 +2985,14 @@ export function DocsHubView({
 								<div className="space-y-3">
 									<div className="flex items-center justify-between">
 										<h3 className="text-sm font-semibold">Responses</h3>
-										{Object.keys(currentOperation.responses || {}).length > 1 ? (
+										{responseStatuses.length > 1 ? (
 											<div className="flex items-center gap-1.5">
-												{Object.keys(currentOperation.responses || {}).map((status) => (
+												{responseStatuses.map((status) => (
 													<Button
 														key={status}
 														type="button"
 														size="sm"
-														variant={activeResponseStatus === status ? 'primary' : 'secondary'}
+														variant={effectiveResponseStatus === status ? 'primary' : 'secondary'}
 														onClick={() => setActiveResponseStatus(status)}
 														className="font-mono text-xs">
 														{status}
@@ -3004,19 +3011,19 @@ export function DocsHubView({
 												<div className="flex items-center gap-2.5">
 													<Badge
 														tone={
-															activeResponseStatus.startsWith('2')
+															effectiveResponseStatus.startsWith('2')
 																? 'success'
-																: activeResponseStatus.startsWith('4')
+																: effectiveResponseStatus.startsWith('4')
 																	? 'warning'
-																	: activeResponseStatus.startsWith('5')
+																	: effectiveResponseStatus.startsWith('5')
 																		? 'danger'
 																		: 'neutral'
 														}
 														className="font-mono font-bold">
-														{statusLabel(activeResponseStatus)}
+														{statusLabel(effectiveResponseStatus)}
 													</Badge>
 													<span className="text-xs font-medium text-fg">
-														{sampleResponsePayload.description || `HTTP ${activeResponseStatus} Response`}
+														{sampleResponsePayload.description || `HTTP ${effectiveResponseStatus} Response`}
 													</span>
 												</div>
 
@@ -3047,7 +3054,11 @@ export function DocsHubView({
 													sampleResponsePayload.payload !== null && sampleResponsePayload.payload !== undefined ? (
 														<CodeBlock code={JSON.stringify(sampleResponsePayload.payload, null, 2)} />
 													) : (
-														<p className="text-xs text-muted italic">No example payload defined.</p>
+														<p className="text-xs text-muted italic font-mono">
+															{effectiveResponseStatus === '204'
+																? 'HTTP 204 No Content (No response body returned)'
+																: 'No example payload defined.'}
+														</p>
 													)
 												) : responseBodyProperties.length > 0 ? (
 													<div
@@ -3093,7 +3104,9 @@ export function DocsHubView({
 												)}
 											</div>
 										</div>
-									) : null}
+									) : (
+										<p className="text-xs text-muted italic">No response specification defined for this operation.</p>
+									)}
 								</div>
 
 								{/* Code Snippets (cURL, JavaScript, Python) */}

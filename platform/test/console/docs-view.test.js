@@ -954,4 +954,109 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 
 		cleanup();
 	});
+
+	it('handles non-200 responses, 204 No Content, multiple status switches, and empty responses cleanly', async () => {
+		const edgeProduct = {
+			...sampleProduct,
+			operations: [
+				{
+					method: 'POST',
+					path: '/v1/items',
+					summary: 'Create item',
+					auth: 'browser',
+					permission: '',
+					feature: 'always',
+					responses: {
+						201: {
+							description: 'Item created',
+							content: {
+								'application/json': {
+									schema: {
+										type: 'object',
+										properties: { id: { type: 'string' } },
+									},
+								},
+							},
+						},
+						400: {
+							description: 'Invalid input parameters',
+							content: {
+								'application/problem+json': {
+									schema: {
+										type: 'object',
+										properties: { detail: { type: 'string' } },
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					method: 'DELETE',
+					path: '/v1/items/:id',
+					summary: 'Delete item',
+					auth: 'browser',
+					permission: '',
+					feature: 'always',
+					responses: {
+						204: {
+							description: 'Item removed',
+						},
+					},
+				},
+				{
+					method: 'GET',
+					path: '/v1/empty',
+					summary: 'Empty spec',
+					auth: 'browser',
+					permission: '',
+					feature: 'always',
+					responses: {},
+				},
+			],
+		};
+
+		// 1. Initial op key has only 201 response -> immediately shows 201 Created without flashing 200 OK
+		const { container } = render(
+			<DocsHubView
+				branding={branding}
+				items={[edgeProduct]}
+				initialProductId="chat"
+				initialOpKey="POST:/v1/items"
+				initialToken="test_token"
+			/>,
+		);
+
+		expect(container.textContent).toContain('201 Created');
+		expect(container.textContent).toContain('Item created');
+		expect(container.textContent).not.toContain('200 OK');
+
+		// Switch to 400 response
+		const btn400 = byText(container, '400', 'button');
+		expect(btn400).not.toBeNull();
+		if (btn400) {
+			click(btn400);
+			expect(container.textContent).toContain('400 Bad Request');
+			expect(container.textContent).toContain('Invalid input parameters');
+		}
+
+		// 2. Select 204 No Content operation
+		const sidebar = container.querySelector('aside');
+		const deleteBtn = byText(sidebar || container, '/items/:id').closest('button');
+		if (deleteBtn) {
+			click(deleteBtn);
+			expect(container.textContent).toContain('204 No Content');
+			expect(container.textContent).toContain('Item removed');
+			expect(container.textContent).toContain('HTTP 204 No Content (No response body returned)');
+		}
+
+		// 3. Select empty responses operation
+		const emptyBtn = byText(sidebar || container, '/empty').closest('button');
+		if (emptyBtn) {
+			click(emptyBtn);
+			expect(container.textContent).toContain('No response specification defined for this operation.');
+		}
+
+		cleanup();
+	});
 });
