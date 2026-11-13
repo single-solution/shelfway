@@ -528,6 +528,46 @@ export function DocsHubView({
 	const [searchQuery, setSearchQuery] = useState('');
 	const [copiedNotice, setCopiedNotice] = useState('');
 	const [clientActor, setClientActor] = useState(/** @type {any} */ (null));
+	const [liveCatalogItems, setLiveCatalogItems] = useState(items || []);
+	const [liveProductDetails, setLiveProductDetails] = useState(/** @type {Record<string, any>} */ ({}));
+
+	useEffect(() => {
+		if (items && items.length > 0) {
+			setLiveCatalogItems(items);
+		}
+	}, [items]);
+
+	useEffect(() => {
+		let cancelled = false;
+		apiFetch('/v1/docs', { redirectOn401: false })
+			.then((res) => {
+				if (!cancelled && res.ok && res.data?.items?.length) {
+					setLiveCatalogItems(res.data.items);
+				}
+			})
+			.catch(() => {});
+		return () => {
+			cancelled = true;
+		};
+	}, []);
+
+	useEffect(() => {
+		if (!selectedProductId) return;
+		let cancelled = false;
+		apiFetch(`/v1/docs/${selectedProductId}`, { redirectOn401: false })
+			.then((res) => {
+				if (!cancelled && res.ok && res.data?.product) {
+					setLiveProductDetails((prev) => ({
+						...prev,
+						[selectedProductId]: res.data.product,
+					}));
+				}
+			})
+			.catch(() => {});
+		return () => {
+			cancelled = true;
+		};
+	}, [selectedProductId]);
 
 	useEffect(() => {
 		if (actor) return;
@@ -554,10 +594,11 @@ export function DocsHubView({
 	const isProductRoleAllowed = !userRole || ['owner', 'developer', 'support', 'admin'].includes(userRole);
 
 	const catalogItems = useMemo(() => {
-		if (items && items.length > 0) {
+		const sourceList = liveCatalogItems && liveCatalogItems.length > 0 ? liveCatalogItems : items;
+		if (sourceList && sourceList.length > 0) {
 			const map = new Map();
 			for (const p of UNIVERSAL_PRODUCTS) map.set(p.productId, { ...p });
-			for (const item of items) {
+			for (const item of sourceList) {
 				const existing = map.get(item.productId);
 				if (existing) {
 					map.set(item.productId, {
@@ -572,7 +613,7 @@ export function DocsHubView({
 			return Array.from(map.values());
 		}
 		return UNIVERSAL_PRODUCTS;
-	}, [items]);
+	}, [items, liveCatalogItems]);
 
 	// Synchronize URL query params seamlessly without page reloads
 	/**
@@ -648,18 +689,34 @@ export function DocsHubView({
 	}, [items]);
 
 	const currentProduct = useMemo(() => {
-		return catalogItems.find((p) => p.productId === selectedProductId) || catalogItems[0] || null;
-	}, [selectedProductId, catalogItems]);
+		const baseProd = catalogItems.find((p) => p.productId === selectedProductId) || catalogItems[0] || null;
+		if (!baseProd) return null;
+		const liveDetail = liveProductDetails[baseProd.productId];
+		if (!liveDetail) return baseProd;
+		return {
+			...baseProd,
+			...liveDetail,
+			operations: liveDetail.operations && liveDetail.operations.length > 0 ? liveDetail.operations : baseProd.operations,
+		};
+	}, [selectedProductId, catalogItems, liveProductDetails]);
 
 	const operations = useMemo(() => {
-		const allOps = /** @type {any[]} */ (currentProduct?.operations || []);
-		if (viewMode === 'store') {
-			const storeOps = allOps.filter((op) => op.auth === 'browser' || op.auth === 'visitor' || !op.auth);
-			return storeOps.length > 0 ? storeOps : allOps;
-		}
-		const prodOps = allOps.filter((op) => op.auth === 'server' || op.auth === 'ticket' || Boolean(op.permission));
-		return prodOps.length > 0 ? prodOps : allOps;
-	}, [currentProduct, viewMode]);
+		return /** @type {any[]} */ (currentProduct?.operations || []);
+	}, [currentProduct]);
+
+	const handleShareDocs = () => {
+		if (typeof window === 'undefined') return;
+		const url = new URL(window.location.href);
+		if (token) url.searchParams.set('token', token);
+		if (website) url.searchParams.set('website', website);
+		if (selectedProductId) url.searchParams.set('product', selectedProductId);
+		if (selectedOpKey) url.searchParams.set('op', selectedOpKey);
+		else url.searchParams.delete('op');
+		if (activeSection && activeSection !== 'products') url.searchParams.set('section', activeSection);
+		copyText(url.toString());
+		setCopiedNotice('Copied Share Link');
+		setTimeout(() => setCopiedNotice(''), 2500);
+	};
 
 	const currentOperation = useMemo(() => {
 		if (!selectedOpKey) return null;
@@ -816,75 +873,48 @@ export function DocsHubView({
 			<div className="docs-container flex flex-col flex-1">
 				{/* Top Docs Toolbar */}
 				<div className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-line bg-surface p-3.5 mb-6">
-					<div className="flex items-center gap-2">
+					<div className="flex flex-wrap items-center gap-3">
 						<span className="text-sm font-semibold text-fg tracking-tight">{brandName} Documentation Hub</span>
-					</div>
-
-					<div className="flex items-center gap-3">
-						{/* Role view switcher */}
-						<div className="flex items-center rounded-control bg-surface-2 p-0.5 text-xs border border-line">
-							<button
-								type="button"
-								onClick={() => {
-									setViewMode('store');
-									setSelectedOpKey(null);
-									if (activeSection.startsWith('sdk-')) selectSection('quickstart');
-									syncUrl(
-										selectedProductId,
-										null,
-										activeSection.startsWith('sdk-') ? 'quickstart' : activeSection,
-										'store',
-									);
-								}}
-								className={`rounded-[calc(var(--radius-control)-2px)] px-3 py-1 font-medium transition ${
-									viewMode === 'store' ? 'bg-surface text-fg shadow-xs font-semibold' : 'text-muted hover:text-fg'
-								}`}>
-								Store
-							</button>
-							<button
-								type="button"
-								onClick={() => {
-									setViewMode('product');
-									setSelectedOpKey(null);
-									if (!activeSection.startsWith('sdk-') && activeSection !== 'products') selectSection('sdk-cli');
-									syncUrl(
-										selectedProductId,
-										null,
-										activeSection.startsWith('sdk-') ? activeSection : 'products',
-										'product',
-									);
-								}}
-								className={`rounded-[calc(var(--radius-control)-2px)] px-3 py-1 font-medium transition ${
-									viewMode === 'product' ? 'bg-surface text-fg shadow-xs font-semibold' : 'text-muted hover:text-fg'
-								}`}>
-								Product
-							</button>
-						</div>
-
+						<Badge tone="success" dot>
+							Authenticated Documentation
+						</Badge>
 						{(actor || effectiveActor) && userRole ? (
-							<div className="hidden sm:flex items-center gap-1.5 text-xs text-muted border-l border-line pl-3">
+							<div className="flex items-center gap-1.5 text-xs text-muted border-l border-line pl-3">
 								<Icon name="user" size={14} />
 								<span>Role:</span>
 								<strong className="text-fg capitalize font-medium">{userRole}</strong>
 							</div>
-						) : token ? (
-							<div className="hidden sm:flex items-center gap-2 text-xs text-muted border-l border-line pl-3">
+						) : null}
+						{token ? (
+							<div className="flex items-center gap-2 text-xs text-muted border-l border-line pl-3">
 								<Icon name="key" size={14} className="text-primary" />
 								<Badge tone="success" dot>
 									{website || 'User Token'}
 								</Badge>
 							</div>
 						) : null}
+					</div>
+
+					<div className="flex items-center gap-2">
+						{token ? (
+							<Button
+								size="sm"
+								variant="secondary"
+								onClick={() => {
+									copyText(token);
+									setCopiedNotice('Copied Token');
+									setTimeout(() => setCopiedNotice(''), 2000);
+								}}>
+								{copiedNotice === 'Copied Token' ? 'Copied Token!' : 'Copy Token'}
+							</Button>
+						) : null}
 
 						<Button
 							size="sm"
-							variant="ghost"
-							onClick={() => {
-								setToken('');
-								setClientActor(null);
-								syncUrl(null, null, '', 'store', '', '');
-							}}>
-							Lock / Switch Token
+							variant="primary"
+							onClick={handleShareDocs}
+							icon={<Icon name={copiedNotice === 'Copied Share Link' ? 'check' : 'link'} size={14} />}>
+							{copiedNotice === 'Copied Share Link' ? 'Copied Share Link!' : 'Share Docs'}
 						</Button>
 					</div>
 				</div>
@@ -908,41 +938,37 @@ export function DocsHubView({
 						</div>
 
 						{/* Section: Getting Started */}
-						{viewMode === 'store' ? (
-							<div className="space-y-1">
-								<p className="px-2 text-[10px] font-mono font-bold uppercase tracking-widest text-muted">
-									Getting Started
-								</p>
-								<button
-									type="button"
-									onClick={() => selectSection('quickstart')}
-									className={`flex w-full items-center gap-2 rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
-										activeSection === 'quickstart'
-											? 'bg-primary/10 text-primary font-semibold shadow-xs'
-											: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
-									}`}>
-									<Icon name="info" size={15} />
-									<span>Quickstart Guide</span>
-								</button>
-								<button
-									type="button"
-									onClick={() => selectSection('tokens')}
-									className={`flex w-full items-center gap-2 rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
-										activeSection === 'tokens'
-											? 'bg-primary/10 text-primary font-semibold shadow-xs'
-											: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
-									}`}>
-									<Icon name="key" size={15} />
-									<span>Authentication &amp; Tokens</span>
-								</button>
-							</div>
-						) : null}
+						<div className="space-y-1">
+							<p className="px-2 text-[10px] font-mono font-bold uppercase tracking-widest text-muted">Getting Started</p>
+							<button
+								type="button"
+								onClick={() => selectSection('quickstart')}
+								className={`flex w-full items-center gap-2 rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
+									activeSection === 'quickstart'
+										? 'bg-primary/10 text-primary font-semibold shadow-xs'
+										: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
+								}`}>
+								<Icon name="info" size={15} />
+								<span>Quickstart Guide</span>
+							</button>
+							<button
+								type="button"
+								onClick={() => selectSection('tokens')}
+								className={`flex w-full items-center gap-2 rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
+									activeSection === 'tokens'
+										? 'bg-primary/10 text-primary font-semibold shadow-xs'
+										: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
+								}`}>
+								<Icon name="key" size={15} />
+								<span>Authentication &amp; Tokens</span>
+							</button>
+						</div>
 
 						{/* Section: Catalog Products & Endpoints */}
 						<div className="space-y-2">
 							<div className="flex items-center justify-between px-2">
 								<p className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted">
-									{viewMode === 'store' ? 'Storefront APIs' : 'Product APIs'}
+									Storefront APIs &amp; Endpoints
 								</p>
 								<span className="text-[10px] text-muted font-mono">{catalogItems.length} products</span>
 							</div>
@@ -1000,24 +1026,38 @@ export function DocsHubView({
 													{filteredOperations.map((/** @type {any} */ op) => {
 														const opKey = `${op.method}:${op.path}`;
 														const isOpActive = selectedOpKey === opKey;
+														const isStorefront = op.auth === 'browser' || op.auth === 'visitor' || !op.auth;
+														const hasAccess = isStorefront || isProductRoleAllowed;
 														return (
 															<button
 																key={opKey}
 																type="button"
 																onClick={() => selectOperation(opKey)}
-																className={`flex w-full items-center gap-1.5 rounded px-2 py-1.5 text-[11px] truncate transition ${
+																className={`flex w-full items-center justify-between gap-1.5 rounded px-2 py-1.5 text-[11px] truncate transition ${
 																	isOpActive
 																		? 'bg-surface-2 text-primary font-semibold shadow-xs'
 																		: 'text-muted hover:text-fg'
 																}`}
 																title={`${op.method} ${op.path}`}>
+																<div className="flex items-center gap-1.5 truncate">
+																	<span
+																		className={`font-mono text-[9px] px-1.5 py-0.5 rounded font-bold ${methodColor(
+																			op.method,
+																		)}`}>
+																		{op.method}
+																	</span>
+																	<span className="truncate font-mono">{op.path.replace(/^\/v1/, '')}</span>
+																</div>
 																<span
-																	className={`font-mono text-[9px] px-1.5 py-0.5 rounded font-bold ${methodColor(
-																		op.method,
-																	)}`}>
-																	{op.method}
+																	className={`font-mono text-[8px] px-1 rounded uppercase font-bold shrink-0 ${
+																		isStorefront
+																			? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10'
+																			: hasAccess
+																				? 'text-primary bg-primary/10'
+																				: 'text-amber-600 dark:text-amber-400 bg-amber-500/10'
+																	}`}>
+																	{isStorefront ? 'Store' : hasAccess ? 'Staff' : 'Restricted'}
 																</span>
-																<span className="truncate font-mono">{op.path.replace(/^\/v1/, '')}</span>
 															</button>
 														);
 													})}
@@ -1036,80 +1076,49 @@ export function DocsHubView({
 						</div>
 
 						{/* Section: Product Developer SDK */}
-						{viewMode === 'product' && isProductRoleAllowed ? (
-							<div className="space-y-1 pt-3 border-t border-line">
-								<div className="flex items-center justify-between px-2">
-									<p className="text-[10px] font-mono font-bold uppercase tracking-widest text-primary">
-										Product Developer SDK
-									</p>
-									<span className="text-[9px] font-mono font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">
-										CORE
-									</span>
-								</div>
-								{STATIC_SDK_GUIDES.map((guide) => (
-									<button
-										key={guide.id}
-										type="button"
-										onClick={() => selectSection(`sdk-${guide.id}`)}
-										className={`flex w-full items-center gap-2 rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
-											activeSection === `sdk-${guide.id}`
-												? 'bg-primary/10 text-primary font-semibold shadow-xs'
-												: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
-										}`}>
+						<div className="space-y-1 pt-3 border-t border-line">
+							<div className="flex items-center justify-between px-2">
+								<p className="text-[10px] font-mono font-bold uppercase tracking-widest text-primary">
+									Product Developer SDK
+								</p>
+								<span
+									className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ${
+										isProductRoleAllowed
+											? 'text-primary bg-primary/10'
+											: 'text-amber-600 dark:text-amber-400 bg-amber-500/10'
+									}`}>
+									{isProductRoleAllowed ? 'CORE' : 'RESTRICTED'}
+								</span>
+							</div>
+							{STATIC_SDK_GUIDES.map((guide) => (
+								<button
+									key={guide.id}
+									type="button"
+									onClick={() => selectSection(`sdk-${guide.id}`)}
+									className={`flex w-full items-center justify-between rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
+										activeSection === `sdk-${guide.id}`
+											? 'bg-primary/10 text-primary font-semibold shadow-xs'
+											: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
+									}`}>
+									<div className="flex items-center gap-2">
 										<Icon name="code" size={15} />
 										<span className="truncate">{guide.title.split(' ')[0]}</span>
-									</button>
-								))}
-							</div>
-						) : null}
+									</div>
+									<span
+										className={`text-[9px] font-mono font-semibold ${
+											isProductRoleAllowed ? 'text-primary' : 'text-amber-600 dark:text-amber-400'
+										}`}>
+										{isProductRoleAllowed ? 'Dev' : 'Restricted'}
+									</span>
+								</button>
+							))}
+						</div>
 					</aside>
 
 					{/* Right Content Area: Interactive Swagger & Guides */}
 					<div className="flex-1 min-w-0 w-full space-y-8">
-						<div className="rounded-card border border-primary/30 bg-primary-soft/10 p-4 shadow-card">
-							<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-								<div className="space-y-1">
-									<div className="flex items-center gap-2">
-										<span className="font-mono text-xs font-bold uppercase tracking-wider text-primary">
-											Authenticated Documentation
-										</span>
-										<span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-surface border border-line text-fg">
-											{effectiveActor ? `${effectiveActor.name} (${userRole || 'user'})` : website || 'User Token'}
-										</span>
-									</div>
-									<p className="text-xs text-muted">
-										Interactive code snippets below are pre-filled with your scoped credentials.
-									</p>
-								</div>
-								<div className="flex items-center gap-2">
-									{token ? (
-										<Button
-											size="sm"
-											variant="secondary"
-											onClick={() => {
-												copyText(token);
-												setCopiedNotice('Copied Token');
-												setTimeout(() => setCopiedNotice(''), 2000);
-											}}>
-											{copiedNotice === 'Copied Token' ? 'Copied Token!' : 'Copy Token'}
-										</Button>
-									) : null}
-									<Button
-										size="sm"
-										variant="ghost"
-										onClick={() => {
-											setToken('');
-											setClientActor(null);
-											syncUrl(selectedProductId, selectedOpKey, activeSection, viewMode, '', website);
-										}}>
-										Lock / Change
-									</Button>
-								</div>
-							</div>
-						</div>
-
-						{/* Role Restricted Banner for Product APIs */}
-						{viewMode === 'product' && !isProductRoleAllowed ? (
+						{/* Role Restricted Banner when accessing restricted SDK guides without permissions */}
+						{activeSection.startsWith('sdk-') && !isProductRoleAllowed ? (
 							<div className="rounded-card border border-warning/40 bg-surface p-6 space-y-3 shadow-card">
 								<div className="flex items-center gap-2 text-warning font-semibold text-sm">
 									<Icon name="shield" size={18} />
@@ -1125,12 +1134,9 @@ export function DocsHubView({
 										size="sm"
 										variant="secondary"
 										onClick={() => {
-											setViewMode('store');
-											setSelectedOpKey(null);
 											selectSection('quickstart');
-											syncUrl(selectedProductId, null, 'quickstart', 'store');
 										}}>
-										Switch to Store Documentation
+										Back to Quickstart
 									</Button>
 								</div>
 							</div>
@@ -1603,6 +1609,22 @@ export function DocsHubView({
 												className="text-xs text-muted hover:text-fg px-2 py-0.5 rounded border border-line bg-surface hover:bg-surface-2 transition">
 												{copiedNotice === 'path' ? 'Copied' : 'Copy'}
 											</button>
+											{(() => {
+												const isStorefront =
+													currentOperation.auth === 'browser' ||
+													currentOperation.auth === 'visitor' ||
+													!currentOperation.auth;
+												const hasAccess = isStorefront || isProductRoleAllowed;
+												return (
+													<Badge tone={hasAccess ? 'success' : 'warning'} dot>
+														{isStorefront
+															? 'Storefront Access (Public)'
+															: hasAccess
+																? 'Access Granted (Staff)'
+																: 'Role Restricted: Developer Required'}
+													</Badge>
+												);
+											})()}
 										</div>
 
 										{currentOperation.summary ? (
@@ -1629,6 +1651,29 @@ export function DocsHubView({
 												</span>
 											) : null}
 										</div>
+
+										{(() => {
+											const isStorefront =
+												currentOperation.auth === 'browser' ||
+												currentOperation.auth === 'visitor' ||
+												!currentOperation.auth;
+											if (!isStorefront && !isProductRoleAllowed) {
+												return (
+													<div className="mt-3 rounded-card border border-warning/40 bg-surface p-4 space-y-2 shadow-card">
+														<div className="flex items-center gap-2 text-warning font-semibold text-xs">
+															<Icon name="shield" size={15} />
+															<span>Role Restricted Access</span>
+														</div>
+														<p className="text-xs text-muted leading-relaxed">
+															This operation requires <strong>Developer</strong> or <strong>Owner</strong>{' '}
+															privileges. Your current role is{' '}
+															<code className="font-mono text-fg">{userRole}</code>.
+														</p>
+													</div>
+												);
+											}
+											return null;
+										})()}
 									</div>
 
 									{/* Parameters List */}

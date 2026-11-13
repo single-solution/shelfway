@@ -26,6 +26,9 @@
 .shelfway-site section[id],
 .shelfway-site #contact,
 .shelfway-site #products,
+.shelfway-site #features,
+.shelfway-site #architecture,
+.shelfway-site #pricing,
 .shelfway-site #why,
 .shelfway-site #work,
 .shelfway-site #start {
@@ -95,13 +98,13 @@
 	box-shadow: 0 4px 16px color-mix(in srgb, var(--shelfway-fg) 6%, transparent);
 }
 .shelfway-site .nav {
+	width: min(calc(100% - 2 * var(--gutter)), var(--max));
 	max-width: var(--max);
 	margin: 0 auto;
-	width: 100%;
 	display: flex;
 	align-items: center;
 	gap: 1.15rem;
-	padding: 0.25rem var(--gutter);
+	padding: 0.25rem 0;
 	background: transparent;
 	border: none;
 	border-radius: 0;
@@ -133,6 +136,21 @@
 	align-items: center;
 	gap: 1.15rem;
 	flex-wrap: nowrap;
+}
+.shelfway-site .nav .nav-section-links,
+.shelfway-site .nav .nav-portal-links {
+	display: flex;
+	align-items: center;
+	gap: 1.15rem;
+	flex-wrap: nowrap;
+}
+.shelfway-site .nav .nav-divider {
+	display: inline-block;
+	width: 1px;
+	height: 1.15rem;
+	background: var(--shelfway-line);
+	margin: 0 0.15rem;
+	flex-shrink: 0;
 }
 .shelfway-site .nav nav a {
 	color: var(--shelfway-muted);

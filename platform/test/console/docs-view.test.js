@@ -207,15 +207,10 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		if (quickstartBtn) click(quickstartBtn);
 		expect(document.body.textContent).toContain('Everyday Development Path');
 
-		// Switch role view mode: Store vs Product
-		const devModeBtn = byText(document.body, 'Product', 'button');
-		if (devModeBtn) click(devModeBtn);
+		// Unified sidebar gives direct access to Product Developer SDK without mode switches
 		const cliBtn = byText(document.body, 'CLI');
 		if (cliBtn) click(cliBtn);
 		expect(document.body.textContent).toContain('CLI Reference');
-
-		const storefrontBtn = byText(document.body, 'Store', 'button');
-		if (storefrontBtn) click(storefrontBtn);
 
 		// Switch back to products section by clicking Chat in sidebar
 		const chatProductBtn = byText(document.body, 'Chat');
@@ -324,8 +319,8 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 			/>,
 		);
 
-		const devModeBtn = byText(document.body, 'Product', 'button');
-		if (devModeBtn) click(devModeBtn);
+		const cliBtn = byText(document.body, 'CLI');
+		click(cliBtn);
 
 		expect(document.body.textContent).toContain('Role Restricted Access');
 		expect(document.body.textContent).toContain('require Developer or Owner privileges');
@@ -359,15 +354,11 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		expect(document.body.textContent).toContain('Authenticated Documentation');
 		expect(document.body.textContent).toContain('mysite.com');
 
-		// Switch to Product mode and verify website / token is preserved
-		const prodBtn = byText(document.body, 'Product', 'button');
-		click(prodBtn);
-		expect(document.body.textContent).toContain('mysite.com');
-
-		// Click lock button and verify documentation is restricted again
-		const lockBtn = byText(document.body, 'Lock / Switch Token', 'button');
-		click(lockBtn);
-		expect(document.body.textContent).toContain('Documentation Access Restricted');
+		// Click Share Docs button and verify share link copies
+		const shareBtn = byText(document.body, 'Share Docs', 'button');
+		expect(shareBtn).toBeDefined();
+		click(shareBtn);
+		expect(document.body.textContent).toContain('Copied Share Link');
 
 		cleanup();
 	});
@@ -382,8 +373,8 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 			/>,
 		);
 
-		const prodBtn = byText(document.body, 'Product', 'button');
-		click(prodBtn);
+		const cliBtn = byText(document.body, 'CLI');
+		click(cliBtn);
 
 		expect(document.body.textContent).toContain('Role Restricted Access');
 		expect(document.body.textContent).toContain('require Developer or Owner privileges');

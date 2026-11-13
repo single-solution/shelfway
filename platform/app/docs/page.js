@@ -1,6 +1,7 @@
 import { connection } from 'next/server';
-import { consoleBranding, one } from '../(console)/_lib/server.js';
+import { consoleApi, consoleBranding, one } from '../(console)/_lib/server.js';
 import { platformSession } from '../_lib/server.js';
+import { loadDocsHub } from '../../src/console/loaders.js';
 import { DocsHubView } from '../../src/console/views/docs.js';
 import { SiteFooter, SiteHeader } from '../_components/SiteNav.js';
 import { COMPANY_NAME, PRODUCT_BRAND } from '../_components/brand.js';
@@ -27,10 +28,13 @@ export async function generateMetadata({ searchParams }) {
 export default async function DocsPage({ searchParams }) {
 	await connection();
 	const q = (await searchParams) || {};
-	const [session, branding] = await Promise.all([
+	const api = await consoleApi().catch(() => null);
+	const [session, branding, docsData] = await Promise.all([
 		platformSession().catch(() => ({ ok: false })),
 		consoleBranding().catch(() => null),
+		api ? loadDocsHub(api).catch(() => ({ ok: false })) : Promise.resolve({ ok: false }),
 	]);
+	const items = docsData?.ok && Array.isArray(docsData.items) ? docsData.items : [];
 	const initialProduct = one(q.product) || '';
 	const initialOp = one(q.op) || '';
 	const initialView = one(q.view) === 'product' || one(q.section)?.startsWith('sdk-') ? 'product' : 'store';
@@ -45,6 +49,7 @@ export default async function DocsPage({ searchParams }) {
 			<main className="flex-1">
 				<DocsHubView
 					branding={branding}
+					items={items}
 					actor={
 						session?.ok
 							? session.actor || session.me || (session.admin ? { role: 'owner', name: 'Admin', admin: true } : null)

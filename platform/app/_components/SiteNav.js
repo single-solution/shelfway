@@ -166,16 +166,24 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 						{brandName}
 					</Link>
 					<nav aria-label="Main">
-						<a href={isCurrentHome ? '#products' : '/#products'}>Features</a>
-						<Link href="/docs" style={isDocs ? { color: 'var(--shelfway-primary)', fontWeight: 600 } : undefined}>
-							Docs
-						</Link>
-						<a
-							href={isCurrentHome ? '#contact' : '/#contact'}
-							onClick={handleContactClick}
-							className="cursor-pointer text-muted hover:text-fg transition font-medium">
-							Contact
-						</a>
+						<div className="nav-section-links">
+							<a href={isCurrentHome ? '#features' : '/#features'}>Features</a>
+							<a href={isCurrentHome ? '#products' : '/#products'}>Products</a>
+							<a href={isCurrentHome ? '#architecture' : '/#architecture'}>Architecture</a>
+							<a href={isCurrentHome ? '#pricing' : '/#pricing'}>Pricing</a>
+							<a
+								href={isCurrentHome ? '#contact' : '/#contact'}
+								onClick={handleContactClick}
+								className="cursor-pointer text-muted hover:text-fg transition font-medium">
+								Contact
+							</a>
+						</div>
+						<span className="nav-divider" aria-hidden="true" />
+						<div className="nav-portal-links">
+							<Link href="/docs" style={isDocs ? { color: 'var(--shelfway-primary)', fontWeight: 600 } : undefined}>
+								Docs
+							</Link>
+						</div>
 					</nav>
 					{activeSession ? (
 						<Button as={Link} className="cta" href={dashboardHref}>
@@ -223,14 +231,17 @@ export function SiteFooter({ brandName = PRODUCT_BRAND, companyName = COMPANY_NA
 				<span className="by">by {companyName}</span>
 			</div>
 			<nav aria-label="Footer">
-				<a href={isHome ? '#products' : '/#products'}>Features</a>
-				<Link href="/docs">Docs</Link>
+				<a href={isHome ? '#features' : '/#features'}>Features</a>
+				<a href={isHome ? '#products' : '/#products'}>Products</a>
+				<a href={isHome ? '#architecture' : '/#architecture'}>Architecture</a>
+				<a href={isHome ? '#pricing' : '/#pricing'}>Pricing</a>
 				<a
 					href={isHome ? '#contact' : '/#contact'}
 					onClick={handleContactClick}
 					className="cursor-pointer text-muted hover:text-fg transition">
 					Contact
 				</a>
+				<Link href="/docs">Docs</Link>
 				{session ? (
 					<Link href={dashboardHref}>{dashboardLabel}</Link>
 				) : (

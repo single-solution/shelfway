@@ -419,7 +419,8 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 					</div>
 				</div>
 
-				<section id="why" className="band">
+				<section id="architecture" className="band">
+					<div id="why" />
 					<div className="site-container">
 						<header className="block-head reveal">
 							<p className="eyebrow">Why not build it all yourself</p>
@@ -470,6 +471,7 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 				</section>
 
 				<section id="products" className="band">
+					<div id="features" />
 					<div className="site-container">
 						<header className="block-head reveal">
 							<p className="eyebrow">What you can add</p>
@@ -713,6 +715,155 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 								<ButtonLink href="/docs" variant="secondary" size="md">
 									Browse docs -&gt;
 								</ButtonLink>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<section id="pricing" className="band">
+					<div className="site-container">
+						<header className="block-head reveal">
+							<p className="eyebrow">Fair, ledger-based pricing</p>
+							<h2>Pay only for active features. No surprise subscriptions.</h2>
+							<p>
+								Start with free development credits. Turn capabilities on and off anytime with exact millicredit ledger
+								accounting. Top up only when your website is actively serving visitors.
+							</p>
+						</header>
+
+						<div className="reveal grid gap-6 md:grid-cols-3 items-stretch mt-6">
+							<div className="rounded-card border border-line bg-surface p-6 shadow-card flex flex-col justify-between">
+								<div className="space-y-4">
+									<div className="space-y-1">
+										<p className="font-mono text-xs uppercase tracking-wider text-muted">Starter</p>
+										<div className="flex items-baseline gap-1">
+											<span className="text-3xl font-display font-extrabold text-fg">0</span>
+											<span className="text-xs text-muted">/ forever free to start</span>
+										</div>
+									</div>
+									<p className="text-xs text-muted leading-relaxed">
+										Everything you need to connect products, build your storefront, and test customer flows.
+									</p>
+									<ul className="space-y-2 text-xs text-fg">
+										<li className="flex items-center gap-2">
+											<span className="text-primary font-bold">+</span>
+											<span>10,000 starter credits on signup</span>
+										</li>
+										<li className="flex items-center gap-2">
+											<span className="text-primary font-bold">+</span>
+											<span>Accounts, Chat, Payments, Orders</span>
+										</li>
+										<li className="flex items-center gap-2">
+											<span className="text-primary font-bold">+</span>
+											<span>Universal Swagger and API docs</span>
+										</li>
+										<li className="flex items-center gap-2">
+											<span className="text-primary font-bold">+</span>
+											<span>Unlimited team invites</span>
+										</li>
+									</ul>
+								</div>
+								<div className="pt-6">
+									<Button
+										type="button"
+										variant="secondary"
+										size="md"
+										className="w-full justify-center"
+										onClick={() => openSignInModal()}>
+										Start Building Free
+									</Button>
+								</div>
+							</div>
+
+							<div className="rounded-card border-2 border-primary bg-surface p-6 shadow-card flex flex-col justify-between relative">
+								<div className="absolute -top-3 right-4 bg-primary text-primary-fg text-[10px] font-mono font-bold px-2 py-0.5 rounded-full uppercase">
+									Most Popular
+								</div>
+								<div className="space-y-4">
+									<div className="space-y-1">
+										<p className="font-mono text-xs uppercase tracking-wider text-primary font-bold">Pay As You Go</p>
+										<div className="flex items-baseline gap-1">
+											<span className="text-3xl font-display font-extrabold text-primary">Micro</span>
+											<span className="text-xs text-muted">/ capability hour</span>
+										</div>
+									</div>
+									<p className="text-xs text-muted leading-relaxed">
+										Live production sites with transparent, append-only ledger charging. Turn features off to stop
+										charges instantly.
+									</p>
+									<ul className="space-y-2 text-xs text-fg">
+										<li className="flex items-center gap-2">
+											<span className="text-primary font-bold">+</span>
+											<span>Real-time millicredit ledger accounting</span>
+										</li>
+										<li className="flex items-center gap-2">
+											<span className="text-primary font-bold">+</span>
+											<span>Zero monthly lock-in contracts</span>
+										</li>
+										<li className="flex items-center gap-2">
+											<span className="text-primary font-bold">+</span>
+											<span>Automatic low-balance grace protection</span>
+										</li>
+										<li className="flex items-center gap-2">
+											<span className="text-primary font-bold">+</span>
+											<span>Top up credits securely anytime</span>
+										</li>
+									</ul>
+								</div>
+								<div className="pt-6">
+									<Button
+										type="button"
+										variant="primary"
+										size="md"
+										className="w-full justify-center"
+										onClick={() => openSignInModal()}>
+										Get Started Now
+									</Button>
+								</div>
+							</div>
+
+							<div className="rounded-card border border-line bg-surface p-6 shadow-card flex flex-col justify-between">
+								<div className="space-y-4">
+									<div className="space-y-1">
+										<p className="font-mono text-xs uppercase tracking-wider text-muted">Enterprise</p>
+										<div className="flex items-baseline gap-1">
+											<span className="text-3xl font-display font-extrabold text-fg">Custom</span>
+											<span className="text-xs text-muted">/ high volume</span>
+										</div>
+									</div>
+									<p className="text-xs text-muted leading-relaxed">
+										High-traffic multi-store merchants, bespoke data residency, custom products, and dedicated SLA
+										support.
+									</p>
+									<ul className="space-y-2 text-xs text-fg">
+										<li className="flex items-center gap-2">
+											<span className="text-primary font-bold">+</span>
+											<span>Custom volume millicredit rates</span>
+										</li>
+										<li className="flex items-center gap-2">
+											<span className="text-primary font-bold">+</span>
+											<span>Private database and storage isolation</span>
+										</li>
+										<li className="flex items-center gap-2">
+											<span className="text-primary font-bold">+</span>
+											<span>Custom product integrations</span>
+										</li>
+										<li className="flex items-center gap-2">
+											<span className="text-primary font-bold">+</span>
+											<span>24/7 dedicated engineering support</span>
+										</li>
+									</ul>
+								</div>
+								<div className="pt-6">
+									<Button
+										type="button"
+										variant="secondary"
+										size="md"
+										className="w-full justify-center"
+										onClick={scrollToContact}>
+										Contact Sales
+									</Button>
+								</div>
 							</div>
 						</div>
 					</div>
