@@ -1059,4 +1059,108 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 
 		cleanup();
 	});
+
+	it('renders clean left-aligned sidebar operations without inner accordion headings and unified request body switcher', async () => {
+		const branding = { name: 'Shelfway' };
+		const testProduct = {
+			productId: 'chat',
+			name: 'Chat',
+			version: '1.0.0',
+			description: 'Chat engine',
+			status: /** @type {'active'} */ ('active'),
+			features: [{ key: 'chat', name: 'Chat Service', description: 'Storefront chat' }],
+			operations: [
+				{
+					method: 'POST',
+					path: '/v1/conversations',
+					summary: 'Start visitor chat conversation',
+					auth: 'browser',
+					permission: '',
+					feature: 'chat',
+					description: 'Initiate a new live conversation from the storefront widget.',
+					requestBody: {
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									required: ['visitorId'],
+									properties: {
+										visitorId: { type: 'string', description: 'Visitor identifier' },
+										initialMessage: { type: 'string', description: 'First message text' },
+									},
+								},
+							},
+						},
+					},
+					responses: {
+						200: {
+							description: 'Conversation created',
+							content: {
+								'application/json': {
+									schema: {
+										type: 'object',
+										properties: {
+											conversationId: { type: 'string', description: 'Created conversation id' },
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					method: 'POST',
+					path: '/v1/conversations/:id/reply',
+					summary: 'Reply to visitor conversation',
+					auth: 'server',
+					permission: 'chat.reply',
+					feature: 'chat',
+					description: 'Staff member reply to conversation.',
+					responses: {
+						200: { description: 'Reply posted' },
+					},
+				},
+			],
+		};
+
+		const { container } = render(
+			<DocsHubView
+				branding={branding}
+				items={[testProduct]}
+				initialProductId="chat"
+				initialOpKey="POST:/v1/conversations"
+				initialToken="test_token_123"
+			/>,
+		);
+
+		// Sidebar checks: no inner accordion headers
+		const sidebar = container.querySelector('aside');
+		expect(sidebar).not.toBeNull();
+		if (sidebar) {
+			expect(sidebar.textContent).not.toContain('Storefront Operations');
+			expect(sidebar.textContent).not.toContain('Staff Operations');
+			expect(sidebar.textContent).toContain('/conversations');
+			expect(sidebar.textContent).toContain('/conversations/:id/reply');
+		}
+
+		// Responses check: no redundant "HTTP Status & Output Structure" label
+		expect(container.textContent).not.toContain('HTTP Status & Output Structure');
+		expect(container.textContent).toContain('200 OK');
+		expect(container.textContent).toContain('Conversation created');
+
+		// Request Body checks: view switcher between Parameters & Types and Example JSON
+		expect(container.textContent).toContain('Parameters & Types');
+		expect(container.textContent).toContain('Example JSON');
+		expect(container.textContent).toContain('visitorId');
+		expect(container.textContent).toContain('Visitor identifier');
+
+		// Click "Example JSON" in Request Body
+		const reqJsonBtn = byText(container, 'Example JSON', 'button');
+		if (reqJsonBtn) {
+			click(reqJsonBtn);
+			expect(container.textContent).toContain('"visitorId"');
+		}
+
+		cleanup();
+	});
 });

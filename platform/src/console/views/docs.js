@@ -1534,6 +1534,7 @@ export function DocsHubView({
 	const [activeSnippetTab, setActiveSnippetTab] = useState('curl');
 	const [activeResponseStatus, setActiveResponseStatus] = useState('200');
 	const [responseViewTab, setResponseViewTab] = useState('example');
+	const [requestBodyViewTab, setRequestBodyViewTab] = useState('schema');
 	const [searchQuery, setSearchQuery] = useState('');
 	const [copiedNotice, setCopiedNotice] = useState('');
 	const [clientActor, setClientActor] = useState(/** @type {any} */ (null));
@@ -1962,7 +1963,7 @@ export function DocsHubView({
 		setSelectedOpKey(normalizedOpKey);
 		setActiveSection('products');
 		if (targetProductId) {
-			setExpandedProductIds((prev) => new Set(prev).add(targetProductId));
+			setExpandedProductIds(new Set([targetProductId]));
 		}
 		syncUrl(targetProductId, normalizedOpKey, 'products');
 	};
@@ -2228,7 +2229,7 @@ export function DocsHubView({
 													</div>
 												</Button>
 
-												{/* Product operations accordion group */}
+												{/* Product operations accordion list */}
 												{isExpanded ? (
 													<div className="space-y-0.5 py-1">
 														<Button
@@ -2246,25 +2247,13 @@ export function DocsHubView({
 															<span>Overview &amp; Embed</span>
 														</Button>
 
-														{/* Storefront Operations Group */}
-														{storefrontOps.length > 0 ? (
-															<div className="pt-2 space-y-0.5">
-																<p className="px-2.5 pb-1 text-[9px] font-mono font-bold uppercase tracking-wider text-muted">
-																	Storefront Operations
-																</p>
-																{storefrontOps.map(renderOpButton)}
-															</div>
+														{storefrontOps.map(renderOpButton)}
+
+														{storefrontOps.length > 0 && staffOps.length > 0 ? (
+															<div className="my-1 border-t border-line/40" />
 														) : null}
 
-														{/* Staff Operations Group */}
-														{staffOps.length > 0 ? (
-															<div className="pt-2 space-y-0.5">
-																<p className="px-2.5 pb-1 text-[9px] font-mono font-bold uppercase tracking-wider text-muted">
-																	Staff Operations
-																</p>
-																{staffOps.map(renderOpButton)}
-															</div>
-														) : null}
+														{staffOps.map(renderOpButton)}
 
 														{prodFilteredOps.length > 40 ? (
 															<p className="px-2.5 py-1 text-[10px] text-muted italic">
@@ -2917,67 +2906,102 @@ export function DocsHubView({
 											<h3 className="text-sm font-semibold flex items-center gap-2">
 												<span>Request Body</span>
 											</h3>
-											<span className="font-mono text-[11px] text-muted bg-surface-2 border border-line px-2 py-0.5 rounded">
-												application/json
-											</span>
 										</div>
 
-										{/* Input accepted parameters table */}
-										{requestBodyProperties.length > 0 ? (
-											<div
-												className="rounded-card border border-line bg-surface overflow-hidden shadow-card"
-												role="table"
-												aria-label="Request Body Parameters">
-												<div
-													className="grid grid-cols-12 border-b border-line bg-surface-2 p-2.5 text-xs font-semibold text-muted"
-													role="row">
-													<div className="col-span-3" role="columnheader">
-														Parameter
-													</div>
-													<div className="col-span-2" role="columnheader">
-														Type
-													</div>
-													<div className="col-span-2" role="columnheader">
-														Required
-													</div>
-													<div className="col-span-5" role="columnheader">
-														Description
-													</div>
+										<div className="rounded-card border border-line bg-surface overflow-hidden shadow-card">
+											{/* Top of Request Body card */}
+											<div className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-surface-2/60 px-4 py-3">
+												<div className="flex items-center gap-2">
+													<span className="font-mono text-xs text-muted bg-surface border border-line px-2 py-0.5 rounded">
+														application/json
+													</span>
+													<span className="text-xs text-muted">
+														{requestBodyProperties.length > 0
+															? `${requestBodyProperties.length} accepted fields`
+															: 'JSON payload'}
+													</span>
 												</div>
-												<div className="divide-y divide-line text-xs" role="rowgroup">
-													{requestBodyProperties.map((prop) => (
-														<div
-															key={prop.name}
-															className="grid grid-cols-12 p-2.5 items-center hover:bg-surface-2/50 transition"
-															role="row">
-															<div className="col-span-3 font-mono font-medium text-fg" role="cell">
-																{prop.name}
-															</div>
-															<div className="col-span-2 font-mono text-primary font-medium" role="cell">
-																{prop.type}
-															</div>
-															<div className="col-span-2" role="cell">
-																{prop.required ? (
-																	<span className="text-danger font-bold">required</span>
-																) : (
-																	<span className="text-muted">optional</span>
-																)}
-															</div>
-															<div className="col-span-5 text-muted" role="cell">
-																{prop.description || (prop.example ? `Example: ${prop.example}` : '-')}
-															</div>
-														</div>
-													))}
+
+												{/* View switcher between "Parameters & Types" and "Example JSON" */}
+												<div className="flex items-center rounded bg-surface p-0.5 text-xs border border-line">
+													<Button
+														type="button"
+														size="sm"
+														variant={requestBodyViewTab === 'schema' ? 'secondary' : 'ghost'}
+														onClick={() => setRequestBodyViewTab('schema')}
+														className="font-medium text-xs">
+														Parameters &amp; Types
+													</Button>
+													<Button
+														type="button"
+														size="sm"
+														variant={requestBodyViewTab === 'example' ? 'secondary' : 'ghost'}
+														onClick={() => setRequestBodyViewTab('example')}
+														className="font-medium text-xs">
+														Example JSON
+													</Button>
 												</div>
 											</div>
-										) : (
-											<p className="text-xs text-muted italic">No schema properties defined in specification.</p>
-										)}
 
-										<CodeBlock
-											code={JSON.stringify(sampleRequestPayload || {}, null, 2)}
-											label="Example JSON Request"
-										/>
+											<div className="p-4">
+												{requestBodyViewTab === 'schema' ? (
+													requestBodyProperties.length > 0 ? (
+														<div
+															className="rounded-control border border-line bg-surface overflow-hidden"
+															role="table"
+															aria-label="Request Body Parameters">
+															<div
+																className="grid grid-cols-12 border-b border-line bg-surface-2 p-2.5 text-xs font-semibold text-muted"
+																role="row">
+																<div className="col-span-3" role="columnheader">
+																	Parameter
+																</div>
+																<div className="col-span-2" role="columnheader">
+																	Type
+																</div>
+																<div className="col-span-2" role="columnheader">
+																	Required
+																</div>
+																<div className="col-span-5" role="columnheader">
+																	Description
+																</div>
+															</div>
+															<div className="divide-y divide-line text-xs" role="rowgroup">
+																{requestBodyProperties.map((prop) => (
+																	<div
+																		key={prop.name}
+																		className="grid grid-cols-12 p-2.5 items-center hover:bg-surface-2/50 transition"
+																		role="row">
+																		<div className="col-span-3 font-mono font-medium text-fg" role="cell">
+																			{prop.name}
+																		</div>
+																		<div className="col-span-2 font-mono text-primary font-medium" role="cell">
+																			{prop.type}
+																		</div>
+																		<div className="col-span-2" role="cell">
+																			{prop.required ? (
+																				<span className="text-danger font-bold">required</span>
+																			) : (
+																				<span className="text-muted">optional</span>
+																			)}
+																		</div>
+																		<div className="col-span-5 text-muted" role="cell">
+																			{prop.description || (prop.example ? `Example: ${prop.example}` : '-')}
+																		</div>
+																	</div>
+																))}
+															</div>
+														</div>
+													) : (
+														<p className="text-xs text-muted italic">
+															No schema properties defined in specification.
+														</p>
+													)
+												) : (
+													<CodeBlock code={JSON.stringify(sampleRequestPayload || {}, null, 2)} />
+												)}
+											</div>
+										</div>
 									</div>
 								) : null}
 
@@ -2999,9 +3023,7 @@ export function DocsHubView({
 													</Button>
 												))}
 											</div>
-										) : (
-											<span className="text-xs text-muted">HTTP Status &amp; Output Structure</span>
-										)}
+										) : null}
 									</div>
 
 									{sampleResponsePayload ? (
