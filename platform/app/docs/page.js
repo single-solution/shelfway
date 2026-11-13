@@ -1,7 +1,7 @@
 import { connection } from 'next/server';
 import { consoleApi, consoleBranding, one } from '../(console)/_lib/server.js';
 import { platformSession } from '../_lib/server.js';
-import { loadDocsHub } from '../../src/console/loaders.js';
+import { loadDocsHub, loadDocsProduct } from '../../src/console/loaders.js';
 import { DocsHubView } from '../../src/console/views/docs.js';
 import { SiteFooter, SiteHeader } from '../_components/SiteNav.js';
 import { COMPANY_NAME, PRODUCT_BRAND } from '../_components/brand.js';
@@ -29,13 +29,16 @@ export default async function DocsPage({ searchParams }) {
 	await connection();
 	const q = (await searchParams) || {};
 	const api = await consoleApi().catch(() => null);
-	const [session, branding, docsData] = await Promise.all([
+	const initialProduct = one(q.product) || '';
+	const [session, branding, docsData, initialProductData] = await Promise.all([
 		platformSession().catch(() => ({ ok: false })),
 		consoleBranding().catch(() => null),
 		api ? loadDocsHub(api).catch(() => ({ ok: false })) : Promise.resolve({ ok: false }),
+		api && initialProduct ? loadDocsProduct(api, initialProduct).catch(() => null) : Promise.resolve(null),
 	]);
 	const items = docsData?.ok && Array.isArray(docsData.items) ? docsData.items : [];
-	const initialProduct = one(q.product) || '';
+	const initialProductDetails =
+		initialProductData?.ok && initialProductData.product ? { [initialProduct]: initialProductData.product } : {};
 	const initialOp = one(q.op) || '';
 	const initialView = one(q.view) === 'product' || one(q.section)?.startsWith('sdk-') ? 'product' : 'store';
 	const initialSection = one(q.section) || '';
@@ -61,6 +64,7 @@ export default async function DocsPage({ searchParams }) {
 					initialSection={initialSection}
 					initialToken={initialToken}
 					initialWebsite={initialWebsite}
+					initialProductDetails={initialProductDetails}
 				/>
 			</main>
 			<SiteFooter brandName={brandName} companyName={COMPANY_NAME} session={session?.ok ? session : null} />

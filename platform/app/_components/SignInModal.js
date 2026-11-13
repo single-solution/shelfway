@@ -232,6 +232,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 				<Callout tone="danger">
 					Your account is suspended.{' '}
 					<TextLink
+						href="#contact"
 						as="button"
 						type="button"
 						onClick={() => {
@@ -362,13 +363,14 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 					<div className="text-center text-xs text-muted pt-1 flex items-center justify-center gap-1.5">
 						<span>Need an account?</span>
 						<TextLink
+							href="#contact"
 							as="button"
 							type="button"
 							onClick={() => {
 								onClose();
 								scrollToContact();
 							}}
-							tone="primary"
+							tone="accent"
 							className="font-semibold cursor-pointer">
 							Contact us
 						</TextLink>

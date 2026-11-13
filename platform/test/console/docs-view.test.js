@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import { byText, cleanup, click, render, type } from '@shelfway/ui/testing';
 import { DocsHubView, sampleFromSchema } from '../../src/console/views/docs.js';
+import { SiteHeader } from '../../app/_components/SiteNav.js';
 import * as loaders from '../../src/console/loaders.js';
 
 vi.mock('next/navigation.js', async (importOriginal) => {
@@ -378,6 +379,93 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 
 		expect(document.body.textContent).toContain('Role Restricted Access');
 		expect(document.body.textContent).toContain('require Developer or Owner privileges');
+
+		cleanup();
+	});
+
+	it('keeps sidebar product operations persistent when switching between sections (never lose context)', async () => {
+		render(
+			<DocsHubView
+				branding={branding}
+				items={[sampleProduct]}
+				initialProductId="chat"
+				initialToken="test_token"
+				actor={{ role: 'owner', name: 'Admin' }}
+			/>,
+		);
+
+		// Chat operations should be visible in sidebar
+		expect(document.body.textContent).toContain('Overview & Embed');
+		expect(document.body.textContent).toContain('/messages');
+
+		// Click Quickstart Guide - sidebar operations must NOT collapse or be lost
+		const quickstartBtn = byText(document.body, 'Quickstart Guide');
+		if (quickstartBtn) click(quickstartBtn);
+
+		expect(document.body.textContent).toContain('Everyday Development Path');
+		// Sidebar still contains the expanded operations
+		expect(document.body.textContent).toContain('Overview & Embed');
+		expect(document.body.textContent).toContain('/messages');
+
+		// Click an SDK guide - operations still stay visible in sidebar
+		const cliBtn = byText(document.body, 'CLI');
+		if (cliBtn) click(cliBtn);
+
+		expect(document.body.textContent).toContain('CLI Reference');
+		expect(document.body.textContent).toContain('Overview & Embed');
+		expect(document.body.textContent).toContain('/messages');
+
+		cleanup();
+	});
+
+	it('renders live product operations passed via initialProductDetails', () => {
+		const liveDetail = {
+			...sampleProduct,
+			operations: [
+				{
+					method: 'POST',
+					path: '/v1/live/webhook',
+					summary: 'Realtime Webhook',
+					auth: 'server',
+					permission: 'live.stream',
+					description: 'Live stream webhook.',
+				},
+			],
+		};
+
+		const html = renderToString(
+			<DocsHubView
+				branding={branding}
+				items={[sampleProduct]}
+				initialProductId="chat"
+				initialToken="test_token"
+				initialProductDetails={{ chat: liveDetail }}
+			/>,
+		);
+
+		expect(html).toContain('Realtime Webhook');
+		expect(html).toContain('/live/webhook');
+	});
+
+	it('SiteHeader renders section links and separate portal links with Docs and Dashboard', () => {
+		const { container } = render(<SiteHeader brandName="Shelfway" isHome={true} session={null} />);
+
+		// Section links
+		expect(container.querySelector('a[href="#features"]')).not.toBeNull();
+		expect(container.querySelector('a[href="#products"]')).not.toBeNull();
+		expect(container.querySelector('a[href="#architecture"]')).not.toBeNull();
+		expect(container.querySelector('a[href="#work"]')).not.toBeNull();
+		expect(container.querySelector('a[href="#pricing"]')).not.toBeNull();
+		expect(container.querySelector('a[href="#contact"]')).not.toBeNull();
+
+		// Divider separating sections from portal links
+		expect(container.querySelector('.nav-divider')).not.toBeNull();
+
+		// Portal links
+		const portalSection = container.querySelector('.nav-portal-links');
+		expect(portalSection).not.toBeNull();
+		expect(portalSection?.textContent).toContain('Docs');
+		expect(portalSection?.textContent).toContain('Dashboard');
 
 		cleanup();
 	});

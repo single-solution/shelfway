@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import NextLink from 'next/link.js';
 import { usePathname } from 'next/navigation.js';
-import { Button, TextLink } from '@shelfway/ui';
+import { Button, ButtonLink } from '@shelfway/ui';
 import { SignInModal } from './SignInModal.js';
 import { apiFetch } from '../../src/console/client.js';
 
@@ -158,6 +158,15 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 		}
 	};
 
+	/** @param {import('react').MouseEvent} e */
+	const handleDashboardClick = (e) => {
+		if (!activeSession) {
+			e.preventDefault();
+			setSignInNext(dashboardHref);
+			setShowSignInModal(true);
+		}
+	};
+
 	return (
 		<>
 			<div className={`nav-shell${scrolled ? ' is-scrolled' : ''}`}>
@@ -170,6 +179,7 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 							<a href={isCurrentHome ? '#features' : '/#features'}>Features</a>
 							<a href={isCurrentHome ? '#products' : '/#products'}>Products</a>
 							<a href={isCurrentHome ? '#architecture' : '/#architecture'}>Architecture</a>
+							<a href={isCurrentHome ? '#work' : '/#work'}>Workflow</a>
 							<a href={isCurrentHome ? '#pricing' : '/#pricing'}>Pricing</a>
 							<a
 								href={isCurrentHome ? '#contact' : '/#contact'}
@@ -183,12 +193,22 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 							<Link href="/docs" style={isDocs ? { color: 'var(--shelfway-primary)', fontWeight: 600 } : undefined}>
 								Docs
 							</Link>
+							<Link
+								href={dashboardHref}
+								onClick={handleDashboardClick}
+								style={
+									pathname.startsWith('/admin') || pathname.startsWith('/overview') || pathname.startsWith('/websites')
+										? { color: 'var(--shelfway-primary)', fontWeight: 600 }
+										: undefined
+								}>
+								Dashboard
+							</Link>
 						</div>
 					</nav>
 					{activeSession ? (
-						<Button as={Link} className="cta" href={dashboardHref}>
+						<ButtonLink as={Link} className="cta" href={dashboardHref}>
 							{isAdmin ? 'Admin Console' : 'Console'}
-						</Button>
+						</ButtonLink>
 					) : (
 						<Button
 							type="button"
@@ -234,6 +254,7 @@ export function SiteFooter({ brandName = PRODUCT_BRAND, companyName = COMPANY_NA
 				<a href={isHome ? '#features' : '/#features'}>Features</a>
 				<a href={isHome ? '#products' : '/#products'}>Products</a>
 				<a href={isHome ? '#architecture' : '/#architecture'}>Architecture</a>
+				<a href={isHome ? '#work' : '/#work'}>Workflow</a>
 				<a href={isHome ? '#pricing' : '/#pricing'}>Pricing</a>
 				<a
 					href={isHome ? '#contact' : '/#contact'}
@@ -242,17 +263,16 @@ export function SiteFooter({ brandName = PRODUCT_BRAND, companyName = COMPANY_NA
 					Contact
 				</a>
 				<Link href="/docs">Docs</Link>
-				{session ? (
-					<Link href={dashboardHref}>{dashboardLabel}</Link>
-				) : (
-					<TextLink
-						as="button"
+				<Link href={dashboardHref}>{dashboardLabel}</Link>
+				{session ? null : (
+					<Button
 						type="button"
-						tone="muted"
+						variant="ghost"
+						size="sm"
 						onClick={() => openSignInModal()}
-						className="cursor-pointer hover:text-fg transition">
+						className="cursor-pointer text-muted hover:text-fg transition p-0 h-auto font-semibold text-sm">
 						Sign in
-					</TextLink>
+					</Button>
 				)}
 			</nav>
 		</footer>

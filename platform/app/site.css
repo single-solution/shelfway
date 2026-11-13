@@ -136,6 +136,12 @@
 	align-items: center;
 	gap: 1.15rem;
 	flex-wrap: nowrap;
+	overflow-x: auto;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+.shelfway-site .nav nav::-webkit-scrollbar {
+	display: none;
 }
 .shelfway-site .nav .nav-section-links,
 .shelfway-site .nav .nav-portal-links {
@@ -143,6 +149,7 @@
 	align-items: center;
 	gap: 1.15rem;
 	flex-wrap: nowrap;
+	flex-shrink: 0;
 }
 .shelfway-site .nav .nav-divider {
 	display: inline-block;
