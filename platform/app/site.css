@@ -1,9 +1,3 @@
-@media (prefers-reduced-motion: no-preference) {
-	html {
-		scroll-behavior: smooth;
-	}
-}
-
 /*
  * Marketing layout for Portal `/` (composition only).
  * Theme pack: Unite - tokens from `@shelfway/ui/theme.css` (see packages/ui/THEME-PACK.md).
@@ -44,8 +38,6 @@
 	position: fixed;
 	inset: 0;
 	z-index: 0;
-	transform: translateZ(0);
-	will-change: transform;
 	background:
 		radial-gradient(1000px 520px at 8% -8%, color-mix(in srgb, var(--shelfway-primary) 14%, transparent), transparent 55%),
 		radial-gradient(700px 400px at 100% 5%, color-mix(in srgb, var(--shelfway-success) 8%, transparent), transparent 45%),
@@ -63,8 +55,6 @@
 	position: fixed;
 	inset: 0;
 	z-index: 0;
-	transform: translateZ(0);
-	will-change: transform;
 	background-image:
 		linear-gradient(color-mix(in srgb, var(--shelfway-fg) 7%, transparent) 1px, transparent 1px),
 		linear-gradient(90deg, color-mix(in srgb, var(--shelfway-fg) 7%, transparent) 1px, transparent 1px);
@@ -450,8 +440,6 @@
 	border-block: 1px solid var(--shelfway-line);
 	padding-top: clamp(3.25rem, 7vw, 5rem);
 	padding-bottom: clamp(3.25rem, 7vw, 5rem);
-	content-visibility: auto;
-	contain-intrinsic-size: auto 600px;
 }
 .shelfway-site .compare-card,
 .shelfway-site .shot-frame,
@@ -1408,11 +1396,9 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 0.35rem;
-	transition: gap 0.2s var(--shelfway-ease);
 }
 
 .shelfway-site .feature-detail .product-docs:hover {
-	gap: 0.6rem;
 	text-decoration: underline;
 }
 

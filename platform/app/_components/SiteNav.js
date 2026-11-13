@@ -37,7 +37,7 @@ export const scrollToContact = () => {
 			const navHeight = nav ? nav.getBoundingClientRect().height : 72;
 			const targetY = el.getBoundingClientRect().top + window.scrollY - navHeight - 36;
 			window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
-			window.history.pushState(null, '', '#contact');
+			window.history.replaceState(null, '', '#contact');
 			return;
 		}
 	}
@@ -82,12 +82,15 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 	}, [session]);
 
 	useEffect(() => {
+		let mounted = true;
+		let rafId = 0;
 		let ticking = false;
 		let lastState = window.scrollY > 12;
 		setScrolled(lastState);
 		const onScroll = () => {
 			if (!ticking) {
-				window.requestAnimationFrame(() => {
+				rafId = window.requestAnimationFrame(() => {
+					if (!mounted) return;
 					const nextState = window.scrollY > 12;
 					if (nextState !== lastState) {
 						lastState = nextState;
@@ -99,7 +102,11 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 			}
 		};
 		window.addEventListener('scroll', onScroll, { passive: true });
-		return () => window.removeEventListener('scroll', onScroll);
+		return () => {
+			mounted = false;
+			if (rafId) window.cancelAnimationFrame(rafId);
+			window.removeEventListener('scroll', onScroll);
+		};
 	}, []);
 
 	useEffect(() => {
@@ -155,7 +162,7 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 	return (
 		<>
 			<div className={`nav-shell${scrolled ? ' is-scrolled' : ''}`}>
-				<header className="nav glass">
+				<header className="nav">
 					<Link className="brand" href={isCurrentHome ? '#top' : '/'}>
 						{brandName}
 					</Link>

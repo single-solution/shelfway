@@ -169,7 +169,7 @@ export function Drawer({
 			data-state={presence.closing ? 'closed' : 'open'}
 			data-placement="right"
 			className={cx(
-				'group fixed inset-0 z-50 flex bg-overlay/70 backdrop-blur-md',
+				'group fixed inset-0 z-50 flex bg-overlay/70',
 				DRAWER.layer,
 				'animate-shelfway-fade data-[state=closed]:pointer-events-none data-[state=closed]:animate-shelfway-fade-out',
 			)}
@@ -280,7 +280,7 @@ function CenterDialog({
 			data-state={presence.closing ? 'closed' : 'open'}
 			data-placement="center"
 			className={cx(
-				'group fixed inset-0 z-50 flex items-end justify-center bg-overlay/70 backdrop-blur-md p-0 sm:items-center sm:p-4',
+				'group fixed inset-0 z-50 flex items-end justify-center bg-overlay/70 p-0 sm:items-center sm:p-4',
 				'animate-shelfway-fade data-[state=closed]:pointer-events-none data-[state=closed]:animate-shelfway-fade-out',
 			)}
 			onMouseDown={(event) => {

@@ -31,45 +31,70 @@ import { apiFetch } from '../client.js';
 
 /**
  * Generate a clean sample JSON payload from a JSON schema object.
+ * Protects against cyclic $ref structures with depth limit and visited set.
  * @param {any} schema
  * @param {any} [components]
+ * @param {number} [depth]
+ * @param {Set<any>} [visited]
  * @returns {any}
  */
-function sampleFromSchema(schema, components) {
-	if (!schema || typeof schema !== 'object') return null;
-	if (schema.$ref && typeof schema.$ref === 'string') {
-		const refName = schema.$ref.replace('#/components/schemas/', '');
-		const resolved = components?.schemas?.[refName];
-		if (resolved) return sampleFromSchema(resolved, components);
-		return {};
-	}
-	if (schema.example !== undefined) return schema.example;
-	if (schema.default !== undefined) return schema.default;
-	if (schema.type === 'object' || schema.properties) {
-		/** @type {Record<string, any>} */
-		const result = {};
-		for (const [key, prop] of Object.entries(schema.properties || {})) {
-			result[key] = sampleFromSchema(prop, components);
+export function sampleFromSchema(schema, components, depth = 0, visited = new Set()) {
+	if (!schema || typeof schema !== 'object' || depth > 6 || visited.has(schema)) return null;
+	visited.add(schema);
+	try {
+		if (schema.$ref && typeof schema.$ref === 'string') {
+			const refName = schema.$ref.replace('#/components/schemas/', '');
+			const resolved = components?.schemas?.[refName];
+			if (resolved) return sampleFromSchema(resolved, components, depth + 1, visited);
+			return {};
 		}
-		return result;
+		if (schema.example !== undefined) return schema.example;
+		if (schema.default !== undefined) return schema.default;
+		if (Array.isArray(schema.oneOf) && schema.oneOf.length > 0) {
+			return sampleFromSchema(schema.oneOf[0], components, depth + 1, visited);
+		}
+		if (Array.isArray(schema.anyOf) && schema.anyOf.length > 0) {
+			return sampleFromSchema(schema.anyOf[0], components, depth + 1, visited);
+		}
+		if (Array.isArray(schema.allOf) && schema.allOf.length > 0) {
+			/** @type {Record<string, any>} */
+			const merged = {};
+			for (const part of schema.allOf) {
+				const sample = sampleFromSchema(part, components, depth + 1, visited);
+				if (sample && typeof sample === 'object' && !Array.isArray(sample)) {
+					Object.assign(merged, sample);
+				}
+			}
+			return merged;
+		}
+		if (schema.type === 'object' || schema.properties) {
+			/** @type {Record<string, any>} */
+			const result = {};
+			for (const [key, prop] of Object.entries(schema.properties || {})) {
+				result[key] = sampleFromSchema(prop, components, depth + 1, visited);
+			}
+			return result;
+		}
+		if (schema.type === 'array') {
+			return [sampleFromSchema(schema.items || {}, components, depth + 1, visited)];
+		}
+		if (schema.type === 'string') {
+			if (schema.enum && schema.enum.length > 0) return schema.enum[0];
+			if (schema.format === 'email') return 'user@example.com';
+			if (schema.format === 'date-time') return '2026-11-03T12:00:00.000Z';
+			if (schema.format === 'uri' || schema.format === 'url') return 'https://example.com';
+			return schema.description ? schema.description.slice(0, 32) : 'string';
+		}
+		if (schema.type === 'integer' || schema.type === 'number') {
+			return schema.minimum !== undefined ? schema.minimum : 1;
+		}
+		if (schema.type === 'boolean') {
+			return true;
+		}
+		return {};
+	} finally {
+		visited.delete(schema);
 	}
-	if (schema.type === 'array') {
-		return [sampleFromSchema(schema.items || {}, components)];
-	}
-	if (schema.type === 'string') {
-		if (schema.enum && schema.enum.length > 0) return schema.enum[0];
-		if (schema.format === 'email') return 'user@example.com';
-		if (schema.format === 'date-time') return '2026-11-03T12:00:00.000Z';
-		if (schema.format === 'uri' || schema.format === 'url') return 'https://example.com';
-		return schema.description ? schema.description.slice(0, 32) : 'string';
-	}
-	if (schema.type === 'integer' || schema.type === 'number') {
-		return schema.minimum !== undefined ? schema.minimum : 1;
-	}
-	if (schema.type === 'boolean') {
-		return true;
-	}
-	return {};
 }
 
 /**
@@ -310,6 +335,24 @@ export function DocsHubView({
 		return operations.find((/** @type {any} */ op) => `${op.method}:${op.path}` === selectedOpKey) || null;
 	}, [operations, selectedOpKey]);
 
+	const sampleRequestPayload = useMemo(() => {
+		const reqSchema = currentOperation?.requestBody?.content?.['application/json']?.schema;
+		return reqSchema ? sampleFromSchema(reqSchema, currentProduct?.components) : {};
+	}, [currentOperation, currentProduct]);
+
+	const sampleResponsePayload = useMemo(() => {
+		if (!currentOperation?.responses) return null;
+		const resp = currentOperation.responses[activeResponseStatus] || Object.values(currentOperation.responses)[0];
+		if (!resp) return null;
+		const respSchema = resp.content?.['application/json']?.schema || resp.content?.['application/problem+json']?.schema;
+		return {
+			description: resp.description,
+			payload: respSchema
+				? sampleFromSchema(respSchema, currentProduct?.components)
+				: { message: resp.description || 'Success' },
+		};
+	}, [currentOperation, currentProduct, activeResponseStatus]);
+
 	// Filtered operations based on search query
 	const filteredOperations = useMemo(() => {
 		const q = searchQuery.trim().toLowerCase();
@@ -377,7 +420,7 @@ export function DocsHubView({
 		return (
 			<ToastProvider>
 				<div className="docs-container flex flex-col flex-1 items-center justify-center my-6 sm:my-14 px-4">
-					<div className="rounded-card border border-line bg-surface/90 backdrop-blur-md p-6 sm:p-8 space-y-6 shadow-card max-w-lg w-full text-center">
+					<div className="rounded-card border border-line bg-surface p-6 sm:p-8 space-y-6 shadow-card max-w-lg w-full text-center">
 						<div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary border border-primary/20">
 							<Icon name="lock" size={22} />
 						</div>
@@ -448,7 +491,7 @@ export function DocsHubView({
 		<ToastProvider>
 			<div className="docs-container flex flex-col flex-1">
 				{/* Top Docs Toolbar */}
-				<div className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-line bg-surface/80 p-3.5 backdrop-blur-md mb-6">
+				<div className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-line bg-surface p-3.5 mb-6">
 					<div className="flex items-center gap-2">
 						<span className="text-sm font-semibold text-fg tracking-tight">{brandName} Documentation Hub</span>
 					</div>
@@ -498,7 +541,7 @@ export function DocsHubView({
 				{/* Two-Column Docs Explorer Layout */}
 				<div className="relative z-10 flex flex-col md:flex-row gap-6 flex-1 items-start">
 					{/* Left Mega-Menu Sticky Sidebar */}
-					<aside className="w-full md:w-72 lg:w-80 shrink-0 rounded-card border border-line bg-surface/80 backdrop-blur-xl overflow-y-auto shelfway-scroll flex flex-col p-4 space-y-6 md:sticky md:top-20 self-start max-h-[calc(100vh-6rem)] shadow-card">
+					<aside className="w-full md:w-72 lg:w-80 shrink-0 rounded-card border border-line bg-surface overflow-y-auto shelfway-scroll flex flex-col p-4 space-y-6 md:sticky md:top-20 self-start max-h-[calc(100vh-6rem)] shadow-card">
 						{/* Search Bar */}
 						<div>
 							<Input
@@ -509,7 +552,7 @@ export function DocsHubView({
 								value={searchQuery}
 								onChange={(e) => setSearchQuery(e.currentTarget.value)}
 								prefix={<Icon name="search" size={14} />}
-								className="text-xs h-9 bg-surface/90"
+								className="text-xs h-9 bg-surface"
 							/>
 						</div>
 
@@ -710,7 +753,7 @@ export function DocsHubView({
 								</div>
 							</div>
 						) : (
-							<div className="rounded-card border border-line bg-surface/90 backdrop-blur-md p-4 shadow-card">
+							<div className="rounded-card border border-line bg-surface p-4 shadow-card">
 								<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 									<div className="space-y-1">
 										<span className="font-mono text-xs font-bold uppercase tracking-wider text-muted">
@@ -761,7 +804,7 @@ export function DocsHubView({
 								</div>
 
 								<div className="grid gap-4 sm:grid-cols-2">
-									<div className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-5 space-y-2 shadow-card shelfway-lift">
+									<div className="rounded-card border border-line bg-surface p-5 space-y-2 shadow-card shelfway-lift">
 										<div className="flex items-center gap-2 text-primary font-semibold text-sm">
 											<Icon name="globe" size={16} />
 											<span>1. Merchant Onboarding</span>
@@ -772,7 +815,7 @@ export function DocsHubView({
 										</p>
 									</div>
 
-									<div className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-5 space-y-2 shadow-card shelfway-lift">
+									<div className="rounded-card border border-line bg-surface p-5 space-y-2 shadow-card shelfway-lift">
 										<div className="flex items-center gap-2 text-emerald-600 font-semibold text-sm">
 											<Icon name="shield" size={16} />
 											<span>2. Isolated Credentials</span>
@@ -784,7 +827,7 @@ export function DocsHubView({
 									</div>
 								</div>
 
-								<div className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-6 space-y-4 shadow-card">
+								<div className="rounded-card border border-line bg-surface p-6 space-y-4 shadow-card">
 									<h2 className="text-base font-semibold text-fg">Everyday Development Path</h2>
 									<ol className="list-decimal list-inside space-y-2.5 text-xs text-muted leading-relaxed">
 										<li>
@@ -808,7 +851,7 @@ export function DocsHubView({
 											{items.map((p) => (
 												<div
 													key={p.productId}
-													className="rounded-card border border-line bg-surface/80 backdrop-blur-xl p-4 space-y-3 shadow-card hard flex flex-col justify-between">
+													className="rounded-card border border-line bg-surface p-4 space-y-3 shadow-card hard flex flex-col justify-between">
 													<div className="space-y-2">
 														<div className="flex items-center justify-between">
 															<span className="font-semibold text-sm text-fg">{p.name}</span>
@@ -865,7 +908,7 @@ export function DocsHubView({
 								</div>
 
 								<div className="space-y-4">
-									<div className="rounded-card border border-line bg-surface/80 backdrop-blur-xl p-5 space-y-3 shadow-card hard">
+									<div className="rounded-card border border-line bg-surface p-5 space-y-3 shadow-card hard">
 										<div className="flex items-center justify-between">
 											<span className="font-semibold text-sm text-primary">Browser Token (Public Client-side)</span>
 											<span className="text-[10px] font-mono bg-primary/10 text-primary px-2 py-0.5 rounded font-bold">
@@ -882,7 +925,7 @@ export function DocsHubView({
 										/>
 									</div>
 
-									<div className="rounded-card border border-line bg-surface/80 backdrop-blur-xl p-5 space-y-3 shadow-card hard">
+									<div className="rounded-card border border-line bg-surface p-5 space-y-3 shadow-card hard">
 										<div className="flex items-center justify-between">
 											<span className="font-semibold text-sm text-emerald-600 dark:text-emerald-400">
 												Server Token (Private Backend Secret)
@@ -935,7 +978,7 @@ export function DocsHubView({
 											href={currentProduct.openapiUrl || `/docs/${currentProduct.productId}/openapi.json`}
 											target="_blank"
 											rel="noopener noreferrer"
-											className="inline-flex items-center gap-1.5 rounded-control border border-line bg-surface/90 px-3.5 py-2 text-xs font-medium text-fg hover:bg-surface-2 transition shadow-xs">
+											className="inline-flex items-center gap-1.5 rounded-control border border-line bg-surface px-3.5 py-2 text-xs font-medium text-fg hover:bg-surface-2 transition shadow-xs">
 											<Icon name="external" size={14} />
 											<span>OpenAPI Spec</span>
 										</a>
@@ -971,7 +1014,7 @@ export function DocsHubView({
 											{currentProduct.features.map((/** @type {any} */ f) => (
 												<div
 													key={f.key}
-													className="rounded-card border border-line bg-surface/80 backdrop-blur-xl p-3.5 space-y-1 shadow-card hard">
+													className="rounded-card border border-line bg-surface p-3.5 space-y-1 shadow-card hard">
 													<div className="flex items-center justify-between gap-2">
 														<span className="text-xs font-semibold text-fg">{f.name}</span>
 														{token ? (
@@ -992,7 +1035,7 @@ export function DocsHubView({
 								) : null}
 
 								{/* AI Assistant Context & Prompt */}
-								<div className="rounded-card border border-primary/40 bg-surface/80 backdrop-blur-xl p-4 space-y-3 shadow-card hard">
+								<div className="rounded-card border border-primary/40 bg-surface p-4 space-y-3 shadow-card hard">
 									<div className="flex flex-wrap items-center justify-between gap-2">
 										<div className="flex items-center gap-2">
 											<Icon name="sparkle" size={16} className="text-primary" />
@@ -1042,7 +1085,7 @@ export function DocsHubView({
 										<span className="text-xs text-muted">Click any operation to view interactive Swagger docs</span>
 									</div>
 
-									<div className="rounded-card border border-line bg-surface/95 backdrop-blur-md overflow-hidden divide-y divide-line shadow-card">
+									<div className="rounded-card border border-line bg-surface overflow-hidden divide-y divide-line shadow-card">
 										{operations.map((/** @type {any} */ op) => {
 											const opKey = `${op.method}:${op.path}`;
 											return (
@@ -1132,7 +1175,7 @@ export function DocsHubView({
 									<div className="space-y-3">
 										<h3 className="text-sm font-semibold">Parameters</h3>
 										<div
-											className="rounded-card border border-line bg-surface/95 backdrop-blur-md overflow-hidden shadow-card"
+											className="rounded-card border border-line bg-surface overflow-hidden shadow-card"
 											role="table"
 											aria-label="Parameters">
 											<div
@@ -1196,11 +1239,7 @@ export function DocsHubView({
 											<h3 className="text-sm font-semibold">Request Body (application/json)</h3>
 											<span className="text-xs text-muted">JSON Schema &amp; Example</span>
 										</div>
-										{(() => {
-											const reqSchema = currentOperation.requestBody?.content?.['application/json']?.schema;
-											const samplePayload = reqSchema ? sampleFromSchema(reqSchema, currentProduct?.components) : {};
-											return <CodeBlock code={JSON.stringify(samplePayload, null, 2)} label="Example JSON Request" />;
-										})()}
+										<CodeBlock code={JSON.stringify(sampleRequestPayload, null, 2)} label="Example JSON Request" />
 									</div>
 								) : null}
 
@@ -1224,27 +1263,15 @@ export function DocsHubView({
 											))}
 										</div>
 
-										{(() => {
-											const resp =
-												currentOperation.responses[activeResponseStatus] ||
-												Object.values(currentOperation.responses)[0];
-											if (!resp) return null;
-											const respSchema =
-												resp.content?.['application/json']?.schema ||
-												resp.content?.['application/problem+json']?.schema;
-											const sampleResp = respSchema
-												? sampleFromSchema(respSchema, currentProduct?.components)
-												: { message: resp.description || 'Success' };
-											return (
-												<div className="space-y-2">
-													<p className="text-xs text-muted">{resp.description || 'Response'}</p>
-													<CodeBlock
-														code={JSON.stringify(sampleResp, null, 2)}
-														label={`HTTP ${activeResponseStatus} Response Payload`}
-													/>
-												</div>
-											);
-										})()}
+										{sampleResponsePayload ? (
+											<div className="space-y-2">
+												<p className="text-xs text-muted">{sampleResponsePayload.description || 'Response'}</p>
+												<CodeBlock
+													code={JSON.stringify(sampleResponsePayload.payload, null, 2)}
+													label={`HTTP ${activeResponseStatus} Response Payload`}
+												/>
+											</div>
+										) : null}
 									</div>
 								) : null}
 
@@ -1286,12 +1313,7 @@ export function DocsHubView({
 												website ? ` \\\n  -H "Origin: https://${website}"` : ''
 											}${
 												currentOperation.requestBody
-													? ` \\\n  -d '${JSON.stringify(
-															sampleFromSchema(
-																currentOperation.requestBody?.content?.['application/json']?.schema,
-																currentProduct?.components,
-															) || {},
-														)}'`
+													? ` \\\n  -d '${JSON.stringify(sampleRequestPayload || {})}'`
 													: ''
 											}`}
 											label="cURL Command"
@@ -1300,14 +1322,7 @@ export function DocsHubView({
 										<CodeBlock
 											code={`const response = await fetch("${apiBase}${currentOperation.path}", {\n  method: "${currentOperation.method}",\n  headers: {\n    "Authorization": "${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}",\n    "Content-Type": "application/json"${website ? `,\n    "Origin": "https://${website}"` : ''}\n  }${
 												currentOperation.requestBody
-													? `,\n  body: JSON.stringify(${JSON.stringify(
-															sampleFromSchema(
-																currentOperation.requestBody?.content?.['application/json']?.schema,
-																currentProduct?.components,
-															) || {},
-															null,
-															2,
-														)})`
+													? `,\n  body: JSON.stringify(${JSON.stringify(sampleRequestPayload || {}, null, 2)})`
 													: ''
 											}\n});\nconst data = await response.json();\nconsole.log(data);`}
 											label="JavaScript Fetch Example"
@@ -1317,10 +1332,7 @@ export function DocsHubView({
 											code={`import requests\n\nurl = "${apiBase}${currentOperation.path}"\nheaders = {\n    "Authorization": "${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}",\n    "Content-Type": "application/json"\n}\n${
 												currentOperation.requestBody
 													? `payload = ${JSON.stringify(
-															sampleFromSchema(
-																currentOperation.requestBody?.content?.['application/json']?.schema,
-																currentProduct?.components,
-															) || {},
+															sampleRequestPayload || {},
 															null,
 															4,
 														)}\nresponse = requests.${currentOperation.method.toLowerCase()}(url, json=payload, headers=headers)`
@@ -1356,7 +1368,7 @@ export function DocsHubView({
 													{guide.commands.map((c) => (
 														<div
 															key={c.cmd}
-															className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-4 space-y-2 shadow-card">
+															className="rounded-card border border-line bg-surface p-4 space-y-2 shadow-card">
 															<code className="text-xs font-mono font-bold text-primary block">{c.cmd}</code>
 															<p className="text-xs text-muted">{c.desc}</p>
 														</div>
@@ -1365,7 +1377,7 @@ export function DocsHubView({
 											) : null}
 
 											{guide.points ? (
-												<div className="rounded-card border border-line bg-surface/95 backdrop-blur-md p-5 space-y-3 shadow-card">
+												<div className="rounded-card border border-line bg-surface p-5 space-y-3 shadow-card">
 													<h2 className="text-sm font-semibold">Key Architecture Invariants</h2>
 													<ul className="list-disc list-inside space-y-2 text-xs text-muted leading-relaxed">
 														{guide.points.map((p, idx) => (

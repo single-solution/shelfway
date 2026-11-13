@@ -8,7 +8,7 @@
  * connected products as tables; and the latest activity as a timeline.
  * @module
  */
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
 	ActionMenu,
 	BarChart,
@@ -68,6 +68,10 @@ export function OverviewView(props) {
 	const [crediting, setCrediting] = useState(/** @type {any} */ (null));
 	const [launching, setLaunching] = useState(/** @type {any | null} */ (null));
 	const launchStepUp = Boolean(props.admin?.launchStepUp);
+	const o = props.overview ?? {};
+	const productsRaw = o.products;
+	const chartBars = useMemo(() => creditDayBars(totalDays(productsRaw ?? [])), [productsRaw]);
+	const products = /** @type {any[]} */ (productsRaw ?? []);
 	/** @param {any} p */
 	const handleOpen = async (p) => {
 		if (launchStepUp) {
@@ -88,8 +92,6 @@ export function OverviewView(props) {
 		return { ok: /** @type {const} */ (true) };
 	};
 	if (!props.ok) return <AdminProblem problem={props.problem} />;
-	const o = props.overview ?? {};
-	const products = /** @type {any[]} */ (o.products ?? []);
 	const attention = /** @type {any[]} */ (props.attention ?? []);
 	const merchants = /** @type {any[]} */ (props.merchants ?? []);
 	const billing = /** @type {Record<string, any>} */ (props.billing ?? {});
@@ -285,12 +287,7 @@ export function OverviewView(props) {
 								)}
 							</Card>
 							<Card title={ADMIN.creditsChart}>
-								<BarChart
-									label={ADMIN.creditsChart}
-									data={creditDayBars(totalDays(products))}
-									format={formatChartCredits}
-									height={132}
-								/>
+								<BarChart label={ADMIN.creditsChart} data={chartBars} format={formatChartCredits} height={132} />
 							</Card>
 						</div>
 						<div className="space-y-4">

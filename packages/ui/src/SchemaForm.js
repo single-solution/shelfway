@@ -24,7 +24,7 @@
  * the inputs; the product checks every value when it is saved, and its field errors come in `errors`.
  * @module
  */
-import { useId, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { Button } from './Button.js';
 import { CARD_FLOW, PillTabs, SaveBar, SettingList, SettingsCard } from './blocks.js';
 import {
@@ -423,10 +423,10 @@ export function SchemaForm({
 	const auto = useId();
 	const prefix = idPrefix ?? `sf${auto.replace(/[^a-zA-Z0-9_-]/g, '')}`;
 	const [picked, setPicked] = useState(/** @type {string | null} */ (null));
-	const fields = fieldsOf(schema);
+	const fields = useMemo(() => fieldsOf(schema), [schema]);
+	const groups = useMemo(() => groupFields(fields.filter((field) => !field.advanced)), [fields]);
+	const advanced = useMemo(() => groupFields(fields.filter((field) => field.advanced)), [fields]);
 	if (fields.length === 0) return <p className="text-sm text-muted">{emptyText}</p>;
-	const groups = groupFields(fields.filter((field) => !field.advanced));
-	const advanced = groupFields(fields.filter((field) => field.advanced));
 	const advancedShown = withAdvanced ? advanced : [];
 	const advancedWords = {
 		title: ADVANCED_GROUP,

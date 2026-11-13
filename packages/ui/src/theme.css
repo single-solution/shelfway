@@ -911,6 +911,7 @@
 	html {
 		-webkit-text-size-adjust: 100%;
 		accent-color: var(--shelfway-primary);
+		scrollbar-gutter: stable;
 	}
 	body {
 		background-color: var(--shelfway-canvas);
@@ -989,9 +990,10 @@
 		scrollbar-width: thin;
 		scrollbar-color: transparent transparent;
 	}
-	*:hover,
-	*:focus-within,
-	*:focus-visible {
+	html:hover,
+	html:focus-within,
+	.shelfway-scroll:hover,
+	.shelfway-scroll:focus-within {
 		scrollbar-color: var(--shelfway-scrollbar) transparent;
 	}
 	@supports not (scrollbar-color: auto) {
@@ -1009,7 +1011,10 @@
 			background-clip: content-box;
 			background-color: transparent;
 		}
-		*:hover::-webkit-scrollbar-thumb {
+		html:hover::-webkit-scrollbar-thumb,
+		html:focus-within::-webkit-scrollbar-thumb,
+		.shelfway-scroll:hover::-webkit-scrollbar-thumb,
+		.shelfway-scroll:focus-within::-webkit-scrollbar-thumb {
 			background-color: var(--shelfway-scrollbar);
 		}
 		::-webkit-scrollbar-thumb:hover {

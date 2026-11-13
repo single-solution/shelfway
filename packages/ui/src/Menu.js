@@ -89,7 +89,11 @@ export function ActionMenu({
 	const enabled = () =>
 		/** @type {HTMLButtonElement[]} */ ([
 			...(root.current?.querySelectorAll('[role="menuitem"], [role="menuitemradio"]') ?? []),
-		]).filter((el) => !el.disabled && (!el.parentElement || getComputedStyle(el.parentElement).display !== 'none'));
+		]).filter(
+			(el) =>
+				!el.disabled &&
+				(el.offsetParent !== null || !el.parentElement || getComputedStyle(el.parentElement).display !== 'none'),
+		);
 
 	useEffect(() => {
 		if (!open) return undefined;
@@ -113,14 +117,14 @@ export function ActionMenu({
 		box?.addEventListener('keydown', escape);
 		document.addEventListener('keydown', escape);
 		if (floating) {
-			document.addEventListener('scroll', close, true);
+			document.addEventListener('scroll', close, { passive: true, capture: true });
 			window.addEventListener('resize', close);
 		}
 		return () => {
 			document.removeEventListener('mousedown', outside);
 			box?.removeEventListener('keydown', escape);
 			document.removeEventListener('keydown', escape);
-			document.removeEventListener('scroll', close, true);
+			document.removeEventListener('scroll', close, { capture: true });
 			window.removeEventListener('resize', close);
 		};
 	}, [open, floating]);
@@ -190,7 +194,7 @@ export function ActionMenu({
 					data-state={presence.closing ? 'closed' : 'open'}
 					{...(floating && anchor ? { style: anchor.style } : {})}
 					className={cx(
-						'z-40 max-w-[calc(100vw-2rem)] rounded-card border border-line bg-surface p-1 shadow-overlay',
+						'z-40 max-h-[calc(100vh-2rem)] max-w-[calc(100vw-2rem)] overflow-y-auto rounded-card border border-line bg-surface p-1 shadow-overlay',
 						floating && anchor
 							? cx('fixed w-60', ORIGINS[`${anchor.up ? 'bottom' : 'top'}-${align}`])
 							: placement === 'up'

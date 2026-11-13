@@ -61,9 +61,10 @@ const reducedMotion = () =>
  * @param {{ value: ReactNode, className?: string }} props
  */
 export function CountUp({ value, className }) {
+	const ref = useRef(/** @type {HTMLDivElement | null} */ (null));
 	const settled = useRef(value);
 	const live = useRef(/** @type {number | null} */ (null));
-	const [frame, setFrame] = useState(/** @type {{ for: ReactNode, text: string } | null} */ (null));
+	const [, setComplete] = useState(0);
 	useLayoutEffect(() => {
 		const before = settled.current;
 		const running = live.current;
@@ -81,24 +82,24 @@ export function CountUp({ value, className }) {
 			const t = Math.min(1, (now - begun) / COUNT_MS);
 			if (t >= 1) {
 				live.current = null;
-				setFrame(null);
+				if (ref.current) ref.current.textContent = written(to.number, to, from);
+				setComplete((c) => c + 1);
 				return;
 			}
 			const n = start + (to.number - start) * (1 - (1 - t) ** 3);
 			live.current = n;
-			setFrame({ for: value, text: written(n, to, from) });
+			if (ref.current) ref.current.textContent = written(n, to, from);
 			id = requestAnimationFrame(tick);
 		};
+		live.current = start;
 		// the old number shows from the first paint, so the new one never flashes before the count starts
-		setFrame({ for: value, text: written(start, to, from) });
+		if (ref.current) ref.current.textContent = written(start, to, from);
 		id = requestAnimationFrame(tick);
 		return () => cancelAnimationFrame(id);
 	}, [value]);
 	return (
-		<div
-			key={typeof value === 'string' || typeof value === 'number' ? String(value) : undefined}
-			{...(className ? { className } : {})}>
-			{frame && Object.is(frame.for, value) ? frame.text : value}
+		<div ref={ref} {...(className ? { className } : {})}>
+			{live.current !== null ? (ref.current?.textContent ?? value) : value}
 		</div>
 	);
 }

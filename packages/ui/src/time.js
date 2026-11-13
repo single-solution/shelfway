@@ -28,8 +28,30 @@ export const useDisplayLocale = () => useContext(DisplayLocaleContext);
 
 /** The viewer's time zone never changes while a page is open: nothing to subscribe to. */
 const noSubscription = () => () => {};
+/** @type {string | undefined} */
+let cachedZone;
+/** @type {typeof Intl.DateTimeFormat | undefined} */
+let lastDateTimeFormat;
+/** @type {typeof Intl.DateTimeFormat.prototype.resolvedOptions | undefined} */
+let lastResolvedOptions;
+
 /** The browser's IANA time zone. */
-const browserZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
+const browserZone = () => {
+	if (
+		cachedZone === undefined ||
+		Intl.DateTimeFormat !== lastDateTimeFormat ||
+		Intl.DateTimeFormat.prototype.resolvedOptions !== lastResolvedOptions
+	) {
+		lastDateTimeFormat = Intl.DateTimeFormat;
+		lastResolvedOptions = Intl.DateTimeFormat.prototype.resolvedOptions;
+		try {
+			cachedZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+		} catch {
+			cachedZone = 'UTC';
+		}
+	}
+	return cachedZone;
+};
 /** No viewer on the server (and in the first render in the browser): UTC. */
 const noZone = () => undefined;
 

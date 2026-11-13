@@ -2,7 +2,7 @@
 
 import Link from 'next/link.js';
 import { Button, ButtonLink, Callout, Card, Form, Icon, Input, TextArea, copyText } from '@shelfway/ui';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { COMPANY_NAME, PRODUCT_BRAND, SiteFooter, SiteHeader, openSignInModal, scrollToContact } from './SiteNav.js';
 
 export { COMPANY_NAME, PRODUCT_BRAND };
@@ -296,9 +296,17 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 		}));
 	};
 
+	const actionTimerRef = useRef(/** @type {any} */ (null));
+	useEffect(() => {
+		return () => {
+			if (actionTimerRef.current) clearTimeout(actionTimerRef.current);
+		};
+	}, []);
+
 	const triggerAction = (/** @type {string} */ label) => {
 		setActionFeedback(label);
-		setTimeout(() => setActionFeedback(''), 1500);
+		if (actionTimerRef.current) clearTimeout(actionTimerRef.current);
+		actionTimerRef.current = setTimeout(() => setActionFeedback(''), 1500);
 	};
 
 	const fromApi = products.filter((p) => p.id && p.name);
@@ -761,12 +769,22 @@ function ContactSection({ brandName = PRODUCT_BRAND }) {
 	const [busy, setBusy] = useState(false);
 	const [submitted, setSubmitted] = useState(false);
 	const [copied, setCopied] = useState(false);
+	const copyTimerRef = useRef(/** @type {any} */ (null));
+	const submitTimerRef = useRef(/** @type {any} */ (null));
+
+	useEffect(() => {
+		return () => {
+			if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+			if (submitTimerRef.current) clearTimeout(submitTimerRef.current);
+		};
+	}, []);
 
 	const handleCopyEmail = async () => {
 		const success = await copyText('support@shelfway.com');
 		if (success) {
 			setCopied(true);
-			setTimeout(() => setCopied(false), 2000);
+			if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+			copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
 		}
 	};
 
@@ -790,7 +808,8 @@ function ContactSection({ brandName = PRODUCT_BRAND }) {
 		setErrors({});
 		setBusy(true);
 
-		setTimeout(() => {
+		if (submitTimerRef.current) clearTimeout(submitTimerRef.current);
+		submitTimerRef.current = setTimeout(() => {
 			setBusy(false);
 			setSubmitted(true);
 			setName('');

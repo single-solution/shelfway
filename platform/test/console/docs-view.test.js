@@ -2,7 +2,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import { byText, cleanup, click, render, type } from '@shelfway/ui/testing';
-import { DocsHubView } from '../../src/console/views/docs.js';
+import { DocsHubView, sampleFromSchema } from '../../src/console/views/docs.js';
 import * as loaders from '../../src/console/loaders.js';
 
 vi.mock('next/navigation.js', async (importOriginal) => {
@@ -246,5 +246,46 @@ describe('Docs hub views (PLAN §10 B1, B2)', () => {
 		if (copyAiBtn) click(copyAiBtn);
 
 		cleanup();
+	});
+
+	it('sampleFromSchema handles cyclic $ref and deep hierarchies safely', () => {
+		const components = {
+			schemas: {
+				Node: {
+					type: 'object',
+					properties: {
+						name: { type: 'string', default: 'node' },
+						child: { $ref: '#/components/schemas/Node' },
+					},
+				},
+			},
+		};
+		const sample = sampleFromSchema({ $ref: '#/components/schemas/Node' }, components);
+		expect(sample).toBeDefined();
+		expect(sample.name).toBe('node');
+		expect(sample.child).toBeDefined();
+	});
+
+	it('sampleFromSchema resolves oneOf, anyOf, and allOf schemas', () => {
+		const oneOfSchema = {
+			oneOf: [
+				{ type: 'string', default: 'variantA' },
+				{ type: 'string', default: 'variantB' },
+			],
+		};
+		expect(sampleFromSchema(oneOfSchema)).toBe('variantA');
+
+		const anyOfSchema = {
+			anyOf: [{ type: 'number', minimum: 42 }, { type: 'string' }],
+		};
+		expect(sampleFromSchema(anyOfSchema)).toBe(42);
+
+		const allOfSchema = {
+			allOf: [
+				{ type: 'object', properties: { id: { type: 'string', default: 'id-1' } } },
+				{ type: 'object', properties: { count: { type: 'integer', minimum: 5 } } },
+			],
+		};
+		expect(sampleFromSchema(allOfSchema)).toEqual({ id: 'id-1', count: 5 });
 	});
 });

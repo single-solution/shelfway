@@ -50,6 +50,9 @@ export const formatNumber = (value, { locale, maximumFractionDigits = 3 } = {}) 
 		? numberIn(locale, maximumFractionDigits).format(value).replace(NO_BREAK_SPACES, ' ')
 		: '—';
 
+/** @type {Map<string, Intl.NumberFormat>} */
+const numberFormatCache = new Map();
+
 /**
  * The number format of a locale (US English for none or an unknown one).
  * @param {string | null | undefined} locale
@@ -57,11 +60,16 @@ export const formatNumber = (value, { locale, maximumFractionDigits = 3 } = {}) 
  */
 const numberIn = (locale, maximumFractionDigits = 3) => {
 	if ((!locale || locale === 'en-US') && maximumFractionDigits === 3) return CREDITS;
+	const key = `${locale || 'en-US'}:${maximumFractionDigits}`;
+	let formatter = numberFormatCache.get(key);
+	if (formatter) return formatter;
 	try {
-		return new Intl.NumberFormat(locale || 'en-US', { minimumFractionDigits: 0, maximumFractionDigits });
+		formatter = new Intl.NumberFormat(locale || 'en-US', { minimumFractionDigits: 0, maximumFractionDigits });
 	} catch {
-		return CREDITS;
+		formatter = CREDITS;
 	}
+	numberFormatCache.set(key, formatter);
+	return formatter;
 };
 
 /**
@@ -103,6 +111,9 @@ const toDate = (value) => {
 	return Number.isNaN(d.getTime()) ? null : d;
 };
 
+/** @type {Map<string, Intl.DateTimeFormat>} */
+const dateTimeFormatCache = new Map();
+
 /**
  * The date and time format of a time zone and a locale (US English by default); UTC for UTC, a missing or an unknown
  * zone; US English for an unknown locale.
@@ -112,15 +123,20 @@ const toDate = (value) => {
 const dateTimeIn = (timeZone, locale) => {
 	const zone = !timeZone ? 'UTC' : timeZone;
 	if (zone === 'UTC' && (!locale || locale === 'en-US')) return DATE_TIME;
+	const key = `${zone}:${locale || 'en-US'}`;
+	let formatter = dateTimeFormatCache.get(key);
+	if (formatter) return formatter;
 	try {
-		return new Intl.DateTimeFormat(locale || 'en-US', { ...DATE_TIME_PARTS, timeZone: zone });
+		formatter = new Intl.DateTimeFormat(locale || 'en-US', { ...DATE_TIME_PARTS, timeZone: zone });
 	} catch {
 		try {
-			return new Intl.DateTimeFormat('en-US', { ...DATE_TIME_PARTS, timeZone: zone });
+			formatter = new Intl.DateTimeFormat('en-US', { ...DATE_TIME_PARTS, timeZone: zone });
 		} catch {
-			return DATE_TIME;
+			formatter = DATE_TIME;
 		}
 	}
+	dateTimeFormatCache.set(key, formatter);
+	return formatter;
 };
 
 /**
@@ -135,6 +151,26 @@ export const formatDateTime = (value, { timeZone, locale } = {}) => {
 	return d ? dateTimeIn(timeZone, locale).format(d).replace(NO_BREAK_SPACES, ' ') : '—';
 };
 
+/** @type {Map<string, Intl.DateTimeFormat>} */
+const dateFormatCache = new Map();
+
+/**
+ * The date format of a locale (US English for none or an unknown one).
+ * @param {string | null | undefined} locale
+ */
+const dateIn = (locale) => {
+	if (!locale || locale === 'en-US') return DATE;
+	let formatter = dateFormatCache.get(locale);
+	if (formatter) return formatter;
+	try {
+		formatter = new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
+	} catch {
+		formatter = DATE;
+	}
+	dateFormatCache.set(locale, formatter);
+	return formatter;
+};
+
 /**
  * `Oct 1, 2026` (UTC); with `locale`, that locale's order (`en-GB`: `1 Oct 2026`).
  * @param {string | number | Date | null | undefined} value
@@ -142,13 +178,7 @@ export const formatDateTime = (value, { timeZone, locale } = {}) => {
  */
 export const formatDate = (value, { locale } = {}) => {
 	const d = toDate(value);
-	if (!d) return '—';
-	if (!locale || locale === 'en-US') return DATE.format(d);
-	try {
-		return new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }).format(d);
-	} catch {
-		return DATE.format(d);
-	}
+	return d ? dateIn(locale).format(d) : '—';
 };
 
 /** Short words written in capitals (or with their own casing) when a choice's value is shown as a label. */

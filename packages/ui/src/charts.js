@@ -39,6 +39,7 @@ export function BarChart({ data, label, format = String, height = 160, className
 				aria-label={`${label}: ${data.length} values, highest ${format(max)}`}
 				viewBox={`0 0 ${width} ${height}`}
 				preserveAspectRatio="none"
+				style={{ height }}
 				className="h-40 w-full text-primary">
 				<line x1="0" y1={plot} x2={width} y2={plot} stroke="var(--shelfway-line-soft)" strokeWidth="1" />
 				{data.map((d, i) => {
