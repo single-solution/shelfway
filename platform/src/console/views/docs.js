@@ -98,6 +98,53 @@ export function sampleFromSchema(schema, components, depth = 0, visited = new Se
 }
 
 /**
+ * Extract a flat list of properties from an OpenAPI schema object for Swagger tables.
+ * @param {any} schema
+ * @param {any} [components]
+ * @param {Set<any>} [visited]
+ * @returns {Array<{ name: string, type: string, required: boolean, description: string, example?: any }>}
+ */
+export function extractSchemaProperties(schema, components, visited = new Set()) {
+	if (!schema || typeof schema !== 'object' || visited.has(schema)) return [];
+	visited.add(schema);
+	try {
+		let resolved = schema;
+		if (schema.$ref && typeof schema.$ref === 'string') {
+			const refName = schema.$ref.replace('#/components/schemas/', '');
+			resolved = components?.schemas?.[refName] || schema;
+		}
+		/** @type {Array<{ name: string, type: string, required: boolean, description: string, example?: any }>} */
+		const list = [];
+		const requiredSet = new Set(Array.isArray(resolved.required) ? resolved.required : []);
+		if (resolved.properties && typeof resolved.properties === 'object') {
+			for (const [name, prop] of Object.entries(resolved.properties)) {
+				const p = /** @type {any} */ (prop);
+				let typeStr = p.type || (p.enum ? 'enum' : 'string');
+				if (p.type === 'array') {
+					typeStr = `array[${p.items?.type || 'string'}]`;
+				}
+				const desc = p.description || (p.enum ? `One of: ${p.enum.join(', ')}` : p.format ? `format: ${p.format}` : '');
+				list.push({
+					name,
+					type: typeStr,
+					required: requiredSet.has(name),
+					description: desc,
+					example: p.example ?? p.default,
+				});
+			}
+		}
+		if (Array.isArray(resolved.allOf)) {
+			for (const part of resolved.allOf) {
+				list.push(...extractSchemaProperties(part, components, visited));
+			}
+		}
+		return list;
+	} finally {
+		visited.delete(schema);
+	}
+}
+
+/**
  * HTTP method badge styling helper matching website theme colors.
  * @param {string} method
  */
@@ -184,6 +231,44 @@ const UNIVERSAL_PRODUCTS = [
 				permission: '',
 				feature: 'auth',
 				description: 'Sends a one-time sign-in code to the shopper email.',
+				parameters: [],
+				requestBody: {
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								required: ['email'],
+								properties: {
+									email: {
+										type: 'string',
+										format: 'email',
+										description: 'Shopper email address to receive one-time code',
+										example: 'shopper@example.com',
+									},
+								},
+							},
+						},
+					},
+				},
+				responses: {
+					200: {
+						description: 'One-time verification code dispatched',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										sent: { type: 'boolean', description: 'Dispatch confirmation flag' },
+										channel: { type: 'string', description: 'Delivery channel (email)' },
+									},
+								},
+							},
+						},
+					},
+					400: {
+						description: 'Invalid email address or rate limit exceeded',
+					},
+				},
 			},
 			{
 				method: 'POST',
@@ -193,6 +278,49 @@ const UNIVERSAL_PRODUCTS = [
 				permission: '',
 				feature: 'auth',
 				description: 'Verifies the code and returns an authenticated customer session.',
+				parameters: [],
+				requestBody: {
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								required: ['email', 'code'],
+								properties: {
+									email: {
+										type: 'string',
+										format: 'email',
+										description: 'Shopper email address',
+										example: 'shopper@example.com',
+									},
+									code: {
+										type: 'string',
+										description: '6-digit verification code',
+										example: '123456',
+									},
+								},
+							},
+						},
+					},
+				},
+				responses: {
+					200: {
+						description: 'Authentication successful',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										sessionToken: { type: 'string', description: 'Authenticated customer session token' },
+										user: { type: 'object', description: 'Customer profile details' },
+									},
+								},
+							},
+						},
+					},
+					400: {
+						description: 'Verification code expired or invalid',
+					},
+				},
 			},
 			{
 				method: 'GET',
@@ -202,6 +330,24 @@ const UNIVERSAL_PRODUCTS = [
 				permission: '',
 				feature: 'auth',
 				description: 'Returns the current signed-in customer profile.',
+				parameters: [],
+				responses: {
+					200: {
+						description: 'Current signed-in customer profile',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										id: { type: 'string', description: 'Customer user ID' },
+										email: { type: 'string', description: 'Customer email address' },
+										name: { type: 'string', description: 'Customer display name' },
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			{
 				method: 'GET',
@@ -211,6 +357,56 @@ const UNIVERSAL_PRODUCTS = [
 				permission: 'users.read',
 				feature: 'staff',
 				description: 'Search and list customer accounts on this website.',
+				parameters: [
+					{
+						name: 'limit',
+						in: 'query',
+						schema: { type: 'integer' },
+						required: false,
+						description: 'Maximum number of customer records to return (1-100)',
+					},
+					{
+						name: 'cursor',
+						in: 'query',
+						schema: { type: 'string' },
+						required: false,
+						description: 'Pagination cursor for next page',
+					},
+					{
+						name: 'q',
+						in: 'query',
+						schema: { type: 'string' },
+						required: false,
+						description: 'Search query matching customer name or email',
+					},
+				],
+				responses: {
+					200: {
+						description: 'Paginated customer list',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										items: {
+											type: 'array',
+											description: 'List of customer account objects',
+											items: {
+												type: 'object',
+												properties: {
+													id: { type: 'string', description: 'Customer ID' },
+													email: { type: 'string', description: 'Email address' },
+													createdAt: { type: 'string', format: 'date-time', description: 'Account creation time' },
+												},
+											},
+										},
+										nextCursor: { type: 'string', description: 'Cursor for next page' },
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			{
 				method: 'POST',
@@ -220,6 +416,47 @@ const UNIVERSAL_PRODUCTS = [
 				permission: 'staff.write',
 				feature: 'staff',
 				description: 'Send an invitation to a new staff member with assigned role.',
+				parameters: [],
+				requestBody: {
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								required: ['email', 'role'],
+								properties: {
+									email: {
+										type: 'string',
+										format: 'email',
+										description: 'Staff email address',
+										example: 'agent@example.com',
+									},
+									role: {
+										type: 'string',
+										enum: ['operator', 'support', 'developer'],
+										description: 'Assigned staff access role',
+										example: 'operator',
+									},
+								},
+							},
+						},
+					},
+				},
+				responses: {
+					200: {
+						description: 'Staff invitation created and sent',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										inviteId: { type: 'string', description: 'Unique invitation identifier' },
+										expiresAt: { type: 'string', format: 'date-time', description: 'Expiry timestamp' },
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 		],
 	},
@@ -246,6 +483,54 @@ const UNIVERSAL_PRODUCTS = [
 				permission: '',
 				feature: 'always',
 				description: 'Initiate a new live conversation from the storefront widget.',
+				parameters: [],
+				requestBody: {
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								required: ['message'],
+								properties: {
+									message: {
+										type: 'string',
+										description: 'Initial message from visitor',
+										example: 'Hello, I have a question about my order',
+									},
+									visitorName: {
+										type: 'string',
+										description: 'Optional visitor display name',
+										example: 'Alex Smith',
+									},
+									email: {
+										type: 'string',
+										format: 'email',
+										description: 'Visitor email for replies',
+										example: 'alex@example.com',
+									},
+								},
+							},
+						},
+					},
+				},
+				responses: {
+					200: {
+						description: 'Conversation initiated successfully',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										conversationId: { type: 'string', description: 'Unique conversation identifier' },
+										status: { type: 'string', description: 'Initial status of conversation' },
+									},
+								},
+							},
+						},
+					},
+					400: {
+						description: 'RFC 7807 problem details when validation fails',
+					},
+				},
 			},
 			{
 				method: 'GET',
@@ -255,6 +540,57 @@ const UNIVERSAL_PRODUCTS = [
 				permission: '',
 				feature: 'always',
 				description: 'Fetch message history for the active visitor session.',
+				parameters: [
+					{
+						name: 'conversationId',
+						in: 'query',
+						required: true,
+						schema: { type: 'string' },
+						description: 'Target conversation identifier',
+					},
+					{
+						name: 'limit',
+						in: 'query',
+						required: false,
+						schema: { type: 'integer' },
+						description: 'Maximum messages to return (default 50)',
+					},
+					{
+						name: 'cursor',
+						in: 'query',
+						required: false,
+						schema: { type: 'string' },
+						description: 'Pagination cursor for next page',
+					},
+				],
+				responses: {
+					200: {
+						description: 'List of conversation messages',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										items: {
+											type: 'array',
+											description: 'Message objects in chronological order',
+											items: {
+												type: 'object',
+												properties: {
+													id: { type: 'string', description: 'Message ID' },
+													body: { type: 'string', description: 'Message text content' },
+													sender: { type: 'string', description: 'Sender role (visitor or operator)' },
+													sentAt: { type: 'string', format: 'date-time', description: 'Timestamp of message' },
+												},
+											},
+										},
+										nextCursor: { type: 'string', description: 'Cursor for next page if more messages exist' },
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			{
 				method: 'POST',
@@ -264,6 +600,45 @@ const UNIVERSAL_PRODUCTS = [
 				permission: '',
 				feature: 'always',
 				description: 'Post a chat message to a conversation.',
+				parameters: [],
+				requestBody: {
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								required: ['conversationId', 'body'],
+								properties: {
+									conversationId: {
+										type: 'string',
+										description: 'Target conversation identifier',
+										example: 'conv_123',
+									},
+									body: {
+										type: 'string',
+										description: 'Message text to send',
+										example: 'Can you help with sizing?',
+									},
+								},
+							},
+						},
+					},
+				},
+				responses: {
+					200: {
+						description: 'Message posted',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										id: { type: 'string', description: 'Unique message identifier' },
+										sentAt: { type: 'string', format: 'date-time', description: 'Timestamp message was recorded' },
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			{
 				method: 'GET',
@@ -273,6 +648,48 @@ const UNIVERSAL_PRODUCTS = [
 				permission: 'chat.read',
 				feature: 'inbox',
 				description: 'Returns active chat conversations for the merchant operator desk.',
+				parameters: [
+					{
+						name: 'status',
+						in: 'query',
+						required: false,
+						schema: { type: 'string', enum: ['active', 'closed', 'all'] },
+						description: 'Filter conversations by status',
+					},
+					{
+						name: 'limit',
+						in: 'query',
+						required: false,
+						schema: { type: 'integer' },
+						description: 'Max conversations to return',
+					},
+				],
+				responses: {
+					200: {
+						description: 'Operator inbox conversations',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										items: {
+											type: 'array',
+											description: 'Active conversations',
+											items: {
+												type: 'object',
+												properties: {
+													id: { type: 'string', description: 'Conversation ID' },
+													visitorName: { type: 'string', description: 'Visitor name' },
+													unreadCount: { type: 'integer', description: 'Number of unread messages' },
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			{
 				method: 'POST',
@@ -282,6 +699,47 @@ const UNIVERSAL_PRODUCTS = [
 				permission: 'chat.write',
 				feature: 'inbox',
 				description: 'Send a staff reply to an ongoing customer conversation.',
+				parameters: [
+					{
+						name: 'id',
+						in: 'path',
+						required: true,
+						schema: { type: 'string' },
+						description: 'Conversation ID to reply to',
+					},
+				],
+				requestBody: {
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								required: ['body'],
+								properties: {
+									body: {
+										type: 'string',
+										description: 'Staff operator reply text',
+										example: 'I would be happy to help with that!',
+									},
+								},
+							},
+						},
+					},
+				},
+				responses: {
+					200: {
+						description: 'Staff reply delivered',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										messageId: { type: 'string', description: 'Created reply message ID' },
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 		],
 	},
@@ -308,6 +766,48 @@ const UNIVERSAL_PRODUCTS = [
 				permission: '',
 				feature: 'cart',
 				description: 'Returns published store products and category listings.',
+				parameters: [
+					{
+						name: 'category',
+						in: 'query',
+						required: false,
+						schema: { type: 'string' },
+						description: 'Filter products by category slug',
+					},
+					{
+						name: 'limit',
+						in: 'query',
+						required: false,
+						schema: { type: 'integer' },
+						description: 'Items per page',
+					},
+				],
+				responses: {
+					200: {
+						description: 'Store catalog items',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										items: {
+											type: 'array',
+											description: 'Catalog products',
+											items: {
+												type: 'object',
+												properties: {
+													id: { type: 'string', description: 'Product ID' },
+													title: { type: 'string', description: 'Product title' },
+													priceCents: { type: 'integer', description: 'Price in smallest currency unit' },
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			{
 				method: 'GET',
@@ -317,6 +817,33 @@ const UNIVERSAL_PRODUCTS = [
 				permission: '',
 				feature: 'cart',
 				description: 'Retrieves current items and calculated totals in visitor cart.',
+				parameters: [],
+				responses: {
+					200: {
+						description: 'Visitor cart contents',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										items: {
+											type: 'array',
+											description: 'Items in cart',
+											items: {
+												type: 'object',
+												properties: {
+													productId: { type: 'string', description: 'Product ID' },
+													quantity: { type: 'integer', description: 'Item quantity' },
+												},
+											},
+										},
+										subtotalCents: { type: 'integer', description: 'Calculated subtotal' },
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			{
 				method: 'POST',
@@ -326,6 +853,46 @@ const UNIVERSAL_PRODUCTS = [
 				permission: '',
 				feature: 'cart',
 				description: 'Adds an item variant or updates quantity in shopper cart.',
+				parameters: [],
+				requestBody: {
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								required: ['productId', 'quantity'],
+								properties: {
+									productId: {
+										type: 'string',
+										description: 'Product ID to add',
+										example: 'prod_tee_01',
+									},
+									quantity: {
+										type: 'integer',
+										minimum: 1,
+										description: 'Quantity of items to add',
+										example: 1,
+									},
+								},
+							},
+						},
+					},
+				},
+				responses: {
+					200: {
+						description: 'Cart updated',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										totalItems: { type: 'integer', description: 'Total item count in cart' },
+										subtotalCents: { type: 'integer', description: 'Updated cart subtotal' },
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			{
 				method: 'POST',
@@ -335,6 +902,41 @@ const UNIVERSAL_PRODUCTS = [
 				permission: '',
 				feature: 'cart',
 				description: 'Submits visitor cart and begins the checkout sequence.',
+				parameters: [],
+				requestBody: {
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								required: ['email'],
+								properties: {
+									email: {
+										type: 'string',
+										format: 'email',
+										description: 'Shopper email',
+										example: 'shopper@example.com',
+									},
+								},
+							},
+						},
+					},
+				},
+				responses: {
+					200: {
+						description: 'Checkout session created',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										orderId: { type: 'string', description: 'Created order identifier' },
+										checkoutUrl: { type: 'string', format: 'uri', description: 'Hosted checkout or payment URL' },
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			{
 				method: 'GET',
@@ -344,6 +946,48 @@ const UNIVERSAL_PRODUCTS = [
 				permission: 'orders.read',
 				feature: 'orders',
 				description: 'List merchant store orders with fulfillment and payment statuses.',
+				parameters: [
+					{
+						name: 'status',
+						in: 'query',
+						required: false,
+						schema: { type: 'string', enum: ['pending', 'paid', 'fulfilled', 'cancelled'] },
+						description: 'Filter by order status',
+					},
+					{
+						name: 'limit',
+						in: 'query',
+						required: false,
+						schema: { type: 'integer' },
+						description: 'Orders per page',
+					},
+				],
+				responses: {
+					200: {
+						description: 'Merchant orders list',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										items: {
+											type: 'array',
+											description: 'Orders',
+											items: {
+												type: 'object',
+												properties: {
+													id: { type: 'string', description: 'Order ID' },
+													status: { type: 'string', description: 'Order status' },
+													totalCents: { type: 'integer', description: 'Total amount' },
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			{
 				method: 'POST',
@@ -353,6 +997,53 @@ const UNIVERSAL_PRODUCTS = [
 				permission: 'orders.write',
 				feature: 'orders',
 				description: 'Record fulfillment and courier tracking for an order.',
+				parameters: [
+					{
+						name: 'id',
+						in: 'path',
+						required: true,
+						schema: { type: 'string' },
+						description: 'Order ID to fulfill',
+					},
+				],
+				requestBody: {
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								required: ['trackingNumber', 'courier'],
+								properties: {
+									trackingNumber: {
+										type: 'string',
+										description: 'Courier tracking number',
+										example: 'TRK-987654321',
+									},
+									courier: {
+										type: 'string',
+										description: 'Carrier or courier service name',
+										example: 'DHL Express',
+									},
+								},
+							},
+						},
+					},
+				},
+				responses: {
+					200: {
+						description: 'Order marked fulfilled',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										fulfilled: { type: 'boolean', description: 'Fulfillment confirmation' },
+										orderId: { type: 'string', description: 'Order ID' },
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 		],
 	},
@@ -379,6 +1070,51 @@ const UNIVERSAL_PRODUCTS = [
 				permission: '',
 				feature: 'checkout',
 				description: 'Creates a payment session with available payment gateways.',
+				parameters: [],
+				requestBody: {
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								required: ['amountCents', 'currency'],
+								properties: {
+									amountCents: {
+										type: 'integer',
+										minimum: 1,
+										description: 'Payment amount in cents',
+										example: 4900,
+									},
+									currency: {
+										type: 'string',
+										description: '3-letter ISO currency code',
+										example: 'USD',
+									},
+									referenceId: {
+										type: 'string',
+										description: 'Merchant internal reference ID',
+										example: 'ref_inv_001',
+									},
+								},
+							},
+						},
+					},
+				},
+				responses: {
+					200: {
+						description: 'Payment session created',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										sessionId: { type: 'string', description: 'Unique payment session ID' },
+										paymentUrl: { type: 'string', format: 'uri', description: 'Hosted payment URL' },
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			{
 				method: 'GET',
@@ -388,6 +1124,26 @@ const UNIVERSAL_PRODUCTS = [
 				permission: '',
 				feature: 'checkout',
 				description: 'Returns available payment providers for this website.',
+				parameters: [],
+				responses: {
+					200: {
+						description: 'Supported payment methods',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										methods: {
+											type: 'array',
+											description: 'Available payment methods',
+											items: { type: 'string' },
+										},
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			{
 				method: 'GET',
@@ -397,6 +1153,41 @@ const UNIVERSAL_PRODUCTS = [
 				permission: 'payments.read',
 				feature: 'review',
 				description: 'List all payment transactions and settlement records.',
+				parameters: [
+					{
+						name: 'limit',
+						in: 'query',
+						required: false,
+						schema: { type: 'integer' },
+						description: 'Max transactions to return',
+					},
+				],
+				responses: {
+					200: {
+						description: 'Transaction ledger entries',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										items: {
+											type: 'array',
+											description: 'Transactions',
+											items: {
+												type: 'object',
+												properties: {
+													id: { type: 'string', description: 'Transaction ID' },
+													amountCents: { type: 'integer', description: 'Amount' },
+													status: { type: 'string', description: 'Settlement status' },
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 		],
 	},
@@ -423,6 +1214,45 @@ const UNIVERSAL_PRODUCTS = [
 				permission: '',
 				feature: 'push',
 				description: 'Saves device push token for visitor notifications.',
+				parameters: [],
+				requestBody: {
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								required: ['token', 'type'],
+								properties: {
+									token: {
+										type: 'string',
+										description: 'Device push registration token',
+										example: 'push_tok_abc123',
+									},
+									type: {
+										type: 'string',
+										enum: ['web-push', 'fcm', 'apns'],
+										description: 'Push service provider type',
+										example: 'web-push',
+									},
+								},
+							},
+						},
+					},
+				},
+				responses: {
+					200: {
+						description: 'Device token registered',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										registered: { type: 'boolean', description: 'Registration status' },
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			{
 				method: 'POST',
@@ -432,6 +1262,51 @@ const UNIVERSAL_PRODUCTS = [
 				permission: 'notifications.send',
 				feature: 'dispatch',
 				description: 'Send SMS, WhatsApp, Email, or Web Push notification.',
+				parameters: [],
+				requestBody: {
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								required: ['channel', 'recipient', 'body'],
+								properties: {
+									channel: {
+										type: 'string',
+										enum: ['sms', 'whatsapp', 'email', 'push'],
+										description: 'Outbound delivery channel',
+										example: 'sms',
+									},
+									recipient: {
+										type: 'string',
+										description: 'Recipient phone number, email, or device token',
+										example: '+15551234567',
+									},
+									body: {
+										type: 'string',
+										description: 'Notification message body',
+										example: 'Your order #1042 has shipped!',
+									},
+								},
+							},
+						},
+					},
+				},
+				responses: {
+					200: {
+						description: 'Notification dispatched',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										messageId: { type: 'string', description: 'Dispatched message ID' },
+										status: { type: 'string', description: 'Dispatch status' },
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 		],
 	},
@@ -458,6 +1333,39 @@ const UNIVERSAL_PRODUCTS = [
 				permission: '',
 				feature: 'consent',
 				description: 'Records visitor consent categories for analytics and tracking.',
+				parameters: [],
+				requestBody: {
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								required: ['categories'],
+								properties: {
+									categories: {
+										type: 'array',
+										description: 'Accepted cookie categories',
+										items: { type: 'string', enum: ['necessary', 'analytics', 'marketing'] },
+									},
+								},
+							},
+						},
+					},
+				},
+				responses: {
+					200: {
+						description: 'Consent preferences saved',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										saved: { type: 'boolean', description: 'Save status' },
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			{
 				method: 'POST',
@@ -467,6 +1375,39 @@ const UNIVERSAL_PRODUCTS = [
 				permission: '',
 				feature: 'analytics',
 				description: 'Reports storefront conversion or custom visitor action.',
+				parameters: [],
+				requestBody: {
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								required: ['event'],
+								properties: {
+									event: {
+										type: 'string',
+										description: 'Event name or action identifier',
+										example: 'view_product',
+									},
+								},
+							},
+						},
+					},
+				},
+				responses: {
+					200: {
+						description: 'Event recorded',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										recorded: { type: 'boolean', description: 'Event recorded flag' },
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			{
 				method: 'GET',
@@ -476,6 +1417,38 @@ const UNIVERSAL_PRODUCTS = [
 				permission: 'growth.read',
 				feature: 'analytics',
 				description: 'Retrieve aggregated page views, visitors, and conversion metrics.',
+				parameters: [
+					{
+						name: 'from',
+						in: 'query',
+						required: false,
+						schema: { type: 'string', format: 'date' },
+						description: 'Start date (YYYY-MM-DD)',
+					},
+					{
+						name: 'to',
+						in: 'query',
+						required: false,
+						schema: { type: 'string', format: 'date' },
+						description: 'End date (YYYY-MM-DD)',
+					},
+				],
+				responses: {
+					200: {
+						description: 'Aggregated analytics metrics',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										pageViews: { type: 'integer', description: 'Total page views' },
+										visitors: { type: 'integer', description: 'Unique visitor count' },
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 		],
 	},
@@ -737,8 +1710,16 @@ export function DocsHubView({
 			url.pathname = '/docs';
 		}
 		url.hash = '';
-		if (token) url.searchParams.set('token', token);
-		else url.searchParams.delete('token');
+
+		let shareToken = token;
+		if (!shareToken) {
+			const role = userRole || effectiveActor?.role || 'user';
+			const uid = effectiveActor?.id || effectiveActor?.merchantId || 'viewer';
+			shareToken = `tok_${role}_${uid}`;
+			setToken(shareToken);
+		}
+		url.searchParams.set('token', shareToken);
+
 		if (website) url.searchParams.set('website', website);
 		else url.searchParams.delete('website');
 		if (selectedProductId) url.searchParams.set('product', selectedProductId);
@@ -761,6 +1742,50 @@ export function DocsHubView({
 		return operations.find((/** @type {any} */ op) => `${op.method}:${op.path}` === selectedOpKey) || null;
 	}, [operations, selectedOpKey]);
 
+	const allParameters = useMemo(() => {
+		if (!currentOperation) return [];
+		const rawParams = Array.isArray(currentOperation.parameters) ? currentOperation.parameters : [];
+		/** @type {Array<{ name: string, in: string, schema?: any, type?: string, required?: boolean, description?: string }>} */
+		const result = [];
+		const seen = new Set();
+		for (const p of rawParams) {
+			const paramObj = p.name ? p : p.$ref ? { name: p.$ref.split('/').pop(), in: 'query', schema: { type: 'string' } } : p;
+			if (paramObj.name) {
+				seen.add(paramObj.name);
+				result.push({
+					name: paramObj.name,
+					in: paramObj.in || 'query',
+					schema: paramObj.schema || { type: 'string' },
+					type: paramObj.schema?.type || paramObj.type || 'string',
+					required: Boolean(paramObj.required),
+					description: paramObj.description || '',
+				});
+			}
+		}
+		const pathMatches = Array.from(String(currentOperation.path).matchAll(/[:{]([a-zA-Z0-9_]+)}?/g));
+		for (const m of pathMatches) {
+			const pName = m[1];
+			if (pName && !seen.has(pName)) {
+				seen.add(pName);
+				result.unshift({
+					name: pName,
+					in: 'path',
+					schema: { type: 'string' },
+					type: 'string',
+					required: true,
+					description: `${pName} identifier`,
+				});
+			}
+		}
+		return result;
+	}, [currentOperation]);
+
+	const requestBodyProperties = useMemo(() => {
+		const reqSchema = currentOperation?.requestBody?.content?.['application/json']?.schema;
+		if (!reqSchema) return [];
+		return extractSchemaProperties(reqSchema, currentProduct?.components);
+	}, [currentOperation, currentProduct]);
+
 	const sampleRequestPayload = useMemo(() => {
 		const reqSchema = currentOperation?.requestBody?.content?.['application/json']?.schema;
 		return reqSchema ? sampleFromSchema(reqSchema, currentProduct?.components) : {};
@@ -777,6 +1802,15 @@ export function DocsHubView({
 				? sampleFromSchema(respSchema, currentProduct?.components)
 				: { message: resp.description || 'Success' },
 		};
+	}, [currentOperation, currentProduct, activeResponseStatus]);
+
+	const responseBodyProperties = useMemo(() => {
+		if (!currentOperation?.responses) return [];
+		const resp = currentOperation.responses[activeResponseStatus] || Object.values(currentOperation.responses)[0];
+		if (!resp) return [];
+		const respSchema = resp.content?.['application/json']?.schema || resp.content?.['application/problem+json']?.schema;
+		if (!respSchema) return [];
+		return extractSchemaProperties(respSchema, currentProduct?.components);
 	}, [currentOperation, currentProduct, activeResponseStatus]);
 
 	// Filtered operations based on search query
@@ -1032,6 +2066,54 @@ export function DocsHubView({
 											expandedProductIds.has(prod.productId) ||
 											(Boolean(q) && (prodMatches || prodFilteredOps.length > 0));
 
+										const storefrontOps = prodFilteredOps.filter(
+											(/** @type {any} */ op) => op.auth === 'browser' || op.auth === 'visitor' || !op.auth,
+										);
+										const staffOps = prodFilteredOps.filter(
+											(/** @type {any} */ op) => !(op.auth === 'browser' || op.auth === 'visitor' || !op.auth),
+										);
+
+										const renderOpButton = (/** @type {any} */ op) => {
+											const opKey = `${op.method}:${op.path}`;
+											const isOpActive = isSelected && selectedOpKey === opKey && activeSection === 'products';
+											const isStorefront = op.auth === 'browser' || op.auth === 'visitor' || !op.auth;
+											const hasAccess = isStorefront || isProductRoleAllowed;
+											return (
+												<Button
+													key={opKey}
+													type="button"
+													variant="ghost"
+													size="sm"
+													onClick={() => selectOperation(opKey, prod.productId)}
+													className={`flex w-full items-center justify-between gap-1.5 rounded px-2.5 py-1.5 text-[11px] truncate transition ${
+														isOpActive
+															? 'bg-surface-2 text-primary font-semibold shadow-xs'
+															: 'text-muted hover:text-fg'
+													}`}
+													title={`${op.method} ${op.path}`}>
+													<div className="flex items-center gap-1.5 truncate">
+														<span
+															className={`font-mono text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0 ${methodColor(
+																op.method,
+															)}`}>
+															{op.method}
+														</span>
+														<span className="truncate font-mono">{op.path.replace(/^\/v1/, '')}</span>
+													</div>
+													<span
+														className={`font-mono text-[8px] px-1 rounded uppercase font-bold shrink-0 ${
+															isStorefront
+																? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10'
+																: hasAccess
+																	? 'text-primary bg-primary/10'
+																	: 'text-amber-600 dark:text-amber-400 bg-amber-500/10'
+														}`}>
+														{isStorefront ? 'Store' : hasAccess ? 'Staff' : 'Restricted'}
+													</span>
+												</Button>
+											);
+										};
+
 										return (
 											<div key={prod.productId} className="space-y-0.5">
 												<Button
@@ -1077,47 +2159,25 @@ export function DocsHubView({
 															<span>Overview &amp; Embed</span>
 														</Button>
 
-														{prodFilteredOps.map((/** @type {any} */ op) => {
-															const opKey = `${op.method}:${op.path}`;
-															const isOpActive =
-																isSelected && selectedOpKey === opKey && activeSection === 'products';
-															const isStorefront = op.auth === 'browser' || op.auth === 'visitor' || !op.auth;
-															const hasAccess = isStorefront || isProductRoleAllowed;
-															return (
-																<Button
-																	key={opKey}
-																	type="button"
-																	variant="ghost"
-																	size="sm"
-																	onClick={() => selectOperation(opKey, prod.productId)}
-																	className={`flex w-full items-center justify-between gap-1.5 rounded px-2.5 py-1.5 text-[11px] truncate transition ${
-																		isOpActive
-																			? 'bg-surface-2 text-primary font-semibold shadow-xs'
-																			: 'text-muted hover:text-fg'
-																	}`}
-																	title={`${op.method} ${op.path}`}>
-																	<div className="flex items-center gap-1.5 truncate">
-																		<span
-																			className={`font-mono text-[9px] px-1.5 py-0.5 rounded font-bold ${methodColor(
-																				op.method,
-																			)}`}>
-																			{op.method}
-																		</span>
-																		<span className="truncate font-mono">{op.path.replace(/^\/v1/, '')}</span>
-																	</div>
-																	<span
-																		className={`font-mono text-[8px] px-1 rounded uppercase font-bold shrink-0 ${
-																			isStorefront
-																				? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10'
-																				: hasAccess
-																					? 'text-primary bg-primary/10'
-																					: 'text-amber-600 dark:text-amber-400 bg-amber-500/10'
-																		}`}>
-																		{isStorefront ? 'Store' : hasAccess ? 'Staff' : 'Restricted'}
-																	</span>
-																</Button>
-															);
-														})}
+														{/* Storefront Operations Group */}
+														{storefrontOps.length > 0 ? (
+															<div className="pt-2 space-y-0.5">
+																<p className="px-2.5 pb-1 text-[9px] font-mono font-bold uppercase tracking-wider text-muted">
+																	Storefront Operations
+																</p>
+																{storefrontOps.map(renderOpButton)}
+															</div>
+														) : null}
+
+														{/* Staff Operations Group */}
+														{staffOps.length > 0 ? (
+															<div className="pt-2 space-y-0.5">
+																<p className="px-2.5 pb-1 text-[9px] font-mono font-bold uppercase tracking-wider text-muted">
+																	Staff Operations
+																</p>
+																{staffOps.map(renderOpButton)}
+															</div>
+														) : null}
 
 														{prodFilteredOps.length > 40 ? (
 															<p className="px-2.5 py-1 text-[10px] text-muted italic">
@@ -1196,37 +2256,9 @@ export function DocsHubView({
 								<div className="space-y-1.5 flex-1 min-w-0">
 									{activeSection === 'products' && currentOperation ? (
 										<>
-											<div className="flex flex-wrap items-center gap-2.5">
-												<span
-													className={`font-mono text-xs px-2.5 py-1 rounded font-bold ${methodColor(
-														currentOperation.method,
-													)}`}>
-													{currentOperation.method}
-												</span>
-												<code className="font-mono text-base font-semibold text-fg">{currentOperation.path}</code>
-												{currentOperation.permission ? (
-													<span className="rounded bg-primary/10 px-2 py-0.5 font-mono text-[11px] text-primary font-semibold">
-														Perm: {currentOperation.permission}
-													</span>
-												) : null}
-												{effectiveActor ? (
-													<span className="font-mono text-[11px] text-muted px-2 py-0.5 rounded bg-surface border border-line">
-														{effectiveActor.name} (Role: {userRole || 'user'})
-													</span>
-												) : !website ? (
-													<span className="font-mono text-[11px] text-muted px-2 py-0.5 rounded bg-surface border border-line">
-														User Token
-													</span>
-												) : null}
-												{website ? (
-													<span className="font-mono text-[11px] text-muted px-2 py-0.5 rounded bg-surface border border-line">
-														{website}
-													</span>
-												) : null}
-											</div>
-											{currentOperation.summary ? (
-												<h1 className="text-lg font-bold text-fg tracking-tight">{currentOperation.summary}</h1>
-											) : null}
+											<h1 className="text-lg md:text-xl font-bold text-fg tracking-tight">
+												{currentOperation.summary || currentOperation.path}
+											</h1>
 											{currentOperation.description ? (
 												<p className="text-xs text-muted leading-relaxed">{currentOperation.description}</p>
 											) : null}
@@ -1234,15 +2266,10 @@ export function DocsHubView({
 									) : (
 										<>
 											<div className="flex flex-wrap items-center gap-2">
-												<span className="text-xs font-semibold text-fg tracking-tight">
+												<span className="text-sm font-semibold text-fg tracking-tight">
 													{brandName} Documentation Hub
 												</span>
-												<span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-surface border border-line text-fg">
-													{effectiveActor
-														? `${effectiveActor.name} (Role: ${userRole || 'user'})`
-														: website || 'User Token'}
-												</span>
-												{website && effectiveActor ? (
+												{website ? (
 													<span className="font-mono text-xs text-muted px-2 py-0.5 rounded bg-surface border border-line">
 														{website}
 													</span>
@@ -1651,6 +2678,58 @@ export function DocsHubView({
 						{/* 5. Single Operation Interactive Swagger Documentation */}
 						{activeSection === 'products' && currentOperation ? (
 							<section className="space-y-6">
+								{/* Swagger Endpoint Bar */}
+								<div className="rounded-card border border-line bg-surface p-3.5 shadow-card hard flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+									<div className="flex flex-wrap items-center gap-2.5 min-w-0">
+										<span
+											className={`font-mono text-xs px-2.5 py-1 rounded font-bold uppercase shrink-0 ${methodColor(
+												currentOperation.method,
+											)}`}>
+											{currentOperation.method}
+										</span>
+										<code className="font-mono text-sm sm:text-base font-semibold text-fg truncate">
+											{currentOperation.path}
+										</code>
+									</div>
+									<div className="flex flex-wrap items-center gap-2 shrink-0">
+										{(() => {
+											const isStorefront =
+												currentOperation.auth === 'browser' ||
+												currentOperation.auth === 'visitor' ||
+												!currentOperation.auth;
+											const hasAccess = isStorefront || isProductRoleAllowed;
+											return (
+												<>
+													<span
+														className={`font-mono text-[11px] px-2 py-0.5 rounded uppercase font-bold shrink-0 ${
+															isStorefront
+																? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10'
+																: hasAccess
+																	? 'text-primary bg-primary/10'
+																	: 'text-amber-600 dark:text-amber-400 bg-amber-500/10'
+														}`}>
+														{isStorefront ? 'Storefront (Browser)' : 'Staff (Server)'}
+													</span>
+													{currentOperation.permission ? (
+														<span className="font-mono text-[11px] text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded font-semibold shrink-0">
+															Perm: {currentOperation.permission}
+														</span>
+													) : null}
+												</>
+											);
+										})()}
+										<Button
+											type="button"
+											variant="ghost"
+											size="sm"
+											onClick={() => copyText(`${apiBase}${currentOperation.path}`)}
+											className="text-xs text-muted hover:text-fg h-7 px-2"
+											icon={<Icon name="copy" size={13} />}>
+											Copy URL
+										</Button>
+									</div>
+								</div>
+
 								{(() => {
 									const isStorefront =
 										currentOperation.auth === 'browser' ||
@@ -1673,10 +2752,15 @@ export function DocsHubView({
 									return null;
 								})()}
 
-								{/* Parameters List */}
-								{currentOperation.parameters && currentOperation.parameters.length > 0 ? (
-									<div className="space-y-3">
-										<h3 className="text-sm font-semibold">Parameters</h3>
+								{/* Parameters Specification */}
+								<div className="space-y-3">
+									<div className="flex items-center justify-between">
+										<h3 className="text-sm font-semibold flex items-center gap-2">
+											<span>Parameters</span>
+											<span className="text-xs font-mono text-muted">({allParameters.length})</span>
+										</h3>
+									</div>
+									{allParameters.length > 0 ? (
 										<div
 											className="rounded-card border border-line bg-surface overflow-hidden shadow-card"
 											role="table"
@@ -1701,85 +2785,188 @@ export function DocsHubView({
 												</div>
 											</div>
 											<div className="divide-y divide-line text-xs" role="rowgroup">
-												{currentOperation.parameters.map((/** @type {any} */ p, /** @type {number} */ idx) => {
-													const paramObj = p.name ? p : p.$ref ? { name: p.$ref.split('/').pop(), in: 'ref' } : p;
-													return (
+												{allParameters.map((/** @type {any} */ paramObj, /** @type {number} */ idx) => (
+													<div
+														key={paramObj.name || idx}
+														className="grid grid-cols-12 p-2.5 items-center hover:bg-surface-2/50 transition"
+														role="row">
+														<div className="col-span-3 font-mono font-medium text-fg" role="cell">
+															{paramObj.name}
+														</div>
+														<div className="col-span-2 font-mono text-muted" role="cell">
+															<span className="rounded bg-surface-2 px-1.5 py-0.5 border border-line text-[11px]">
+																{paramObj.in || 'query'}
+															</span>
+														</div>
+														<div className="col-span-2 font-mono text-primary font-medium" role="cell">
+															{paramObj.schema?.type || paramObj.type || 'string'}
+														</div>
+														<div className="col-span-2" role="cell">
+															{paramObj.required ? (
+																<span className="text-danger font-bold">required</span>
+															) : (
+																<span className="text-muted">optional</span>
+															)}
+														</div>
+														<div className="col-span-3 text-muted" role="cell">
+															{paramObj.description || '-'}
+														</div>
+													</div>
+												))}
+											</div>
+										</div>
+									) : (
+										<p className="text-xs text-muted italic">No query or path parameters required.</p>
+									)}
+								</div>
+
+								{/* Request Body Specification (for mutations) */}
+								{currentOperation.requestBody || ['POST', 'PUT', 'PATCH'].includes(currentOperation.method) ? (
+									<div className="space-y-3">
+										<div className="flex items-center justify-between">
+											<h3 className="text-sm font-semibold flex items-center gap-2">
+												<span>Request Body</span>
+											</h3>
+											<span className="font-mono text-[11px] text-muted bg-surface-2 border border-line px-2 py-0.5 rounded">
+												application/json
+											</span>
+										</div>
+
+										{/* Input accepted parameters table */}
+										{requestBodyProperties.length > 0 ? (
+											<div
+												className="rounded-card border border-line bg-surface overflow-hidden shadow-card"
+												role="table"
+												aria-label="Request Body Parameters">
+												<div
+													className="grid grid-cols-12 border-b border-line bg-surface-2 p-2.5 text-xs font-semibold text-muted"
+													role="row">
+													<div className="col-span-3" role="columnheader">
+														Parameter
+													</div>
+													<div className="col-span-2" role="columnheader">
+														Type
+													</div>
+													<div className="col-span-2" role="columnheader">
+														Required
+													</div>
+													<div className="col-span-5" role="columnheader">
+														Description
+													</div>
+												</div>
+												<div className="divide-y divide-line text-xs" role="rowgroup">
+													{requestBodyProperties.map((prop) => (
 														<div
-															key={paramObj.name || idx}
+															key={prop.name}
 															className="grid grid-cols-12 p-2.5 items-center hover:bg-surface-2/50 transition"
 															role="row">
 															<div className="col-span-3 font-mono font-medium text-fg" role="cell">
-																{paramObj.name}
-															</div>
-															<div className="col-span-2 font-mono text-muted" role="cell">
-																{paramObj.in || 'query'}
+																{prop.name}
 															</div>
 															<div className="col-span-2 font-mono text-primary font-medium" role="cell">
-																{paramObj.schema?.type || 'string'}
+																{prop.type}
 															</div>
 															<div className="col-span-2" role="cell">
-																{paramObj.required ? (
+																{prop.required ? (
 																	<span className="text-danger font-bold">required</span>
 																) : (
 																	<span className="text-muted">optional</span>
 																)}
 															</div>
-															<div className="col-span-3 text-muted" role="cell">
-																{paramObj.description || '-'}
+															<div className="col-span-5 text-muted" role="cell">
+																{prop.description || (prop.example ? `Example: ${prop.example}` : '-')}
 															</div>
 														</div>
-													);
-												})}
-											</div>
-										</div>
-									</div>
-								) : null}
-
-								{/* Request Body Specification (for mutations) */}
-								{currentOperation.requestBody ? (
-									<div className="space-y-3">
-										<div className="flex items-center justify-between">
-											<h3 className="text-sm font-semibold">Request Body (application/json)</h3>
-											<span className="text-xs text-muted">JSON Schema &amp; Example</span>
-										</div>
-										<CodeBlock code={JSON.stringify(sampleRequestPayload, null, 2)} label="Example JSON Request" />
-									</div>
-								) : null}
-
-								{/* Responses Specification (Swagger tabs) */}
-								{currentOperation.responses ? (
-									<div className="space-y-3">
-										<h3 className="text-sm font-semibold">Responses</h3>
-										<div className="flex items-center gap-1.5 border-b border-line pb-2">
-											{Object.keys(currentOperation.responses).map((status) => (
-												<Button
-													key={status}
-													type="button"
-													size="sm"
-													variant={activeResponseStatus === status ? 'primary' : 'secondary'}
-													onClick={() => setActiveResponseStatus(status)}
-													className="font-mono text-xs">
-													{status}
-												</Button>
-											))}
-										</div>
-
-										{sampleResponsePayload ? (
-											<div className="space-y-2">
-												<p className="text-xs text-muted">{sampleResponsePayload.description || 'Response'}</p>
-												<CodeBlock
-													code={JSON.stringify(sampleResponsePayload.payload, null, 2)}
-													label={`HTTP ${activeResponseStatus} Response Payload`}
-												/>
+													))}
+												</div>
 											</div>
 										) : null}
+
+										<CodeBlock
+											code={JSON.stringify(sampleRequestPayload || {}, null, 2)}
+											label="Example JSON Request"
+										/>
 									</div>
 								) : null}
 
-								{/* Ready-to-Run Code Snippets */}
+								{/* Responses Specification (Swagger tabs & Output Structure) */}
+								<div className="space-y-3">
+									<div className="flex items-center justify-between">
+										<h3 className="text-sm font-semibold">Responses</h3>
+										<span className="text-xs text-muted">HTTP Status &amp; Output Structure</span>
+									</div>
+									<div className="flex items-center gap-1.5 border-b border-line pb-2">
+										{Object.keys(currentOperation.responses || { 200: { description: 'Success' } }).map((status) => (
+											<Button
+												key={status}
+												type="button"
+												size="sm"
+												variant={activeResponseStatus === status ? 'primary' : 'secondary'}
+												onClick={() => setActiveResponseStatus(status)}
+												className="font-mono text-xs">
+												{status}
+											</Button>
+										))}
+									</div>
+
+									{sampleResponsePayload ? (
+										<div className="space-y-3">
+											<p className="text-xs text-muted font-medium">
+												{sampleResponsePayload.description || `HTTP ${activeResponseStatus} Response`}
+											</p>
+
+											{/* Output Structure Table */}
+											{responseBodyProperties.length > 0 ? (
+												<div
+													className="rounded-card border border-line bg-surface overflow-hidden shadow-card"
+													role="table"
+													aria-label="Response Output Structure">
+													<div
+														className="grid grid-cols-12 border-b border-line bg-surface-2 p-2.5 text-xs font-semibold text-muted"
+														role="row">
+														<div className="col-span-4" role="columnheader">
+															Field
+														</div>
+														<div className="col-span-3" role="columnheader">
+															Type
+														</div>
+														<div className="col-span-5" role="columnheader">
+															Description
+														</div>
+													</div>
+													<div className="divide-y divide-line text-xs" role="rowgroup">
+														{responseBodyProperties.map((prop) => (
+															<div
+																key={prop.name}
+																className="grid grid-cols-12 p-2.5 items-center hover:bg-surface-2/50 transition"
+																role="row">
+																<div className="col-span-4 font-mono font-medium text-fg" role="cell">
+																	{prop.name}
+																</div>
+																<div className="col-span-3 font-mono text-primary font-medium" role="cell">
+																	{prop.type}
+																</div>
+																<div className="col-span-5 text-muted" role="cell">
+																	{prop.description || '-'}
+																</div>
+															</div>
+														))}
+													</div>
+												</div>
+											) : null}
+
+											<CodeBlock
+												code={JSON.stringify(sampleResponsePayload.payload, null, 2)}
+												label={`HTTP ${activeResponseStatus} Response Payload`}
+											/>
+										</div>
+									) : null}
+								</div>
+
+								{/* Code Snippets (cURL, JavaScript, Python) */}
 								<div className="space-y-3 pt-4 border-t border-line">
 									<div className="flex items-center justify-between">
-										<h3 className="text-sm font-semibold">Ready-to-Use Code Snippet</h3>
+										<h3 className="text-sm font-semibold">Code Snippets</h3>
 										<div className="flex items-center rounded bg-surface-2 p-0.5 text-xs border border-line">
 											<Button
 												type="button"
@@ -1813,7 +3000,7 @@ export function DocsHubView({
 											code={`curl -X ${currentOperation.method} "${apiBase}${currentOperation.path}" \\\n  -H "Authorization: ${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}" \\\n  -H "Content-Type: application/json"${
 												website ? ` \\\n  -H "Origin: https://${website}"` : ''
 											}${
-												currentOperation.requestBody
+												currentOperation.requestBody || ['POST', 'PUT', 'PATCH'].includes(currentOperation.method)
 													? ` \\\n  -d '${JSON.stringify(sampleRequestPayload || {})}'`
 													: ''
 											}`}
@@ -1822,7 +3009,7 @@ export function DocsHubView({
 									) : activeSnippetTab === 'fetch' ? (
 										<CodeBlock
 											code={`const response = await fetch("${apiBase}${currentOperation.path}", {\n  method: "${currentOperation.method}",\n  headers: {\n    "Authorization": "${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}",\n    "Content-Type": "application/json"${website ? `,\n    "Origin": "https://${website}"` : ''}\n  }${
-												currentOperation.requestBody
+												currentOperation.requestBody || ['POST', 'PUT', 'PATCH'].includes(currentOperation.method)
 													? `,\n  body: JSON.stringify(${JSON.stringify(sampleRequestPayload || {}, null, 2)})`
 													: ''
 											}\n});\nconst data = await response.json();\nconsole.log(data);`}
@@ -1831,7 +3018,7 @@ export function DocsHubView({
 									) : (
 										<CodeBlock
 											code={`import requests\n\nurl = "${apiBase}${currentOperation.path}"\nheaders = {\n    "Authorization": "${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}",\n    "Content-Type": "application/json"\n}\n${
-												currentOperation.requestBody
+												currentOperation.requestBody || ['POST', 'PUT', 'PATCH'].includes(currentOperation.method)
 													? `payload = ${JSON.stringify(
 															sampleRequestPayload || {},
 															null,

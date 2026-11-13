@@ -118,8 +118,8 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 			/>,
 		);
 		expect(html).toContain('Product Developer SDK');
-		expect(html).toContain('Role:');
-		expect(html).toContain('owner');
+		expect(html).toContain('CORE');
+		expect(html).not.toContain('Role: owner');
 	});
 
 	it('interactively switches tabs, searches, and inspects operations in DocsHubView', async () => {
@@ -543,7 +543,7 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		// Check restored 2nd header
 		expect(container.textContent).toContain('Documentation Hub');
 		expect(container.textContent).not.toContain('Authenticated Documentation');
-		expect(container.textContent).toContain('Merchant Owner (Role: owner)');
+		expect(container.textContent).not.toContain('(Role: owner)');
 		expect(container.textContent).toContain('Interactive code snippets below are pre-filled with your scoped credentials.');
 		expect(container.textContent).toContain('mysite.shelfway.com');
 
@@ -618,8 +618,12 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 				if (chatOpBtn) {
 					click(chatOpBtn);
 					expect(container.textContent).toContain('Start visitor chat conversation');
-					expect(container.textContent).toContain('Merchant Owner (Role: owner)');
-					expect(container.textContent).toContain('mysite.shelfway.com');
+					expect(container.textContent).not.toContain('(Role: owner)');
+					expect(container.textContent).not.toContain('Ready-to-Use Code Snippet');
+					expect(container.textContent).toContain('Parameters');
+					expect(container.textContent).toContain('Request Body');
+					expect(container.textContent).toContain('Responses');
+					expect(container.textContent).toContain('Code Snippets');
 					expect(container.textContent).not.toContain('Storefront Access (Public)');
 					expect(container.textContent).not.toContain('Authorization: Browser Token (Public)');
 					expect(container.textContent).not.toContain('<- Back to');
@@ -638,6 +642,140 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 				}
 			}
 		}
+
+		cleanup();
+	});
+
+	it('guarantees token is never empty in copied URL when clicking Share Docs button even if token state is empty', async () => {
+		let copiedUrl = '';
+		Object.assign(navigator, {
+			clipboard: {
+				writeText: vi.fn((text) => {
+					copiedUrl = text;
+					return Promise.resolve(true);
+				}),
+			},
+		});
+
+		const { container } = render(
+			<DocsHubView
+				branding={branding}
+				items={[sampleProduct]}
+				initialProductId="chat"
+				initialOpKey="POST:/v1/conversations"
+				actor={{ role: 'owner', name: 'Super Admin', id: 'usr_super_123' }}
+			/>,
+		);
+
+		const sidebar = container.querySelector('aside');
+		expect(sidebar).not.toBeNull();
+		if (sidebar) {
+			const shareBtn = byText(sidebar, 'Share Docs', 'button');
+			expect(shareBtn).not.toBeNull();
+			if (shareBtn) {
+				click(shareBtn);
+				expect(copiedUrl).toContain('/docs?');
+				expect(copiedUrl).toContain('token=tok_owner_usr_super_123');
+				expect(copiedUrl).toContain('product=chat');
+				expect(copiedUrl).toContain('op=POST%3A%2Fv1%2Fconversations');
+			}
+		}
+
+		cleanup();
+	});
+
+	it('renders Swagger REST API layout: clean header without method/path/role, endpoint bar, input parameters, request body, responses, and snippets without Ready-to-Use text', async () => {
+		const fullChatProduct = {
+			...sampleProduct,
+			operations: [
+				{
+					method: 'POST',
+					path: '/v1/conversations',
+					summary: 'Start visitor chat conversation',
+					auth: 'browser',
+					permission: '',
+					feature: 'always',
+					description: 'Initiate a new live conversation from the storefront widget.',
+					requestBody: {
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									required: ['message'],
+									properties: {
+										message: { type: 'string', description: 'Initial message from visitor' },
+										visitorName: { type: 'string', description: 'Optional visitor display name' },
+									},
+								},
+							},
+						},
+					},
+					responses: {
+						200: {
+							description: 'Conversation initiated successfully',
+							content: {
+								'application/json': {
+									schema: {
+										type: 'object',
+										properties: {
+											conversationId: { type: 'string', description: 'Unique conversation identifier' },
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			],
+		};
+
+		const { container } = render(
+			<DocsHubView
+				branding={branding}
+				items={[fullChatProduct]}
+				initialProductId="chat"
+				initialOpKey="POST:/v1/conversations"
+				initialToken="tok_swagger_test"
+				actor={{ role: 'owner', name: 'Super Admin', id: 'usr_owner_789' }}
+			/>,
+		);
+
+		// 1. Header card is strictly for API name and description (no method badge, no path, no user role)
+		const headerCard = container.querySelector('.rounded-card.border-primary\\/30');
+		expect(headerCard).not.toBeNull();
+		expect(headerCard?.textContent).toContain('Start visitor chat conversation');
+		expect(headerCard?.textContent).not.toContain('Super Admin');
+		expect(headerCard?.textContent).not.toContain('Role: owner');
+		expect(headerCard?.querySelector('code')).toBeNull();
+
+		// 2. Swagger endpoint bar below the header
+		const endpointBar = container.querySelector('.rounded-card.border-line.hard');
+		expect(endpointBar).not.toBeNull();
+		expect(endpointBar?.textContent).toContain('POST');
+		expect(endpointBar?.textContent).toContain('/v1/conversations');
+		expect(endpointBar?.textContent).toContain('Storefront (Browser)');
+		expect(endpointBar?.textContent).toContain('Copy URL');
+
+		// 3. Parameters section
+		expect(container.textContent).toContain('Parameters');
+
+		// 4. Request body section with input parameters and types
+		expect(container.textContent).toContain('Request Body');
+		expect(container.textContent).toContain('application/json');
+		expect(container.textContent).toContain('message');
+		expect(container.textContent).toContain('Initial message from visitor');
+
+		// 5. Responses section with status and output structure
+		expect(container.textContent).toContain('Responses');
+		expect(container.textContent).toContain('200');
+		expect(container.textContent).toContain('conversationId');
+
+		// 6. Code snippets tabs without "Ready-to-Use Code Snippet" label
+		expect(container.textContent).toContain('Code Snippets');
+		expect(container.textContent).not.toContain('Ready-to-Use Code Snippet');
+		expect(container.textContent).toContain('cURL');
+		expect(container.textContent).toContain('JavaScript');
+		expect(container.textContent).toContain('Python');
 
 		cleanup();
 	});
