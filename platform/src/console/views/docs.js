@@ -7,7 +7,7 @@
  * @module
  */
 import { useEffect, useMemo, useState } from 'react';
-import { Badge, Button, CodeBlock, Icon, Input, ToastProvider, copyText } from '@shelfway/ui';
+import { Badge, Button, ButtonLink, CodeBlock, Icon, Input, ToastProvider, copyText } from '@shelfway/ui';
 import { apiFetch } from '../client.js';
 
 /**
@@ -218,20 +218,7 @@ export function DocsHubView({
 
 	const effectiveActor = actor || clientActor;
 	const userRole = effectiveActor?.role || (effectiveActor?.admin ? 'owner' : null);
-	const isDeveloperRole = Boolean(userRole === 'owner' || userRole === 'developer' || userRole === 'support');
-	const [roleViewMode, setRoleViewMode] = useState(isDeveloperRole ? 'developer' : 'storefront');
-
-	useEffect(() => {
-		if (isDeveloperRole) setRoleViewMode('developer');
-	}, [isDeveloperRole]);
-
-	const openSignIn = () => {
-		if (typeof window !== 'undefined') {
-			window.dispatchEvent(new CustomEvent('shelfway:open-signin'));
-		}
-	};
-
-	const isUnlocked = Boolean(effectiveActor || token);
+	const [roleViewMode, setRoleViewMode] = useState('storefront');
 
 	// Synchronize URL query params seamlessly without page reloads
 	/**
@@ -416,77 +403,6 @@ export function DocsHubView({
 
 	const apiBase = typeof window !== 'undefined' && window.location?.origin ? window.location.origin : 'https://api.shelfway.com';
 
-	if (!isUnlocked) {
-		return (
-			<ToastProvider>
-				<div className="docs-container flex flex-col flex-1 items-center justify-center my-6 sm:my-14 px-4">
-					<div className="rounded-card border border-line bg-surface p-6 sm:p-8 space-y-6 shadow-card max-w-lg w-full text-center">
-						<div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary border border-primary/20">
-							<Icon name="lock" size={22} />
-						</div>
-						<div className="space-y-1.5">
-							<h1 className="font-display text-2xl font-bold tracking-tight text-fg">Sign in to view documentation</h1>
-							<p className="text-xs sm:text-sm text-muted leading-relaxed">
-								Shelfway documentation is private and accessible to registered merchants and authorized website
-								developers.
-							</p>
-						</div>
-
-						<div className="space-y-4 pt-1">
-							<Button variant="primary" size="lg" className="w-full font-semibold" onClick={openSignIn}>
-								Sign in with merchant account
-							</Button>
-
-							<div className="relative flex items-center justify-center">
-								<div className="border-t border-line absolute inset-x-0" />
-								<span className="bg-surface px-3 text-[11px] font-mono uppercase tracking-wider text-muted relative">
-									or unlock with website token
-								</span>
-							</div>
-
-							<div className="space-y-2 text-left">
-								<div className="flex items-center gap-1.5 text-xs font-semibold text-fg">
-									<Icon name="key" size={14} className="text-primary" />
-									<span>Are you building a site for a merchant?</span>
-								</div>
-								<div className="flex flex-col sm:flex-row gap-2">
-									<Input
-										hideLabel
-										label="Website token or setup link"
-										placeholder="Paste website token or setup link..."
-										value={tokenInput}
-										onChange={(e) => setTokenInput(e.currentTarget.value)}
-										onKeyDown={(e) => {
-											if (e.key === 'Enter') applyToken(tokenInput);
-										}}
-										className="flex-1 text-xs h-10"
-									/>
-									<Button
-										variant="secondary"
-										disabled={!tokenInput.trim()}
-										onClick={() => applyToken(tokenInput)}
-										className="font-medium shrink-0">
-										Unlock with token
-									</Button>
-								</div>
-								<p className="text-[11px] text-muted">
-									Merchants generate this token directly from: Websites -&gt; [Website] -&gt; Share with developer.
-								</p>
-							</div>
-						</div>
-
-						<div className="pt-2 border-t border-line/60 text-xs text-muted flex items-center justify-center gap-1.5">
-							<span>Need an account or assistance?</span>
-							<a href="/#contact" className="text-primary hover:underline font-semibold">
-								Contact us
-							</a>
-						</div>
-					</div>
-				</div>
-			</ToastProvider>
-		);
-	}
-
 	return (
 		<ToastProvider>
 			<div className="docs-container flex flex-col flex-1">
@@ -501,7 +417,10 @@ export function DocsHubView({
 						<div className="flex items-center rounded-control bg-surface-2 p-0.5 text-xs border border-line">
 							<button
 								type="button"
-								onClick={() => setRoleViewMode('storefront')}
+								onClick={() => {
+									setRoleViewMode('storefront');
+									if (activeSection.startsWith('sdk-')) selectSection('quickstart');
+								}}
 								className={`rounded-[calc(var(--radius-control)-2px)] px-3 py-1 font-medium transition ${
 									roleViewMode === 'storefront'
 										? 'bg-surface text-fg shadow-xs font-semibold'
@@ -511,7 +430,10 @@ export function DocsHubView({
 							</button>
 							<button
 								type="button"
-								onClick={() => setRoleViewMode('developer')}
+								onClick={() => {
+									setRoleViewMode('developer');
+									if (!activeSection.startsWith('sdk-')) selectSection('sdk-cli');
+								}}
 								className={`rounded-[calc(var(--radius-control)-2px)] px-3 py-1 font-medium transition ${
 									roleViewMode === 'developer'
 										? 'bg-surface text-fg shadow-xs font-semibold'
@@ -593,6 +515,18 @@ export function DocsHubView({
 							</div>
 
 							<div className="space-y-1">
+								{filteredProducts.length === 0 ? (
+									<div className="rounded border border-dashed border-line px-2.5 py-3 text-center space-y-1">
+										<p className="text-[11px] font-medium text-fg">No products connected</p>
+										{effectiveActor?.admin ? (
+											<a
+												href="/admin/products"
+												className="text-[10px] text-primary hover:underline block font-semibold">
+												+ Connect product
+											</a>
+										) : null}
+									</div>
+								) : null}
 								{filteredProducts.map((prod) => {
 									const isSelected = selectedProductId === prod.productId;
 									const isExpanded = isSelected && activeSection === 'products';
@@ -669,7 +603,7 @@ export function DocsHubView({
 						</div>
 
 						{/* Section: Product Developer SDK */}
-						{roleViewMode === 'developer' || isDeveloperRole ? (
+						{roleViewMode === 'developer' ? (
 							<div className="space-y-1 pt-3 border-t border-line">
 								<div className="flex items-center justify-between px-2">
 									<p className="text-[10px] font-mono font-bold uppercase tracking-widest text-primary">
@@ -889,7 +823,22 @@ export function DocsHubView({
 											))}
 										</div>
 									</div>
-								) : null}
+								) : (
+									<div className="rounded-card border border-line bg-surface p-6 text-center space-y-3 shadow-card">
+										<p className="text-sm font-medium text-fg">No products placed in the catalog yet</p>
+										<p className="text-xs text-muted max-w-md mx-auto">
+											Once micro-products (Accounts, Chat, Payments, Ecommerce, Notifications, Growth) are connected in
+											the Admin Console, their specifications, widget scripts, and endpoints will appear here.
+										</p>
+										{effectiveActor?.admin ? (
+											<div className="pt-1">
+												<ButtonLink href="/admin/products" variant="primary" size="sm">
+													Connect your first product
+												</ButtonLink>
+											</div>
+										) : null}
+									</div>
+								)}
 							</section>
 						) : null}
 
@@ -902,9 +851,27 @@ export function DocsHubView({
 									</p>
 									<h1 className="font-display text-3xl font-bold tracking-tight text-fg">Authentication &amp; Tokens</h1>
 									<p className="text-sm text-muted leading-relaxed max-w-3xl">
-										Shelfway enforces strictly typed credentials. Browser tokens, server tokens, configure sessions, and
-										staff tickets are mutually exclusive and never cross-authorized.
+										Shelfway connects storefront widgets and backend APIs using two scoped tokens. You never share your
+										merchant portal passwords or database credentials with frontend code.
 									</p>
+								</div>
+
+								{/* Action Card: Where to find tokens */}
+								<div className="rounded-card border border-primary/20 bg-primary/5 p-5 space-y-3 shadow-card">
+									<div className="flex items-center gap-2 text-primary font-semibold text-sm">
+										<Icon name="key" size={16} />
+										<span>Where to find your tokens</span>
+									</div>
+									<p className="text-xs text-muted leading-relaxed">
+										Every website you create in Shelfway receives its own unique pair of tokens. In the console, go to{' '}
+										<strong>Websites</strong>, select your website, and click <strong>Share with developer</strong> (or
+										download your <strong>Developer Pack</strong>) to reveal your scoped Browser and Server tokens.
+									</p>
+									<div className="pt-1">
+										<ButtonLink href="/websites" variant="secondary" size="sm">
+											View your Websites &amp; Tokens
+										</ButtonLink>
+									</div>
 								</div>
 
 								<div className="space-y-4">
@@ -917,10 +884,10 @@ export function DocsHubView({
 										</div>
 										<p className="text-xs text-muted leading-relaxed">
 											Public token embedded into frontend HTML &lt;script&gt; tags. It authorizes visitor widgets
-											(Chat, Cart, Signup forms) and is restricted to the merchant's verified domain origin.
+											(Chat, Cart, Signup forms) and is restricted to your website domain.
 										</p>
 										<CodeBlock
-											code={`<script src="${apiBase}/widget.js" data-token="YOUR_WEBSITE_BROWSER_TOKEN" async></script>`}
+											code={`<script src="${apiBase}/widget.js" data-token="${token || 'YOUR_WEBSITE_BROWSER_TOKEN'}" async></script>`}
 											label="HTML Widget Snippet"
 										/>
 									</div>
@@ -939,7 +906,7 @@ export function DocsHubView({
 											headers for server-to-server operations (order creation, user management, inventory sync).
 										</p>
 										<CodeBlock
-											code={`curl -X GET "${apiBase}/v1/products" \\\n  -H "Authorization: Bearer YOUR_WEBSITE_SERVER_TOKEN" \\\n  -H "Content-Type: application/json"`}
+											code={`curl -X GET "${apiBase}/v1/products" \\\n  -H "Authorization: Bearer ${token || 'YOUR_WEBSITE_SERVER_TOKEN'}" \\\n  -H "Content-Type: application/json"`}
 											label="Backend cURL Header"
 										/>
 									</div>
@@ -947,7 +914,30 @@ export function DocsHubView({
 							</section>
 						) : null}
 
-						{/* 3. Product Overview (When no specific operation is selected) */}
+						{/* 3. Product Empty State (When no product is connected) */}
+						{activeSection === 'products' && !currentProduct ? (
+							<section className="space-y-6">
+								<div className="rounded-card border border-line bg-surface p-8 text-center space-y-3 shadow-card">
+									<div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-surface-2 text-muted">
+										<Icon name="info" size={20} />
+									</div>
+									<h2 className="text-base font-semibold text-fg">No products connected yet</h2>
+									<p className="text-xs text-muted max-w-md mx-auto">
+										Connect a product in the Admin Console to view its interactive OpenAPI specifications, endpoints,
+										and widget embed guides.
+									</p>
+									{effectiveActor?.admin ? (
+										<div className="pt-2">
+											<ButtonLink href="/admin/products" variant="primary" size="sm">
+												Connect product
+											</ButtonLink>
+										</div>
+									) : null}
+								</div>
+							</section>
+						) : null}
+
+						{/* 4. Product Overview (When no specific operation is selected) */}
 						{activeSection === 'products' && !selectedOpKey && currentProduct ? (
 							<section className="space-y-6">
 								<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-line pb-6">

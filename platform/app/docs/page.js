@@ -49,7 +49,9 @@ export default async function DocsPage({ searchParams }) {
 					items={loaded.ok ? loaded.items : []}
 					activeProductDetail={productDetail?.ok ? productDetail.product : null}
 					actor={
-						session.ok ? session.actor || session.me || (session.admin ? { role: 'owner', name: 'Admin' } : null) : null
+						session.ok
+							? session.actor || session.me || (session.admin ? { role: 'owner', name: 'Admin', admin: true } : null)
+							: null
 					}
 					initialProductId={initialProduct}
 					initialOpKey={initialOp}

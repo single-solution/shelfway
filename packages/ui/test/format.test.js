@@ -137,6 +137,10 @@ describe('problem documents', () => {
 		expect(describeProblem({ type: '/problems/catalog_launch_refused', detail: 'the launch has expired' })).toBe(
 			'the launch has expired',
 		);
+		expect(describeProblem({ type: '/problems/unauthorized', detail: 'The product refused the connect secret.' })).toBe(
+			'The product refused the connect secret.',
+		);
+		expect(describeProblem({ type: '/problems/unauthorized' })).toBe('Your session has ended. Sign in again.');
 		expect(describeProblem({ type: '/problems/rate_limited' })).toMatch(/Too many attempts/);
 		expect(describeProblem({ type: '/problems/something_new', detail: 'Plain detail.' })).toBe('Plain detail.');
 		expect(describeProblem({ type: '/problems/something_new', title: 'Title only' })).toBe('Title only');

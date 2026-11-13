@@ -59,7 +59,7 @@ const unlockScroll = (doc) => {
 	const body = doc.body;
 	overlayLockCount = Math.max(0, overlayLockCount - 1);
 	if (overlayLockCount === 0) {
-		body.style.overflow = previousOverflow;
+		body.style.overflow = previousOverflow === 'hidden' ? '' : previousOverflow;
 	}
 };
 

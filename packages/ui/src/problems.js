@@ -38,6 +38,7 @@ const DETAIL_FIRST = new Set([
 	'forbidden',
 	'not_found',
 	'catalog_launch_refused',
+	'unauthorized',
 ]);
 
 /**

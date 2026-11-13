@@ -98,6 +98,13 @@ export const catalogRoutes = (service, commerce, identity) => {
 		}),
 		defineRoute({
 			method: 'GET',
+			path: '/docs/openapi.json',
+			auth: 'public',
+			rateLimit: { limit: 120, windowMs: 60_000 },
+			handler: async () => ok(await service.catalogOpenapi()),
+		}),
+		defineRoute({
+			method: 'GET',
 			path: '/v1/docs/:productId',
 			auth: 'public',
 			rateLimit: { limit: 120, windowMs: 60_000 },
@@ -106,6 +113,13 @@ export const catalogRoutes = (service, commerce, identity) => {
 		defineRoute({
 			method: 'GET',
 			path: '/v1/docs/:productId/openapi.json',
+			auth: 'public',
+			rateLimit: { limit: 120, windowMs: 60_000 },
+			handler: async (c) => ok(await service.productOpenapi(/** @type {string} */ (c.params.productId))),
+		}),
+		defineRoute({
+			method: 'GET',
+			path: '/docs/:productId/openapi.json',
 			auth: 'public',
 			rateLimit: { limit: 120, windowMs: 60_000 },
 			handler: async (c) => ok(await service.productOpenapi(/** @type {string} */ (c.params.productId))),

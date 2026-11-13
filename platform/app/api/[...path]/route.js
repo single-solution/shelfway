@@ -36,9 +36,14 @@ export const { GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS } = toNextRoute(
 	async (request) => {
 		const portal = await getPlatform().catch((error) => error);
 		if (portal instanceof Error) return notReady(portal);
-		const path = new URL(request.url).pathname.replace(/^\/api(?=\/)/, '');
+		const url = new URL(request.url);
+		const path = url.pathname.replace(/^\/api(?=\/)/, '');
 		const system = Object.hasOwn(SYSTEM, path) ? SYSTEM[path] : undefined;
 		if (system && (request.method === 'GET' || request.method === 'HEAD')) return system(portal);
+		if (path.startsWith('/docs/') && path.endsWith('/openapi.json')) {
+			url.pathname = `/v1${path}`;
+			return portal.handle(new Request(url.toString(), request));
+		}
 		return portal.handle(request);
 	},
 	{ after },

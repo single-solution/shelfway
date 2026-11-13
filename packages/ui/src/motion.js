@@ -50,11 +50,15 @@ export const usePresence = (open) => {
 			return undefined;
 		}
 		let live = true;
+		const fallback = setTimeout(() => {
+			if (live) setState('closed');
+		}, 350);
 		void Promise.allSettled(running.map((animation) => animation.finished)).then(() => {
 			if (live) setState('closed');
 		});
 		return () => {
 			live = false;
+			clearTimeout(fallback);
 		};
 	}, [state]);
 	return { mounted: state !== 'closed', closing: state === 'closing', ref };

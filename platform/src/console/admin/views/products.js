@@ -102,16 +102,31 @@ function ConnectDialog({ open, title, description, submitLabel, urlRequired, pat
 	const [problem, setProblem] = useState(/** @type {Problem | null} */ (null));
 	const formId = useId();
 
+	useEffect(() => {
+		if (open) {
+			setUrl('');
+			setSecret('');
+			setErrors({});
+			setProblem(null);
+		}
+	}, [open]);
+
 	const submit = async () => {
 		/** @type {Record<string, string>} */
 		const local = {};
-		if (urlRequired && !url.trim()) local.url = PRODUCTS.urlMissing;
-		if (!secret) local.secret = PRODUCTS.secretMissing;
+		const cleanUrl = url.trim();
+		const cleanSecret = secret.trim();
+		if (urlRequired && !cleanUrl) local.url = PRODUCTS.urlMissing;
+		if (!cleanSecret) local.secret = PRODUCTS.secretMissing;
 		setErrors(local);
 		if (Object.keys(local).length > 0) return;
 		setBusy(true);
 		setProblem(null);
-		const result = await apiFetch(path, { method: 'POST', body: { ...(url.trim() ? { url: url.trim() } : {}), secret } });
+		const result = await apiFetch(path, {
+			method: 'POST',
+			body: { ...(cleanUrl ? { url: cleanUrl } : {}), secret: cleanSecret },
+			redirectOn401: false,
+		});
 		setBusy(false);
 		if (!result.ok) {
 			setProblem(result.problem);
@@ -144,6 +159,7 @@ function ConnectDialog({ open, title, description, submitLabel, urlRequired, pat
 			}>
 			<Form id={formId} onSubmit={submit} busy={busy} aria-label={title}>
 				<Input
+					name="product_connect_url"
 					label={urlRequired ? PRODUCTS.url : PRODUCTS.urlOptional}
 					help={urlRequired ? PRODUCTS.urlHelp : PRODUCTS.urlOptionalHelp}
 					type="url"
@@ -156,10 +172,11 @@ function ConnectDialog({ open, title, description, submitLabel, urlRequired, pat
 					required={urlRequired}
 				/>
 				<Input
+					name="product_connect_secret"
 					label={PRODUCTS.secret}
 					help={PRODUCTS.secretHelp}
 					type="password"
-					autoComplete="off"
+					autoComplete="new-password"
 					value={secret}
 					onChange={(e) => setSecret(e.currentTarget.value)}
 					error={errors.secret ?? fields.secret}

@@ -138,7 +138,6 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 	const isDocs = pathname === '/docs' || pathname.startsWith('/docs/');
 	const isAdmin = Boolean(activeSession?.admin || activeSession?.kind === 'admin');
 	const dashboardHref = isAdmin ? '/admin' : '/overview';
-	const dashboardLabel = isAdmin ? 'Admin' : 'Console';
 
 	const handleCloseSignIn = () => {
 		setShowSignInModal(false);
@@ -177,7 +176,6 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 							className="cursor-pointer text-muted hover:text-fg transition font-medium">
 							Contact
 						</a>
-						{activeSession ? <Link href={dashboardHref}>{dashboardLabel}</Link> : null}
 					</nav>
 					{activeSession ? (
 						<Button as={Link} className="cta" href={dashboardHref}>

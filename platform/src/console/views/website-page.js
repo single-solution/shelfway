@@ -750,6 +750,7 @@ export function WebsitePageView({
 				onDone={() => setSharingPack(false)}
 			/>
 			<Dialog
+				placement="center"
 				open={Boolean(revealedPack)}
 				onClose={() => setRevealedPack(null)}
 				title="Website Setup & Credentials"

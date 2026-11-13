@@ -369,7 +369,10 @@ export const createCatalogService = (ctx, options = {}) => {
 				return fail('catalog_target_refused', `The product address was refused (${error.reason}).`);
 			return fail('upstream_error', `The product could not be reached (${error.reason}).`);
 		}
-		if (res.status === 401) fail('unauthorized', 'The product refused the connect secret.');
+		if (res.status === 401)
+			fail('unauthorized', 'The product refused the connect secret.', {
+				errors: [{ path: '/secret', message: 'The product refused the connect secret.' }],
+			});
 		if (res.status === 503)
 			fail('upstream_error', productReason(res.text) ?? 'The product refuses connections: its CONNECT_SECRET is not set.');
 		if (res.status !== 200) fail('upstream_error', `The product answered ${res.status}.`);

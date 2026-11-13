@@ -97,9 +97,11 @@ describe('Docs hub (PLAN §10 B1, B2, B3)', () => {
 			]),
 		);
 
-		// Public GET /v1/docs/:productId/openapi.json
+		// Public GET /v1/docs/:productId/openapi.json & direct /docs/:productId/openapi.json
 		const openapiRes = await h.api.call('GET', `/v1/docs/${product.productId}/openapi.json`);
 		expect(openapiRes.status).toBe(200);
+		const directProductRes = await h.api.call('GET', `/docs/${product.productId}/openapi.json`);
+		expect(directProductRes.status).toBe(200);
 		expect(openapiRes.json).toMatchObject({
 			openapi: '3.1.0',
 			info: { title: `${m.name} API` },
@@ -128,6 +130,8 @@ describe('Docs hub (PLAN §10 B1, B2, B3)', () => {
 
 		const catalogRes = await h.api.call('GET', '/v1/docs/openapi.json');
 		expect(catalogRes.status).toBe(200);
+		const directCatalogRes = await h.api.call('GET', '/docs/openapi.json');
+		expect(directCatalogRes.status).toBe(200);
 		expect(catalogRes.json).toMatchObject({
 			openapi: '3.1.0',
 			info: { title: 'Shelfway Catalog OpenAPI' },
