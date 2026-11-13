@@ -740,6 +740,10 @@ export function DocsHubView({
 	const handleShareDocs = () => {
 		if (typeof window === 'undefined') return;
 		const url = new URL(window.location.href);
+		if (!url.pathname || url.pathname === '/') {
+			url.pathname = '/docs';
+		}
+		url.hash = '';
 		if (token) url.searchParams.set('token', token);
 		else url.searchParams.delete('token');
 		if (website) url.searchParams.set('website', website);
@@ -787,6 +791,8 @@ export function DocsHubView({
 	const filteredOperations = useMemo(() => {
 		const q = searchQuery.trim().toLowerCase();
 		if (!q) return operations;
+		const prodMatches = currentProduct?.name?.toLowerCase().includes(q) || currentProduct?.productId?.toLowerCase().includes(q);
+		if (prodMatches) return operations;
 		return operations.filter(
 			(/** @type {any} */ op) =>
 				op.path.toLowerCase().includes(q) ||
@@ -794,15 +800,15 @@ export function DocsHubView({
 				(op.summary && op.summary.toLowerCase().includes(q)) ||
 				(op.description && op.description.toLowerCase().includes(q)),
 		);
-	}, [operations, searchQuery]);
+	}, [currentProduct, operations, searchQuery]);
 
 	const filteredProducts = useMemo(() => {
 		const q = searchQuery.trim().toLowerCase();
 		if (!q) return catalogItems;
 		return catalogItems.filter((p) => {
 			if (
-				p.name.toLowerCase().includes(q) ||
-				p.productId.toLowerCase().includes(q) ||
+				p.name?.toLowerCase().includes(q) ||
+				p.productId?.toLowerCase().includes(q) ||
 				(p.description && p.description.toLowerCase().includes(q))
 			) {
 				return true;
@@ -1028,17 +1034,21 @@ export function DocsHubView({
 												? prodDetail.operations
 												: prod.operations) || [];
 										const q = searchQuery.trim().toLowerCase();
-										const prodFilteredOps = q
-											? prodRawOps.filter(
-													(/** @type {any} */ op) =>
-														op.path?.toLowerCase().includes(q) ||
-														op.method?.toLowerCase().includes(q) ||
-														(op.summary && op.summary.toLowerCase().includes(q)) ||
-														(op.description && op.description.toLowerCase().includes(q)),
-												)
-											: prodRawOps;
+										const prodMatches =
+											prod.name?.toLowerCase().includes(q) || prod.productId?.toLowerCase().includes(q);
+										const prodFilteredOps =
+											q && !prodMatches
+												? prodRawOps.filter(
+														(/** @type {any} */ op) =>
+															op.path?.toLowerCase().includes(q) ||
+															op.method?.toLowerCase().includes(q) ||
+															(op.summary && op.summary.toLowerCase().includes(q)) ||
+															(op.description && op.description.toLowerCase().includes(q)),
+													)
+												: prodRawOps;
 										const isExpanded =
-											expandedProductIds.has(prod.productId) || (Boolean(q) && prodFilteredOps.length > 0);
+											expandedProductIds.has(prod.productId) ||
+											(Boolean(q) && (prodMatches || prodFilteredOps.length > 0));
 
 										return (
 											<div key={prod.productId} className="space-y-0.5">
@@ -1176,7 +1186,7 @@ export function DocsHubView({
 						</div>
 
 						{/* Fixed Footer in Sidebar with Share Button */}
-						<div className="p-3 border-t border-line bg-surface/95 backdrop-blur-xs shrink-0">
+						<div className="p-3 border-t border-line bg-surface/95 backdrop-blur-sm shrink-0">
 							<Button
 								type="button"
 								size="sm"

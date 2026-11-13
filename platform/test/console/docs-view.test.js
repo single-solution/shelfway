@@ -569,21 +569,53 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 			expect(sidebar.textContent).toContain('/inbox');
 
 			// Check fixed footer Share Docs button
+			let copiedUrl = '';
+			Object.assign(navigator, {
+				clipboard: {
+					writeText: vi.fn((text) => {
+						copiedUrl = text;
+						return Promise.resolve(true);
+					}),
+				},
+			});
+
 			const shareDocsBtn = byText(sidebar, 'Share Docs');
 			expect(shareDocsBtn).not.toBeNull();
 			if (shareDocsBtn) {
 				click(shareDocsBtn);
 				expect(sidebar.textContent).toContain('Copied Share Link');
+				expect(copiedUrl).toContain('/docs?');
+				expect(copiedUrl).toContain('token=scoped_sec_token_888');
+				expect(copiedUrl).toContain('website=mysite.shelfway.com');
+				expect(copiedUrl).toContain('product=accounts');
 			}
 		}
 
 		// Search filtering: search for "sign-in"
 		const searchInput = container.querySelector('input[placeholder*="Search"]');
+		expect(searchInput).not.toBeNull();
 		if (searchInput) {
 			type(searchInput, 'sign-in');
 			// Accounts has sign-in, Chat does not
 			expect(sidebar?.textContent).toContain('/auth/sign-in');
 			expect(sidebar?.textContent).not.toContain('/conversations');
+
+			// Search for product name "accounts": should show all Accounts operations
+			type(searchInput, 'accounts');
+			expect(sidebar?.textContent).toContain('/auth/sign-in');
+			expect(sidebar?.textContent).toContain('/users');
+			expect(sidebar?.textContent).not.toContain('/conversations');
+
+			// Clear search and select an operation under Chat to verify cross-product navigation
+			type(searchInput, '');
+			if (sidebar) {
+				const chatOpBtn = byText(sidebar, '/conversations');
+				expect(chatOpBtn).not.toBeNull();
+				if (chatOpBtn) {
+					click(chatOpBtn);
+					expect(container.textContent).toContain('Start visitor chat conversation');
+				}
+			}
 		}
 
 		cleanup();
