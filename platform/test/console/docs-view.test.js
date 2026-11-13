@@ -237,9 +237,9 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		if (curlTab) click(curlTab);
 		expect(document.body.textContent).toContain('curl -X POST');
 
-		// Back to product overview
-		const backBtn = byText(document.body, '<- Back to Chat Overview');
-		if (backBtn) click(backBtn);
+		// Back to product overview via sidebar
+		const overviewBtn = byText(document.body, 'Overview & Embed');
+		if (overviewBtn) click(overviewBtn);
 		expect(document.body.textContent).toContain('Available API Operations');
 		expect(document.body.textContent).toContain('Active');
 
@@ -306,7 +306,8 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 			click(unlockBtn);
 		}
 
-		expect(document.body.textContent).toContain('Authenticated Documentation');
+		expect(document.body.textContent).toContain('Documentation Hub');
+		expect(document.body.textContent).not.toContain('Authenticated Documentation');
 		cleanup();
 	});
 
@@ -352,7 +353,8 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		const unlockBtn = byText(document.body, 'Unlock Documentation', 'button');
 		click(unlockBtn);
 
-		expect(document.body.textContent).toContain('Authenticated Documentation');
+		expect(document.body.textContent).toContain('Documentation Hub');
+		expect(document.body.textContent).not.toContain('Authenticated Documentation');
 		expect(document.body.textContent).toContain('mysite.com');
 
 		// Click Share Docs button and verify share link copies
@@ -539,7 +541,8 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		);
 
 		// Check restored 2nd header
-		expect(container.textContent).toContain('Authenticated Documentation');
+		expect(container.textContent).toContain('Documentation Hub');
+		expect(container.textContent).not.toContain('Authenticated Documentation');
 		expect(container.textContent).toContain('Merchant Owner (Role: owner)');
 		expect(container.textContent).toContain('Interactive code snippets below are pre-filled with your scoped credentials.');
 		expect(container.textContent).toContain('mysite.shelfway.com');
@@ -559,27 +562,31 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		const accountsBtn = byText(container, 'Accounts');
 		if (accountsBtn) click(accountsBtn);
 
-		// In the DOM, each product's expanded operations must be distinct
+		// Setup clipboard mock
+		let copiedUrl = '';
+		/** @type {HTMLElement | null} */
+		let shareDocsBtn = null;
+		Object.assign(navigator, {
+			clipboard: {
+				writeText: vi.fn((text) => {
+					copiedUrl = text;
+					return Promise.resolve(true);
+				}),
+			},
+		});
+
+		// In the DOM, each product's expanded operations must be distinct and left-aligned without nested indentation
 		const sidebar = container.querySelector('aside');
 		expect(sidebar).not.toBeNull();
 		if (sidebar) {
+			expect(sidebar.querySelector('.border-l')).toBeNull();
 			expect(sidebar.textContent).toContain('/auth/sign-in');
 			expect(sidebar.textContent).toContain('/users');
 			expect(sidebar.textContent).toContain('/conversations');
 			expect(sidebar.textContent).toContain('/inbox');
 
 			// Check fixed footer Share Docs button
-			let copiedUrl = '';
-			Object.assign(navigator, {
-				clipboard: {
-					writeText: vi.fn((text) => {
-						copiedUrl = text;
-						return Promise.resolve(true);
-					}),
-				},
-			});
-
-			const shareDocsBtn = byText(sidebar, 'Share Docs');
+			shareDocsBtn = byText(sidebar, 'Share Docs');
 			expect(shareDocsBtn).not.toBeNull();
 			if (shareDocsBtn) {
 				click(shareDocsBtn);
@@ -588,6 +595,7 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 				expect(copiedUrl).toContain('token=scoped_sec_token_888');
 				expect(copiedUrl).toContain('website=mysite.shelfway.com');
 				expect(copiedUrl).toContain('product=accounts');
+				expect(copiedUrl).not.toContain('view=');
 			}
 		}
 
@@ -614,6 +622,23 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 				if (chatOpBtn) {
 					click(chatOpBtn);
 					expect(container.textContent).toContain('Start visitor chat conversation');
+					expect(container.textContent).toContain('Merchant Owner (Role: owner)');
+					expect(container.textContent).toContain('mysite.shelfway.com');
+					expect(container.textContent).not.toContain('Storefront Access (Public)');
+					expect(container.textContent).not.toContain('Authorization: Browser Token (Public)');
+					expect(container.textContent).not.toContain('<- Back to');
+					// Operation title does not have redundant copy button next to path
+					const opCode = container.querySelector('code.font-mono');
+					expect(opCode?.textContent).toBe('/v1/conversations');
+					expect(opCode?.parentElement?.textContent).not.toContain('Copy');
+
+					// Fixed footer Share Docs button preserves selected product and operation
+					if (shareDocsBtn) {
+						click(shareDocsBtn);
+						expect(sidebar.textContent).toContain('Copied Share Link');
+						expect(copiedUrl).toContain('product=chat');
+						expect(copiedUrl).toContain('op=POST%3A%2Fv1%2Fconversations');
+					}
 				}
 			}
 		}

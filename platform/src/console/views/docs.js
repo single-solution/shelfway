@@ -509,9 +509,6 @@ export function DocsHubView({
 	initialProductDetails = {},
 }) {
 	const brandName = branding?.name || 'Shelfway';
-	const [viewMode, setViewMode] = useState(
-		initialView === 'product' || initialSection?.startsWith('sdk-') ? 'product' : 'store',
-	);
 	const [activeSection, setActiveSection] = useState(
 		initialSection ||
 			(initialProductId
@@ -653,11 +650,10 @@ export function DocsHubView({
 	 * @param {string | null} [pId]
 	 * @param {string | null} [op]
 	 * @param {string} [sec]
-	 * @param {string} [view]
 	 * @param {string} [tok]
 	 * @param {string} [web]
 	 */
-	const syncUrl = (pId, op, sec, view = viewMode, tok = token, web = website) => {
+	const syncUrl = (pId, op, sec, tok = token, web = website) => {
 		if (typeof window === 'undefined') return;
 		const params = new URLSearchParams(window.location.search);
 		if (pId) params.set('product', pId);
@@ -666,8 +662,7 @@ export function DocsHubView({
 		else params.delete('op');
 		if (sec && sec !== 'products' && sec !== 'quickstart') params.set('section', sec);
 		else params.delete('section');
-		if (view && view !== 'store') params.set('view', view);
-		else params.delete('view');
+		params.delete('view');
 		if (tok) params.set('token', tok);
 		else params.delete('token');
 		if (web) params.set('website', web);
@@ -697,7 +692,7 @@ export function DocsHubView({
 		setToken(extractedToken);
 		if (extractedWebsite) setWebsite(extractedWebsite);
 		setTokenInput('');
-		syncUrl(selectedProductId, selectedOpKey, activeSection, viewMode, extractedToken, extractedWebsite);
+		syncUrl(selectedProductId, selectedOpKey, activeSection, extractedToken, extractedWebsite);
 	};
 
 	// Listen for browser forward/back buttons
@@ -706,13 +701,11 @@ export function DocsHubView({
 			const params = new URLSearchParams(window.location.search);
 			const p = params.get('product') || items[0]?.productId || 'chat';
 			const o = params.get('op') || null;
-			const v = params.get('view') || (params.get('section')?.startsWith('sdk-') ? 'product' : 'store');
-			const s = params.get('section') || (v === 'product' ? 'sdk-cli' : 'products');
+			const s = params.get('section') || 'products';
 			const t = params.get('token') || '';
 			const w = params.get('website') || '';
 			setSelectedProductId(p);
 			setSelectedOpKey(o);
-			setViewMode(v === 'product' ? 'product' : 'store');
 			setActiveSection(s);
 			setToken(t);
 			setWebsite(w);
@@ -757,8 +750,7 @@ export function DocsHubView({
 		} else {
 			url.searchParams.delete('section');
 		}
-		if (viewMode && viewMode !== 'store') url.searchParams.set('view', viewMode);
-		else url.searchParams.delete('view');
+		url.searchParams.delete('view');
 		copyText(url.toString());
 		setCopiedNotice('Copied Share Link');
 		setTimeout(() => setCopiedNotice(''), 2500);
@@ -839,7 +831,7 @@ export function DocsHubView({
 			}
 			return next;
 		});
-		syncUrl(productId, null, 'products', viewMode);
+		syncUrl(productId, null, 'products');
 	};
 
 	/**
@@ -857,24 +849,14 @@ export function DocsHubView({
 		if (targetProductId) {
 			setExpandedProductIds((prev) => new Set(prev).add(targetProductId));
 		}
-		syncUrl(targetProductId, normalizedOpKey, 'products', viewMode);
+		syncUrl(targetProductId, normalizedOpKey, 'products');
 	};
 
 	/** @param {string} section */
 	const selectSection = (section) => {
 		setActiveSection(section);
 		setSelectedOpKey(null);
-		syncUrl(selectedProductId, null, section, viewMode);
-	};
-
-	/**
-	 * @param {string} key
-	 * @param {string} text
-	 */
-	const copyCode = (key, text) => {
-		copyText(text);
-		setCopiedNotice(key);
-		setTimeout(() => setCopiedNotice(''), 2000);
+		syncUrl(selectedProductId, null, section);
 	};
 
 	const widgetScriptUrl = currentProduct?.widgetScriptUrl || '';
@@ -1068,18 +1050,25 @@ export function DocsHubView({
 														</span>
 														<span className="truncate">{prod.name}</span>
 													</div>
-													<span className="text-[10px] text-muted font-mono">{`v${prod.version}`}</span>
+													<div className="flex items-center gap-1.5 shrink-0">
+														<span className="text-[10px] text-muted font-mono">{`v${prod.version}`}</span>
+														<Icon
+															name={isExpanded ? 'chevronDown' : 'chevronRight'}
+															size={12}
+															className="text-muted"
+														/>
+													</div>
 												</Button>
 
-												{/* Mega-menu sub-list of product operations */}
+												{/* Product operations accordion group */}
 												{isExpanded ? (
-													<div className="ml-4 pl-2 border-l border-line space-y-0.5 py-1">
+													<div className="space-y-0.5 py-1">
 														<Button
 															type="button"
 															variant="ghost"
 															size="sm"
 															onClick={() => selectOperation('', prod.productId)}
-															className={`flex w-full items-center justify-start gap-1.5 rounded px-2 py-1.5 text-[11px] transition ${
+															className={`flex w-full items-center justify-start gap-1.5 rounded px-2.5 py-1.5 text-[11px] transition ${
 																isSelected && !selectedOpKey && activeSection === 'products'
 																	? 'bg-surface-2 text-primary font-semibold'
 																	: 'text-muted hover:text-fg'
@@ -1101,7 +1090,7 @@ export function DocsHubView({
 																	variant="ghost"
 																	size="sm"
 																	onClick={() => selectOperation(opKey, prod.productId)}
-																	className={`flex w-full items-center justify-between gap-1.5 rounded px-2 py-1.5 text-[11px] truncate transition ${
+																	className={`flex w-full items-center justify-between gap-1.5 rounded px-2.5 py-1.5 text-[11px] truncate transition ${
 																		isOpActive
 																			? 'bg-surface-2 text-primary font-semibold shadow-xs'
 																			: 'text-muted hover:text-fg'
@@ -1131,7 +1120,7 @@ export function DocsHubView({
 														})}
 
 														{prodFilteredOps.length > 40 ? (
-															<p className="px-2 py-1 text-[10px] text-muted italic">
+															<p className="px-2.5 py-1 text-[10px] text-muted italic">
 																+{prodFilteredOps.length - 40} more endpoints in spec
 															</p>
 														) : null}
@@ -1186,7 +1175,7 @@ export function DocsHubView({
 						</div>
 
 						{/* Fixed Footer in Sidebar with Share Button */}
-						<div className="p-3 border-t border-line bg-surface/95 backdrop-blur-sm shrink-0">
+						<div className="p-3 border-t border-line mt-auto shrink-0 bg-surface">
 							<Button
 								type="button"
 								size="sm"
@@ -1201,31 +1190,71 @@ export function DocsHubView({
 
 					{/* Right Content Area: Interactive Swagger & Guides */}
 					<div className="flex-1 min-w-0 w-full space-y-8">
-						{/* Authenticated Context Detail Header */}
+						{/* Detail Header Container */}
 						<div className="rounded-card border border-primary/30 bg-primary/5 p-4 shadow-card">
-							<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-								<div className="space-y-1">
-									<div className="flex flex-wrap items-center gap-2">
-										<span className="text-xs font-semibold text-fg tracking-tight">{brandName} Documentation Hub</span>
-										<Badge tone="success" dot>
-											Authenticated Documentation
-										</Badge>
-										<span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-surface border border-line text-fg">
-											{effectiveActor
-												? `${effectiveActor.name} (Role: ${userRole || 'user'})`
-												: website || 'User Token'}
-										</span>
-										{website && effectiveActor ? (
-											<span className="font-mono text-xs text-muted px-2 py-0.5 rounded bg-surface border border-line">
-												{website}
-											</span>
-										) : null}
-									</div>
-									<p className="text-xs text-muted">
-										Interactive code snippets below are pre-filled with your scoped credentials.
-									</p>
+							<div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+								<div className="space-y-1.5 flex-1 min-w-0">
+									{activeSection === 'products' && currentOperation ? (
+										<>
+											<div className="flex flex-wrap items-center gap-2.5">
+												<span
+													className={`font-mono text-xs px-2.5 py-1 rounded font-bold ${methodColor(
+														currentOperation.method,
+													)}`}>
+													{currentOperation.method}
+												</span>
+												<code className="font-mono text-base font-semibold text-fg">{currentOperation.path}</code>
+												{currentOperation.permission ? (
+													<span className="rounded bg-primary/10 px-2 py-0.5 font-mono text-[11px] text-primary font-semibold">
+														Perm: {currentOperation.permission}
+													</span>
+												) : null}
+												{effectiveActor ? (
+													<span className="font-mono text-[11px] text-muted px-2 py-0.5 rounded bg-surface border border-line">
+														{effectiveActor.name} (Role: {userRole || 'user'})
+													</span>
+												) : !website ? (
+													<span className="font-mono text-[11px] text-muted px-2 py-0.5 rounded bg-surface border border-line">
+														User Token
+													</span>
+												) : null}
+												{website ? (
+													<span className="font-mono text-[11px] text-muted px-2 py-0.5 rounded bg-surface border border-line">
+														{website}
+													</span>
+												) : null}
+											</div>
+											{currentOperation.summary ? (
+												<h1 className="text-lg font-bold text-fg tracking-tight">{currentOperation.summary}</h1>
+											) : null}
+											{currentOperation.description ? (
+												<p className="text-xs text-muted leading-relaxed">{currentOperation.description}</p>
+											) : null}
+										</>
+									) : (
+										<>
+											<div className="flex flex-wrap items-center gap-2">
+												<span className="text-xs font-semibold text-fg tracking-tight">
+													{brandName} Documentation Hub
+												</span>
+												<span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-surface border border-line text-fg">
+													{effectiveActor
+														? `${effectiveActor.name} (Role: ${userRole || 'user'})`
+														: website || 'User Token'}
+												</span>
+												{website && effectiveActor ? (
+													<span className="font-mono text-xs text-muted px-2 py-0.5 rounded bg-surface border border-line">
+														{website}
+													</span>
+												) : null}
+											</div>
+											<p className="text-xs text-muted">
+												Interactive code snippets below are pre-filled with your scoped credentials.
+											</p>
+										</>
+									)}
 								</div>
-								<div className="flex items-center gap-2">
+								<div className="flex items-center gap-2 shrink-0">
 									{token ? (
 										<Button
 											type="button"
@@ -1246,7 +1275,7 @@ export function DocsHubView({
 										onClick={() => {
 											setToken('');
 											setClientActor(null);
-											syncUrl(selectedProductId, selectedOpKey, activeSection, viewMode, '', website);
+											syncUrl(selectedProductId, selectedOpKey, activeSection, '', website);
 										}}>
 										Lock / Change
 									</Button>
@@ -1648,98 +1677,27 @@ export function DocsHubView({
 						{/* 5. Single Operation Interactive Swagger Documentation */}
 						{activeSection === 'products' && currentOperation ? (
 							<section className="space-y-6">
-								{/* Operation Header */}
-								<div className="space-y-3 border-b border-line pb-6">
-									<div className="flex items-center gap-2">
-										<Button
-											size="sm"
-											variant="ghost"
-											onClick={() => selectOperation('')}
-											className="text-xs text-muted hover:text-fg flex items-center gap-1.5 transition font-medium p-0 h-auto">
-											&lt;- Back to {currentProduct?.name || 'Product'} Overview
-										</Button>
-									</div>
-
-									<div className="flex flex-wrap items-center gap-2.5">
-										<span
-											className={`font-mono text-xs px-2.5 py-1 rounded font-bold ${methodColor(
-												currentOperation.method,
-											)}`}>
-											{currentOperation.method}
-										</span>
-										<code className="font-mono text-base font-semibold text-fg">{currentOperation.path}</code>
-										<Button
-											size="sm"
-											variant="secondary"
-											onClick={() => copyCode('path', currentOperation.path)}
-											className="text-xs text-muted hover:text-fg">
-											{copiedNotice === 'path' ? 'Copied' : 'Copy'}
-										</Button>
-										{(() => {
-											const isStorefront =
-												currentOperation.auth === 'browser' ||
-												currentOperation.auth === 'visitor' ||
-												!currentOperation.auth;
-											const hasAccess = isStorefront || isProductRoleAllowed;
-											return (
-												<Badge tone={hasAccess ? 'success' : 'warning'} dot>
-													{isStorefront
-														? 'Storefront Access (Public)'
-														: hasAccess
-															? 'Access Granted (Staff)'
-															: 'Role Restricted: Developer Required'}
-												</Badge>
-											);
-										})()}
-									</div>
-
-									{currentOperation.summary ? (
-										<h2 className="text-lg font-bold text-fg">{currentOperation.summary}</h2>
-									) : null}
-
-									{currentOperation.description ? (
-										<p className="text-xs text-muted leading-relaxed">{currentOperation.description}</p>
-									) : null}
-
-									{/* Security & Authentication Notice */}
-									<div className="flex flex-wrap items-center gap-2 pt-2">
-										<span className="text-xs text-muted font-medium">Authorization:</span>
-										<span className="rounded bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-fg border border-line">
-											{currentOperation.auth === 'server'
-												? 'Authorization: Bearer <serverToken>'
-												: currentOperation.auth === 'browser'
-													? 'Browser Token (Public)'
-													: 'Staff Ticket'}
-										</span>
-										{currentOperation.permission ? (
-											<span className="rounded bg-primary/10 px-2 py-0.5 font-mono text-[11px] text-primary font-semibold">
-												Perm: {currentOperation.permission}
-											</span>
-										) : null}
-									</div>
-
-									{(() => {
-										const isStorefront =
-											currentOperation.auth === 'browser' ||
-											currentOperation.auth === 'visitor' ||
-											!currentOperation.auth;
-										if (!isStorefront && !isProductRoleAllowed) {
-											return (
-												<div className="mt-3 rounded-card border border-warning/40 bg-surface p-4 space-y-2 shadow-card">
-													<div className="flex items-center gap-2 text-warning font-semibold text-xs">
-														<Icon name="shield" size={15} />
-														<span>Role Restricted Access</span>
-													</div>
-													<p className="text-xs text-muted leading-relaxed">
-														This operation requires <strong>Developer</strong> or <strong>Owner</strong> privileges.
-														Your current role is <code className="font-mono text-fg">{userRole}</code>.
-													</p>
+								{(() => {
+									const isStorefront =
+										currentOperation.auth === 'browser' ||
+										currentOperation.auth === 'visitor' ||
+										!currentOperation.auth;
+									if (!isStorefront && !isProductRoleAllowed) {
+										return (
+											<div className="rounded-card border border-warning/40 bg-surface p-4 space-y-2 shadow-card">
+												<div className="flex items-center gap-2 text-warning font-semibold text-xs">
+													<Icon name="shield" size={15} />
+													<span>Role Restricted Access</span>
 												</div>
-											);
-										}
-										return null;
-									})()}
-								</div>
+												<p className="text-xs text-muted leading-relaxed">
+													This operation requires <strong>Developer</strong> or <strong>Owner</strong> privileges.
+													Your current role is <code className="font-mono text-fg">{userRole}</code>.
+												</p>
+											</div>
+										);
+									}
+									return null;
+								})()}
 
 								{/* Parameters List */}
 								{currentOperation.parameters && currentOperation.parameters.length > 0 ? (
