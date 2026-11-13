@@ -1254,32 +1254,6 @@ export function DocsHubView({
 										</>
 									)}
 								</div>
-								<div className="flex items-center gap-2 shrink-0">
-									{token ? (
-										<Button
-											type="button"
-											size="sm"
-											variant="secondary"
-											onClick={() => {
-												copyText(token);
-												setCopiedNotice('Copied Token');
-												setTimeout(() => setCopiedNotice(''), 2000);
-											}}>
-											{copiedNotice === 'Copied Token' ? 'Copied Token!' : 'Copy Token'}
-										</Button>
-									) : null}
-									<Button
-										type="button"
-										size="sm"
-										variant="ghost"
-										onClick={() => {
-											setToken('');
-											setClientActor(null);
-											syncUrl(selectedProductId, selectedOpKey, activeSection, '', website);
-										}}>
-										Lock / Change
-									</Button>
-								</div>
 							</div>
 						</div>
 						{/* Role Restricted Banner when accessing restricted SDK guides without permissions */}

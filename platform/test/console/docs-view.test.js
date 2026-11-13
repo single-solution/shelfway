@@ -547,13 +547,9 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		expect(container.textContent).toContain('Interactive code snippets below are pre-filled with your scoped credentials.');
 		expect(container.textContent).toContain('mysite.shelfway.com');
 
-		// Check Copy Token button in restored header
-		const copyTokenBtn = byText(container, 'Copy Token', 'button');
-		expect(copyTokenBtn).not.toBeNull();
-		if (copyTokenBtn) {
-			click(copyTokenBtn);
-			expect(container.textContent).toContain('Copied Token');
-		}
+		// Verify redundant Copy Token and Lock / Change buttons are completely removed
+		expect(container.textContent).not.toContain('Copy Token');
+		expect(container.textContent).not.toContain('Lock / Change');
 
 		// Expand Chat as well as Accounts
 		const chatBtn = byText(container, 'Chat');
