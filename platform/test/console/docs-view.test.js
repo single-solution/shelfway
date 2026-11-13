@@ -857,4 +857,101 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 
 		cleanup();
 	});
+
+	it('renders cohesive Swagger response card with status badge, view switcher between Example JSON and Schema / Types, and clean sidebar full-width buttons', async () => {
+		const fullChatProduct = {
+			...sampleProduct,
+			operations: [
+				{
+					method: 'POST',
+					path: '/v1/conversations',
+					summary: 'Start visitor chat conversation',
+					auth: 'browser',
+					permission: '',
+					feature: 'always',
+					description: 'Create a new visitor conversation thread.',
+					requestBody: {
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										message: { type: 'string', description: 'Initial message' },
+									},
+								},
+							},
+						},
+					},
+					responses: {
+						200: {
+							description: 'Conversation initiated successfully',
+							content: {
+								'application/json': {
+									schema: {
+										type: 'object',
+										properties: {
+											conversationId: { type: 'string', description: 'Unique conversation identifier' },
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			],
+		};
+
+		const { container } = render(
+			<DocsHubView
+				branding={branding}
+				items={[fullChatProduct]}
+				initialProductId="chat"
+				initialOpKey="POST:/v1/conversations"
+				initialToken="test_token"
+			/>,
+		);
+
+		// 1. Check sidebar buttons have full-width block classes
+		const sidebar = container.querySelector('aside');
+		expect(sidebar).not.toBeNull();
+		if (!sidebar) throw new Error('sidebar missing');
+		const opBtn = byText(sidebar, '/conversations').closest('button');
+		expect(opBtn).not.toBeNull();
+		expect(opBtn?.className).toContain('w-full');
+		expect(opBtn?.className).toContain('justify-between');
+
+		// 2. Check Swagger Responses card has status badge and description
+		expect(container.textContent).toContain('200 OK');
+		expect(container.textContent).toContain('Conversation initiated successfully');
+		expect(container.textContent).not.toContain('HTTP 200 Response Payload');
+
+		// 3. Check view switcher defaults to Example JSON
+		const exampleBtn = byText(container, 'Example JSON', 'button');
+		const schemaBtn = byText(container, 'Schema / Types', 'button');
+		expect(exampleBtn).not.toBeNull();
+		expect(schemaBtn).not.toBeNull();
+		expect(container.textContent).toContain('conversationId');
+
+		// 4. Toggle to Schema / Types
+		if (schemaBtn) {
+			click(schemaBtn);
+			expect(container.textContent).toContain('Field');
+			expect(container.textContent).toContain('Type');
+			expect(container.textContent).toContain('Unique conversation identifier');
+		}
+
+		// 5. Toggle back to Example JSON
+		if (exampleBtn) {
+			click(exampleBtn);
+			expect(container.textContent).toContain('conversationId');
+		}
+
+		// 6. Check Code Snippets do NOT have redundant labels
+		expect(container.textContent).toContain('cURL');
+		expect(container.textContent).not.toContain('cURL Command');
+		expect(container.textContent).not.toContain('JavaScript Fetch Example');
+		expect(container.textContent).not.toContain('Python Requests Example');
+
+		cleanup();
+	});
 });

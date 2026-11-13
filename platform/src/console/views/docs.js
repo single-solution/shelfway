@@ -179,6 +179,29 @@ function methodColor(method) {
 	}
 }
 
+/**
+ * Clean HTTP status code and text label.
+ * @param {string | number} code
+ */
+function statusLabel(code) {
+	const c = String(code);
+	/** @type {Record<string, string>} */
+	const labels = {
+		200: '200 OK',
+		201: '201 Created',
+		202: '202 Accepted',
+		204: '204 No Content',
+		400: '400 Bad Request',
+		401: '401 Unauthorized',
+		403: '403 Forbidden',
+		404: '404 Not Found',
+		409: '409 Conflict',
+		422: '422 Unprocessable',
+		500: '500 Server Error',
+	};
+	return labels[c] || `${c} Response`;
+}
+
 const STATIC_SDK_GUIDES = [
 	{
 		id: 'cli',
@@ -1510,6 +1533,7 @@ export function DocsHubView({
 	const [tokenInput, setTokenInput] = useState('');
 	const [activeSnippetTab, setActiveSnippetTab] = useState('curl');
 	const [activeResponseStatus, setActiveResponseStatus] = useState('200');
+	const [responseViewTab, setResponseViewTab] = useState('example');
 	const [searchQuery, setSearchQuery] = useState('');
 	const [copiedNotice, setCopiedNotice] = useState('');
 	const [clientActor, setClientActor] = useState(/** @type {any} */ (null));
@@ -1984,6 +2008,7 @@ export function DocsHubView({
 								className="text-xs h-9"
 							/>
 							<Button
+								block
 								type="button"
 								variant="primary"
 								size="md"
@@ -2043,11 +2068,12 @@ export function DocsHubView({
 									Getting Started
 								</p>
 								<Button
+									block
 									type="button"
 									variant="ghost"
 									size="sm"
 									onClick={() => selectSection('quickstart')}
-									className={`flex w-full items-center justify-start gap-2 rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
+									className={`w-full !flex !items-center !justify-start gap-2 rounded-control px-2.5 py-2 text-xs font-medium text-left transition shelfway-motion ${
 										activeSection === 'quickstart'
 											? 'bg-primary/10 text-primary font-semibold shadow-xs'
 											: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
@@ -2056,11 +2082,12 @@ export function DocsHubView({
 									<span>Quickstart Guide</span>
 								</Button>
 								<Button
+									block
 									type="button"
 									variant="ghost"
 									size="sm"
 									onClick={() => selectSection('tokens')}
-									className={`flex w-full items-center justify-start gap-2 rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
+									className={`w-full !flex !items-center !justify-start gap-2 rounded-control px-2.5 py-2 text-xs font-medium text-left transition shelfway-motion ${
 										activeSection === 'tokens'
 											? 'bg-primary/10 text-primary font-semibold shadow-xs'
 											: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
@@ -2131,17 +2158,18 @@ export function DocsHubView({
 											return (
 												<Button
 													key={opKey}
+													block
 													type="button"
 													variant="ghost"
 													size="sm"
 													onClick={() => selectOperation(opKey, prod.productId)}
-													className={`flex w-full items-center justify-between gap-1.5 rounded px-2.5 py-1.5 text-[11px] truncate transition ${
+													className={`w-full !flex !items-center !justify-between gap-1.5 rounded px-2.5 py-1.5 text-[11px] text-left transition ${
 														isOpActive
 															? 'bg-surface-2 text-primary font-semibold shadow-xs'
 															: 'text-muted hover:text-fg'
 													}`}
 													title={`${op.method} ${op.path}`}>
-													<div className="flex items-center gap-1.5 truncate">
+													<div className="flex items-center gap-1.5 truncate min-w-0 flex-1">
 														<span
 															className={`font-mono text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0 ${methodColor(
 																op.method,
@@ -2151,7 +2179,7 @@ export function DocsHubView({
 														<span className="truncate font-mono">{op.path.replace(/^\/v1/, '')}</span>
 													</div>
 													<span
-														className={`font-mono text-[8px] px-1 rounded uppercase font-bold shrink-0 ${
+														className={`font-mono text-[8px] px-1 rounded uppercase font-bold shrink-0 ml-auto ${
 															isStorefront
 																? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10'
 																: hasAccess
@@ -2167,22 +2195,23 @@ export function DocsHubView({
 										return (
 											<div key={prod.productId} className="space-y-0.5">
 												<Button
+													block
 													type="button"
 													variant="ghost"
 													size="sm"
 													onClick={() => selectProduct(prod.productId)}
-													className={`flex w-full items-center justify-between rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
+													className={`w-full !flex !items-center !justify-between rounded-control px-2.5 py-2 text-xs font-medium text-left transition shelfway-motion ${
 														isSelected && !selectedOpKey && activeSection === 'products'
 															? 'bg-primary/10 text-primary font-semibold shadow-xs'
 															: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
 													}`}>
-													<div className="flex items-center gap-2 truncate">
+													<div className="flex items-center gap-2 truncate min-w-0 flex-1">
 														<span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-surface-2 font-mono text-[10px] text-primary font-bold border border-line">
 															{prod.name.slice(0, 1)}
 														</span>
 														<span className="truncate">{prod.name}</span>
 													</div>
-													<div className="flex items-center gap-1.5 shrink-0">
+													<div className="flex items-center gap-1.5 shrink-0 ml-auto">
 														<span className="text-[10px] text-muted font-mono">{`v${prod.version}`}</span>
 														<Icon
 															name={isExpanded ? 'chevronDown' : 'chevronRight'}
@@ -2196,11 +2225,12 @@ export function DocsHubView({
 												{isExpanded ? (
 													<div className="space-y-0.5 py-1">
 														<Button
+															block
 															type="button"
 															variant="ghost"
 															size="sm"
 															onClick={() => selectOperation('', prod.productId)}
-															className={`flex w-full items-center justify-start gap-1.5 rounded px-2.5 py-1.5 text-[11px] transition ${
+															className={`w-full !flex !items-center !justify-start gap-1.5 rounded px-2.5 py-1.5 text-[11px] text-left transition ${
 																isSelected && !selectedOpKey && activeSection === 'products'
 																	? 'bg-surface-2 text-primary font-semibold'
 																	: 'text-muted hover:text-fg'
@@ -2260,21 +2290,22 @@ export function DocsHubView({
 								{STATIC_SDK_GUIDES.map((guide) => (
 									<Button
 										key={guide.id}
+										block
 										type="button"
 										variant="ghost"
 										size="sm"
 										onClick={() => selectSection(`sdk-${guide.id}`)}
-										className={`flex w-full items-center justify-between rounded-control px-2.5 py-2 text-xs font-medium transition shelfway-motion ${
+										className={`w-full !flex !items-center !justify-between rounded-control px-2.5 py-2 text-xs font-medium text-left transition shelfway-motion ${
 											activeSection === `sdk-${guide.id}`
 												? 'bg-primary/10 text-primary font-semibold shadow-xs'
 												: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
 										}`}>
-										<div className="flex items-center gap-2">
+										<div className="flex items-center gap-2 truncate min-w-0 flex-1">
 											<Icon name="code" size={15} />
 											<span className="truncate">{guide.title.split(' ')[0]}</span>
 										</div>
 										<span
-											className={`text-[9px] font-mono font-semibold ${
+											className={`text-[9px] font-mono font-semibold shrink-0 ml-auto ${
 												isProductRoleAllowed ? 'text-primary' : 'text-amber-600 dark:text-amber-400'
 											}`}>
 											{isProductRoleAllowed ? 'Dev' : 'Restricted'}
@@ -2287,10 +2318,11 @@ export function DocsHubView({
 						{/* Fixed Footer in Sidebar with Share Button */}
 						<div className="p-3 border-t border-line mt-auto shrink-0 bg-surface">
 							<Button
+								block
 								type="button"
 								size="sm"
 								variant="primary"
-								className="w-full justify-center"
+								className="w-full !justify-center"
 								onClick={handleShareDocs}
 								icon={<Icon name={copiedNotice === 'Copied Share Link' ? 'check' : 'link'} size={14} />}>
 								{copiedNotice === 'Copied Share Link' ? 'Copied Share Link!' : 'Share Docs'}
@@ -2701,13 +2733,14 @@ export function DocsHubView({
 											return (
 												<Button
 													key={opKey}
+													block
 													type="button"
 													variant="ghost"
 													onClick={() => selectOperation(opKey)}
-													className="flex w-full items-center justify-between p-3.5 text-left hover:bg-surface-2 transition group rounded-none h-auto">
-													<div className="flex items-center gap-3 truncate">
+													className="w-full !flex !items-center !justify-between p-3.5 text-left hover:bg-surface-2 transition group rounded-none h-auto">
+													<div className="flex items-center gap-3 truncate min-w-0 flex-1">
 														<span
-															className={`font-mono text-[10px] px-2 py-0.5 rounded font-bold ${methodColor(
+															className={`font-mono text-[10px] px-2 py-0.5 rounded font-bold shrink-0 ${methodColor(
 																op.method,
 															)}`}>
 															{op.method}
@@ -2716,7 +2749,7 @@ export function DocsHubView({
 															{op.path}
 														</span>
 													</div>
-													<span className="text-xs text-muted truncate ml-4 max-w-sm">{op.summary}</span>
+													<span className="text-xs text-muted truncate ml-4 max-w-sm shrink-0">{op.summary}</span>
 												</Button>
 											);
 										})}
@@ -2945,72 +2978,120 @@ export function DocsHubView({
 								<div className="space-y-3">
 									<div className="flex items-center justify-between">
 										<h3 className="text-sm font-semibold">Responses</h3>
-										<span className="text-xs text-muted">HTTP Status &amp; Output Structure</span>
-									</div>
-									<div className="flex items-center gap-1.5 border-b border-line pb-2">
-										{Object.keys(currentOperation.responses || { 200: { description: 'Success' } }).map((status) => (
-											<Button
-												key={status}
-												type="button"
-												size="sm"
-												variant={activeResponseStatus === status ? 'primary' : 'secondary'}
-												onClick={() => setActiveResponseStatus(status)}
-												className="font-mono text-xs">
-												{status}
-											</Button>
-										))}
+										{Object.keys(currentOperation.responses || {}).length > 1 ? (
+											<div className="flex items-center gap-1.5">
+												{Object.keys(currentOperation.responses || {}).map((status) => (
+													<Button
+														key={status}
+														type="button"
+														size="sm"
+														variant={activeResponseStatus === status ? 'primary' : 'secondary'}
+														onClick={() => setActiveResponseStatus(status)}
+														className="font-mono text-xs">
+														{status}
+													</Button>
+												))}
+											</div>
+										) : (
+											<span className="text-xs text-muted">HTTP Status &amp; Output Structure</span>
+										)}
 									</div>
 
 									{sampleResponsePayload ? (
-										<div className="space-y-3">
-											<p className="text-xs text-muted font-medium">
-												{sampleResponsePayload.description || `HTTP ${activeResponseStatus} Response`}
-											</p>
-
-											{/* Output Structure Table */}
-											{responseBodyProperties.length > 0 ? (
-												<div
-													className="rounded-card border border-line bg-surface overflow-hidden shadow-card"
-													role="table"
-													aria-label="Response Output Structure">
-													<div
-														className="grid grid-cols-12 border-b border-line bg-surface-2 p-2.5 text-xs font-semibold text-muted"
-														role="row">
-														<div className="col-span-4" role="columnheader">
-															Field
-														</div>
-														<div className="col-span-3" role="columnheader">
-															Type
-														</div>
-														<div className="col-span-5" role="columnheader">
-															Description
-														</div>
-													</div>
-													<div className="divide-y divide-line text-xs" role="rowgroup">
-														{responseBodyProperties.map((prop) => (
-															<div
-																key={prop.name}
-																className="grid grid-cols-12 p-2.5 items-center hover:bg-surface-2/50 transition"
-																role="row">
-																<div className="col-span-4 font-mono font-medium text-fg" role="cell">
-																	{prop.name}
-																</div>
-																<div className="col-span-3 font-mono text-primary font-medium" role="cell">
-																	{prop.type}
-																</div>
-																<div className="col-span-5 text-muted" role="cell">
-																	{prop.description || '-'}
-																</div>
-															</div>
-														))}
-													</div>
+										<div className="rounded-card border border-line bg-surface overflow-hidden shadow-card">
+											{/* Top of response card: Status badge + response description + view switcher */}
+											<div className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-surface-2/60 px-4 py-3">
+												<div className="flex items-center gap-2.5">
+													<Badge
+														tone={
+															activeResponseStatus.startsWith('2')
+																? 'success'
+																: activeResponseStatus.startsWith('4')
+																	? 'warning'
+																	: activeResponseStatus.startsWith('5')
+																		? 'danger'
+																		: 'neutral'
+														}
+														className="font-mono font-bold">
+														{statusLabel(activeResponseStatus)}
+													</Badge>
+													<span className="text-xs font-medium text-fg">
+														{sampleResponsePayload.description || `HTTP ${activeResponseStatus} Response`}
+													</span>
 												</div>
-											) : null}
 
-											<CodeBlock
-												code={JSON.stringify(sampleResponsePayload.payload, null, 2)}
-												label={`HTTP ${activeResponseStatus} Response Payload`}
-											/>
+												{/* View switcher between "Example JSON" and "Schema / Types" */}
+												<div className="flex items-center rounded bg-surface p-0.5 text-xs border border-line">
+													<Button
+														type="button"
+														size="sm"
+														variant={responseViewTab === 'example' ? 'secondary' : 'ghost'}
+														onClick={() => setResponseViewTab('example')}
+														className="font-medium text-xs">
+														Example JSON
+													</Button>
+													<Button
+														type="button"
+														size="sm"
+														variant={responseViewTab === 'schema' ? 'secondary' : 'ghost'}
+														onClick={() => setResponseViewTab('schema')}
+														className="font-medium text-xs">
+														Schema / Types
+													</Button>
+												</div>
+											</div>
+
+											{/* Inside response card */}
+											<div className="p-4">
+												{responseViewTab === 'example' ? (
+													sampleResponsePayload.payload !== null && sampleResponsePayload.payload !== undefined ? (
+														<CodeBlock code={JSON.stringify(sampleResponsePayload.payload, null, 2)} />
+													) : (
+														<p className="text-xs text-muted italic">No example payload defined.</p>
+													)
+												) : responseBodyProperties.length > 0 ? (
+													<div
+														className="rounded-control border border-line bg-surface overflow-hidden"
+														role="table"
+														aria-label="Response Output Structure">
+														<div
+															className="grid grid-cols-12 border-b border-line bg-surface-2 p-2.5 text-xs font-semibold text-muted"
+															role="row">
+															<div className="col-span-4" role="columnheader">
+																Field
+															</div>
+															<div className="col-span-3" role="columnheader">
+																Type
+															</div>
+															<div className="col-span-5" role="columnheader">
+																Description
+															</div>
+														</div>
+														<div className="divide-y divide-line text-xs" role="rowgroup">
+															{responseBodyProperties.map((prop) => (
+																<div
+																	key={prop.name}
+																	className="grid grid-cols-12 p-2.5 items-center hover:bg-surface-2/50 transition"
+																	role="row">
+																	<div className="col-span-4 font-mono font-medium text-fg" role="cell">
+																		{prop.name}
+																	</div>
+																	<div className="col-span-3 font-mono text-primary font-medium" role="cell">
+																		{prop.type}
+																	</div>
+																	<div className="col-span-5 text-muted" role="cell">
+																		{prop.description || '-'}
+																	</div>
+																</div>
+															))}
+														</div>
+													</div>
+												) : (
+													<p className="text-xs text-muted italic">
+														No schema properties defined for this response.
+													</p>
+												)}
+											</div>
 										</div>
 									) : null}
 								</div>
@@ -3056,7 +3137,6 @@ export function DocsHubView({
 													? ` \\\n  -d '${JSON.stringify(sampleRequestPayload || {})}'`
 													: ''
 											}`}
-											label="cURL Command"
 										/>
 									) : activeSnippetTab === 'fetch' ? (
 										<CodeBlock
@@ -3065,7 +3145,6 @@ export function DocsHubView({
 													? `,\n  body: JSON.stringify(${JSON.stringify(sampleRequestPayload || {}, null, 2)})`
 													: ''
 											}\n});\nconst data = await response.json();\nconsole.log(data);`}
-											label="JavaScript Fetch Example"
 										/>
 									) : (
 										<CodeBlock
@@ -3078,7 +3157,6 @@ export function DocsHubView({
 														)}\nresponse = requests.${currentOperation.method.toLowerCase()}(url, json=payload, headers=headers)`
 													: `response = requests.${currentOperation.method.toLowerCase()}(url, headers=headers)`
 											}\nprint(response.json())`}
-											label="Python Requests Example"
 										/>
 									)}
 								</div>
