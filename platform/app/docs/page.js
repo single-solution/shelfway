@@ -89,7 +89,16 @@ export default async function DocsPage({ searchParams }) {
 					items={items}
 					actor={
 						session?.ok
-							? session.actor || session.me || (session.admin ? { role: 'owner', name: 'Admin', admin: true } : null)
+							? session.actor ||
+								session.me ||
+								(session.admin
+									? {
+											role: session.admin.role || 'owner',
+											name: session.admin.name || 'Admin',
+											admin: true,
+											id: session.admin.id || 'admin',
+										}
+									: null)
 							: null
 					}
 					initialProductId={initialProduct}

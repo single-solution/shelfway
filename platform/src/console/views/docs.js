@@ -116,12 +116,25 @@ export function extractSchemaProperties(schema, components, visited = new Set())
 		/** @type {Array<{ name: string, type: string, required: boolean, description: string, example?: any }>} */
 		const list = [];
 		const requiredSet = new Set(Array.isArray(resolved.required) ? resolved.required : []);
+
+		if (resolved.type === 'array' && resolved.items) {
+			const itemProps = extractSchemaProperties(resolved.items, components, visited);
+			for (const p of itemProps) {
+				list.push({
+					...p,
+					name: `[].${p.name}`,
+				});
+			}
+			return list;
+		}
+
 		if (resolved.properties && typeof resolved.properties === 'object') {
 			for (const [name, prop] of Object.entries(resolved.properties)) {
 				const p = /** @type {any} */ (prop);
 				let typeStr = p.type || (p.enum ? 'enum' : 'string');
 				if (p.type === 'array') {
-					typeStr = `array[${p.items?.type || 'string'}]`;
+					const itemType = p.items?.type || (p.items?.$ref ? p.items.$ref.split('/').pop() : 'string');
+					typeStr = `array[${itemType}]`;
 				}
 				const desc = p.description || (p.enum ? `One of: ${p.enum.join(', ')}` : p.format ? `format: ${p.format}` : '');
 				list.push({
@@ -1584,12 +1597,26 @@ export function DocsHubView({
 						// best effort token loading
 					}
 				}
+				setToken((prev) => {
+					if (prev) return prev;
+					const r = isAdm ? d.admin?.role || 'owner' : d.actor?.role || 'owner';
+					const u = isAdm ? d.admin?.id || 'admin' : d.actor?.id || mId || 'user';
+					return `tok_${r}_${u}`;
+				});
 			}
 		});
 		return () => {
 			cancelled = true;
 		};
 	}, [actor, initialToken]);
+
+	useEffect(() => {
+		if (actor && !token) {
+			const r = actor.role || (actor.admin ? 'owner' : 'owner');
+			const u = actor.id || actor.merchantId || (actor.admin ? 'admin' : 'viewer');
+			setToken((prev) => prev || `tok_${r}_${u}`);
+		}
+	}, [actor, token]);
 
 	const effectiveActor = actor || clientActor;
 	const userRole = effectiveActor?.role || (effectiveActor?.admin ? 'owner' : null);
@@ -1636,9 +1663,14 @@ export function DocsHubView({
 		if (sec && sec !== 'products' && sec !== 'quickstart') params.set('section', sec);
 		else params.delete('section');
 		params.delete('view');
-		if (tok) params.set('token', tok);
+		const resolvedTok =
+			tok ||
+			token ||
+			params.get('token') ||
+			(effectiveActor ? `tok_${userRole || 'owner'}_${effectiveActor.id || effectiveActor.merchantId || 'viewer'}` : '');
+		if (resolvedTok) params.set('token', resolvedTok);
 		else params.delete('token');
-		if (web) params.set('website', web);
+		if (web || website) params.set('website', web || website);
 		else params.delete('website');
 		const qs = params.toString();
 		const nextUrl = `${window.location.pathname}${qs ? `?${qs}` : ''}`;
@@ -1711,7 +1743,7 @@ export function DocsHubView({
 		}
 		url.hash = '';
 
-		let shareToken = token;
+		let shareToken = token || url.searchParams.get('token');
 		if (!shareToken) {
 			const role = userRole || effectiveActor?.role || 'user';
 			const uid = effectiveActor?.id || effectiveActor?.merchantId || 'viewer';
@@ -1735,6 +1767,7 @@ export function DocsHubView({
 		copyText(url.toString());
 		setCopiedNotice('Copied Share Link');
 		setTimeout(() => setCopiedNotice(''), 2500);
+		syncUrl(selectedProductId, selectedOpKey, activeSection, shareToken, website);
 	};
 
 	const currentOperation = useMemo(() => {
@@ -1749,8 +1782,16 @@ export function DocsHubView({
 		const result = [];
 		const seen = new Set();
 		for (const p of rawParams) {
-			const paramObj = p.name ? p : p.$ref ? { name: p.$ref.split('/').pop(), in: 'query', schema: { type: 'string' } } : p;
-			if (paramObj.name) {
+			let paramObj = p;
+			if (p.$ref && typeof p.$ref === 'string') {
+				const refName = p.$ref.replace('#/components/parameters/', '');
+				paramObj = currentProduct?.components?.parameters?.[refName] || {
+					name: refName,
+					in: 'query',
+					schema: { type: 'string' },
+				};
+			}
+			if (paramObj?.name) {
 				seen.add(paramObj.name);
 				result.push({
 					name: paramObj.name,
@@ -1778,7 +1819,7 @@ export function DocsHubView({
 			}
 		}
 		return result;
-	}, [currentOperation]);
+	}, [currentOperation, currentProduct]);
 
 	const requestBodyProperties = useMemo(() => {
 		const reqSchema = currentOperation?.requestBody?.content?.['application/json']?.schema;
@@ -1812,6 +1853,15 @@ export function DocsHubView({
 		if (!respSchema) return [];
 		return extractSchemaProperties(respSchema, currentProduct?.components);
 	}, [currentOperation, currentProduct, activeResponseStatus]);
+
+	useEffect(() => {
+		if (currentOperation?.responses) {
+			const statuses = Object.keys(currentOperation.responses);
+			if (statuses.length > 0 && !statuses.includes(activeResponseStatus)) {
+				setActiveResponseStatus(statuses[0] || '200');
+			}
+		}
+	}, [currentOperation, activeResponseStatus]);
 
 	// Filtered operations based on search query
 	const filteredOperations = useMemo(() => {
@@ -2880,7 +2930,9 @@ export function DocsHubView({
 													))}
 												</div>
 											</div>
-										) : null}
+										) : (
+											<p className="text-xs text-muted italic">No schema properties defined in specification.</p>
+										)}
 
 										<CodeBlock
 											code={JSON.stringify(sampleRequestPayload || {}, null, 2)}

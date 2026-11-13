@@ -2,7 +2,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import { byText, cleanup, click, render, type } from '@shelfway/ui/testing';
-import { DocsHubView, sampleFromSchema } from '../../src/console/views/docs.js';
+import { DocsHubView, extractSchemaProperties, sampleFromSchema } from '../../src/console/views/docs.js';
 import { SiteHeader } from '../../app/_components/SiteNav.js';
 import * as loaders from '../../src/console/loaders.js';
 
@@ -776,6 +776,84 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		expect(container.textContent).toContain('cURL');
 		expect(container.textContent).toContain('JavaScript');
 		expect(container.textContent).toContain('Python');
+
+		cleanup();
+	});
+
+	it('extractSchemaProperties extracts properties from array schemas and resolves component refs', () => {
+		const components = {
+			schemas: {
+				Message: {
+					type: 'object',
+					required: ['id', 'text'],
+					properties: {
+						id: { type: 'string', description: 'Message identifier' },
+						text: { type: 'string', description: 'Content of the message' },
+					},
+				},
+			},
+		};
+
+		const arraySchema = {
+			type: 'array',
+			items: {
+				$ref: '#/components/schemas/Message',
+			},
+		};
+
+		const props = extractSchemaProperties(arraySchema, components);
+		expect(props).toHaveLength(2);
+		expect(props[0]).toEqual({
+			name: '[].id',
+			type: 'string',
+			required: true,
+			description: 'Message identifier',
+			example: undefined,
+		});
+		expect(props[1]).toEqual({
+			name: '[].text',
+			type: 'string',
+			required: true,
+			description: 'Content of the message',
+			example: undefined,
+		});
+	});
+
+	it('DocsHubView populates token state when actor is provided and preserves token during URL sync', async () => {
+		let copiedUrl = '';
+		Object.assign(navigator, {
+			clipboard: {
+				writeText: vi.fn((text) => {
+					copiedUrl = text;
+					return Promise.resolve(true);
+				}),
+			},
+		});
+
+		const { container } = render(
+			<DocsHubView
+				branding={branding}
+				items={[sampleProduct]}
+				initialProductId="chat"
+				initialOpKey="POST:/v1/messages"
+				actor={{ role: 'developer', name: 'Dev User', id: 'usr_dev_456' }}
+			/>,
+		);
+
+		// Verified that snippet code block contains pre-resolved token
+		expect(container.textContent).toContain('Bearer tok_developer_usr_dev_456');
+
+		// Click Share Docs and verify URL has the token
+		const sidebar = container.querySelector('aside');
+		expect(sidebar).not.toBeNull();
+		if (sidebar) {
+			const shareBtn = byText(sidebar, 'Share Docs', 'button');
+			expect(shareBtn).not.toBeNull();
+			if (shareBtn) {
+				click(shareBtn);
+				expect(copiedUrl).toContain('token=tok_developer_usr_dev_456');
+			}
+		}
 
 		cleanup();
 	});
