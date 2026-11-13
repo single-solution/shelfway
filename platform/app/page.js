@@ -1,6 +1,4 @@
-import { consoleApi } from './(console)/_lib/server.js';
 import { platformSession } from './_lib/server.js';
-import { loadDocsHub } from '../src/console/loaders.js';
 import { COMPANY_NAME, PRODUCT_BRAND } from './_components/brand.js';
 import { SiteHome } from './_components/SiteHome.js';
 
@@ -15,24 +13,49 @@ export async function generateMetadata() {
 	};
 }
 
+/** Static marketing products for public landing page - zero backend overhead. */
+const STATIC_PRODUCTS = [
+	{
+		id: 'accounts',
+		name: 'Accounts',
+		description: 'Members and staff on your website - without building sign-in from scratch.',
+	},
+	{
+		id: 'ecommerce',
+		name: 'Ecommerce',
+		description: 'Catalog, cart, and orders - when you sell.',
+	},
+	{
+		id: 'payments',
+		name: 'Payments',
+		description: 'Payment links, wallets, cards, and proof checks - set up in your account.',
+	},
+	{
+		id: 'chat',
+		name: 'Chat',
+		description: 'Live chat where people already are - with help from AI when you want it.',
+	},
+	{
+		id: 'notifications',
+		name: 'Notifications',
+		description: 'Updates and alerts from one place - not five separate tools.',
+	},
+	{
+		id: 'growth',
+		name: 'Growth',
+		description: 'Consent, SEO, and site measurement.',
+	},
+];
+
 export default async function SitePage() {
-	const [session, api] = await Promise.all([platformSession(), consoleApi()]);
-	const docs = await loadDocsHub(api).catch(() => null);
-	const products =
-		docs?.ok && Array.isArray(docs.items)
-			? docs.items.map((item) => ({
-					id: String(item.productId ?? ''),
-					name: String(item.name ?? item.productId ?? ''),
-					description: typeof item.description === 'string' ? item.description : '',
-				}))
-			: [];
+	const session = await platformSession().catch(() => ({ ok: false }));
 	return (
 		<div className="shelfway-site flex min-h-screen flex-col bg-transparent text-fg font-sans">
 			<SiteHome
 				productName={PRODUCT_BRAND}
 				companyName={COMPANY_NAME}
-				products={products}
-				session={session.ok ? session : null}
+				products={STATIC_PRODUCTS}
+				session={session?.ok ? session : null}
 			/>
 		</div>
 	);

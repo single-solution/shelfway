@@ -10,7 +10,7 @@ vi.mock('next/navigation.js', async (importOriginal) => {
 	return { .../** @type {object} */ (await importOriginal()), useRouter: () => testRouter };
 });
 
-describe('Docs hub views (PLAN §10 B1, B2)', () => {
+describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 	const branding = { name: 'Shelfway', accent: '#0f766e', logoUrl: null };
 	const sampleProduct = {
 		productId: 'chat',
@@ -287,5 +287,55 @@ describe('Docs hub views (PLAN §10 B1, B2)', () => {
 			],
 		};
 		expect(sampleFromSchema(allOfSchema)).toEqual({ id: 'id-1', count: 5 });
+	});
+
+	it('locks interactive product docs when unauthenticated and unlocks with user unique token', async () => {
+		render(<DocsHubView branding={branding} items={[sampleProduct]} initialProductId="chat" initialSection="products" />);
+
+		expect(document.body.textContent).toContain('Documentation Access Restricted');
+		expect(document.body.textContent).toContain('Authentication Required');
+
+		const tokenInput = document.querySelector('input[placeholder*="user unique token"]');
+		if (tokenInput) {
+			type(tokenInput, 'unique_user_token_123');
+		}
+
+		const unlockBtn = byText(document.body, 'Unlock', 'button') || byText(document.body, 'Unlock Documentation', 'button');
+		if (unlockBtn) {
+			click(unlockBtn);
+		}
+
+		expect(document.body.textContent).toContain('Authenticated Documentation');
+		cleanup();
+	});
+
+	it('enforces role-based access: operator role cannot access Product APIs', async () => {
+		render(
+			<DocsHubView
+				branding={branding}
+				items={[sampleProduct]}
+				actor={{ role: 'operator', name: 'Desk Agent' }}
+				initialSection="quickstart"
+			/>,
+		);
+
+		const devModeBtn = byText(document.body, 'Product Developer SDK');
+		if (devModeBtn) click(devModeBtn);
+
+		expect(document.body.textContent).toContain('Role Restricted Access');
+		expect(document.body.textContent).toContain('require Developer or Owner privileges');
+
+		cleanup();
+	});
+
+	it('renders universal product catalog even with empty items array', () => {
+		const html = renderToString(<DocsHubView branding={branding} items={[]} initialToken="universal_tok" />);
+		expect(html).toContain('Accounts');
+		expect(html).toContain('Chat');
+		expect(html).toContain('Ecommerce');
+		expect(html).toContain('Payments');
+		expect(html).toContain('Notifications');
+		expect(html).toContain('Growth');
+		expect(html).toContain('Ready Storefront Products');
 	});
 });

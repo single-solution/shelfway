@@ -28,16 +28,16 @@ export async function generateMetadata({ searchParams }) {
 export default async function DocsPage({ searchParams }) {
 	await connection();
 	const q = (await searchParams) || {};
-	const session = await platformSession();
-	const [branding, api] = await Promise.all([consoleBranding(), consoleApi()]);
-	const loaded = await loadDocsHub(api);
+	const session = await platformSession().catch(() => ({ ok: false }));
+	const [branding, api] = await Promise.all([consoleBranding().catch(() => null), consoleApi().catch(() => null)]);
+	const loaded = api ? await loadDocsHub(api).catch(() => ({ ok: false, items: [] })) : { ok: false, items: [] };
 	const initialProduct = one(q.product) || '';
 	const initialOp = one(q.op) || '';
 	const initialSection = one(q.section) || (initialProduct ? 'products' : 'quickstart');
 	const initialToken = one(q.token) || '';
 	const initialWebsite = one(q.website) || '';
 	const productToLoad = initialProduct || (loaded.ok && loaded.items[0]?.productId) || '';
-	const productDetail = productToLoad ? await loadDocsProduct(api, productToLoad) : null;
+	const productDetail = productToLoad && api ? await loadDocsProduct(api, productToLoad).catch(() => null) : null;
 	const brandName = branding?.name || PRODUCT_BRAND;
 
 	return (

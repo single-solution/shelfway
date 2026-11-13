@@ -159,6 +159,328 @@ const STATIC_SDK_GUIDES = [
 	},
 ];
 
+/** Universal product catalogue specifications (not tied to dynamic merchant site placements). */
+const UNIVERSAL_PRODUCTS = [
+	{
+		productId: 'accounts',
+		name: 'Accounts',
+		version: '1.0.0',
+		description: 'Visitor authentication, shopper profiles, staff access, and member accounts.',
+		status: 'active',
+		features: [
+			{ key: 'auth', name: 'Member Sign-In', description: 'Shopper sign-in and session verification.' },
+			{ key: 'staff', name: 'Staff Management', description: 'Invite and manage team members and roles.' },
+		],
+		needs: { database: true, storage: 'none' },
+		links: { offers: [], needs: [] },
+		docsUrl: '/docs/accounts',
+		openapiUrl: '/docs/accounts/openapi.json',
+		operations: [
+			{
+				method: 'POST',
+				path: '/v1/auth/sign-in',
+				summary: 'Request shopper sign-in code',
+				auth: 'browser',
+				permission: '',
+				feature: 'auth',
+				description: 'Sends a one-time sign-in code to the shopper email.',
+			},
+			{
+				method: 'POST',
+				path: '/v1/auth/verify',
+				summary: 'Verify code and create session',
+				auth: 'browser',
+				permission: '',
+				feature: 'auth',
+				description: 'Verifies the code and returns an authenticated customer session.',
+			},
+			{
+				method: 'GET',
+				path: '/v1/auth/session',
+				summary: 'Get current customer profile',
+				auth: 'browser',
+				permission: '',
+				feature: 'auth',
+				description: 'Returns the current signed-in customer profile.',
+			},
+			{
+				method: 'GET',
+				path: '/v1/users',
+				summary: 'List customer accounts',
+				auth: 'server',
+				permission: 'users.read',
+				feature: 'staff',
+				description: 'Search and list customer accounts on this website.',
+			},
+			{
+				method: 'POST',
+				path: '/v1/staff/invites',
+				summary: 'Invite staff member',
+				auth: 'server',
+				permission: 'staff.write',
+				feature: 'staff',
+				description: 'Send an invitation to a new staff member with assigned role.',
+			},
+		],
+	},
+	{
+		productId: 'chat',
+		name: 'Chat',
+		version: '1.0.0',
+		description: 'Real-time visitor chat, AI replies, and staff operator inbox.',
+		status: 'active',
+		features: [
+			{ key: 'ai', name: 'AI Assistant', description: 'Answers customer questions automatically.' },
+			{ key: 'inbox', name: 'Operator Inbox', description: 'Staff live response desk.' },
+		],
+		needs: { database: true, storage: 'optional' },
+		links: { offers: [], needs: [] },
+		docsUrl: '/docs/chat',
+		openapiUrl: '/docs/chat/openapi.json',
+		operations: [
+			{
+				method: 'POST',
+				path: '/v1/conversations',
+				summary: 'Start visitor chat conversation',
+				auth: 'browser',
+				permission: '',
+				feature: 'always',
+				description: 'Initiate a new live conversation from the storefront widget.',
+			},
+			{
+				method: 'GET',
+				path: '/v1/messages',
+				summary: 'List chat messages for visitor',
+				auth: 'browser',
+				permission: '',
+				feature: 'always',
+				description: 'Fetch message history for the active visitor session.',
+			},
+			{
+				method: 'POST',
+				path: '/v1/messages',
+				summary: 'Send a message',
+				auth: 'browser',
+				permission: '',
+				feature: 'always',
+				description: 'Post a chat message to a conversation.',
+			},
+			{
+				method: 'GET',
+				path: '/v1/inbox',
+				summary: 'List active conversations for operator',
+				auth: 'server',
+				permission: 'chat.read',
+				feature: 'inbox',
+				description: 'Returns active chat conversations for the merchant operator desk.',
+			},
+			{
+				method: 'POST',
+				path: '/v1/conversations/:id/reply',
+				summary: 'Operator reply to conversation',
+				auth: 'server',
+				permission: 'chat.write',
+				feature: 'inbox',
+				description: 'Send a staff reply to an ongoing customer conversation.',
+			},
+		],
+	},
+	{
+		productId: 'ecommerce',
+		name: 'Ecommerce',
+		version: '1.0.0',
+		description: 'Catalog, shopping cart, checkout flow, orders, and returns.',
+		status: 'active',
+		features: [
+			{ key: 'cart', name: 'Cart & Checkout', description: 'Storefront cart and order checkout.' },
+			{ key: 'orders', name: 'Order Management', description: 'Fulfillment, shipping, and returns.' },
+		],
+		needs: { database: true, storage: 'none' },
+		links: { offers: [], needs: [] },
+		docsUrl: '/docs/ecommerce',
+		openapiUrl: '/docs/ecommerce/openapi.json',
+		operations: [
+			{
+				method: 'GET',
+				path: '/v1/catalog',
+				summary: 'Browse store catalog products',
+				auth: 'browser',
+				permission: '',
+				feature: 'cart',
+				description: 'Returns published store products and category listings.',
+			},
+			{
+				method: 'GET',
+				path: '/v1/cart',
+				summary: 'Get shopper cart items',
+				auth: 'browser',
+				permission: '',
+				feature: 'cart',
+				description: 'Retrieves current items and calculated totals in visitor cart.',
+			},
+			{
+				method: 'POST',
+				path: '/v1/cart/items',
+				summary: 'Add item to shopping cart',
+				auth: 'browser',
+				permission: '',
+				feature: 'cart',
+				description: 'Adds an item variant or updates quantity in shopper cart.',
+			},
+			{
+				method: 'POST',
+				path: '/v1/checkout',
+				summary: 'Initiate order checkout',
+				auth: 'browser',
+				permission: '',
+				feature: 'cart',
+				description: 'Submits visitor cart and begins the checkout sequence.',
+			},
+			{
+				method: 'GET',
+				path: '/v1/orders',
+				summary: 'List store orders',
+				auth: 'server',
+				permission: 'orders.read',
+				feature: 'orders',
+				description: 'List merchant store orders with fulfillment and payment statuses.',
+			},
+			{
+				method: 'POST',
+				path: '/v1/orders/:id/fulfill',
+				summary: 'Fulfill customer order',
+				auth: 'server',
+				permission: 'orders.write',
+				feature: 'orders',
+				description: 'Record fulfillment and courier tracking for an order.',
+			},
+		],
+	},
+	{
+		productId: 'payments',
+		name: 'Payments',
+		version: '1.0.0',
+		description: 'Collect payments, wallets, payment links, and proof verification.',
+		status: 'active',
+		features: [
+			{ key: 'checkout', name: 'Payment Flow', description: 'Storefront payment sessions.' },
+			{ key: 'review', name: 'Proof Review', description: 'Manual payment proof review.' },
+		],
+		needs: { database: true, storage: 'optional' },
+		links: { offers: [], needs: [] },
+		docsUrl: '/docs/payments',
+		openapiUrl: '/docs/payments/openapi.json',
+		operations: [
+			{
+				method: 'POST',
+				path: '/v1/sessions',
+				summary: 'Create payment session',
+				auth: 'browser',
+				permission: '',
+				feature: 'checkout',
+				description: 'Creates a payment session with available payment gateways.',
+			},
+			{
+				method: 'GET',
+				path: '/v1/methods',
+				summary: 'List available payment methods',
+				auth: 'browser',
+				permission: '',
+				feature: 'checkout',
+				description: 'Returns available payment providers for this website.',
+			},
+			{
+				method: 'GET',
+				path: '/v1/transactions',
+				summary: 'Ledger of transactions',
+				auth: 'server',
+				permission: 'payments.read',
+				feature: 'review',
+				description: 'List all payment transactions and settlement records.',
+			},
+		],
+	},
+	{
+		productId: 'notifications',
+		name: 'Notifications',
+		version: '1.0.0',
+		description: 'Multi-channel notifications via WhatsApp, SMS, email, and push.',
+		status: 'active',
+		features: [
+			{ key: 'push', name: 'Push Delivery', description: 'Visitor push notification registration.' },
+			{ key: 'dispatch', name: 'Outbound Messaging', description: 'Server-to-person notifications.' },
+		],
+		needs: { database: true, storage: 'none' },
+		links: { offers: [], needs: [] },
+		docsUrl: '/docs/notifications',
+		openapiUrl: '/docs/notifications/openapi.json',
+		operations: [
+			{
+				method: 'POST',
+				path: '/v1/tokens',
+				summary: 'Register visitor device for push',
+				auth: 'browser',
+				permission: '',
+				feature: 'push',
+				description: 'Saves device push token for visitor notifications.',
+			},
+			{
+				method: 'POST',
+				path: '/v1/messages',
+				summary: 'Dispatch notification message',
+				auth: 'server',
+				permission: 'notifications.send',
+				feature: 'dispatch',
+				description: 'Send SMS, WhatsApp, Email, or Web Push notification.',
+			},
+		],
+	},
+	{
+		productId: 'growth',
+		name: 'Growth',
+		version: '1.0.0',
+		description: 'Cookie consent banner, SEO tags, and site event measurement.',
+		status: 'active',
+		features: [
+			{ key: 'consent', name: 'Cookie Consent', description: 'Visitor consent preferences.' },
+			{ key: 'analytics', name: 'Site Analytics', description: 'Measurement and page views.' },
+		],
+		needs: { database: true, storage: 'none' },
+		links: { offers: [], needs: [] },
+		docsUrl: '/docs/growth',
+		openapiUrl: '/docs/growth/openapi.json',
+		operations: [
+			{
+				method: 'POST',
+				path: '/v1/consent',
+				summary: 'Save visitor cookie consent preferences',
+				auth: 'browser',
+				permission: '',
+				feature: 'consent',
+				description: 'Records visitor consent categories for analytics and tracking.',
+			},
+			{
+				method: 'POST',
+				path: '/v1/events',
+				summary: 'Record visitor conversion event',
+				auth: 'browser',
+				permission: '',
+				feature: 'analytics',
+				description: 'Reports storefront conversion or custom visitor action.',
+			},
+			{
+				method: 'GET',
+				path: '/v1/analytics',
+				summary: 'Query site analytics metrics',
+				auth: 'server',
+				permission: 'growth.read',
+				feature: 'analytics',
+				description: 'Retrieve aggregated page views, visitors, and conversion metrics.',
+			},
+		],
+	},
+];
+
 /**
  * @param {{
  *   branding?: { name: string, accent?: string, logoUrl?: string | null },
@@ -218,7 +540,30 @@ export function DocsHubView({
 
 	const effectiveActor = actor || clientActor;
 	const userRole = effectiveActor?.role || (effectiveActor?.admin ? 'owner' : null);
+	const isUnlocked = Boolean(token || effectiveActor);
+	const isProductRoleAllowed = !userRole || ['owner', 'developer', 'support', 'admin'].includes(userRole);
 	const [roleViewMode, setRoleViewMode] = useState('storefront');
+
+	const catalogItems = useMemo(() => {
+		if (items && items.length > 0) {
+			const map = new Map();
+			for (const p of UNIVERSAL_PRODUCTS) map.set(p.productId, { ...p });
+			for (const item of items) {
+				const existing = map.get(item.productId);
+				if (existing) {
+					map.set(item.productId, {
+						...existing,
+						...item,
+						operations: item.operations && item.operations.length > 0 ? item.operations : existing.operations,
+					});
+				} else {
+					map.set(item.productId, item);
+				}
+			}
+			return Array.from(map.values());
+		}
+		return UNIVERSAL_PRODUCTS;
+	}, [items]);
 
 	// Synchronize URL query params seamlessly without page reloads
 	/**
@@ -310,8 +655,13 @@ export function DocsHubView({
 	}, [selectedProductId, cachedDetails]);
 
 	const currentProduct = useMemo(() => {
-		return cachedDetails[selectedProductId] || items.find((p) => p.productId === selectedProductId) || items[0] || null;
-	}, [cachedDetails, selectedProductId, items]);
+		return (
+			cachedDetails[selectedProductId] ||
+			catalogItems.find((p) => p.productId === selectedProductId) ||
+			catalogItems[0] ||
+			null
+		);
+	}, [cachedDetails, selectedProductId, catalogItems]);
 
 	const operations = useMemo(() => {
 		return /** @type {any[]} */ (currentProduct?.operations || []);
@@ -340,29 +690,39 @@ export function DocsHubView({
 		};
 	}, [currentOperation, currentProduct, activeResponseStatus]);
 
-	// Filtered operations based on search query
+	// Filtered operations based on search query and Store vs Product roleViewMode
 	const filteredOperations = useMemo(() => {
 		const q = searchQuery.trim().toLowerCase();
-		if (!q) return operations;
-		return operations.filter(
+		let ops = operations;
+		if (roleViewMode === 'storefront') {
+			const storeOps = operations.filter(
+				(op) => op.auth === 'browser' || op.auth === 'visitor' || !op.auth || op.feature === 'always',
+			);
+			if (storeOps.length > 0) ops = storeOps;
+		} else if (roleViewMode === 'developer') {
+			const prodOps = operations.filter((op) => op.auth === 'server' || op.auth === 'ticket' || Boolean(op.permission));
+			if (prodOps.length > 0) ops = prodOps;
+		}
+		if (!q) return ops;
+		return ops.filter(
 			(/** @type {any} */ op) =>
 				op.path.toLowerCase().includes(q) ||
 				op.method.toLowerCase().includes(q) ||
 				(op.summary && op.summary.toLowerCase().includes(q)) ||
 				(op.description && op.description.toLowerCase().includes(q)),
 		);
-	}, [operations, searchQuery]);
+	}, [operations, searchQuery, roleViewMode]);
 
 	const filteredProducts = useMemo(() => {
 		const q = searchQuery.trim().toLowerCase();
-		if (!q) return items;
-		return items.filter(
+		if (!q) return catalogItems;
+		return catalogItems.filter(
 			(p) =>
 				p.name.toLowerCase().includes(q) ||
 				p.productId.toLowerCase().includes(q) ||
 				(p.description && p.description.toLowerCase().includes(q)),
 		);
-	}, [items, searchQuery]);
+	}, [catalogItems, searchQuery]);
 
 	/** @param {string} productId */
 	const selectProduct = (productId) => {
@@ -443,20 +803,27 @@ export function DocsHubView({
 							</button>
 						</div>
 
-						{(actor || effectiveActor) && userRole ? (
+						{isUnlocked ? (
+							(actor || effectiveActor) && userRole ? (
+								<div className="hidden sm:flex items-center gap-1.5 text-xs text-muted border-l border-line pl-3">
+									<Icon name="user" size={14} />
+									<span>Role:</span>
+									<strong className="text-fg capitalize font-medium">{userRole}</strong>
+								</div>
+							) : token ? (
+								<div className="hidden sm:flex items-center gap-2 text-xs text-muted border-l border-line pl-3">
+									<Icon name="key" size={14} className="text-primary" />
+									<Badge tone="success" dot>
+										{website || 'User Token'}
+									</Badge>
+								</div>
+							) : null
+						) : (
 							<div className="hidden sm:flex items-center gap-1.5 text-xs text-muted border-l border-line pl-3">
-								<Icon name="user" size={14} />
-								<span>Role:</span>
-								<strong className="text-fg capitalize font-medium">{userRole}</strong>
+								<Icon name="lock" size={14} className="text-muted" />
+								<span>Locked</span>
 							</div>
-						) : token ? (
-							<div className="hidden sm:flex items-center gap-2 text-xs text-muted border-l border-line pl-3">
-								<Icon name="key" size={14} className="text-primary" />
-								<Badge tone="success" dot>
-									{website || 'Website Token'}
-								</Badge>
-							</div>
-						) : null}
+						)}
 					</div>
 				</div>
 
@@ -629,23 +996,11 @@ export function DocsHubView({
 								))}
 							</div>
 						) : null}
-
-						{/* Sidebar Footer Link to Catalog OpenAPI */}
-						<div className="pt-4 border-t border-line text-xs space-y-1">
-							<a
-								href="/docs/openapi.json"
-								target="_blank"
-								rel="noopener noreferrer"
-								className="flex items-center justify-between text-muted hover:text-fg px-2 py-1.5 rounded hover:bg-surface-2 transition">
-								<span className="font-mono text-xs">Catalog OpenAPI 3.1</span>
-								<Icon name="external" size={12} />
-							</a>
-						</div>
 					</aside>
 
 					{/* Right Content Area: Interactive Swagger & Guides */}
 					<div className="flex-1 min-w-0 w-full space-y-8">
-						{token ? (
+						{isUnlocked ? (
 							<div className="rounded-card border border-primary/30 bg-primary-soft/10 p-4 shadow-card">
 								<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 									<div className="space-y-1">
@@ -653,27 +1008,27 @@ export function DocsHubView({
 											<span className="font-mono text-xs font-bold uppercase tracking-wider text-primary">
 												Authenticated Documentation
 											</span>
-											{website ? (
-												<span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-surface border border-line text-fg">
-													{website}
-												</span>
-											) : null}
+											<span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-surface border border-line text-fg">
+												{effectiveActor ? `${effectiveActor.name} (${userRole || 'user'})` : website || 'User Token'}
+											</span>
 										</div>
 										<p className="text-xs text-muted">
-											Interactive code snippets below are pre-filled with your scoped credentials. No login required.
+											Interactive code snippets below are pre-filled with your scoped credentials.
 										</p>
 									</div>
 									<div className="flex items-center gap-2">
-										<Button
-											size="sm"
-											variant="secondary"
-											onClick={() => {
-												copyText(token);
-												setCopiedNotice('Copied Token');
-												setTimeout(() => setCopiedNotice(''), 2000);
-											}}>
-											{copiedNotice === 'Copied Token' ? 'Copied Token!' : 'Copy Token'}
-										</Button>
+										{token ? (
+											<Button
+												size="sm"
+												variant="secondary"
+												onClick={() => {
+													copyText(token);
+													setCopiedNotice('Copied Token');
+													setTimeout(() => setCopiedNotice(''), 2000);
+												}}>
+												{copiedNotice === 'Copied Token' ? 'Copied Token!' : 'Copy Token'}
+											</Button>
+										) : null}
 										<Button
 											size="sm"
 											variant="ghost"
@@ -681,46 +1036,73 @@ export function DocsHubView({
 												setToken('');
 												syncUrl(selectedProductId, selectedOpKey, activeSection, '', website);
 											}}>
-											Change
+											Lock / Change
 										</Button>
 									</div>
 								</div>
 							</div>
 						) : (
-							<div className="rounded-card border border-line bg-surface p-4 shadow-card">
-								<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+							<div className="rounded-card border border-primary/40 bg-surface p-5 shadow-card space-y-3">
+								<div className="flex items-start gap-3">
+									<div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+										<Icon name="key" size={18} />
+									</div>
 									<div className="space-y-1">
-										<span className="font-mono text-xs font-bold uppercase tracking-wider text-muted">
-											Interactive Playground
-										</span>
-										<p className="text-xs text-muted">
-											Paste your website token or setup link to pre-fill live examples, widget embeds, and API snippets
-											without signing in.
+										<h2 className="text-sm font-semibold text-fg">Documentation Access Restricted</h2>
+										<p className="text-xs text-muted leading-relaxed">
+											API specifications and interactive Swagger testing are restricted to authenticated users. Enter
+											your user unique token or setup link to unlock documentation.
 										</p>
 									</div>
-									<div className="flex items-center gap-2">
-										<Input
-											hideLabel
-											label="Website token or setup link"
-											placeholder="Paste website token or link..."
-											value={tokenInput}
-											onChange={(e) => setTokenInput(e.currentTarget.value)}
-											onKeyDown={(e) => {
-												if (e.key === 'Enter') applyToken(tokenInput);
-											}}
-											className="w-60 text-xs h-8"
-										/>
-										<Button
-											size="sm"
-											variant="secondary"
-											disabled={!tokenInput.trim()}
-											onClick={() => applyToken(tokenInput)}>
-											Apply
-										</Button>
-									</div>
+								</div>
+								<div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
+									<Input
+										hideLabel
+										label="User unique token or link"
+										placeholder="Paste user unique token or setup link..."
+										value={tokenInput}
+										onChange={(e) => setTokenInput(e.currentTarget.value)}
+										onKeyDown={(e) => {
+											if (e.key === 'Enter') applyToken(tokenInput);
+										}}
+										className="w-full sm:w-80 text-xs h-9"
+									/>
+									<Button
+										size="sm"
+										variant="primary"
+										disabled={!tokenInput.trim()}
+										onClick={() => applyToken(tokenInput)}>
+										Unlock Documentation
+									</Button>
 								</div>
 							</div>
 						)}
+
+						{/* Role Restricted Banner for Product APIs */}
+						{roleViewMode === 'developer' && !isProductRoleAllowed ? (
+							<div className="rounded-card border border-warning/40 bg-surface p-6 space-y-3 shadow-card">
+								<div className="flex items-center gap-2 text-warning font-semibold text-sm">
+									<Icon name="shield" size={18} />
+									<span>Role Restricted Access</span>
+								</div>
+								<p className="text-xs text-muted leading-relaxed">
+									Product integration APIs and developer tools require <strong>Developer</strong> or{' '}
+									<strong>Owner</strong> privileges. Your current role is{' '}
+									<code className="font-mono text-fg">{userRole}</code>.
+								</p>
+								<div className="pt-2">
+									<Button
+										size="sm"
+										variant="secondary"
+										onClick={() => {
+											setRoleViewMode('storefront');
+											selectSection('quickstart');
+										}}>
+										Switch to Storefront APIs
+									</Button>
+								</div>
+							</div>
+						) : null}
 
 						{/* 1. Quickstart Section */}
 						{activeSection === 'quickstart' ? (
@@ -733,7 +1115,16 @@ export function DocsHubView({
 									<p className="text-sm text-muted leading-relaxed max-w-3xl">
 										Shelfway connects modular products (Accounts, Notifications, Chat, Payments, Ecommerce, Growth) to
 										merchants' websites. Storefront builders connect directly to our public widget scripts and backend
-										REST APIs using credentials from the merchant's setup link or Developer Pack.
+										REST APIs using credentials from the merchant's setup link or Developer Pack. Universal OpenAPI 3.1
+										specification is available at{' '}
+										<a
+											href="/docs/openapi.json"
+											target="_blank"
+											rel="noopener noreferrer"
+											className="text-primary hover:underline font-mono">
+											/docs/openapi.json
+										</a>
+										.
 									</p>
 								</div>
 
@@ -775,14 +1166,14 @@ export function DocsHubView({
 								</div>
 
 								{/* Ready Storefront Products */}
-								{items.length > 0 ? (
+								{catalogItems.length > 0 ? (
 									<div className="space-y-4 pt-2">
 										<div className="flex items-center justify-between">
 											<h2 className="text-base font-semibold text-fg">Ready Storefront Products</h2>
-											<span className="text-xs text-muted font-mono">{items.length} products available</span>
+											<span className="text-xs text-muted font-mono">{catalogItems.length} products available</span>
 										</div>
 										<div className="grid gap-3 sm:grid-cols-2">
-											{items.map((p) => (
+											{catalogItems.map((/** @type {any} */ p) => (
 												<div
 													key={p.productId}
 													className="rounded-card border border-line bg-surface p-4 space-y-3 shadow-card hard flex flex-col justify-between">
@@ -794,7 +1185,7 @@ export function DocsHubView({
 														<p className="text-xs text-muted leading-relaxed line-clamp-2">{p.description}</p>
 														{p.features && p.features.length > 0 ? (
 															<div className="flex flex-wrap gap-1.5 pt-1">
-																{p.features.slice(0, 3).map((f) => (
+																{p.features.slice(0, 3).map((/** @type {any} */ f) => (
 																	<span
 																		key={f.key}
 																		className="text-[10px] font-mono bg-surface-2 text-fg/80 border border-line px-1.5 py-0.5 rounded">
@@ -939,400 +1330,482 @@ export function DocsHubView({
 
 						{/* 4. Product Overview (When no specific operation is selected) */}
 						{activeSection === 'products' && !selectedOpKey && currentProduct ? (
-							<section className="space-y-6">
-								<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-line pb-6">
-									<div className="space-y-1">
-										<p className="font-mono text-xs font-bold tracking-widest uppercase text-primary">
-											PRODUCT SPECIFICATION
-										</p>
-										<div className="flex items-center gap-2.5">
-											<h1 className="font-display text-3xl font-bold tracking-tight text-fg">{currentProduct.name}</h1>
-											<span className="font-mono text-xs bg-surface-2 text-muted px-2 py-0.5 rounded border border-line">
-												v{currentProduct.version}
-											</span>
-											<span className="font-mono text-xs bg-success-soft text-on-success-soft px-2 py-0.5 rounded font-semibold border border-success/30">
-												active
-											</span>
+							!isUnlocked ? (
+								<section className="space-y-6">
+									<div className="rounded-card border border-line bg-surface p-8 text-center space-y-4 shadow-card">
+										<div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+											<Icon name="key" size={24} />
 										</div>
-										<p className="text-sm text-muted">{currentProduct.description}</p>
+										<div className="space-y-1 max-w-md mx-auto">
+											<h2 className="text-lg font-semibold text-fg">Authentication Required</h2>
+											<p className="text-xs text-muted leading-relaxed">
+												Please sign in or enter your user unique token to unlock interactive Swagger documentation,
+												endpoint testing, and schemas for {currentProduct.name}.
+											</p>
+										</div>
+										<div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 max-w-sm mx-auto">
+											<Input
+												hideLabel
+												label="User unique token"
+												placeholder="Paste user unique token..."
+												value={tokenInput}
+												onChange={(e) => setTokenInput(e.currentTarget.value)}
+												onKeyDown={(e) => {
+													if (e.key === 'Enter') applyToken(tokenInput);
+												}}
+												className="text-xs h-9 w-full sm:w-64"
+											/>
+											<Button
+												size="md"
+												variant="primary"
+												disabled={!tokenInput.trim()}
+												onClick={() => applyToken(tokenInput)}>
+												Unlock
+											</Button>
+										</div>
+									</div>
+								</section>
+							) : (
+								<section className="space-y-6">
+									<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-line pb-6">
+										<div className="space-y-1">
+											<p className="font-mono text-xs font-bold tracking-widest uppercase text-primary">
+												PRODUCT SPECIFICATION
+											</p>
+											<div className="flex items-center gap-2.5">
+												<h1 className="font-display text-3xl font-bold tracking-tight text-fg">
+													{currentProduct.name}
+												</h1>
+												<span className="font-mono text-xs bg-surface-2 text-muted px-2 py-0.5 rounded border border-line">
+													v{currentProduct.version}
+												</span>
+												<span className="font-mono text-xs bg-success-soft text-on-success-soft px-2 py-0.5 rounded font-semibold border border-success/30">
+													active
+												</span>
+											</div>
+											<p className="text-sm text-muted">{currentProduct.description}</p>
+										</div>
+
+										<div className="flex items-center gap-2">
+											<a
+												href={currentProduct.docsUrl || `/docs?product=${currentProduct.productId}`}
+												className="hidden"
+												tabIndex={-1}>
+												{currentProduct.docsUrl}
+											</a>
+											<a
+												href={currentProduct.openapiUrl || `/docs/${currentProduct.productId}/openapi.json`}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="inline-flex items-center gap-1.5 rounded-control border border-line bg-surface px-3.5 py-2 text-xs font-medium text-fg hover:bg-surface-2 transition shadow-xs">
+												<Icon name="external" size={14} />
+												<span>OpenAPI Spec</span>
+											</a>
+										</div>
 									</div>
 
-									<div className="flex items-center gap-2">
-										<a
-											href={currentProduct.docsUrl || `/docs?product=${currentProduct.productId}`}
-											className="hidden"
-											tabIndex={-1}>
-											{currentProduct.docsUrl}
-										</a>
-										<a
-											href={currentProduct.openapiUrl || `/docs/${currentProduct.productId}/openapi.json`}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="inline-flex items-center gap-1.5 rounded-control border border-line bg-surface px-3.5 py-2 text-xs font-medium text-fg hover:bg-surface-2 transition shadow-xs">
-											<Icon name="external" size={14} />
-											<span>OpenAPI Spec</span>
-										</a>
-									</div>
-								</div>
+									{/* Client-Side Widget Snippet */}
+									{widgetSnippet ? (
+										<div className="space-y-2">
+											<h2 className="text-sm font-semibold flex items-center gap-2">
+												<Icon name="code" size={16} className="text-primary" />
+												<span>Storefront Widget Embed</span>
+											</h2>
+											<p className="text-xs text-muted">
+												Add this script to your storefront layout HTML to embed the {currentProduct.name} widget.
+											</p>
+											<CodeBlock code={widgetSnippet} label="Storefront HTML" />
+										</div>
+									) : null}
 
-								{/* Client-Side Widget Snippet */}
-								{widgetSnippet ? (
-									<div className="space-y-2">
-										<h2 className="text-sm font-semibold flex items-center gap-2">
-											<Icon name="code" size={16} className="text-primary" />
-											<span>Storefront Widget Embed</span>
-										</h2>
-										<p className="text-xs text-muted">
-											Add this script to your storefront layout HTML to embed the {currentProduct.name} widget.
+									{/* Features & Capabilities */}
+									{currentProduct.features && currentProduct.features.length > 0 ? (
+										<div className="space-y-3">
+											<div className="flex items-center justify-between">
+												<h2 className="text-sm font-semibold">Capabilities &amp; Feature Switches</h2>
+												{token ? (
+													<span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-medium">
+														Active on {website || 'connected website'}
+													</span>
+												) : null}
+											</div>
+											<div className="grid gap-2.5 sm:grid-cols-2">
+												{currentProduct.features.map((/** @type {any} */ f) => (
+													<div
+														key={f.key}
+														className="rounded-card border border-line bg-surface p-3.5 space-y-1 shadow-card hard">
+														<div className="flex items-center justify-between gap-2">
+															<span className="text-xs font-semibold text-fg">{f.name}</span>
+															{token ? (
+																<Badge tone="success" dot>
+																	Active
+																</Badge>
+															) : (
+																<code className="text-[10px] text-muted font-mono bg-surface-2 px-1.5 py-0.5 rounded">
+																	{f.key}
+																</code>
+															)}
+														</div>
+														{f.description ? <p className="text-xs text-muted">{f.description}</p> : null}
+													</div>
+												))}
+											</div>
+										</div>
+									) : null}
+
+									{/* AI Assistant Context & Prompt */}
+									<div className="rounded-card border border-primary/40 bg-surface p-4 space-y-3 shadow-card hard">
+										<div className="flex flex-wrap items-center justify-between gap-2">
+											<div className="flex items-center gap-2">
+												<Icon name="sparkle" size={16} className="text-primary" />
+												<span className="font-semibold text-sm text-fg">AI Assistant &amp; Developer Prompt</span>
+											</div>
+											<Button
+												size="sm"
+												variant="secondary"
+												onClick={() => {
+													const aiContext = [
+														`# Shelfway ${currentProduct.name} API Integration Guide`,
+														`Website Domain: ${website || 'your-store.shelfway.com'}`,
+														`API Base: ${apiBase}`,
+														`Product ID: ${currentProduct.productId}`,
+														`Docs URL: ${apiBase}/docs?product=${currentProduct.productId}`,
+														`OpenAPI Spec: ${apiBase}/docs/${currentProduct.productId}/openapi.json`,
+														'',
+														'## Active Capabilities',
+														...(currentProduct.features || []).map(
+															(/** @type {any} */ f) => `- ${f.name} (${f.key}): ${f.description || ''}`,
+														),
+														'',
+														'## Authentication',
+														`Authorization Header: Bearer ${token || 'YOUR_WEBSITE_SERVER_TOKEN'}`,
+														`Browser Client Token: ${token || 'YOUR_WEBSITE_BROWSER_TOKEN'}`,
+														'',
+														'## Integration Rules',
+														'1. All endpoints return RFC 7807/9457 problems on failure.',
+														'2. Always send Content-Type: application/json.',
+														'3. Use exact casing for JSON keys matching the OpenAPI spec.',
+													].join('\n');
+													copyText(aiContext);
+												}}>
+												Copy AI Prompt
+											</Button>
+										</div>
+										<p className="text-xs text-muted leading-relaxed">
+											Copy full capability context, token authorization headers, and schema specification to paste into
+											Claude, Cursor, or AI coding assistants.
 										</p>
-										<CodeBlock code={widgetSnippet} label="Storefront HTML" />
 									</div>
-								) : null}
 
-								{/* Features & Capabilities */}
-								{currentProduct.features && currentProduct.features.length > 0 ? (
+									{/* Endpoints Table Overview (Swagger-style) */}
 									<div className="space-y-3">
 										<div className="flex items-center justify-between">
-											<h2 className="text-sm font-semibold">Capabilities &amp; Feature Switches</h2>
-											{token ? (
-												<span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-medium">
-													Active on {website || 'connected website'}
+											<h2 className="text-sm font-semibold">Available API Operations ({operations.length})</h2>
+											<span className="text-xs text-muted">Click any operation to view interactive Swagger docs</span>
+										</div>
+
+										<div className="rounded-card border border-line bg-surface overflow-hidden divide-y divide-line shadow-card">
+											{operations.map((/** @type {any} */ op) => {
+												const opKey = `${op.method}:${op.path}`;
+												return (
+													<button
+														key={opKey}
+														type="button"
+														onClick={() => selectOperation(opKey)}
+														className="flex w-full items-center justify-between p-3.5 text-left hover:bg-surface-2 transition group">
+														<div className="flex items-center gap-3 truncate">
+															<span
+																className={`font-mono text-[10px] px-2 py-0.5 rounded font-bold ${methodColor(
+																	op.method,
+																)}`}>
+																{op.method}
+															</span>
+															<span className="font-mono text-xs text-fg group-hover:text-primary transition truncate font-medium">
+																{op.path}
+															</span>
+														</div>
+														<span className="text-xs text-muted truncate ml-4 max-w-sm">{op.summary}</span>
+													</button>
+												);
+											})}
+										</div>
+									</div>
+								</section>
+							)
+						) : null}
+
+						{/* 5. Single Operation Interactive Swagger Documentation */}
+						{activeSection === 'products' && currentOperation ? (
+							!isUnlocked ? (
+								<section className="space-y-6">
+									<div className="rounded-card border border-line bg-surface p-8 text-center space-y-4 shadow-card">
+										<div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+											<Icon name="key" size={24} />
+										</div>
+										<div className="space-y-1 max-w-md mx-auto">
+											<h2 className="text-lg font-semibold text-fg">Authentication Required</h2>
+											<p className="text-xs text-muted leading-relaxed">
+												Please sign in or enter your user unique token to inspect operation {currentOperation.method}{' '}
+												{currentOperation.path} schemas, request bodies, and cURL snippets.
+											</p>
+										</div>
+										<div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 max-w-sm mx-auto">
+											<Input
+												hideLabel
+												label="User unique token"
+												placeholder="Paste user unique token..."
+												value={tokenInput}
+												onChange={(e) => setTokenInput(e.currentTarget.value)}
+												onKeyDown={(e) => {
+													if (e.key === 'Enter') applyToken(tokenInput);
+												}}
+												className="text-xs h-9 w-full sm:w-64"
+											/>
+											<Button
+												size="md"
+												variant="primary"
+												disabled={!tokenInput.trim()}
+												onClick={() => applyToken(tokenInput)}>
+												Unlock
+											</Button>
+										</div>
+									</div>
+								</section>
+							) : (
+								<section className="space-y-6">
+									{/* Operation Header */}
+									<div className="space-y-3 border-b border-line pb-6">
+										<div className="flex items-center gap-2">
+											<button
+												type="button"
+												onClick={() => selectOperation('')}
+												className="text-xs text-muted hover:text-fg flex items-center gap-1.5 transition font-medium">
+												&lt;- Back to {currentProduct?.name || 'Product'} Overview
+											</button>
+										</div>
+
+										<div className="flex flex-wrap items-center gap-2.5">
+											<span
+												className={`font-mono text-xs px-2.5 py-1 rounded font-bold ${methodColor(
+													currentOperation.method,
+												)}`}>
+												{currentOperation.method}
+											</span>
+											<code className="font-mono text-base font-semibold text-fg">{currentOperation.path}</code>
+											<button
+												type="button"
+												onClick={() => copyCode('path', currentOperation.path)}
+												className="text-xs text-muted hover:text-fg px-2 py-0.5 rounded border border-line bg-surface hover:bg-surface-2 transition">
+												{copiedNotice === 'path' ? 'Copied' : 'Copy'}
+											</button>
+										</div>
+
+										{currentOperation.summary ? (
+											<h2 className="text-lg font-bold text-fg">{currentOperation.summary}</h2>
+										) : null}
+
+										{currentOperation.description ? (
+											<p className="text-xs text-muted leading-relaxed">{currentOperation.description}</p>
+										) : null}
+
+										{/* Security & Authentication Notice */}
+										<div className="flex flex-wrap items-center gap-2 pt-2">
+											<span className="text-xs text-muted font-medium">Authorization:</span>
+											<span className="rounded bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-fg border border-line">
+												{currentOperation.auth === 'server'
+													? 'Authorization: Bearer <serverToken>'
+													: currentOperation.auth === 'browser'
+														? 'Browser Token (Public)'
+														: 'Staff Ticket'}
+											</span>
+											{currentOperation.permission ? (
+												<span className="rounded bg-primary/10 px-2 py-0.5 font-mono text-[11px] text-primary font-semibold">
+													Perm: {currentOperation.permission}
 												</span>
 											) : null}
 										</div>
-										<div className="grid gap-2.5 sm:grid-cols-2">
-											{currentProduct.features.map((/** @type {any} */ f) => (
-												<div
-													key={f.key}
-													className="rounded-card border border-line bg-surface p-3.5 space-y-1 shadow-card hard">
-													<div className="flex items-center justify-between gap-2">
-														<span className="text-xs font-semibold text-fg">{f.name}</span>
-														{token ? (
-															<Badge tone="success" dot>
-																Active
-															</Badge>
-														) : (
-															<code className="text-[10px] text-muted font-mono bg-surface-2 px-1.5 py-0.5 rounded">
-																{f.key}
-															</code>
-														)}
-													</div>
-													{f.description ? <p className="text-xs text-muted">{f.description}</p> : null}
-												</div>
-											))}
-										</div>
-									</div>
-								) : null}
-
-								{/* AI Assistant Context & Prompt */}
-								<div className="rounded-card border border-primary/40 bg-surface p-4 space-y-3 shadow-card hard">
-									<div className="flex flex-wrap items-center justify-between gap-2">
-										<div className="flex items-center gap-2">
-											<Icon name="sparkle" size={16} className="text-primary" />
-											<span className="font-semibold text-sm text-fg">AI Assistant &amp; Developer Prompt</span>
-										</div>
-										<Button
-											size="sm"
-											variant="secondary"
-											onClick={() => {
-												const aiContext = [
-													`# Shelfway ${currentProduct.name} API Integration Guide`,
-													`Website Domain: ${website || 'your-store.shelfway.com'}`,
-													`API Base: ${apiBase}`,
-													`Product ID: ${currentProduct.productId}`,
-													`Docs URL: ${apiBase}/docs?product=${currentProduct.productId}`,
-													`OpenAPI Spec: ${apiBase}/docs/${currentProduct.productId}/openapi.json`,
-													'',
-													'## Active Capabilities',
-													...(currentProduct.features || []).map(
-														(/** @type {any} */ f) => `- ${f.name} (${f.key}): ${f.description || ''}`,
-													),
-													'',
-													'## Authentication',
-													`Authorization Header: Bearer ${token || 'YOUR_WEBSITE_SERVER_TOKEN'}`,
-													`Browser Client Token: ${token || 'YOUR_WEBSITE_BROWSER_TOKEN'}`,
-													'',
-													'## Integration Rules',
-													'1. All endpoints return RFC 7807/9457 problems on failure.',
-													'2. Always send Content-Type: application/json.',
-													'3. Use exact casing for JSON keys matching the OpenAPI spec.',
-												].join('\n');
-												copyText(aiContext);
-											}}>
-											Copy AI Prompt
-										</Button>
-									</div>
-									<p className="text-xs text-muted leading-relaxed">
-										Copy full capability context, token authorization headers, and schema specification to paste into
-										Claude, Cursor, or AI coding assistants.
-									</p>
-								</div>
-
-								{/* Endpoints Table Overview (Swagger-style) */}
-								<div className="space-y-3">
-									<div className="flex items-center justify-between">
-										<h2 className="text-sm font-semibold">Available API Operations ({operations.length})</h2>
-										<span className="text-xs text-muted">Click any operation to view interactive Swagger docs</span>
 									</div>
 
-									<div className="rounded-card border border-line bg-surface overflow-hidden divide-y divide-line shadow-card">
-										{operations.map((/** @type {any} */ op) => {
-											const opKey = `${op.method}:${op.path}`;
-											return (
-												<button
-													key={opKey}
-													type="button"
-													onClick={() => selectOperation(opKey)}
-													className="flex w-full items-center justify-between p-3.5 text-left hover:bg-surface-2 transition group">
-													<div className="flex items-center gap-3 truncate">
-														<span
-															className={`font-mono text-[10px] px-2 py-0.5 rounded font-bold ${methodColor(
-																op.method,
-															)}`}>
-															{op.method}
-														</span>
-														<span className="font-mono text-xs text-fg group-hover:text-primary transition truncate font-medium">
-															{op.path}
-														</span>
-													</div>
-													<span className="text-xs text-muted truncate ml-4 max-w-sm">{op.summary}</span>
-												</button>
-											);
-										})}
-									</div>
-								</div>
-							</section>
-						) : null}
-
-						{/* 4. Single Operation Interactive Swagger Documentation */}
-						{activeSection === 'products' && currentOperation ? (
-							<section className="space-y-6">
-								{/* Operation Header */}
-								<div className="space-y-3 border-b border-line pb-6">
-									<div className="flex items-center gap-2">
-										<button
-											type="button"
-											onClick={() => selectOperation('')}
-											className="text-xs text-muted hover:text-fg flex items-center gap-1.5 transition font-medium">
-											&lt;- Back to {currentProduct?.name || 'Product'} Overview
-										</button>
-									</div>
-
-									<div className="flex flex-wrap items-center gap-2.5">
-										<span
-											className={`font-mono text-xs px-2.5 py-1 rounded font-bold ${methodColor(
-												currentOperation.method,
-											)}`}>
-											{currentOperation.method}
-										</span>
-										<code className="font-mono text-base font-semibold text-fg">{currentOperation.path}</code>
-										<button
-											type="button"
-											onClick={() => copyCode('path', currentOperation.path)}
-											className="text-xs text-muted hover:text-fg px-2 py-0.5 rounded border border-line bg-surface hover:bg-surface-2 transition">
-											{copiedNotice === 'path' ? 'Copied' : 'Copy'}
-										</button>
-									</div>
-
-									{currentOperation.summary ? (
-										<h2 className="text-lg font-bold text-fg">{currentOperation.summary}</h2>
-									) : null}
-
-									{currentOperation.description ? (
-										<p className="text-xs text-muted leading-relaxed">{currentOperation.description}</p>
-									) : null}
-
-									{/* Security & Authentication Notice */}
-									<div className="flex flex-wrap items-center gap-2 pt-2">
-										<span className="text-xs text-muted font-medium">Authorization:</span>
-										<span className="rounded bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-fg border border-line">
-											{currentOperation.auth === 'server'
-												? 'Authorization: Bearer <serverToken>'
-												: currentOperation.auth === 'browser'
-													? 'Browser Token (Public)'
-													: 'Staff Ticket'}
-										</span>
-										{currentOperation.permission ? (
-											<span className="rounded bg-primary/10 px-2 py-0.5 font-mono text-[11px] text-primary font-semibold">
-												Perm: {currentOperation.permission}
-											</span>
-										) : null}
-									</div>
-								</div>
-
-								{/* Parameters List */}
-								{currentOperation.parameters && currentOperation.parameters.length > 0 ? (
-									<div className="space-y-3">
-										<h3 className="text-sm font-semibold">Parameters</h3>
-										<div
-											className="rounded-card border border-line bg-surface overflow-hidden shadow-card"
-											role="table"
-											aria-label="Parameters">
+									{/* Parameters List */}
+									{currentOperation.parameters && currentOperation.parameters.length > 0 ? (
+										<div className="space-y-3">
+											<h3 className="text-sm font-semibold">Parameters</h3>
 											<div
-												className="grid grid-cols-12 border-b border-line bg-surface-2 p-2.5 text-xs font-semibold text-muted"
-												role="row">
-												<div className="col-span-3" role="columnheader">
-													Name
+												className="rounded-card border border-line bg-surface overflow-hidden shadow-card"
+												role="table"
+												aria-label="Parameters">
+												<div
+													className="grid grid-cols-12 border-b border-line bg-surface-2 p-2.5 text-xs font-semibold text-muted"
+													role="row">
+													<div className="col-span-3" role="columnheader">
+														Name
+													</div>
+													<div className="col-span-2" role="columnheader">
+														In
+													</div>
+													<div className="col-span-2" role="columnheader">
+														Type
+													</div>
+													<div className="col-span-2" role="columnheader">
+														Required
+													</div>
+													<div className="col-span-3" role="columnheader">
+														Description
+													</div>
 												</div>
-												<div className="col-span-2" role="columnheader">
-													In
+												<div className="divide-y divide-line text-xs" role="rowgroup">
+													{currentOperation.parameters.map((/** @type {any} */ p, /** @type {number} */ idx) => {
+														const paramObj = p.name ? p : p.$ref ? { name: p.$ref.split('/').pop(), in: 'ref' } : p;
+														return (
+															<div
+																key={paramObj.name || idx}
+																className="grid grid-cols-12 p-2.5 items-center hover:bg-surface-2/50 transition"
+																role="row">
+																<div className="col-span-3 font-mono font-medium text-fg" role="cell">
+																	{paramObj.name}
+																</div>
+																<div className="col-span-2 font-mono text-muted" role="cell">
+																	{paramObj.in || 'query'}
+																</div>
+																<div className="col-span-2 font-mono text-primary font-medium" role="cell">
+																	{paramObj.schema?.type || 'string'}
+																</div>
+																<div className="col-span-2" role="cell">
+																	{paramObj.required ? (
+																		<span className="text-danger font-bold">required</span>
+																	) : (
+																		<span className="text-muted">optional</span>
+																	)}
+																</div>
+																<div className="col-span-3 text-muted" role="cell">
+																	{paramObj.description || '-'}
+																</div>
+															</div>
+														);
+													})}
 												</div>
-												<div className="col-span-2" role="columnheader">
-													Type
-												</div>
-												<div className="col-span-2" role="columnheader">
-													Required
-												</div>
-												<div className="col-span-3" role="columnheader">
-													Description
-												</div>
-											</div>
-											<div className="divide-y divide-line text-xs" role="rowgroup">
-												{currentOperation.parameters.map((/** @type {any} */ p, /** @type {number} */ idx) => {
-													const paramObj = p.name ? p : p.$ref ? { name: p.$ref.split('/').pop(), in: 'ref' } : p;
-													return (
-														<div
-															key={paramObj.name || idx}
-															className="grid grid-cols-12 p-2.5 items-center hover:bg-surface-2/50 transition"
-															role="row">
-															<div className="col-span-3 font-mono font-medium text-fg" role="cell">
-																{paramObj.name}
-															</div>
-															<div className="col-span-2 font-mono text-muted" role="cell">
-																{paramObj.in || 'query'}
-															</div>
-															<div className="col-span-2 font-mono text-primary font-medium" role="cell">
-																{paramObj.schema?.type || 'string'}
-															</div>
-															<div className="col-span-2" role="cell">
-																{paramObj.required ? (
-																	<span className="text-danger font-bold">required</span>
-																) : (
-																	<span className="text-muted">optional</span>
-																)}
-															</div>
-															<div className="col-span-3 text-muted" role="cell">
-																{paramObj.description || '-'}
-															</div>
-														</div>
-													);
-												})}
 											</div>
 										</div>
-									</div>
-								) : null}
+									) : null}
 
-								{/* Request Body Specification (for mutations) */}
-								{currentOperation.requestBody ? (
-									<div className="space-y-3">
+									{/* Request Body Specification (for mutations) */}
+									{currentOperation.requestBody ? (
+										<div className="space-y-3">
+											<div className="flex items-center justify-between">
+												<h3 className="text-sm font-semibold">Request Body (application/json)</h3>
+												<span className="text-xs text-muted">JSON Schema &amp; Example</span>
+											</div>
+											<CodeBlock code={JSON.stringify(sampleRequestPayload, null, 2)} label="Example JSON Request" />
+										</div>
+									) : null}
+
+									{/* Responses Specification (Swagger tabs) */}
+									{currentOperation.responses ? (
+										<div className="space-y-3">
+											<h3 className="text-sm font-semibold">Responses</h3>
+											<div className="flex items-center gap-1.5 border-b border-line pb-2">
+												{Object.keys(currentOperation.responses).map((status) => (
+													<button
+														key={status}
+														type="button"
+														onClick={() => setActiveResponseStatus(status)}
+														className={`rounded px-2.5 py-1 text-xs font-mono transition shelfway-motion ${
+															activeResponseStatus === status
+																? 'bg-primary text-on-primary font-bold shadow-xs'
+																: 'bg-surface-2 text-muted hover:text-fg'
+														}`}>
+														{status}
+													</button>
+												))}
+											</div>
+
+											{sampleResponsePayload ? (
+												<div className="space-y-2">
+													<p className="text-xs text-muted">{sampleResponsePayload.description || 'Response'}</p>
+													<CodeBlock
+														code={JSON.stringify(sampleResponsePayload.payload, null, 2)}
+														label={`HTTP ${activeResponseStatus} Response Payload`}
+													/>
+												</div>
+											) : null}
+										</div>
+									) : null}
+
+									{/* Ready-to-Run Code Snippets */}
+									<div className="space-y-3 pt-4 border-t border-line">
 										<div className="flex items-center justify-between">
-											<h3 className="text-sm font-semibold">Request Body (application/json)</h3>
-											<span className="text-xs text-muted">JSON Schema &amp; Example</span>
-										</div>
-										<CodeBlock code={JSON.stringify(sampleRequestPayload, null, 2)} label="Example JSON Request" />
-									</div>
-								) : null}
-
-								{/* Responses Specification (Swagger tabs) */}
-								{currentOperation.responses ? (
-									<div className="space-y-3">
-										<h3 className="text-sm font-semibold">Responses</h3>
-										<div className="flex items-center gap-1.5 border-b border-line pb-2">
-											{Object.keys(currentOperation.responses).map((status) => (
+											<h3 className="text-sm font-semibold">Ready-to-Use Code Snippet</h3>
+											<div className="flex items-center rounded bg-surface-2 p-0.5 text-xs border border-line">
 												<button
-													key={status}
 													type="button"
-													onClick={() => setActiveResponseStatus(status)}
-													className={`rounded px-2.5 py-1 text-xs font-mono transition shelfway-motion ${
-														activeResponseStatus === status
-															? 'bg-primary text-on-primary font-bold shadow-xs'
-															: 'bg-surface-2 text-muted hover:text-fg'
+													onClick={() => setActiveSnippetTab('curl')}
+													className={`rounded px-2.5 py-1 font-medium transition ${
+														activeSnippetTab === 'curl'
+															? 'bg-surface text-fg font-semibold shadow-xs'
+															: 'text-muted'
 													}`}>
-													{status}
+													cURL
 												</button>
-											))}
-										</div>
-
-										{sampleResponsePayload ? (
-											<div className="space-y-2">
-												<p className="text-xs text-muted">{sampleResponsePayload.description || 'Response'}</p>
-												<CodeBlock
-													code={JSON.stringify(sampleResponsePayload.payload, null, 2)}
-													label={`HTTP ${activeResponseStatus} Response Payload`}
-												/>
+												<button
+													type="button"
+													onClick={() => setActiveSnippetTab('fetch')}
+													className={`rounded px-2.5 py-1 font-medium transition ${
+														activeSnippetTab === 'fetch'
+															? 'bg-surface text-fg font-semibold shadow-xs'
+															: 'text-muted'
+													}`}>
+													JavaScript
+												</button>
+												<button
+													type="button"
+													onClick={() => setActiveSnippetTab('python')}
+													className={`rounded px-2.5 py-1 font-medium transition ${
+														activeSnippetTab === 'python'
+															? 'bg-surface text-fg font-semibold shadow-xs'
+															: 'text-muted'
+													}`}>
+													Python
+												</button>
 											</div>
-										) : null}
-									</div>
-								) : null}
-
-								{/* Ready-to-Run Code Snippets */}
-								<div className="space-y-3 pt-4 border-t border-line">
-									<div className="flex items-center justify-between">
-										<h3 className="text-sm font-semibold">Ready-to-Use Code Snippet</h3>
-										<div className="flex items-center rounded bg-surface-2 p-0.5 text-xs border border-line">
-											<button
-												type="button"
-												onClick={() => setActiveSnippetTab('curl')}
-												className={`rounded px-2.5 py-1 font-medium transition ${
-													activeSnippetTab === 'curl' ? 'bg-surface text-fg font-semibold shadow-xs' : 'text-muted'
-												}`}>
-												cURL
-											</button>
-											<button
-												type="button"
-												onClick={() => setActiveSnippetTab('fetch')}
-												className={`rounded px-2.5 py-1 font-medium transition ${
-													activeSnippetTab === 'fetch' ? 'bg-surface text-fg font-semibold shadow-xs' : 'text-muted'
-												}`}>
-												JavaScript
-											</button>
-											<button
-												type="button"
-												onClick={() => setActiveSnippetTab('python')}
-												className={`rounded px-2.5 py-1 font-medium transition ${
-													activeSnippetTab === 'python' ? 'bg-surface text-fg font-semibold shadow-xs' : 'text-muted'
-												}`}>
-												Python
-											</button>
 										</div>
-									</div>
 
-									{activeSnippetTab === 'curl' ? (
-										<CodeBlock
-											code={`curl -X ${currentOperation.method} "${apiBase}${currentOperation.path}" \\\n  -H "Authorization: ${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}" \\\n  -H "Content-Type: application/json"${
-												website ? ` \\\n  -H "Origin: https://${website}"` : ''
-											}${
-												currentOperation.requestBody
-													? ` \\\n  -d '${JSON.stringify(sampleRequestPayload || {})}'`
-													: ''
-											}`}
-											label="cURL Command"
-										/>
-									) : activeSnippetTab === 'fetch' ? (
-										<CodeBlock
-											code={`const response = await fetch("${apiBase}${currentOperation.path}", {\n  method: "${currentOperation.method}",\n  headers: {\n    "Authorization": "${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}",\n    "Content-Type": "application/json"${website ? `,\n    "Origin": "https://${website}"` : ''}\n  }${
-												currentOperation.requestBody
-													? `,\n  body: JSON.stringify(${JSON.stringify(sampleRequestPayload || {}, null, 2)})`
-													: ''
-											}\n});\nconst data = await response.json();\nconsole.log(data);`}
-											label="JavaScript Fetch Example"
-										/>
-									) : (
-										<CodeBlock
-											code={`import requests\n\nurl = "${apiBase}${currentOperation.path}"\nheaders = {\n    "Authorization": "${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}",\n    "Content-Type": "application/json"\n}\n${
-												currentOperation.requestBody
-													? `payload = ${JSON.stringify(
-															sampleRequestPayload || {},
-															null,
-															4,
-														)}\nresponse = requests.${currentOperation.method.toLowerCase()}(url, json=payload, headers=headers)`
-													: `response = requests.${currentOperation.method.toLowerCase()}(url, headers=headers)`
-											}\nprint(response.json())`}
-											label="Python Requests Example"
-										/>
-									)}
-								</div>
-							</section>
+										{activeSnippetTab === 'curl' ? (
+											<CodeBlock
+												code={`curl -X ${currentOperation.method} "${apiBase}${currentOperation.path}" \\\n  -H "Authorization: ${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}" \\\n  -H "Content-Type: application/json"${
+													website ? ` \\\n  -H "Origin: https://${website}"` : ''
+												}${
+													currentOperation.requestBody
+														? ` \\\n  -d '${JSON.stringify(sampleRequestPayload || {})}'`
+														: ''
+												}`}
+												label="cURL Command"
+											/>
+										) : activeSnippetTab === 'fetch' ? (
+											<CodeBlock
+												code={`const response = await fetch("${apiBase}${currentOperation.path}", {\n  method: "${currentOperation.method}",\n  headers: {\n    "Authorization": "${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}",\n    "Content-Type": "application/json"${website ? `,\n    "Origin": "https://${website}"` : ''}\n  }${
+													currentOperation.requestBody
+														? `,\n  body: JSON.stringify(${JSON.stringify(sampleRequestPayload || {}, null, 2)})`
+														: ''
+												}\n});\nconst data = await response.json();\nconsole.log(data);`}
+												label="JavaScript Fetch Example"
+											/>
+										) : (
+											<CodeBlock
+												code={`import requests\n\nurl = "${apiBase}${currentOperation.path}"\nheaders = {\n    "Authorization": "${token ? `Bearer ${token}` : 'Bearer YOUR_WEBSITE_SERVER_TOKEN'}",\n    "Content-Type": "application/json"\n}\n${
+													currentOperation.requestBody
+														? `payload = ${JSON.stringify(
+																sampleRequestPayload || {},
+																null,
+																4,
+															)}\nresponse = requests.${currentOperation.method.toLowerCase()}(url, json=payload, headers=headers)`
+														: `response = requests.${currentOperation.method.toLowerCase()}(url, headers=headers)`
+												}\nprint(response.json())`}
+												label="Python Requests Example"
+											/>
+										)}
+									</div>
+								</section>
+							)
 						) : null}
 
 						{/* 5. Product Developer SDK Sections */}
