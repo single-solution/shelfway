@@ -484,7 +484,7 @@ describe('Docs hub views (PLAN Section 10 B1, B2)', () => {
 		);
 		const ctaBtn = loggedInContainer.querySelector('.cta');
 		expect(ctaBtn?.textContent).toBe('Dashboard');
-		expect(ctaBtn?.getAttribute('href')).toBe('/admin');
+		expect(ctaBtn?.getAttribute('href')).toBe('/dashboard');
 		expect(loggedInContainer.textContent).not.toContain('Admin Console');
 
 		cleanup();

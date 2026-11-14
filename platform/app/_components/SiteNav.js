@@ -136,8 +136,7 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 
 	const isCurrentHome = isHome || pathname === '/';
 	const isDocs = pathname === '/docs' || pathname.startsWith('/docs/');
-	const isAdmin = Boolean(activeSession?.admin || activeSession?.kind === 'admin');
-	const dashboardHref = isAdmin ? '/admin' : '/overview';
+	const dashboardHref = '/dashboard';
 
 	const handleCloseSignIn = () => {
 		setShowSignInModal(false);
@@ -195,7 +194,7 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
 							type="button"
 							className="cta"
 							onClick={() => {
-								setSignInNext(null);
+								setSignInNext('/dashboard');
 								setShowSignInModal(true);
 							}}>
 							Sign in
