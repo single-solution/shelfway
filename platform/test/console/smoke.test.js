@@ -207,6 +207,8 @@ describe('merchant console smoke', () => {
 		expect(homeOf('merchant', '/admin/merchants')).toBe('/overview');
 		expect(homeOf('admin', '/admin/merchants')).toBe('/admin/merchants');
 		expect(homeOf('admin', '/credits')).toBe('/admin');
+		expect(homeOf('admin', '/dashboard')).toBe('/dashboard');
+		expect(homeOf('merchant', '/dashboard')).toBe('/dashboard');
 		expect(
 			contactLine({
 				channels: [

@@ -23,7 +23,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  *   onSuccess?: () => void,
  * }} props
  */
-export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null, onSuccess }) {
+export function SignInModal({ open, onClose, brandName = 'Shelfway', next = '/dashboard', onSuccess }) {
 	const [name, setName] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
@@ -64,7 +64,8 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 		if (onSuccess) {
 			onSuccess();
 		} else {
-			const destination = homeOf(consoleKind === 'admin' ? 'admin' : 'merchant', next);
+			const targetNext = next || '/dashboard';
+			const destination = homeOf(consoleKind === 'admin' ? 'admin' : 'merchant', targetNext);
 			window.location.assign(destination);
 		}
 	};
@@ -203,7 +204,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = null
 				return;
 			}
 			onClose();
-			window.location.assign('/admin');
+			window.location.assign('/dashboard');
 		} finally {
 			busyRef.current = false;
 			setBusy(false);

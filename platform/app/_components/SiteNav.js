@@ -17,7 +17,7 @@ export { COMPANY_NAME, PRODUCT_BRAND };
  * Open the central sign-in modal from anywhere on the public site.
  * @param {string | null} [next]
  */
-export const openSignInModal = (next = null) => {
+export const openSignInModal = (next = '/dashboard') => {
 	if (typeof window !== 'undefined') {
 		window.dispatchEvent(new CustomEvent('shelfway:open-signin', { detail: { next } }));
 	}
@@ -212,8 +212,7 @@ export function SiteHeader({ brandName = PRODUCT_BRAND, isHome = false, session 
  * @param {{ brandName?: string, companyName?: string, isHome?: boolean, session?: any }} props
  */
 export function SiteFooter({ brandName = PRODUCT_BRAND, companyName = COMPANY_NAME, isHome = false, session = null }) {
-	const isAdmin = Boolean(session?.admin || session?.kind === 'admin');
-	const dashboardHref = isAdmin ? '/admin' : '/overview';
+	const dashboardHref = '/dashboard';
 	const dashboardLabel = 'Dashboard';
 
 	/** @param {import('react').MouseEvent} e */
@@ -249,7 +248,7 @@ export function SiteFooter({ brandName = PRODUCT_BRAND, companyName = COMPANY_NA
 						type="button"
 						variant="ghost"
 						size="sm"
-						onClick={() => openSignInModal()}
+						onClick={() => openSignInModal('/dashboard')}
 						className="cursor-pointer text-muted hover:text-fg transition p-0 h-auto font-semibold text-sm">
 						Sign in
 					</Button>

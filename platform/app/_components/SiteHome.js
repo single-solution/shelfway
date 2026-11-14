@@ -886,13 +886,13 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 						<div className="hero-actions reveal" style={{ marginTop: '1.75rem' }}>
 							{session ? (
 								<ButtonLink
-									href={session.admin || session.kind === 'admin' ? '/admin' : '/overview'}
+									href="/dashboard"
 									variant="primary"
 									size="lg">
-									{session.admin || session.kind === 'admin' ? 'Open Admin Console' : 'Open Dashboard'}
+									Open Dashboard
 								</ButtonLink>
 							) : (
-								<Button type="button" variant="primary" size="lg" onClick={() => openSignInModal()}>
+								<Button type="button" variant="primary" size="lg" onClick={() => openSignInModal('/dashboard')}>
 									Sign in
 								</Button>
 							)}
