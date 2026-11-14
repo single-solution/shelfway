@@ -8,7 +8,7 @@
 import { notFound, redirect } from 'next/navigation.js';
 import { connection } from 'next/server';
 import { PageTransition } from '@shelfway/ui';
-import { loadAccount, loadCredits, loadOverview, loadWebsitePage, loadWebsites } from '../../../src/console/loaders.js';
+import { loadAccount, loadCredits, loadWebsitePage, loadWebsites } from '../../../src/console/loaders.js';
 import { ACCOUNT_PARTS, routes } from '../../../src/console/paths.js';
 import { LEGACY_PEER_REDIRECTS, websitePartOf } from '../../../src/console/website-parts.js';
 import { consoleBranding, merchantContext, one, redirectIfSignedIn } from '../_lib/server.js';
@@ -16,7 +16,7 @@ import { AccountView } from '../../../src/console/views/account.js';
 import { CreditsView } from '../../../src/console/views/credits.js';
 import { SharedSetupView } from '../../../src/console/views/setup.js';
 import { ConfirmEmailView, ForgotPasswordView, ResetPasswordView, SetPasswordView } from '../../../src/console/views/sign-in.js';
-import { OverviewView, WebsiteView, WebsitesView } from '../../../src/console/views/websites.js';
+import { WebsiteView, WebsitesView } from '../../../src/console/views/websites.js';
 
 export const dynamic = 'force-dynamic';
 
@@ -74,10 +74,7 @@ async function ConfirmEmailPage() {
 }
 
 async function OverviewPage() {
-	const { api, me, merchantId } = await merchantContext('/overview');
-	const overview = await loadOverview(api, merchantId);
-	const welcome = overview.ok && overview.rows.length === 0;
-	return <OverviewView {...overview} me={me} branding={welcome ? await consoleBranding() : undefined} />;
+	redirect('/dashboard');
 }
 
 async function WebsitesPage() {

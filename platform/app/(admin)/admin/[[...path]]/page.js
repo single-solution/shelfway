@@ -15,7 +15,6 @@ import {
 	loadMerchant,
 	loadMerchants,
 	loadMyAccount,
-	loadOverview,
 	loadProduct,
 	loadProducts,
 	loadSettings,
@@ -35,15 +34,13 @@ import { ActivityView } from '../../../../src/console/admin/views/activity.js';
 import { AdminsView } from '../../../../src/console/admin/views/admins.js';
 import { FinanceView } from '../../../../src/console/admin/views/finance.js';
 import { AdminWebsiteView, MerchantsView } from '../../../../src/console/admin/views/merchants.js';
-import { OverviewView } from '../../../../src/console/admin/views/overview.js';
 import { ProductsView } from '../../../../src/console/admin/views/products.js';
 import { SettingsView } from '../../../../src/console/admin/views/settings.js';
 
 export const dynamic = 'force-dynamic';
 
 async function HomePage() {
-	const { api, admin } = await adminContext('/admin');
-	return <OverviewView {...await loadOverview(api)} admin={admin} />;
+	redirect('/dashboard');
 }
 
 async function MyAccountPage() {

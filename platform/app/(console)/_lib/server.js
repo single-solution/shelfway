@@ -25,7 +25,7 @@ export const merchantContext = async (next) => {
 	const session = await consoleSession();
 	if (!session.ok) {
 		if (session.status === 401) redirect(next ? `/?auth=1&next=${encodeURIComponent(next)}` : '/?auth=1');
-		if (/** @type {{ admin?: boolean }} */ (session).admin) redirect('/admin');
+		if (/** @type {{ admin?: boolean }} */ (session).admin) redirect('/dashboard');
 		throw new Error(session.problem?.detail ?? 'The console is unavailable.');
 	}
 	return { api: await consoleApi(), me: session.me, merchantId: session.merchantId };
@@ -34,8 +34,7 @@ export const merchantContext = async (next) => {
 /** Signed-in visitors of the public pages go straight to their console (the session of the layout, no second call). */
 export const redirectIfSignedIn = async () => {
 	const session = await consoleSession();
-	if (session.ok) redirect('/overview');
-	if (/** @type {{ admin?: boolean }} */ (session).admin) redirect('/admin');
+	if (session.ok || /** @type {{ admin?: boolean }} */ (session).admin) redirect('/dashboard');
 };
 
 /** True while no admin exists (the sign-in page offers Create admin). */

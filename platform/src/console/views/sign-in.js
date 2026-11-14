@@ -243,7 +243,7 @@ function CreateAdmin({ branding }) {
 			redirectOn401: false,
 		});
 		setBusy(false);
-		if (result.ok) window.location.assign('/admin');
+		if (result.ok) window.location.assign('/dashboard');
 		else {
 			setProblem(result.problem);
 			setErrors(fieldErrors(result.problem));

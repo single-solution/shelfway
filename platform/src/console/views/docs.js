@@ -2138,7 +2138,7 @@ export function DocsHubView({
 											<p className="text-[11px] font-medium text-fg">No products connected</p>
 											{effectiveActor?.admin ? (
 												<a
-													href="/admin/products"
+													href="/dashboard?section=products"
 													className="text-[10px] text-primary hover:underline block font-semibold">
 													+ Connect product
 												</a>
@@ -2455,11 +2455,11 @@ export function DocsHubView({
 										<p className="text-sm font-medium text-fg">No products placed in the catalog yet</p>
 										<p className="text-xs text-muted max-w-md mx-auto">
 											Once micro-products (Accounts, Chat, Payments, Ecommerce, Notifications, Growth) are connected in
-											the Admin Console, their specifications, widget scripts, and endpoints will appear here.
+											the Dashboard, their specifications, widget scripts, and endpoints will appear here.
 										</p>
 										{effectiveActor?.admin ? (
 											<div className="pt-1">
-												<ButtonLink href="/admin/products" variant="primary" size="sm">
+												<ButtonLink href="/dashboard?section=products" variant="primary" size="sm">
 													Connect your first product
 												</ButtonLink>
 											</div>
@@ -2550,12 +2550,12 @@ export function DocsHubView({
 									</div>
 									<h2 className="text-base font-semibold text-fg">No products connected yet</h2>
 									<p className="text-xs text-muted max-w-md mx-auto">
-										Connect a product in the Admin Console to view its interactive OpenAPI specifications, endpoints,
+										Connect a product in the Dashboard to view its interactive OpenAPI specifications, endpoints,
 										and widget embed guides.
 									</p>
 									{effectiveActor?.admin ? (
 										<div className="pt-2">
-											<ButtonLink href="/admin/products" variant="primary" size="sm">
+											<ButtonLink href="/dashboard?section=products" variant="primary" size="sm">
 												Connect product
 											</ButtonLink>
 										</div>
