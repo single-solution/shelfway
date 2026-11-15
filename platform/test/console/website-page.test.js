@@ -234,7 +234,7 @@ describe('website page (jsdom)', () => {
 				(/** @type {any} */ st) => st === 201,
 			);
 			await until(() => shows('Chatty added.'));
-			expect(testRouter.push).toHaveBeenLastCalledWith(`/admin/merchants/${merchantId}/websites/${websiteId}/products/chatty`);
+			expect(testRouter.push).toHaveBeenLastCalledWith(`/dashboard/merchants/${merchantId}/websites/${websiteId}/products/chatty`);
 			expect(buttons('Actions for Chatty')).toHaveLength(1);
 			// nothing left to add
 			await press('Add product');
@@ -266,12 +266,12 @@ describe('website page (jsdom)', () => {
 			const installDetail = await admin.loadAdminWebsite(ownerBrowser.api, merchantId, websiteId, 'install', owner);
 			withToasts(<AdminWebsiteView detail={installDetail} admin={owner} />);
 			await settle(2);
-			expect(testRouter.push).toHaveBeenLastCalledWith(`/admin/merchants/${merchantId}/websites/${websiteId}`);
+			expect(testRouter.push).toHaveBeenLastCalledWith(`/dashboard/merchants/${merchantId}/websites/${websiteId}`);
 			cleanup();
 			const usageDetail = await admin.loadAdminWebsite(ownerBrowser.api, merchantId, websiteId, 'usage', owner);
 			withToasts(<AdminWebsiteView detail={usageDetail} admin={owner} />);
 			await settle(2);
-			expect(testRouter.push).toHaveBeenLastCalledWith(`/admin/merchants/${merchantId}/websites/${websiteId}`);
+			expect(testRouter.push).toHaveBeenLastCalledWith(`/dashboard/merchants/${merchantId}/websites/${websiteId}`);
 			cleanup();
 
 			// ---------------------------------------------------------------- Developer pack: OTP step-up -> pack JSON (A2 + A5)
@@ -342,7 +342,7 @@ describe('website page (jsdom)', () => {
 			const removed = await ownerBrowser.waitCall('DELETE', `/v1/merchants/${merchantId}/websites/${websiteId}`);
 			expect(removed.status).toBe(200);
 			await until(() => shows('shop.example.com removed.'));
-			expect(testRouter.push).toHaveBeenLastCalledWith(`/admin/merchants/${merchantId}`); // up to the merchant's page
+			expect(testRouter.push).toHaveBeenLastCalledWith(`/dashboard/merchants/${merchantId}`); // up to the merchant's page
 			cleanup();
 
 			// a refused removal (the website is gone) shows the problem in the dialog
@@ -376,7 +376,7 @@ describe('website page (jsdom)', () => {
 			merchant.use();
 			withToasts(<WebsiteView {...await loaders.loadWebsitePage(merchant.api, merchantId, websiteId, '')} />);
 			expect(document.querySelector('h1')?.textContent).toBe('shop.example.com');
-			expect(document.querySelector('nav[aria-label="Breadcrumb"] a')?.getAttribute('href')).toBe('/websites');
+			expect(document.querySelector('nav[aria-label="Breadcrumb"] a')?.getAttribute('href')).toBe('/dashboard/websites');
 			expect(document.querySelector('#product-notes')).not.toBeNull();
 			expect(buttons('Add product')).toHaveLength(1);
 			expect(buttons('Share with developer')).toHaveLength(1);
@@ -396,11 +396,11 @@ describe('website page (jsdom)', () => {
 			// Install ceremony redirects away (A1)
 			withToasts(<WebsiteView {...await loaders.loadWebsitePage(merchant.api, merchantId, websiteId, 'install')} />);
 			await settle(2);
-			expect(testRouter.push).toHaveBeenLastCalledWith(`/websites/${websiteId}`);
+			expect(testRouter.push).toHaveBeenLastCalledWith(`/dashboard/websites/${websiteId}`);
 			cleanup();
 			// the list filters by domain
 			withToasts(<WebsitesView {...await loaders.loadWebsites(merchant.api, merchantId)} />);
-			expect(document.querySelector(`a[href="/websites/${websiteId}"]`)?.textContent).toBe('shop.example.com');
+			expect(document.querySelector(`a[href="/dashboard/websites/${websiteId}"]`)?.textContent).toBe('shop.example.com');
 			const search = /** @type {HTMLInputElement} */ (document.querySelector('input[aria-label="Search domains"]'));
 			await act(async () => {
 				type(search, 'nothing');
@@ -455,7 +455,7 @@ describe('website page (jsdom)', () => {
 				/>,
 			);
 			await settle(2);
-			expect(testRouter.push).toHaveBeenLastCalledWith(`/admin/merchants/${merchantId}/websites/${websiteId}`);
+			expect(testRouter.push).toHaveBeenLastCalledWith(`/dashboard/merchants/${merchantId}/websites/${websiteId}`);
 			expect(financeBrowser.calls.some((/** @type {any} */ c) => c.path.endsWith('/tokens'))).toBe(false);
 			cleanup();
 
@@ -489,7 +489,7 @@ describe('website page (jsdom)', () => {
 			// the list's own address: a row per website (a link, its status, what it has or lacks), the first one open
 			withToasts(<WebsitesView {...await loaders.loadWebsites(merchant.api, merchantId)} />);
 			await settle(2);
-			const rowOf = (/** @type {string} */ id) => document.querySelector(`a[href="/websites/${id}"]`);
+			const rowOf = (/** @type {string} */ id) => document.querySelector(`a[href="/dashboard/websites/${id}"]`);
 			const rowText = (/** @type {string} */ id) =>
 				rowOf(id)?.closest('li, [role="listitem"], div')?.parentElement?.textContent;
 			expect(rowText(String(shop.websiteId))).toContain('Notes');
@@ -515,7 +515,7 @@ describe('website page (jsdom)', () => {
 			withToasts(<WebsiteView {...await loaders.loadWebsitePage(merchant.api, merchantId, String(shop.websiteId), '')} />);
 			await settle(2);
 			await press('Settings');
-			expect(testRouter.push).toHaveBeenLastCalledWith(`/websites/${shop.websiteId}/settings`);
+			expect(testRouter.push).toHaveBeenLastCalledWith(`/dashboard/websites/${shop.websiteId}/settings`);
 			cleanup();
 
 			// on a phone the list stands alone until a website is picked
@@ -534,7 +534,7 @@ describe('website page (jsdom)', () => {
 			withToasts(<WebsiteView {...await loaders.loadWebsitePage(merchant.api, merchantId, String(shop.websiteId), '')} />);
 			await settle(2);
 			await press('Back to the list');
-			expect(testRouter.push).toHaveBeenLastCalledWith('/websites');
+			expect(testRouter.push).toHaveBeenLastCalledWith('/dashboard/websites');
 			cleanup();
 			expect(listeners.size).toBe(0);
 			vi.unstubAllGlobals();
@@ -560,7 +560,7 @@ describe('website page (jsdom)', () => {
 					<WebsiteView {...await loaders.loadWebsitePage(merchant.api, merchantId, String(shop.websiteId), 'changes')} />,
 				);
 				await settle(2);
-				expect(testRouter.push).toHaveBeenLastCalledWith(`/websites/${shop.websiteId}`);
+				expect(testRouter.push).toHaveBeenLastCalledWith(`/dashboard/websites/${shop.websiteId}`);
 				cleanup();
 			} finally {
 				// @ts-expect-error jsdom has no scrollIntoView of its own

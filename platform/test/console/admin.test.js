@@ -149,7 +149,7 @@ describe('admin console smoke', () => {
 			expect(listHtml).toContain('Shop & Co');
 			expect(listHtml).toContain('250 credits'); // the balance on the row
 			expect(listHtml).toContain('Add merchant');
-			expect(listRaw).toContain(`href="/admin/merchants/${merchantId}"`);
+			expect(listRaw).toContain(`href="/dashboard/merchants/${merchantId}"`);
 			expect(listRaw).toContain('data-shelfway-page');
 			expect(listRaw).not.toContain('role="tab"');
 			const none = await admin.loadMerchants(ownerBrowser.api, { q: 'nobody-here' });
@@ -196,11 +196,11 @@ describe('admin console smoke', () => {
 			expect(raw).toContain('aria-label="Actions for shop.example.com"');
 			// a website is its own page: crumbs back to the merchant, its sections (status, products, changes, usage) all open
 			const siteId = String(detail.rows[0]?.website.websiteId);
-			expect(raw).toContain(`href="/admin/merchants/${merchantId}/websites/${siteId}"`);
+			expect(raw).toContain(`href="/dashboard/merchants/${merchantId}/websites/${siteId}"`);
 			const siteDetail = await admin.loadAdminWebsite(ownerBrowser.api, merchantId, siteId, '', owner);
 			const siteRaw = ssr(<AdminWebsiteView detail={siteDetail} admin={owner} />);
 			expect(text(siteRaw)).toContain('Notes');
-			expect(siteRaw).toContain(`href="/admin/merchants/${merchantId}"`);
+			expect(siteRaw).toContain(`href="/dashboard/merchants/${merchantId}"`);
 			// home is product rows only; Settings / Share with developer are header actions (Setup sheet may sit in More)
 			for (const word of ['Add product', 'Settings', 'Share with developer', 'Open']) expect(text(siteRaw)).toContain(word);
 			expect(siteRaw).toContain('id="product-notes"');
@@ -223,7 +223,7 @@ describe('admin console smoke', () => {
 			const productsHtml = text(productsRaw);
 			for (const word of ['Add product', 'Notes', 'Chatty', 'Websites']) expect(productsHtml).toContain(word);
 			// a table: the rows open the product's page; by name: Chatty comes first
-			expect(productsRaw).toContain('href="/admin/products/notes"');
+			expect(productsRaw).toContain('href="/dashboard/products/notes"');
 			expect(productsHtml.indexOf('Chatty')).toBeLessThan(productsHtml.indexOf('Notes'));
 			expect(products.ok && products.items.map((p) => p.name)).toEqual(['Chatty', 'Notes']);
 			// nothing connected yet, and nothing found with a filter
@@ -251,7 +251,7 @@ describe('admin console smoke', () => {
 			for (const word of ['Features and prices', 'Connection']) expect(productHtml).toContain(word);
 			expect(productRaw).toContain('title="No credits earned in the last 30 UTC days."');
 			expect(productHtml).not.toContain('Credits earned per UTC day (last 30 days)');
-			expect(productRaw).toContain(`href="/admin/merchants/${merchantId}/websites/${websiteId}"`);
+			expect(productRaw).toContain(`href="/dashboard/merchants/${merchantId}/websites/${websiteId}"`);
 			const featuresHtml = text(ssr(<ProductsView detail={product} section="features" admin={owner} />));
 			expect(featuresHtml).toContain('Per hour');
 			const connectionHtml = text(ssr(<ProductsView detail={product} section="connection" admin={owner} />));
@@ -318,7 +318,7 @@ describe('admin console smoke', () => {
 			// an inner navigation: needs attention first, then receipts and charges, each its own address
 			for (const word of ['Credits and billing', 'Needs attention', 'Receipts', 'Charges'])
 				expect(text(financeRaw)).toContain(word);
-			expect(financeRaw).toContain('href="/admin/finance/charges?');
+			expect(financeRaw).toContain('href="/dashboard/finance/charges?');
 			const creditsHtml = text(
 				ssr(
 					<MerchantCredits
@@ -465,33 +465,24 @@ describe('admin console smoke', () => {
 		}
 	});
 
-	it('opens an old address of a Settings part at that part of the one Settings page', async () => {
-		const { SettingsPart } = await import('../../app/(admin)/admin/[[...path]]/page.js');
-		const open = (/** @type {string} */ part) => SettingsPart({ params: Promise.resolve({ part }) });
-		await expect(open('mail')).rejects.toMatchObject({ digest: expect.stringContaining('/admin/settings#mail') });
-		await expect(open('billing')).rejects.toMatchObject({ digest: expect.stringContaining('/admin/settings#billing') });
-		// a part that does not exist stays a 404
-		await expect(open('nothing')).rejects.toMatchObject({ digest: expect.stringContaining('404') });
-	});
-
 	it('pure helpers of the admin views', () => {
 		expect(query({ a: 'x', b: null, c: '', d: 2 })).toBe('?a=x&d=2');
 		expect(query({})).toBe('');
-		expect(adminRoutes.activity({ merchantId: 'mer_1' })).toBe('/admin/activity?merchantId=mer_1');
-		expect(adminRoutes.login('/admin/x')).toBe('/?auth=1&next=%2Fadmin%2Fx');
-		expect(adminRoutes.merchant('mer_1', { q: 'shop', status: null })).toBe('/admin/merchants/mer_1?q=shop');
-		expect(adminRoutes.merchant('mer_1')).toBe('/admin/merchants/mer_1');
-		expect(adminRoutes.website('mer_1', 'web_1')).toBe('/admin/merchants/mer_1/websites/web_1');
-		expect(adminRoutes.merchantPart('mer_1', 'websites')).toBe('/admin/merchants/mer_1');
-		expect(adminRoutes.merchantPart('mer_1', 'credits')).toBe('/admin/merchants/mer_1/credits');
-		expect(adminRoutes.product('notes', { status: 'active' })).toBe('/admin/products/notes?status=active');
-		expect(adminRoutes.product('notes')).toBe('/admin/products/notes');
-		expect(adminRoutes.productPart('notes', 'websites')).toBe('/admin/products/notes');
-		expect(adminRoutes.productPart('notes', 'features')).toBe('/admin/products/notes/features');
-		expect(adminRoutes.admin('adm_1')).toBe('/admin/admins/adm_1');
-		expect(adminRoutes.settingsPart('mail')).toBe('/admin/settings#mail');
-		expect(adminRoutes.settingsPart('branding')).toBe('/admin/settings#branding');
-		expect(adminRoutes.products({ status: 'active' })).toBe('/admin/products?status=active');
+		expect(adminRoutes.activity({ merchantId: 'mer_1' })).toBe('/dashboard/activity?merchantId=mer_1');
+		expect(adminRoutes.login('/dashboard/x')).toBe('/?auth=1&next=%2Fdashboard%2Fx');
+		expect(adminRoutes.merchant('mer_1', { q: 'shop', status: null })).toBe('/dashboard/merchants/mer_1?q=shop');
+		expect(adminRoutes.merchant('mer_1')).toBe('/dashboard/merchants/mer_1');
+		expect(adminRoutes.website('mer_1', 'web_1')).toBe('/dashboard/merchants/mer_1/websites/web_1');
+		expect(adminRoutes.merchantPart('mer_1', 'websites')).toBe('/dashboard/merchants/mer_1');
+		expect(adminRoutes.merchantPart('mer_1', 'credits')).toBe('/dashboard/merchants/mer_1/credits');
+		expect(adminRoutes.product('notes', { status: 'active' })).toBe('/dashboard/products/notes?status=active');
+		expect(adminRoutes.product('notes')).toBe('/dashboard/products/notes');
+		expect(adminRoutes.productPart('notes', 'websites')).toBe('/dashboard/products/notes');
+		expect(adminRoutes.productPart('notes', 'features')).toBe('/dashboard/products/notes/features');
+		expect(adminRoutes.admin('adm_1')).toBe('/dashboard/admins/adm_1');
+		expect(adminRoutes.settingsPart('mail')).toBe('/dashboard/settings#mail');
+		expect(adminRoutes.settingsPart('branding')).toBe('/dashboard/settings#branding');
+		expect(adminRoutes.products({ status: 'active' })).toBe('/dashboard/products?status=active');
 		expect(adminApi.productWebsites('notes', 'abc')).toBe('/v1/admin/products/notes/websites?cursor=abc');
 		expect(adminApi.launch('notes')).toBe('/v1/admin/products/notes/launch');
 		expect(creditDayBars([{ day: '2026-10-01', amount: 1500 }])).toEqual([{ label: '10-01', value: 1.5, hint: '2026-10-01' }]);

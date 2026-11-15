@@ -41,9 +41,9 @@ export const hashToken = (secret, purpose, token) => {
 
 /** Console paths of each link kind. */
 const LINK_PATHS = Object.freeze({
-	setup: '/set-password',
-	password_reset: '/reset-password',
-	email_change: '/confirm-email',
+	setup: '/?auth=setup',
+	password_reset: '/?auth=reset',
+	email_change: '/?auth=confirm',
 });
 
 /**

@@ -217,7 +217,7 @@ describe('admin Products (jsdom)', () => {
 			// Websites using it (the page's first part): domain with its merchant, status, features on, daily cost; the
 			// domain opens its website card on the merchant's page
 			expect(shows('shop.example.com') && shows('Shop & Co') && shows('Notes')).toBe(true);
-			expect(document.querySelector(`a[href="/admin/merchants/${merchantId}/websites/${site.websiteId}"]`)).not.toBeNull();
+			expect(document.querySelector(`a[href="/dashboard/merchants/${merchantId}/websites/${site.websiteId}"]`)).not.toBeNull();
 			cleanup();
 			// the connection part has the address
 			withToasts(<ProductsView detail={loaded} section="connection" admin={owner} />);

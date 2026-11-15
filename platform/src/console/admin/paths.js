@@ -10,57 +10,57 @@ const e = encodeURIComponent;
 
 /** Admin Console page URLs. */
 export const adminRoutes = Object.freeze({
-	login: (next = '') => (next ? `/?auth=1&next=${e(next)}` : '/?auth=1'),
-	overview: () => '/admin',
+	login: (next = '/dashboard') => (next ? `/?auth=1&next=${e(next)}` : '/?auth=1'),
+	overview: () => '/dashboard',
 	/** the Merchants screen with nothing selected; `q` and `status` filter its list */
-	merchants: (/** @type {{ status?: string | null, q?: string | null }} */ q = {}) => `/admin/merchants${query(q)}`,
+	merchants: (/** @type {{ status?: string | null, q?: string | null }} */ q = {}) => `/dashboard/merchants${query(q)}`,
 	/** the Merchants screen with a merchant selected (the list keeps its filter) */
 	merchant: (/** @type {string} */ id, /** @type {{ status?: string | null, q?: string | null }} */ q = {}) =>
-		`/admin/merchants/${e(id)}${query(q)}`,
+		`/dashboard/merchants/${e(id)}${query(q)}`,
 	/** a part of a merchant's page: websites (the merchant's own address), credits, details or activity */
 	merchantPart: (/** @type {string} */ id, /** @type {string} */ part) =>
-		part === 'websites' ? `/admin/merchants/${e(id)}` : `/admin/merchants/${e(id)}/${e(part)}`,
+		part === 'websites' ? `/dashboard/merchants/${e(id)}` : `/dashboard/merchants/${e(id)}/${e(part)}`,
 	/** a website of a merchant: its own page */
-	website: (/** @type {string} */ m, /** @type {string} */ w) => `/admin/merchants/${e(m)}/websites/${e(w)}`,
+	website: (/** @type {string} */ m, /** @type {string} */ w) => `/dashboard/merchants/${e(m)}/websites/${e(w)}`,
 	/** a part of a website's page: `products/:productId`, `settings/:section`, `setup`; none = Overview */
 	websitePart: (/** @type {string} */ m, /** @type {string} */ w, /** @type {string} */ part = '') =>
 		part
-			? `/admin/merchants/${e(m)}/websites/${e(w)}/${part.split('/').map(e).join('/')}`
-			: `/admin/merchants/${e(m)}/websites/${e(w)}`,
+			? `/dashboard/merchants/${e(m)}/websites/${e(w)}/${part.split('/').map(e).join('/')}`
+			: `/dashboard/merchants/${e(m)}/websites/${e(w)}`,
 	/** the Setup sheet of a website */
-	websiteSetup: (/** @type {string} */ m, /** @type {string} */ w) => `/admin/merchants/${e(m)}/websites/${e(w)}/setup`,
+	websiteSetup: (/** @type {string} */ m, /** @type {string} */ w) => `/dashboard/merchants/${e(m)}/websites/${e(w)}/setup`,
 	/** the Website settings of a website (a part: `business`, `brand`, `connections`, …) */
 	websiteSettings: (/** @type {string} */ m, /** @type {string} */ w, /** @type {string} */ section = '') =>
 		section
-			? `/admin/merchants/${e(m)}/websites/${e(w)}/settings/${e(section)}`
-			: `/admin/merchants/${e(m)}/websites/${e(w)}/settings`,
-	products: (/** @type {{ status?: string | null }} */ q = {}) => `/admin/products${query(q)}`,
-	product: (/** @type {string} */ id, /** @type {{ status?: string | null }} */ q = {}) => `/admin/products/${e(id)}${query(q)}`,
+			? `/dashboard/merchants/${e(m)}/websites/${e(w)}/settings/${e(section)}`
+			: `/dashboard/merchants/${e(m)}/websites/${e(w)}/settings`,
+	products: (/** @type {{ status?: string | null }} */ q = {}) => `/dashboard/products${query(q)}`,
+	product: (/** @type {string} */ id, /** @type {{ status?: string | null }} */ q = {}) => `/dashboard/products/${e(id)}${query(q)}`,
 	/** a part of a product's page: websites (the product's own address), features or connection */
 	productPart: (/** @type {string} */ id, /** @type {string} */ part) =>
-		part === 'websites' ? `/admin/products/${e(id)}` : `/admin/products/${e(id)}/${e(part)}`,
+		part === 'websites' ? `/dashboard/products/${e(id)}` : `/dashboard/products/${e(id)}/${e(part)}`,
 	finance: (
 		/** @type {{ merchantId?: string | null, from?: string | null, to?: string | null, method?: string | null, by?: string | null }} */ q = {},
-	) => `/admin/finance${query(q)}`,
+	) => `/dashboard/finance${query(q)}`,
 	/** a part of Credits and billing: attention (the page's own address), receipts or charges; the filters in the query */
 	financePart: (
 		/** @type {string} */ part,
 		/** @type {{ merchantId?: string | null, from?: string | null, to?: string | null, method?: string | null, by?: string | null }} */ q = {},
-	) => (part === 'attention' ? `/admin/finance${query(q)}` : `/admin/finance/${e(part)}${query(q)}`),
+	) => (part === 'attention' ? `/dashboard/finance${query(q)}` : `/dashboard/finance/${e(part)}${query(q)}`),
 	activity: (
 		/** @type {{ merchantId?: string | null, adminId?: string | null, from?: string | null, to?: string | null }} */ q = {},
-	) => `/admin/activity${query(q)}`,
-	admins: () => '/admin/admins',
-	admin: (/** @type {string} */ id) => `/admin/admins/${e(id)}`,
+	) => `/dashboard/activity${query(q)}`,
+	admins: () => '/dashboard/admins',
+	admin: (/** @type {string} */ id) => `/dashboard/admins/${e(id)}`,
 	/** a part of an admin's page: details (the admin's own address) or activity */
 	adminPart: (/** @type {string} */ id, /** @type {string} */ part) =>
-		part === 'details' ? `/admin/admins/${e(id)}` : `/admin/admins/${e(id)}/${e(part)}`,
-	settings: () => '/admin/settings',
+		part === 'details' ? `/dashboard/admins/${e(id)}` : `/dashboard/admins/${e(id)}/${e(part)}`,
+	settings: () => '/dashboard/settings',
 	/** a part of Settings (branding, support, mail, security or billing): the page's one address with the part in the hash */
-	settingsPart: (/** @type {string} */ part) => `/admin/settings#${e(part)}`,
-	account: () => '/admin/account',
+	settingsPart: (/** @type {string} */ part) => `/dashboard/settings#${e(part)}`,
+	account: () => '/dashboard/account',
 	/** a part of My account: profile (the page's own address), sign-in, two-step or activity */
-	accountPart: (/** @type {string} */ part) => (part === 'profile' ? '/admin/account' : `/admin/account#${e(part)}`),
+	accountPart: (/** @type {string} */ part) => (part === 'profile' ? '/dashboard/account' : `/dashboard/account#${e(part)}`),
 });
 
 /** Admin API paths. */

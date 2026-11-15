@@ -346,7 +346,7 @@ describe('Setup page (jsdom)', () => {
 			expect(shows('Not set yet')).toBe(true);
 			expect(
 				[...document.querySelectorAll('a')].find((a) => a.textContent === 'Open Website settings')?.getAttribute('href'),
-			).toBe(`/websites/${websiteId}/settings`);
+			).toBe(`/dashboard/websites/${websiteId}/settings`);
 			expect(shows('Not filled out yet.')).toBe(true);
 			expect(shows('Fill out the business profile to see which features this website should use.')).toBe(true);
 			await press('Fill out the profile');
@@ -364,7 +364,7 @@ describe('Setup page (jsdom)', () => {
 			expect(dialog().textContent).toContain(
 				'The countries and languages come from the website’s settings (Region and format)',
 			);
-			expect(dialog().querySelector('a')?.getAttribute('href')).toBe(`/websites/${websiteId}/settings/region`);
+			expect(dialog().querySelector('a')?.getAttribute('href')).toBe(`/dashboard/websites/${websiteId}/settings/region`);
 			expect(() => byLabel(dialog(), 'Languages of the website')).toThrow();
 			// own answers where the options cannot list everything, typed once each
 			const ownPays = /** @type {HTMLInputElement} */ (

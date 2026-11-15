@@ -81,6 +81,17 @@ export function DashboardHubView({
 		};
 	}, [session]);
 
+	// Listen for browser back/forward navigation
+	useEffect(() => {
+		const onPopState = () => {
+			if (typeof window === 'undefined') return;
+			const seg = window.location.pathname.replace(/^\/dashboard\/?/, '').split('/')[0];
+			setActiveSection(seg || 'overview');
+		};
+		window.addEventListener('popstate', onPopState);
+		return () => window.removeEventListener('popstate', onPopState);
+	}, []);
+
 	const effectiveSession = clientSession || session;
 	const userRole = effectiveSession?.role || effectiveSession?.actor?.role || (token ? 'developer' : null);
 	const userKind =
@@ -91,13 +102,8 @@ export function DashboardHubView({
 	const selectSection = (sec) => {
 		setActiveSection(sec);
 		if (typeof window !== 'undefined') {
-			const url = new URL(window.location.href);
-			if (sec && sec !== 'overview') {
-				url.searchParams.set('section', sec);
-			} else {
-				url.searchParams.delete('section');
-			}
-			window.history.replaceState(null, '', url.pathname + (url.search || ''));
+			const targetPath = !sec || sec === 'overview' ? '/dashboard' : `/dashboard/${sec}`;
+			window.history.pushState(null, '', targetPath);
 		}
 	};
 
@@ -349,6 +355,36 @@ export function DashboardHubView({
 											<Icon name="activity" size={15} />
 											<span>System Activity</span>
 										</Button>
+
+										<Button
+											block
+											type="button"
+											variant="ghost"
+											size="sm"
+											onClick={() => selectSection('admins')}
+											className={`w-full !flex !items-center !justify-start gap-2.5 rounded-control px-3 py-2 text-xs font-medium transition ${
+												activeSection === 'admins'
+													? 'bg-primary/10 text-primary font-semibold'
+													: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
+											}`}>
+											<Icon name="shield" size={15} />
+											<span>Administrators</span>
+										</Button>
+
+										<Button
+											block
+											type="button"
+											variant="ghost"
+											size="sm"
+											onClick={() => selectSection('account')}
+											className={`w-full !flex !items-center !justify-start gap-2.5 rounded-control px-3 py-2 text-xs font-medium transition ${
+												activeSection === 'account'
+													? 'bg-primary/10 text-primary font-semibold'
+													: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
+											}`}>
+											<Icon name="user" size={15} />
+											<span>My Account</span>
+										</Button>
 									</>
 								) : null}
 
@@ -414,6 +450,21 @@ export function DashboardHubView({
 											}`}>
 											<Icon name="creditCard" size={15} />
 											<span>Credits &amp; Billing</span>
+										</Button>
+
+										<Button
+											block
+											type="button"
+											variant="ghost"
+											size="sm"
+											onClick={() => selectSection('account')}
+											className={`w-full !flex !items-center !justify-start gap-2.5 rounded-control px-3 py-2 text-xs font-medium transition ${
+												activeSection === 'account'
+													? 'bg-primary/10 text-primary font-semibold'
+													: 'text-fg/80 hover:bg-surface-2 hover:text-fg'
+											}`}>
+											<Icon name="user" size={15} />
+											<span>My Account</span>
 										</Button>
 									</>
 								) : null}
@@ -892,6 +943,96 @@ export function DashboardHubView({
 										<div className="p-2.5 rounded bg-surface-2 font-mono flex items-center justify-between">
 											<span>catalog.probe: Universal products readiness check OK</span>
 											<span className="text-[10px]">5m ago</span>
+										</div>
+									</div>
+								</div>
+							</section>
+						) : null}
+
+						{/* 8. Admins Section (Admin) */}
+						{activeSection === 'admins' && userKind === 'admin' ? (
+							<section className="space-y-4">
+								<div className="border-b border-line pb-4">
+									<h1 className="text-xl font-bold text-fg">Platform Administrators</h1>
+									<p className="text-xs text-muted">
+										Manage administrative users, access privileges, and security settings.
+									</p>
+								</div>
+
+								<div className="rounded-card border border-line bg-surface p-5 space-y-4 shadow-card">
+									<div className="flex items-center justify-between">
+										<div className="space-y-1">
+											<h2 className="text-sm font-semibold text-fg">Active Administrator</h2>
+											<p className="text-xs text-muted">Current signed-in administrator account.</p>
+										</div>
+										<Badge tone="primary">Owner</Badge>
+									</div>
+
+									<div className="divide-y divide-line text-xs">
+										<div className="py-2.5 flex items-center justify-between">
+											<span className="text-muted">Administrator</span>
+											<span className="font-semibold text-fg">{effectiveSession?.name || 'Administrator'}</span>
+										</div>
+										<div className="py-2.5 flex items-center justify-between">
+											<span className="text-muted">Email</span>
+											<span className="font-mono text-fg">{effectiveSession?.email || 'admin@shelfway.test'}</span>
+										</div>
+										<div className="py-2.5 flex items-center justify-between">
+											<span className="text-muted">Role</span>
+											<span className="font-mono text-fg uppercase text-[11px]">{userRole || 'owner'}</span>
+										</div>
+										<div className="py-2.5 flex items-center justify-between">
+											<span className="text-muted">Access Level</span>
+											<span className="text-emerald-600 font-medium">Full Platform Control</span>
+										</div>
+									</div>
+								</div>
+							</section>
+						) : null}
+
+						{/* 9. Account Section (All Personas) */}
+						{activeSection === 'account' ? (
+							<section className="space-y-4">
+								<div className="border-b border-line pb-4">
+									<h1 className="text-xl font-bold text-fg">Account &amp; Security</h1>
+									<p className="text-xs text-muted">Manage your credentials, sessions, and profile settings.</p>
+								</div>
+
+								<div className="rounded-card border border-line bg-surface p-5 space-y-4 shadow-card">
+									<div className="flex items-center justify-between">
+										<div className="space-y-1">
+											<h2 className="text-sm font-semibold text-fg">Identity Profile</h2>
+											<p className="text-xs text-muted">Credentials and authentication status.</p>
+										</div>
+										<Badge tone="success" dot>
+											Authenticated
+										</Badge>
+									</div>
+
+									<div className="divide-y divide-line text-xs">
+										<div className="py-2.5 flex items-center justify-between">
+											<span className="text-muted">Account Name</span>
+											<span className="font-semibold text-fg">
+												{effectiveSession?.name || (userKind === 'admin' ? 'Admin' : 'Merchant')}
+											</span>
+										</div>
+										<div className="py-2.5 flex items-center justify-between">
+											<span className="text-muted">Email Address</span>
+											<span className="font-mono text-fg">
+												{effectiveSession?.email || (userKind === 'admin' ? 'admin@shelfway.test' : 'merchant@example.com')}
+											</span>
+										</div>
+										<div className="py-2.5 flex items-center justify-between">
+											<span className="text-muted">Identity Plane</span>
+											<span className="font-mono text-fg uppercase text-[11px]">{userKind}</span>
+										</div>
+										<div className="py-2.5 flex items-center justify-between">
+											<span className="text-muted">Role Privilege</span>
+											<span className="font-mono text-fg uppercase text-[11px]">{userRole || 'owner'}</span>
+										</div>
+										<div className="py-2.5 flex items-center justify-between">
+											<span className="text-muted">Two-Step Verification</span>
+											<span className="text-emerald-600 font-medium">Protected (TOTP / OTP)</span>
 										</div>
 									</div>
 								</div>

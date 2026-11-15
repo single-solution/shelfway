@@ -361,7 +361,7 @@ describe('merchant console interactions (jsdom): sign-in, Account, Overview, web
 		render(<WebsitesView {...await loaders.loadWebsites(e.api, beta.merchantId)} branding={BRANDING} />);
 		// the list is rich rows; a row is a link to the website's page, which stands open beside it
 		expect(shows('beta.example.com')).toBe(true);
-		expect(document.querySelector(`a[href="/websites/${site.websiteId}"]`)).not.toBeNull();
+		expect(document.querySelector(`a[href="/dashboard/websites/${site.websiteId}"]`)).not.toBeNull();
 		expect(document.querySelector('h1')?.textContent).toBe('beta.example.com');
 		cleanup();
 		render(<WebsiteView {...await loaders.loadWebsitePage(e.api, beta.merchantId, String(site.websiteId), '')} />);
@@ -419,7 +419,7 @@ describe('merchant console interactions (jsdom): sign-in, Account, Overview, web
 		const frame = await loaders.loadFrame(e.api, beta.merchantId);
 		const low = { status: 'low_balance', balance: 5000, dailySpend: 24_000, daysLeft: 0 };
 		render(
-			<PathnameContext.Provider value={`/websites/${site.websiteId}`}>
+			<PathnameContext.Provider value={`/dashboard/websites/${site.websiteId}`}>
 				<ConsoleShell
 					me={beta.me}
 					websites={frame.websites}
@@ -437,15 +437,15 @@ describe('merchant console interactions (jsdom): sign-in, Account, Overview, web
 		);
 		expect(shows('child') && shows('Credits are running low') && shows('help@shelfway.test') && shows('Acme')).toBe(true);
 		// store admin workspace links are present for the active website
-		expect(document.querySelector(`nav a[href="/websites/${site.websiteId}"]`)).not.toBeNull();
-		expect(document.querySelector(`nav a[href="/websites/${site.websiteId}/orders"]`)).not.toBeNull();
-		expect(document.querySelector(`nav a[href="/websites/${site.websiteId}/products"]`)).not.toBeNull();
-		expect(document.querySelector(`nav a[href="/websites/${site.websiteId}/customers"]`)).not.toBeNull();
-		expect(document.querySelector(`nav a[href="/websites/${site.websiteId}/setup"]`)).not.toBeNull();
-		expect(document.querySelector(`nav a[href="/websites/${site.websiteId}/settings"]`)).not.toBeNull();
+		expect(document.querySelector(`nav a[href="/dashboard/websites/${site.websiteId}"]`)).not.toBeNull();
+		expect(document.querySelector(`nav a[href="/dashboard/websites/${site.websiteId}/orders"]`)).not.toBeNull();
+		expect(document.querySelector(`nav a[href="/dashboard/websites/${site.websiteId}/products"]`)).not.toBeNull();
+		expect(document.querySelector(`nav a[href="/dashboard/websites/${site.websiteId}/customers"]`)).not.toBeNull();
+		expect(document.querySelector(`nav a[href="/dashboard/websites/${site.websiteId}/setup"]`)).not.toBeNull();
+		expect(document.querySelector(`nav a[href="/dashboard/websites/${site.websiteId}/settings"]`)).not.toBeNull();
 		// the balance is a link at the bottom of the sidebar, and Usage and credits carries an attention dot while it is low
-		expect(document.querySelector('a[title="Credit balance"]')?.getAttribute('href')).toBe('/credits');
-		expect(document.querySelector('nav a[href="/credits"] [data-shelfway-dot]')?.getAttribute('title')).toBe(
+		expect(document.querySelector('a[title="Credit balance"]')?.getAttribute('href')).toBe('/dashboard/finance');
+		expect(document.querySelector('nav a[href="/dashboard/finance"] [data-shelfway-dot]')?.getAttribute('title')).toBe(
 			'Credits are running low',
 		);
 		const [siteSelect] = /** @type {HTMLSelectElement[]} */ ([...document.querySelectorAll('select')]);

@@ -121,16 +121,27 @@ export const adminSections = (admin, pathname, attention = 0) =>
 	/** @type {const} */ (['operate', 'money', 'portal'])
 		.map((group) => ({
 			label: ADMIN.menuGroups[group],
-			items: ADMIN_NAV.filter((item) => item.group === group && adminCan(admin, item.permission)).map((item) => ({
-				href: item.href,
-				label: item.label,
-				icon: item.icon,
-				kind: item.kind,
-				current: item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`),
-				...(item.href === adminRoutes.finance() && attention > 0
-					? { badge: { count: attention, tone: /** @type {const} */ ('attention'), label: ADMIN.menuAttention(attention) } }
-					: {}),
-			})),
+			items: ADMIN_NAV.filter((item) => item.group === group && adminCan(admin, item.permission)).map((item) => {
+				const altHref = item.href.startsWith('/dashboard')
+					? item.href.replace('/dashboard', '/admin')
+					: `/dashboard${item.href}`;
+				const isCurrent = item.exact
+					? pathname === item.href || pathname === altHref
+					: pathname === item.href ||
+						pathname.startsWith(`${item.href}/`) ||
+						pathname === altHref ||
+						pathname.startsWith(`${altHref}/`);
+				return {
+					href: item.href,
+					label: item.label,
+					icon: item.icon,
+					kind: item.kind,
+					current: isCurrent,
+					...(item.href === adminRoutes.finance() && attention > 0
+						? { badge: { count: attention, tone: /** @type {const} */ ('attention'), label: ADMIN.menuAttention(attention) } }
+						: {}),
+				};
+			}),
 		}))
 		.filter((section) => section.items.length > 0);
 

@@ -116,7 +116,7 @@ describe('merchant console smoke', () => {
 			const websitesText = text(websitesRaw);
 			expect(websitesText).toContain('www.shop.example.com');
 			expect(websitesRaw).toContain('data-shelfway-page');
-			expect(websitesRaw).toContain(`href="/websites/${site.websiteId}"`);
+			expect(websitesRaw).toContain(`href="/dashboard/websites/${site.websiteId}"`);
 			expect(websitesRaw).not.toContain('role="tab"');
 			expect(websitesText).toContain('No products yet'); // the second website's row says what it lacks
 			expect(websitesText).toContain('Chatty: no feature on yet');
@@ -128,13 +128,13 @@ describe('merchant console smoke', () => {
 			const selectedRaw = ssr(<WebsiteView {...selected} />);
 			const selectedText = text(selectedRaw);
 			expect(selectedRaw).toContain('aria-label="Breadcrumb"');
-			expect(selectedRaw).toContain('href="/websites"');
+			expect(selectedRaw).toContain('href="/dashboard/websites"');
 			expect(selectedText).toContain('Notes');
 			expect(selectedText).toContain('Chatty');
 			expect(selectedText).toContain('No features on');
 			for (const word of ['Settings', 'Share with developer', 'Add product', 'Daily cost', 'Open'])
 				expect(selectedText).toContain(word);
-			expect(selectedRaw).toContain(`href="/websites/${site.websiteId}"`); // its row in the list
+			expect(selectedRaw).toContain(`href="/dashboard/websites/${site.websiteId}"`); // its row in the list
 			expect(selectedRaw).toContain('id="product-notes"');
 			expect(selectedRaw).not.toContain('role="tab"');
 			expect(selectedText).not.toContain('Remove website');
@@ -219,7 +219,7 @@ describe('merchant console smoke', () => {
 		).toBe('a@b.co (Email), https://wa.me/15550100 (WhatsApp)');
 		expect(contactLine({ channels: [] })).toBe('support');
 		expect(contactLine(null)).toBe('support');
-		expect(routes.website('web_1')).toBe('/websites/web_1');
+		expect(routes.website('web_1')).toBe('/dashboard/websites/web_1');
 		expect(routes.docsProductOpenapi('chat')).toBe('/docs/chat/openapi.json');
 		expect(routes.docsOpenapi()).toBe('/docs/openapi.json');
 		expect(api.docsProductOpenapi('chat')).toBe('/v1/docs/chat/openapi.json');
@@ -289,12 +289,12 @@ describe('merchant console smoke', () => {
 		expect(sectionOf({ kind: 'product', id: 'notes' })).toBe('product-notes');
 		expect(sectionOf(null)).toBeNull();
 		expect(sectionOf({ kind: 'overview' })).toBeNull();
-		expect(routes.websiteSetup('w1')).toBe('/websites/w1/setup');
-		expect(routes.websiteSettings('w1', 'brand')).toBe('/websites/w1/settings/brand');
-		expect(adminRoutes.websiteSetup('m1', 'w1')).toBe('/admin/merchants/m1/websites/w1/setup');
-		expect(adminRoutes.websiteSettings('m1', 'w1', 'brand')).toBe('/admin/merchants/m1/websites/w1/settings/brand');
-		expect(adminRoutes.adminPart('p1', 's1')).toBe('/admin/admins/p1/s1');
-		expect(adminRoutes.account()).toBe('/admin/account');
+		expect(routes.websiteSetup('w1')).toBe('/dashboard/websites/w1/setup');
+		expect(routes.websiteSettings('w1', 'brand')).toBe('/dashboard/websites/w1/settings/brand');
+		expect(adminRoutes.websiteSetup('m1', 'w1')).toBe('/dashboard/merchants/m1/websites/w1/setup');
+		expect(adminRoutes.websiteSettings('m1', 'w1', 'brand')).toBe('/dashboard/merchants/m1/websites/w1/settings/brand');
+		expect(adminRoutes.adminPart('p1', 's1')).toBe('/dashboard/admins/p1/s1');
+		expect(adminRoutes.account()).toBe('/dashboard/account');
 		expect(adminApi.adminTwoStepOff('a1')).toBe('/v1/admin/admins/a1/two-step/off');
 		expect(adminApi.settingsBilling()).toBe('/v1/admin/settings/billing');
 

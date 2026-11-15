@@ -111,9 +111,15 @@ const creditsMark = (billing) => {
  */
 export const merchantSections = (pathname, billing = null) => {
 	/** @param {string} href */
-	const is = (href) => pathname === href || pathname.startsWith(`${href}/`);
-	const currentWebsiteId = /^\/websites\/([^/?#]+)/.exec(pathname)?.[1] ?? '';
-	const storePrefix = currentWebsiteId ? `/websites/${currentWebsiteId}` : '';
+	const is = (href) => {
+		if (href === routes.overview() || href === '/dashboard' || href === '/overview') {
+			return pathname === routes.overview() || pathname === '/dashboard' || pathname === '/overview';
+		}
+		const altHref = href.startsWith('/dashboard/') ? href.replace('/dashboard', '') : `/dashboard${href}`;
+		return pathname === href || pathname.startsWith(`${href}/`) || pathname === altHref || pathname.startsWith(`${altHref}/`);
+	};
+	const currentWebsiteId = /^\/(?:dashboard\/)?websites\/([^/?#]+)/.exec(pathname)?.[1] ?? '';
+	const storePrefix = currentWebsiteId ? (pathname.startsWith('/dashboard') ? `/dashboard/websites/${currentWebsiteId}` : `/websites/${currentWebsiteId}`) : '';
 	return [
 		{
 			label: '',
@@ -231,7 +237,7 @@ export function ConsoleShell({ me, websites, billing: frameBilling, children, br
 	const [billing, setBilling] = useState(frameBilling);
 	useEffect(() => setBilling(frameBilling), [frameBilling]);
 	if (PUBLIC_PATHS.includes(pathname) || pathname === '/docs' || pathname.startsWith('/docs/')) return children;
-	const currentWebsiteId = /^\/websites\/([^/?#]+)/.exec(pathname)?.[1] ?? '';
+	const currentWebsiteId = /^\/(?:dashboard\/)?websites\/([^/?#]+)/.exec(pathname)?.[1] ?? '';
 	const merchant = me?.merchant ?? null;
 	const signOut = async () => {
 		await apiFetch(api.signOut(), { method: 'POST', redirectOn401: false });

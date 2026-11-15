@@ -23,41 +23,37 @@ export const query = (params) => {
  */
 export const withCursor = (path, cursor) => (cursor ? `${path}${path.includes('?') ? '&' : '?'}cursor=${e(cursor)}` : path);
 
-/** The public pages (no console frame): marketing home, sign-in, emailed-link pages and a shared Setup sheet. */
+/** The public pages (no console frame): marketing home, sign-in, and docs. */
 export const PUBLIC_PATHS = Object.freeze([
 	'/',
 	'/login',
-	'/forgot-password',
-	'/reset-password',
-	'/set-password',
-	'/confirm-email',
-	'/shared-setup',
 	'/docs',
+	'/dashboard',
 ]);
 
 /** Merchant console page URLs. */
 export const routes = Object.freeze({
-	login: (next = '') => (next ? `/?auth=1&next=${e(next)}` : '/?auth=1'),
-	forgotPassword: () => '/forgot-password',
-	overview: () => '/overview',
+	login: (next = '/dashboard') => (next ? `/?auth=1&next=${e(next)}` : '/?auth=1'),
+	forgotPassword: () => '/?auth=forgot',
+	overview: () => '/dashboard',
 	/** the Websites screen with nothing selected */
-	websites: () => '/websites',
+	websites: () => '/dashboard/websites',
 	/** the Websites screen with a website selected */
-	website: (/** @type {string} */ id) => `/websites/${e(id)}`,
+	website: (/** @type {string} */ id) => `/dashboard/websites/${e(id)}`,
 	/** a part of a website's page: `products/:productId`, `settings/:section`, `setup`; none = Overview */
 	websitePart: (/** @type {string} */ id, /** @type {string} */ part = '') =>
-		part ? `/websites/${e(id)}/${part.split('/').map(e).join('/')}` : `/websites/${e(id)}`,
+		part ? `/dashboard/websites/${e(id)}/${part.split('/').map(e).join('/')}` : `/dashboard/websites/${e(id)}`,
 	/** the Setup sheet of a website */
-	websiteSetup: (/** @type {string} */ id) => `/websites/${e(id)}/setup`,
+	websiteSetup: (/** @type {string} */ id) => `/dashboard/websites/${e(id)}/setup`,
 	/** the Website settings of a website (a part: `business`, `brand`, `connections`, …) */
 	websiteSettings: (/** @type {string} */ id, /** @type {string} */ section = '') =>
-		section ? `/websites/${e(id)}/settings/${e(section)}` : `/websites/${e(id)}/settings`,
-	credits: () => '/credits',
+		section ? `/dashboard/websites/${e(id)}/settings/${e(section)}` : `/dashboard/websites/${e(id)}/settings`,
+	credits: () => '/dashboard/finance',
 	/** the receipts section of Usage and credits */
-	creditsReceipts: () => '/credits#receipts',
-	account: () => '/account',
+	creditsReceipts: () => '/dashboard/finance#receipts',
+	account: () => '/dashboard/account',
 	/** a part of the Account page: details (the page's own address), sign-in, two-step or activity */
-	accountPart: (/** @type {string} */ part) => (part === 'details' ? '/account' : `/account#${e(part)}`),
+	accountPart: (/** @type {string} */ part) => (part === 'details' ? '/dashboard/account' : `/dashboard/account#${e(part)}`),
 	/** Public Docs hub */
 	docs: () => '/docs',
 	docsProduct: (/** @type {string} */ id) => `/docs?product=${e(id)}`,

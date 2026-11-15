@@ -108,7 +108,7 @@ describe('Website settings (jsdom)', () => {
 				'Data and files',
 				'Between your products',
 			]);
-			const region = `a[href="/websites/${x.websiteId}/settings/region"]`;
+			const region = `a[href="/dashboard/websites/${x.websiteId}/settings/region"]`;
 			expect(
 				nav.querySelector(`${region} [title="Needed by Notes"], ${region} [aria-label="Needed by Notes"]`),
 			).not.toBeNull();
@@ -163,7 +163,7 @@ describe('Website settings (jsdom)', () => {
 			expect(buttons('Save changes')).toHaveLength(0);
 			// Recent changes peer page was retired in A1 and redirects to website home
 			await openPage(x, 'changes');
-			expect(testRouter.push).toHaveBeenLastCalledWith(`/websites/${x.websiteId}`);
+			expect(testRouter.push).toHaveBeenLastCalledWith(`/dashboard/websites/${x.websiteId}`);
 			// the preview of the Format follows the currency
 			await openPage(x, 'settings/region');
 			expect(document.querySelector('[data-preview="money"]')?.textContent).toContain('USD');

@@ -170,7 +170,7 @@ describe('fuller Portal screens (jsdom)', () => {
 			expect(shows('Getting the platform ready')).toBe(false); // a product, a merchant and a website exist: nothing left to set up
 			await menu('Actions for Notes');
 			await clickEl(menuItem('View product'));
-			expect(pushed('/admin/products/notes')).toBe(true);
+			expect(pushed('/dashboard/products/notes')).toBe(true);
 			await menu('Actions for Notes');
 			await clickEl(menuItem('Open as admin'));
 			await ownerBrowser.api.post('/v1/me/step-up-otp', {});
@@ -209,7 +209,7 @@ describe('fuller Portal screens (jsdom)', () => {
 			await press('Close');
 			await menu('More actions');
 			await clickEl(menuItem('Open in Activity'));
-			expect(pushed(`/admin/activity?merchantId=${merchantId}`)).toBe(true);
+			expect(pushed(`/dashboard/activity?merchantId=${merchantId}`)).toBe(true);
 			await menu('More actions');
 			await clickEl(menuItem('Usage, all websites'));
 			await until(() => shows('Usage · Shop & Co') && !dialog().querySelector('[aria-busy="true"]'));
@@ -246,8 +246,8 @@ describe('fuller Portal screens (jsdom)', () => {
 			for (const text of ['Credits added', 'Credits charged', 'Receipts', 'Charges', 'Needs attention'])
 				expect(shows(text)).toBe(true);
 			// the parts are links with their own addresses (the filters stay in the query)
-			expect(document.querySelector('nav a[href^="/admin/finance/receipts"]')).not.toBeNull();
-			expect(document.querySelector('nav a[href^="/admin/finance/charges"]')).not.toBeNull();
+			expect(document.querySelector('nav a[href^="/dashboard/finance/receipts"]')).not.toBeNull();
+			expect(document.querySelector('nav a[href^="/dashboard/finance/charges"]')).not.toBeNull();
 			await clickEl(/** @type {Element} */ (buttons('Add credits')[0]));
 			await until(() => shows('Choose the merchant who paid'));
 			await type(byLabel(dialog(), 'Merchant'), merchantId);
@@ -257,11 +257,11 @@ describe('fuller Portal screens (jsdom)', () => {
 			cleanup();
 			withToasts(<FinanceView {...billing} admin={owner} part="receipts" />);
 			await pressMenu('Period', 'Last 7 days');
-			expect(pushed('/admin/finance/receipts?') && pushed('from=')).toBe(true);
+			expect(pushed('/dashboard/finance/receipts?') && pushed('from=')).toBe(true);
 			cleanup();
 			withToasts(<FinanceView {...billing} admin={owner} part="charges" />);
 			await press('By merchant');
-			expect(pushed('/admin/finance/charges?by=merchant')).toBe(true);
+			expect(pushed('/dashboard/finance/charges?by=merchant')).toBe(true);
 			cleanup();
 
 			// ---------------------------------------------------------------- Activity
@@ -274,7 +274,7 @@ describe('fuller Portal screens (jsdom)', () => {
 			expect(shows('Activity entry') && shows('Changes')).toBe(true);
 			await press('Close');
 			const only = /** @type {HTMLAnchorElement} */ (document.querySelector('a[title="Show only Shop & Co"]'));
-			expect(only.getAttribute('href')).toBe(`/admin/activity?merchantId=${merchantId}`);
+			expect(only.getAttribute('href')).toBe(`/dashboard/activity?merchantId=${merchantId}`);
 			await pressMenu('Admin', String(activity.admins?.[0]?.label));
 			expect(pushed(`adminId=${owner.adminId}`)).toBe(true);
 			await pressMenu('Period', 'This month (UTC)');
@@ -316,7 +316,7 @@ describe('fuller Portal screens (jsdom)', () => {
 			withToasts(<AdminsView {...ownActivity} selectedId={owner.adminId} section="activity" />);
 			expect(document.querySelectorAll('[data-shelfway-row]').length).toBeGreaterThan(0);
 			await pressMenu('More actions', 'Open in Activity');
-			expect(pushed(`/admin/activity?adminId=${owner.adminId}`)).toBe(true);
+			expect(pushed(`/dashboard/activity?adminId=${owner.adminId}`)).toBe(true);
 			cleanup();
 
 			// ---------------------------------------------------------------- merchant console
@@ -329,11 +329,11 @@ describe('fuller Portal screens (jsdom)', () => {
 			cleanup();
 			// usage redirects to the website home (PLAN §1, §10 A1)
 			withToasts(<WebsiteView {...await loaders.loadWebsitePage(shop.b.api, merchantId, websiteId, 'usage')} />);
-			await until(() => pushed(`/websites/${websiteId}`));
+			await until(() => pushed(`/dashboard/websites/${websiteId}`));
 			cleanup();
 			withToasts(<CreditsView {...await loaders.loadCredits(shop.b.api, merchantId, {})} />);
 			await pressMenu('Period', 'Last month (UTC)');
-			expect(pushed('/credits?from=')).toBe(true);
+			expect(pushed('/dashboard/finance?from=')).toBe(true);
 		} finally {
 			await world.close();
 			restore();

@@ -33,7 +33,24 @@ const config = {
 			})),
 		],
 	}),
-	// `/` is the public marketing site (app/page.js). Signed-in merchants are sent to /overview from that page.
+	redirects: async () => [
+		{ source: '/admin', destination: '/dashboard', permanent: false },
+		{ source: '/admin/:path*', destination: '/dashboard/:path*', permanent: false },
+		{ source: '/overview', destination: '/dashboard', permanent: false },
+		{ source: '/websites', destination: '/dashboard/websites', permanent: false },
+		{ source: '/websites/:path*', destination: '/dashboard/websites/:path*', permanent: false },
+		{ source: '/credits', destination: '/dashboard/finance', permanent: false },
+		{ source: '/credits/:path*', destination: '/dashboard/finance', permanent: false },
+		{ source: '/account', destination: '/dashboard/account', permanent: false },
+		{ source: '/account/:path*', destination: '/dashboard/account', permanent: false },
+		{ source: '/login', destination: '/?auth=1', permanent: false },
+		{ source: '/forgot-password', destination: '/?auth=forgot', permanent: false },
+		{ source: '/reset-password', destination: '/?auth=reset', permanent: false },
+		{ source: '/set-password', destination: '/?auth=setup', permanent: false },
+		{ source: '/confirm-email', destination: '/?auth=confirm', permanent: false },
+		{ source: '/shared-setup', destination: '/dashboard', permanent: false },
+	],
+	// `/` is the public marketing site (app/page.js). Signed-in users are sent to /dashboard from that page.
 	headers: async () => [
 		{ source: '/:path*', headers: staticSecurityHeaders() },
 		{ source: '/api/:path*', headers: [{ key: 'Content-Security-Policy', value: API_CSP }] },
