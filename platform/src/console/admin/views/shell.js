@@ -138,7 +138,13 @@ export const adminSections = (admin, pathname, attention = 0) =>
 					kind: item.kind,
 					current: isCurrent,
 					...(item.href === adminRoutes.finance() && attention > 0
-						? { badge: { count: attention, tone: /** @type {const} */ ('attention'), label: ADMIN.menuAttention(attention) } }
+						? {
+								badge: {
+									count: attention,
+									tone: /** @type {const} */ ('attention'),
+									label: ADMIN.menuAttention(attention),
+								},
+							}
 						: {}),
 				};
 			}),

@@ -234,7 +234,9 @@ describe('website page (jsdom)', () => {
 				(/** @type {any} */ st) => st === 201,
 			);
 			await until(() => shows('Chatty added.'));
-			expect(testRouter.push).toHaveBeenLastCalledWith(`/dashboard/merchants/${merchantId}/websites/${websiteId}/products/chatty`);
+			expect(testRouter.push).toHaveBeenLastCalledWith(
+				`/dashboard/merchants/${merchantId}/websites/${websiteId}/products/chatty`,
+			);
 			expect(buttons('Actions for Chatty')).toHaveLength(1);
 			// nothing left to add
 			await press('Add product');

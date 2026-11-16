@@ -34,7 +34,7 @@ describe('Admins (PLAN 0.8.2; Owner only)', () => {
 
 		// copy: shown once, only to that admin, logged
 		const copied = await o.client.post(`/v1/admin/admins/${adminId}/invite`, { copy: true, password: PASSWORD });
-		expect(copied.json.link).toMatch(/^https:\/\/portal\.test\/set-password#token=/);
+		expect(copied.json.link).toMatch(/^https:\/\/portal\.test\/\?auth=setup#token=/);
 		expect(await h.activity('admin.invite_link_copied')).toHaveLength(1);
 		// a resend cancels the copied link
 		const resent = await o.client.post(`/v1/admin/admins/${adminId}/invite`, {});

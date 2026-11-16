@@ -885,10 +885,7 @@ export function SiteHome({ productName = PRODUCT_BRAND, companyName = COMPANY_NA
 						</dl>
 						<div className="hero-actions reveal" style={{ marginTop: '1.75rem' }}>
 							{session ? (
-								<ButtonLink
-									href="/dashboard"
-									variant="primary"
-									size="lg">
+								<ButtonLink href="/dashboard" variant="primary" size="lg">
 									Open Dashboard
 								</ButtonLink>
 							) : (

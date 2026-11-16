@@ -119,7 +119,11 @@ export const merchantSections = (pathname, billing = null) => {
 		return pathname === href || pathname.startsWith(`${href}/`) || pathname === altHref || pathname.startsWith(`${altHref}/`);
 	};
 	const currentWebsiteId = /^\/(?:dashboard\/)?websites\/([^/?#]+)/.exec(pathname)?.[1] ?? '';
-	const storePrefix = currentWebsiteId ? (pathname.startsWith('/dashboard') ? `/dashboard/websites/${currentWebsiteId}` : `/websites/${currentWebsiteId}`) : '';
+	const storePrefix = currentWebsiteId
+		? pathname.startsWith('/dashboard')
+			? `/dashboard/websites/${currentWebsiteId}`
+			: `/websites/${currentWebsiteId}`
+		: '';
 	return [
 		{
 			label: '',

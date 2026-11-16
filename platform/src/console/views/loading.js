@@ -41,10 +41,9 @@ import { Link } from '../link.js';
  * @returns {Shape}
  */
 export const shapeOf = (area, pathname) => {
-	const [first, second, third, fourth] = pathname
-		.split('/')
-		.filter(Boolean)
-		.slice(area === 'admin' ? 1 : 0);
+	const parts = pathname.split('/').filter(Boolean);
+	const start = parts[0] === 'dashboard' || parts[0] === 'admin' ? 1 : 0;
+	const [first, second, third, fourth] = parts.slice(start);
 	if (area === 'admin') {
 		if (!first) return { body: 'overview', title: ADMIN.menu.overview };
 		const menu = /** @type {Record<string, string>} */ (ADMIN.menu);

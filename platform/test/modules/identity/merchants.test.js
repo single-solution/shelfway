@@ -73,7 +73,7 @@ describe('merchants (PLAN 0.2 Merchants, 0.5.9)', () => {
 			copy: true,
 			password: PASSWORD,
 		});
-		expect(copied.json.link).toMatch(/^https:\/\/portal\.test\/set-password#token=/);
+		expect(copied.json.link).toMatch(/^https:\/\/portal\.test\/\?auth=setup#token=/);
 		expect(await h.activity('merchant.setup_link_copied')).toHaveLength(1);
 		const token = decodeURIComponent(copied.json.link.split('#token=')[1]);
 		expect((await h.client().post('/v1/auth/set-password', { token, password: PASSWORD })).json.console).toBe('merchant');

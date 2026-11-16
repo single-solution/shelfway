@@ -178,9 +178,9 @@ describe('tokens and links', () => {
 		expect(SETUP_TTL_MS).toEqual({ merchant: 72 * 3_600_000, admin: 24 * 3_600_000 });
 	});
 	it('puts tokens in the fragment', () => {
-		expect(linkFor('https://p.test/', 'setup', 'a b')).toBe('https://p.test/set-password#token=a%20b');
-		expect(linkFor('https://p.test', 'password_reset', 't')).toBe('https://p.test/reset-password#token=t');
-		expect(linkFor('https://p.test', 'email_change', 't')).toBe('https://p.test/confirm-email#token=t');
+		expect(linkFor('https://p.test/', 'setup', 'a b')).toBe('https://p.test/?auth=setup#token=a%20b');
+		expect(linkFor('https://p.test', 'password_reset', 't')).toBe('https://p.test/?auth=reset#token=t');
+		expect(linkFor('https://p.test', 'email_change', 't')).toBe('https://p.test/?auth=confirm#token=t');
 	});
 });
 

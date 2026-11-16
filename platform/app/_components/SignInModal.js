@@ -413,7 +413,9 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = '/da
 	} else if (challenge) {
 		dialogTitle = 'Two-step verification';
 		dialogEyebrow = 'TWO-STEP VERIFICATION';
-		dialogDesc = useRecovery ? 'Enter one of your backup recovery codes.' : 'Enter the 6-digit code from your authenticator app.';
+		dialogDesc = useRecovery
+			? 'Enter one of your backup recovery codes.'
+			: 'Enter the 6-digit code from your authenticator app.';
 	} else if (authMode === 'forgot') {
 		dialogTitle = 'Reset your password';
 		dialogEyebrow = 'PASSWORD RECOVERY';
@@ -435,13 +437,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = '/da
 	}
 
 	return (
-		<Dialog
-			open={open}
-			onClose={onClose}
-			title={dialogTitle}
-			eyebrow={dialogEyebrow}
-			description={dialogDesc}
-			size="sm">
+		<Dialog open={open} onClose={onClose} title={dialogTitle} eyebrow={dialogEyebrow} description={dialogDesc} size="sm">
 			{suspended ? (
 				<Callout tone="danger">
 					Your account is suspended.{' '}

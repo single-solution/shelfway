@@ -24,12 +24,7 @@ export const query = (params) => {
 export const withCursor = (path, cursor) => (cursor ? `${path}${path.includes('?') ? '&' : '?'}cursor=${e(cursor)}` : path);
 
 /** The public pages (no console frame): marketing home, sign-in, and docs. */
-export const PUBLIC_PATHS = Object.freeze([
-	'/',
-	'/login',
-	'/docs',
-	'/dashboard',
-]);
+export const PUBLIC_PATHS = Object.freeze(['/', '/login', '/docs', '/dashboard']);
 
 /** Merchant console page URLs. */
 export const routes = Object.freeze({

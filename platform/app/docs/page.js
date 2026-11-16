@@ -1,6 +1,5 @@
 import { connection } from 'next/server';
-import { consoleApi, consoleBranding, one } from '../(console)/_lib/server.js';
-import { platformSession } from '../_lib/server.js';
+import { platformApi as consoleApi, platformBranding as consoleBranding, platformSession, one } from '../_lib/server.js';
 import { loadDocsHub, loadDocsProduct } from '../../src/console/loaders.js';
 import { DocsHubView } from '../../src/console/views/docs.js';
 import { SiteFooter, SiteHeader } from '../_components/SiteNav.js';

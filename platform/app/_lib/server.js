@@ -46,6 +46,7 @@ export const platformSession = cache(async () => {
 			name: data.admin?.name || 'Admin',
 			email: data.admin?.email,
 			role: data.admin?.role || 'owner',
+			twoStepRequired: data.twoStepRequired === true,
 		};
 	}
 	if (data?.kind === 'merchant') {

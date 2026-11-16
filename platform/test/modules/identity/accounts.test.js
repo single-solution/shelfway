@@ -224,7 +224,7 @@ describe('links (PLAN 0.2 Logins)', () => {
 		const created = await o.client.post('/v1/admin/merchants', { name: 'Shop', ownerName: 'Sam', email: 'sam@shop.test' });
 		expect(created.json.setup).toMatchObject({ mailed: true, link: null });
 		const token = h.mailer.token('sam@shop.test', 'merchant_setup');
-		expect(h.mailer.sent.at(-1)?.data.link).toMatch(/^https:\/\/portal\.test\/set-password#token=/);
+		expect(h.mailer.sent.at(-1)?.data.link).toMatch(/^https:\/\/portal\.test\/\?auth=setup#token=/);
 		expect((await h.call('POST', '/v1/auth/set-password/check', { body: { token } })).json).toEqual({
 			console: 'merchant',
 			email: 'sam@shop.test',
@@ -276,7 +276,7 @@ describe('links (PLAN 0.2 Logins)', () => {
 			status: 'reset_sent',
 		});
 		const token = h.mailer.token('sam@shop.test', 'password_reset');
-		expect(h.mailer.sent.at(-1)?.data.link).toMatch(/\/reset-password#token=/);
+		expect(h.mailer.sent.at(-1)?.data.link).toMatch(/\/\?auth=reset#token=/);
 		expect(await h.activity('login.reset_link_issued')).toHaveLength(1);
 		const next = 'another long passphrase';
 		expect((await h.call('POST', '/v1/auth/reset-password', { body: { token, password: next } })).status).toBe(204);

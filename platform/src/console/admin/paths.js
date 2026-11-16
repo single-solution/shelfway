@@ -35,7 +35,8 @@ export const adminRoutes = Object.freeze({
 			? `/dashboard/merchants/${e(m)}/websites/${e(w)}/settings/${e(section)}`
 			: `/dashboard/merchants/${e(m)}/websites/${e(w)}/settings`,
 	products: (/** @type {{ status?: string | null }} */ q = {}) => `/dashboard/products${query(q)}`,
-	product: (/** @type {string} */ id, /** @type {{ status?: string | null }} */ q = {}) => `/dashboard/products/${e(id)}${query(q)}`,
+	product: (/** @type {string} */ id, /** @type {{ status?: string | null }} */ q = {}) =>
+		`/dashboard/products/${e(id)}${query(q)}`,
 	/** a part of a product's page: websites (the product's own address), features or connection */
 	productPart: (/** @type {string} */ id, /** @type {string} */ part) =>
 		part === 'websites' ? `/dashboard/products/${e(id)}` : `/dashboard/products/${e(id)}/${e(part)}`,
