@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	PHONE_COUNTRIES,
 	callingCodeOf,
+	countryOfPhone,
 	nationalNumberOf,
 	normalizePhone,
 	phoneInCountries,
@@ -202,5 +203,21 @@ describe('nationalNumberOf', () => {
 		expect(nationalNumberOf('+')).toBeNull();
 		expect(nationalNumberOf('+2101234567')).toBeNull();
 		expect(nationalNumberOf(null)).toBeNull();
+	});
+});
+
+describe('countryOfPhone', () => {
+	it('detects ISO 3166-1 country code from phone number or calling code', () => {
+		expect(countryOfPhone('+92 300 1234567')).toBe('PK');
+		expect(countryOfPhone('+447700900123')).toBe('GB');
+		expect(countryOfPhone('+1 415 555 0100')).toBe('US');
+		expect(countryOfPhone('+971 50 123 4567')).toBe('AE');
+		expect(countryOfPhone('+33 6 12 34 56 78')).toBe('FR');
+		expect(countryOfPhone('+49 151 1234567')).toBe('DE');
+		expect(countryOfPhone('+92')).toBe('PK');
+		expect(countryOfPhone('92')).toBe('PK');
+		expect(countryOfPhone('')).toBeNull();
+		expect(countryOfPhone(null)).toBeNull();
+		expect(countryOfPhone('+999 123456')).toBeNull();
 	});
 });

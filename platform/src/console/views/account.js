@@ -110,8 +110,6 @@ export function MerchantFieldsForm({
 		ownerName: merchant.ownerName ?? '',
 		email: merchant.email ?? '',
 		phone: merchant.phone ?? '',
-		address: merchant.address ?? '',
-		country: merchant.country ?? '',
 	});
 	const [clientErrors, setClientErrors] = useState(/** @type {Record<string, string>} */ ({}));
 	const [busy, setBusy] = useState(false);
@@ -154,7 +152,7 @@ export function MerchantFieldsForm({
 		setProblem(null);
 		/** @type {Record<string, string | null>} */
 		const body = {};
-		for (const key of /** @type {const} */ (['name', 'ownerName', 'phone', 'address', 'country'])) {
+		for (const key of /** @type {const} */ (['name', 'ownerName', 'phone'])) {
 			const value = form[key].trim() === '' ? null : form[key].trim();
 			if (value !== (merchant[key] ?? null)) body[key] = value;
 		}
@@ -221,25 +219,7 @@ export function MerchantFieldsForm({
 				readOnly={readOnly}
 				maxLength={40}
 			/>
-			<Select
-				label={MERCHANT_FIELDS.country}
-				value={form.country}
-				onChange={(e) => set('country', e.currentTarget.value)}
-				error={errors.country}
-				disabled={readOnly}
-				options={countryOptions(MERCHANT_FIELDS.countryNone)}
-			/>
-			<Input
-				label={MERCHANT_FIELDS.address}
-				autoComplete="street-address"
-				value={form.address}
-				onChange={(e) => set('address', e.currentTarget.value)}
-				error={errors.address}
-				readOnly={readOnly}
-				maxLength={300}
-				wide
-			/>
-			<FormError problem={problem} fields={['name', 'ownerName', 'email', 'phone', 'address', 'country']} />
+			<FormError problem={problem} fields={['name', 'ownerName', 'email', 'phone']} />
 			{readOnly ? null : (
 				<Button type="submit" loading={busy}>
 					{LOGIN.save}

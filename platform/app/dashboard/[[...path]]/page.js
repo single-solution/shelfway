@@ -157,10 +157,7 @@ export default async function DashboardPage({ params, searchParams }) {
 		if (first === 'merchants' && second && !third) {
 			const merchantId = second;
 			const filter = { status: one(q.status), q: one(q.q), cursor: one(q.cursor) };
-			const [list, detail] = await Promise.all([
-				loadMerchants(api, filter),
-				loadMerchant(api, merchantId, session.admin),
-			]);
+			const [list, detail] = await Promise.all([loadMerchants(api, filter), loadMerchant(api, merchantId, session.admin)]);
 			return <MerchantsView list={list} detail={detail} merchantId={merchantId} admin={session.admin} />;
 		}
 

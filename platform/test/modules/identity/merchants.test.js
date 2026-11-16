@@ -21,8 +21,6 @@ describe('merchants (PLAN 0.2 Merchants, 0.5.9)', () => {
 			ownerName: 'Sam Seller',
 			email: 'Sam@Shop.test',
 			phone: '+33 1 42 68 53 00',
-			address: '10 Rue de Rivoli, Paris',
-			country: 'fr',
 		});
 		expect(created.status).toBe(201);
 		expect(created.json.merchant).toMatchObject({
@@ -30,7 +28,7 @@ describe('merchants (PLAN 0.2 Merchants, 0.5.9)', () => {
 			ownerName: 'Sam Seller',
 			email: 'sam@shop.test',
 			phone: '+33 1 42 68 53 00',
-			address: '10 Rue de Rivoli, Paris',
+			address: null,
 			country: 'FR',
 			status: 'active',
 			setupPending: true,
@@ -61,7 +59,7 @@ describe('merchants (PLAN 0.2 Merchants, 0.5.9)', () => {
 			'email_taken',
 		);
 		const entry = (await h.activity('merchant.created'))[0];
-		expect(JSON.stringify(entry)).not.toMatch(/sam@shop\.test|Sam Seller|Rivoli|42 68 53 00/);
+		expect(JSON.stringify(entry)).not.toMatch(/sam@shop\.test|Sam Seller|42 68 53 00/);
 	});
 
 	it('without email sending the setup link is skipped and can be copied (shown once, logged)', async () => {
@@ -99,6 +97,7 @@ describe('merchants (PLAN 0.2 Merchants, 0.5.9)', () => {
 			(await o.client.patch(`/v1/admin/merchants/${id}`, { phone: '+44 20 1234 5678', address: null })).json,
 		).toMatchObject({
 			phone: '+44 20 1234 5678',
+			country: 'GB',
 			address: null,
 		});
 		expect((await o.client.patch(`/v1/admin/merchants/${id}`, {})).status).toBe(422);
@@ -216,5 +215,28 @@ describe('merchants (PLAN 0.2 Merchants, 0.5.9)', () => {
 		expect((await m.admin.post('/v1/admin/merchants', { name: 'New', ownerName: 'N', email: 'sam@shop.test' })).status).toBe(
 			201,
 		);
+	});
+
+	it('auto-derives country code from phone number on create and update', async () => {
+		const h = await boot();
+		const o = await h.owner();
+		const created = await o.client.post('/v1/admin/merchants', {
+			name: 'Pak Traders',
+			ownerName: 'Ali Khan',
+			email: 'ali@pak.test',
+			phone: '+92 300 1234567',
+		});
+		expect(created.status).toBe(201);
+		expect(created.json.merchant.country).toBe('PK');
+		expect(created.json.merchant.address).toBeNull();
+
+		const id = created.json.merchant.merchantId;
+		const updated = await o.client.patch(`/v1/admin/merchants/${id}`, { phone: '+1 415 555 0100' });
+		expect(updated.status).toBe(200);
+		expect(updated.json.country).toBe('US');
+
+		const cleared = await o.client.patch(`/v1/admin/merchants/${id}`, { phone: null });
+		expect(cleared.status).toBe(200);
+		expect(cleared.json.country).toBeNull();
 	});
 });

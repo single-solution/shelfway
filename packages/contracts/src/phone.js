@@ -47,6 +47,22 @@ const CALLING_CODES = Object.freeze(
 	),
 );
 
+/** Reverse map from calling code digits to the primary ISO 3166-1 alpha-2 country code. */
+const PRIMARY_COUNTRY_BY_CODE = Object.freeze(
+	Object.assign(Object.fromEntries(Object.entries(CALLING_CODES).map(([country, code]) => [code, country])), {
+		1: 'US',
+		7: 'RU',
+		44: 'GB',
+		61: 'AU',
+		47: 'NO',
+		358: 'FI',
+		590: 'GP',
+		599: 'CW',
+		212: 'MA',
+		39: 'IT',
+	}),
+);
+
 /** The countries a phone setting may name (ISO 3166-1 alpha-2), in alphabetical order. */
 export const PHONE_COUNTRIES = Object.freeze(Object.keys(CALLING_CODES));
 
@@ -129,6 +145,23 @@ export const websiteCallingCode = (setting, country) => {
  * @param {string} digits
  */
 const leadingCode = (digits) => [1, 2, 3].map((n) => digits.slice(0, n)).find((code) => CODES.has(code)) ?? '';
+
+/**
+ * Detect the country code (ISO 3166-1 alpha-2) from a phone number or calling code.
+ * @param {unknown} input e.g. "+92 300 1234567", "+14155550100", "+44", or "44"
+ * @returns {string | null}
+ */
+export const countryOfPhone = (input) => {
+	if (typeof input !== 'string') return null;
+	const raw = input.trim();
+	if (!raw) return null;
+	const digits = raw.replace(/\D/g, '');
+	if (!digits) return null;
+	const code = leadingCode(
+		raw.startsWith('+') || raw.startsWith('00') ? (raw.startsWith('+') ? digits : digits.slice(2)) : digits,
+	);
+	return code ? (PRIMARY_COUNTRY_BY_CODE[code] ?? null) : null;
+};
 
 /**
  * The national number after a calling code, without a trunk 0 where the country has one.

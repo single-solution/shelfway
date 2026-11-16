@@ -270,9 +270,6 @@ describe('admin console interactions (jsdom)', () => {
 		fillDialog('Owner name', 'Olga');
 		fillDialog('Owner email (login)', 'ops-owner@made.test');
 		fillDialog('Phone', '+44 7700 900111');
-		await act(async () => {
-			type(byLabel(/** @type {HTMLElement} */ (document.querySelector('[role="dialog"]')), 'Country'), 'GB');
-		});
 		await pressInDialog('Add merchant');
 		const made = /** @type {any} */ (
 			await until(
@@ -343,7 +340,6 @@ describe('admin console interactions (jsdom)', () => {
 		);
 		// Edit merchant: the fields in a dialog, the login email until the password is set
 		await press('Edit merchant');
-		fillDialog('Address', 'Industrial area');
 		fillDialog('Owner email (login)', 'olga@made.test');
 		await pressInDialog('Save');
 		await until(() =>

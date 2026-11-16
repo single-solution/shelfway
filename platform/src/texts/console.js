@@ -176,7 +176,7 @@ export const MERCHANT = Object.freeze({
 	allWebsites: 'All websites',
 	balanceLink: 'Credit balance',
 	accountIntro: 'Your business details, sign-in and security.',
-	detailsIntro: 'Business name, owner, phone, address and country.',
+	detailsIntro: 'Business name, owner and phone.',
 	tiles: Object.freeze({ websites: 'Websites', products: 'Products on websites' }),
 	/** The Overview greeting and the one sentence of what matters now. */
 	welcome: (/** @type {string} */ name) => (name ? `Welcome back, ${name}` : 'Welcome back'),

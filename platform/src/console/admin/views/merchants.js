@@ -39,7 +39,7 @@ import { ADMIN, BILLING, MERCHANT_FIELDS, MORE, TWO_STEP, WEBSITE } from '../../
 import { Link } from '../../link.js';
 import { api, withCursor } from '../../paths.js';
 import { DaysLeft } from '../../views/billing.js';
-import { MerchantFieldsForm, countryOptions } from '../../views/account.js';
+import { MerchantFieldsForm } from '../../views/account.js';
 import { COUNTRY_NAMES } from '../../../modules/identity/core/countries.js';
 import { ConfirmChange } from '../../views/common.js';
 import { ActivityTable } from '../../views/login-settings.js';
@@ -172,7 +172,7 @@ function CopyLinkDialog({ link, onClose }) {
  */
 export function AddMerchantDialog({ open, onClose, onCreated }) {
 	const toast = useToast();
-	const [form, setForm] = useState({ name: '', ownerName: '', email: '', phone: '', address: '', country: '' });
+	const [form, setForm] = useState({ name: '', ownerName: '', email: '', phone: '' });
 	const [clientErrors, setClientErrors] = useState(/** @type {Record<string, string>} */ ({}));
 	const [busy, setBusy] = useState(false);
 	const [problem, setProblem] = useState(/** @type {Problem | null} */ (null));
@@ -204,17 +204,6 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 			});
 		}
 	};
-	const handleCountry = (/** @type {any} */ e) => {
-		const { value } = e.currentTarget;
-		setForm((f) => ({ ...f, country: value }));
-		if (clientErrors.country) {
-			setClientErrors((prev) => {
-				const next = { ...prev };
-				delete next.country;
-				return next;
-			});
-		}
-	};
 	const submit = async () => {
 		const errs = validate();
 		if (Object.keys(errs).length > 0) {
@@ -226,8 +215,7 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 		setProblem(null);
 		/** @type {Record<string, string>} */
 		const body = { name: form.name.trim(), ownerName: form.ownerName.trim(), email: form.email.trim() };
-		for (const key of /** @type {const} */ (['phone', 'address', 'country']))
-			if (form[key].trim()) body[key] = form[key].trim();
+		if (form.phone.trim()) body.phone = form.phone.trim();
 		const result = await apiFetch(adminApi.createMerchant(), { method: 'POST', body });
 		setBusy(false);
 		if (!result.ok) {
@@ -238,7 +226,7 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 			title: ADMIN.merchantCreated,
 			description: result.data?.setup?.mailed ? ADMIN.setupMailed : ADMIN.setupNotMailed,
 		});
-		setForm({ name: '', ownerName: '', email: '', phone: '', address: '', country: '' });
+		setForm({ name: '', ownerName: '', email: '', phone: '' });
 		setClientErrors({});
 		if (!result.data?.setup?.mailed && result.data?.setup?.link) {
 			setUnmailedLink(result.data.setup.link);
@@ -311,24 +299,7 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 						error={errors.phone}
 						maxLength={40}
 					/>
-					<Select
-						label={MERCHANT_FIELDS.country}
-						value={form.country}
-						onChange={handleCountry}
-						error={errors.country}
-						options={countryOptions(MERCHANT_FIELDS.countryNone)}
-					/>
-					<Input
-						name="address"
-						label={MERCHANT_FIELDS.address}
-						autoComplete="street-address"
-						value={form.address}
-						onChange={handleInput}
-						error={errors.address}
-						maxLength={300}
-						wide
-					/>
-					<FormError problem={problem} fields={['name', 'ownerName', 'email', 'phone', 'address', 'country']} />
+					<FormError problem={problem} fields={['name', 'ownerName', 'email', 'phone']} />
 				</Form>
 			</Dialog>
 			{unmailedLink ? (
@@ -356,7 +327,6 @@ const detailItems = (merchant) => [
 	{ label: MERCHANT_FIELDS.email, value: merchant.email },
 	{ label: MORE.fields.phone, value: merchant.phone ?? '—' },
 	{ label: MORE.fields.country, value: <span suppressHydrationWarning>{countryName(merchant.country)}</span> },
-	{ label: MORE.fields.address, value: merchant.address ?? '—' },
 	{ label: MORE.fields.added, value: <LocalTime value={merchant.createdAt} /> },
 	{
 		label: MORE.fields.lastSignIn,

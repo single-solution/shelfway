@@ -7,6 +7,7 @@
  * merchant is deleted: screens show "Deleted merchant" for them).
  * @module
  */
+import { countryOfPhone } from '@shelfway/contracts/phone';
 import { problem } from '../../infra/http.js';
 import { presentMerchant } from './core/present.js';
 import { sendLater } from './repo.js';
@@ -154,18 +155,19 @@ export const createMerchants = (deps, hooks) => {
 		 * link is emailed when email sending is set (else the admin copies it).
 		 * @param {MerchantFields & { actor: Actor, meta?: Meta }} input
 		 */
-		create: async ({ name, ownerName, email, phone, address, country, actor, meta = {} }) => {
+		create: async ({ name, ownerName, email, phone, country = null, actor, meta = {} }) => {
 			const merchantId = repo.id('mer');
 			await repo.claimLogin(email, 'merchant', merchantId);
+			const derivedCountry = (phone ? countryOfPhone(phone) : null) ?? country ?? null;
 			const doc = {
 				_id: merchantId,
 				name,
 				nameKey: nameKey(name),
 				ownerName,
 				email,
-				phone,
-				address,
-				country,
+				phone: phone ?? null,
+				address: null,
+				country: derivedCountry,
 				status: 'active',
 				suspension: null,
 				passwordHash: null,
@@ -195,7 +197,17 @@ export const createMerchants = (deps, hooks) => {
 			const merchant = await load(merchantId);
 			/** @type {Record<string, unknown>} */
 			const set = {};
-			for (const [key, value] of Object.entries(fields)) if (value !== undefined && value !== merchant[key]) set[key] = value;
+			for (const [key, value] of Object.entries(fields)) {
+				if (key === 'address') {
+					if (merchant.address !== null) set.address = null;
+					continue;
+				}
+				if (value !== undefined && value !== merchant[key]) set[key] = value;
+			}
+			if (fields.phone !== undefined) {
+				const derivedCountry = countryOfPhone(fields.phone);
+				if (derivedCountry !== merchant.country) set.country = derivedCountry;
+			}
 			if (set.email !== undefined) {
 				if (merchant.passwordHash || actor.type !== 'admin')
 					throw problem('conflict', 'The login email can be corrected only until the password is set.');
