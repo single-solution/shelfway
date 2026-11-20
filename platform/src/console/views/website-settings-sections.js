@@ -54,7 +54,7 @@ import { api } from '../paths.js';
  * @param {unknown} value
  * @returns {T}
  */
-export const setIn = (target, path, value) => {
+const setIn = (target, path, value) => {
 	const [head, ...rest] = path;
 	if (head === undefined) return /** @type {T} */ (value);
 	const copy = Array.isArray(target) ? [...target] : { .../** @type {object} */ (target) };
@@ -71,7 +71,7 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
  * @param {{ manage: { merchantId: string, websiteId: string }, section: string, saved: S, version: number,
  *   onSaved: (answer: { settings: WebsiteSettings, readiness: any[] }) => void, onStale: () => void }} input
  */
-export const useSectionForm = ({ manage, section, saved, version, onSaved, onStale }) => {
+const useSectionForm = ({ manage, section, saved, version, onSaved, onStale }) => {
 	const toast = useToast();
 	const [draft, setDraft] = useState(saved);
 	const [saving, setSaving] = useState(false);
@@ -157,7 +157,7 @@ export const useSectionForm = ({ manage, section, saved, version, onSaved, onSta
  * @param {{ form: ReturnType<typeof useSectionForm>, canWrite: boolean, onReload: () => void, stale: boolean,
  *   children: import('react').ReactNode }} props
  */
-export function SectionForm({ form, canWrite, onReload, stale, children }) {
+function SectionForm({ form, canWrite, onReload, stale, children }) {
 	return (
 		<>
 			{stale ? (
@@ -201,7 +201,7 @@ export function SectionForm({ form, canWrite, onReload, stale, children }) {
  * @param {{ label: import('react').ReactNode, description?: import('react').ReactNode, summary: import('react').ReactNode,
  *   onEdit: () => void, error?: string, editLabel?: string }} props
  */
-export function SummaryRow({ label, description, summary, onEdit, error, editLabel = T.edit }) {
+function SummaryRow({ label, description, summary, onEdit, error, editLabel = T.edit }) {
 	return (
 		<SettingRow label={label} {...(description ? { description } : {})}>
 			<div className="flex flex-wrap items-center justify-between gap-3">

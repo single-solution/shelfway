@@ -182,7 +182,7 @@ const FACT =
  * One fact of the header.
  * @param {{ fact: PageFact, linkAs?: import('react').ElementType }} props
  */
-export function Fact({ fact, linkAs }) {
+function Fact({ fact, linkAs }) {
 	const LinkTag = linkAs ?? 'a';
 	const body = (
 		<>
@@ -229,7 +229,7 @@ export function Fact({ fact, linkAs }) {
  * The (i) beside the title: the page's old description in a small popover.
  * @param {{ label: string, children: ReactNode }} props
  */
-export function InfoButton({ label, children }) {
+function InfoButton({ label, children }) {
 	const [open, setOpen] = useState(false);
 	const root = useRef(/** @type {HTMLDivElement | null} */ (null));
 	const buttonRef = useRef(/** @type {HTMLButtonElement | null} */ (null));

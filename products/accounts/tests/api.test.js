@@ -1,6 +1,6 @@
 import { createPublicKey, verify as cryptoVerify } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { sha1Upper, totpCode } from '../adapters/crypto.js';
+import { sha1Upper, totpCode } from '../server/adapters/crypto.js';
 import { ADDRESSES_PER_USER, MAX_CHOICES, MAX_CUSTOM_FIELDS, MAX_ROLES } from '../core/limits.js';
 import { ADMIN_ORIGIN, ALL, CHAT, NOTIFY, ORIGIN, SHOP, appleKey, idToken, setup } from './helpers.js';
 

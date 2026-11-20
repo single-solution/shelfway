@@ -14,7 +14,7 @@ import { createCatalogShop } from './catalog-shop.js';
 import { createCatalogTaxonomy } from './catalog-taxonomy.js';
 import { createCatalogTools } from './catalog-tools.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 

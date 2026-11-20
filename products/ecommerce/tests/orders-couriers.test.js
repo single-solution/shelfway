@@ -6,8 +6,8 @@
 import { createId } from '@shelfway/contracts';
 import { netError } from '@shelfway/net';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { bookingValues, courierViolation, createCouriers } from '../adapters/couriers.js';
-import { placeOrder } from '../adapters/ledger.js';
+import { bookingValues, courierViolation, createCouriers } from '../server/adapters/couriers.js';
+import { placeOrder } from '../server/adapters/ledger.js';
 import { checkCouriers, cleanTracking, courierOf, fillTemplate, readPath, trackingLink } from '../core/couriers.js';
 import { COLLECTIONS } from '../core/model.js';
 import { ALL, COURIER, readyShop, storedOrder } from './helpers.js';
@@ -35,7 +35,7 @@ const KEYS = {
 beforeAll(async () => {
 	shop = await readyShop();
 	data = await shop.db();
-	await data.ensureIndexes((await import('../adapters/product.js')).INDEXES);
+	await data.ensureIndexes((await import('../server/adapters/product.js')).INDEXES);
 	ticket = await shop.ticket();
 	await shop.list('couriers', COURIERS);
 });

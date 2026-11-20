@@ -7,7 +7,7 @@
 import { describe, expect, it } from 'vitest';
 import { createOutboundPolicy } from '@shelfway/net';
 import { httpOutcome, parseStatusRule, valueAt } from '../core/gateway.js';
-import { createProviders, providerViolation } from '../adapters/providers.js';
+import { createProviders, providerViolation } from '../server/adapters/providers.js';
 
 const policy = createOutboundPolicy({});
 const NOW = Date.parse('2026-10-01T10:00:00Z');
@@ -24,7 +24,7 @@ const MESSAGE = {
 const fakeSend = (answer = () => ({ status: 200, body: '{}' })) => {
 	/** @type {Array<{ url: string, init: any }>} */
 	const calls = [];
-	/** @type {import('../adapters/providers.js').OutboundSend} */
+	/** @type {import('../server/adapters/providers.js').OutboundSend} */
 	const send = async (url, init) => {
 		calls.push({ url, init });
 		const { status, body = '' } = answer({ url, init });

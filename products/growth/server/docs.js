@@ -17,7 +17,7 @@ import {
 import guide from '../docs/guide.json' with { type: 'json' };
 import openapi from '../openapi.json' with { type: 'json' };
 import { createSnippets } from '../core/snippets.js';
-import { manifest } from '../adapters/product.js';
+import { manifest } from './adapters/product.js';
 
 /**
  * The docs page.

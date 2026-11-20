@@ -3,7 +3,7 @@
  * whether the shop and Chat search with Atlas (the `catalog` setting `search`, SF-13), the
  * index name (`SEARCH_INDEX`) and whether the index answered the last time a shop or Chat search used it (`adapters/search-state.js`),
  * so Overview ticks the index in its setup list, or lists it under Needs you while it is missing, while either is
- * `atlas`. Setup only: no business data. `server/routes.js` mounts it next to the dashboard's list routes.
+ * atlas. `server/routes.js` mounts it next to the dashboard's list routes.
  * @module
  */
 import { defineRoute } from '@shelfway/app-kit';
@@ -16,7 +16,7 @@ import { SEARCH_INDEX } from '../core/limits.js';
  */
 
 /**
- * @param {import('../adapters/product.js').Product} product
+ * @param {import('./adapters/product.js').Product} product
  * @returns {import('@shelfway/app-kit').RouteDefinition[]}
  */
 export const createDashboardSearch = (product) => [

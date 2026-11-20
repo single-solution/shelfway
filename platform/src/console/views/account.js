@@ -6,8 +6,21 @@
  * table (`/account/activity`).
  * @module
  */
-import { useEffect, useState } from 'react';
-import { Button, Form, FormError, Input, Page, Select, SettingsCard, fieldErrors, useToast } from '@shelfway/ui';
+import { useContext, useEffect, useState } from 'react';
+import {
+	Button,
+	FieldLayoutContext,
+	Form,
+	FormError,
+	Input,
+	Page,
+	Select,
+	SettingRow,
+	SettingsCard,
+	fieldErrors,
+	useToast,
+} from '@shelfway/ui';
+import { PHONE_COUNTRIES, callingCodeOf, countryOfPhone, normalizePhone, nationalNumberOf } from '@shelfway/contracts/phone';
 import { COUNTRY_CHOICES } from '../../modules/identity/core/countries.js';
 import { LOGIN, MERCHANT, MERCHANT_FIELDS, MORE, TWO_STEP } from '../../texts/console.js';
 import { apiFetch, useResource } from '../client.js';
@@ -90,6 +103,40 @@ export function AccountPage({ title, info, part, parts, activity, facts, status,
 export const countryOptions = (noneLabel) => [{ value: '', label: noneLabel }, ...COUNTRY_CHOICES];
 
 /**
+ * Calling code choices generated from PHONE_COUNTRIES and sorted by calling code digits.
+ * @type {Array<{ value: string, label: string }>}
+ */
+export const CALLING_CODE_CHOICES = [...new Set(PHONE_COUNTRIES.map(callingCodeOf).filter(Boolean))]
+	.map((code) => {
+		const country = countryOfPhone(code) ?? '';
+		return {
+			value: code,
+			label: `${code} (${country})`,
+		};
+	})
+	.sort((a, b) => {
+		const numA = Number(a.value.replace('+', ''));
+		const numB = Number(b.value.replace('+', ''));
+		return numA - numB;
+	});
+
+/**
+ * Combine calling code and national number into a valid E.164 string.
+ * Returns null if the number is empty.
+ * @param {string | null | undefined} national
+ * @param {string} callingCode
+ * @returns {string | null}
+ */
+export const combinePhone = (national, callingCode) => {
+	const raw = (national ?? '').trim();
+	if (!raw) return null;
+	return (
+		normalizePhone(raw, { defaultCallingCode: callingCode }) ??
+		(raw.startsWith('+') ? raw : `${callingCode}${raw.replace(/\s+/g, '')}`)
+	);
+};
+
+/**
  * The merchant fields form (Account and the admin Details tab).
  * @param {{ merchant: Record<string, any>, path: string, method?: string, withEmail?: boolean, emailLocked?: boolean,
  *   emailLockedHelp?: string, readOnly?: boolean, onSaved?: (merchant: any) => void }} props
@@ -105,11 +152,16 @@ export function MerchantFieldsForm({
 	onSaved,
 }) {
 	const toast = useToast();
+	const initialCountry = merchant.phone ? countryOfPhone(merchant.phone) : null;
+	const initialCode = initialCountry ? callingCodeOf(initialCountry) : '+1';
+	const [callingCode, setCallingCode] = useState(initialCode);
+	const normalizedInitial = merchant.phone ? normalizePhone(merchant.phone) : null;
+	const initialNational = normalizedInitial ? (nationalNumberOf(normalizedInitial) ?? merchant.phone) : (merchant.phone ?? '');
 	const [form, setForm] = useState({
 		name: merchant.name ?? '',
 		ownerName: merchant.ownerName ?? '',
 		email: merchant.email ?? '',
-		phone: merchant.phone ?? '',
+		phone: initialNational,
 	});
 	const [clientErrors, setClientErrors] = useState(/** @type {Record<string, string>} */ ({}));
 	const [busy, setBusy] = useState(false);
@@ -125,13 +177,23 @@ export function MerchantFieldsForm({
 			});
 		}
 	};
+	const handlePhoneChange = (/** @type {string} */ value) => {
+		set('phone', value);
+		if (value.startsWith('+') || value.startsWith('00')) {
+			const detected = countryOfPhone(value);
+			if (detected) {
+				const code = callingCodeOf(detected);
+				if (code) setCallingCode(code);
+			}
+		}
+	};
 	const validate = () => {
 		/** @type {Record<string, string>} */
 		const errs = {};
 		const name = form.name.trim();
 		const ownerName = form.ownerName.trim();
-		if (!name) errs.name = 'Business name is required.';
-		else if (name.length > 120) errs.name = 'Business name cannot exceed 120 characters.';
+		if (!name) errs.name = 'Company name is required.';
+		else if (name.length > 120) errs.name = 'Company name cannot exceed 120 characters.';
 		if (!ownerName) errs.ownerName = 'Contact name is required.';
 		else if (ownerName.length > 120) errs.ownerName = 'Contact name cannot exceed 120 characters.';
 		if (withEmail && !emailLocked) {
@@ -152,10 +214,13 @@ export function MerchantFieldsForm({
 		setProblem(null);
 		/** @type {Record<string, string | null>} */
 		const body = {};
-		for (const key of /** @type {const} */ (['name', 'ownerName', 'phone'])) {
-			const value = form[key].trim() === '' ? null : form[key].trim();
-			if (value !== (merchant[key] ?? null)) body[key] = value;
-		}
+		const nameVal = form.name.trim() === '' ? null : form.name.trim();
+		if (nameVal !== (merchant.name ?? null)) body.name = nameVal;
+		const ownerNameVal = form.ownerName.trim() === '' ? null : form.ownerName.trim();
+		if (ownerNameVal !== (merchant.ownerName ?? null)) body.ownerName = ownerNameVal;
+		const finalPhone = combinePhone(form.phone, callingCode);
+		const existingPhone = merchant.phone ? (normalizePhone(merchant.phone) ?? merchant.phone) : null;
+		if (finalPhone !== existingPhone) body.phone = finalPhone;
 		if (withEmail && !emailLocked && form.email.trim() !== merchant.email) body.email = form.email.trim();
 		if (Object.keys(body).length === 0) {
 			setBusy(false);
@@ -170,6 +235,7 @@ export function MerchantFieldsForm({
 		toast.show({ title: MERCHANT.detailsSaved });
 		onSaved?.(result.data);
 	};
+	const rows = useContext(FieldLayoutContext) === 'row';
 	const serverErrors = fieldErrors(problem);
 	const errors = { ...serverErrors, ...clientErrors };
 	return (
@@ -207,18 +273,56 @@ export function MerchantFieldsForm({
 					{...(emailLocked && emailLockedHelp ? { help: emailLockedHelp } : {})}
 				/>
 			) : null}
-			<Input
-				label={MERCHANT_FIELDS.phone}
-				type="tel"
-				inputMode="tel"
-				autoComplete="tel"
-				help={MERCHANT_FIELDS.phoneHelp}
-				value={form.phone}
-				onChange={(e) => set('phone', e.currentTarget.value)}
-				error={errors.phone}
-				readOnly={readOnly}
-				maxLength={40}
-			/>
+			{rows ? (
+				<SettingRow label={MERCHANT_FIELDS.phone} description={MERCHANT_FIELDS.phoneHelp}>
+					<div className="grid grid-cols-[minmax(7.5rem,9.5rem)_1fr] items-start gap-3">
+						<Select
+							layout="stack"
+							hideLabel
+							label={MERCHANT_FIELDS.callingCode}
+							value={callingCode}
+							options={CALLING_CODE_CHOICES}
+							onChange={(e) => setCallingCode(e.currentTarget.value)}
+							disabled={readOnly}
+						/>
+						<Input
+							layout="stack"
+							hideLabel
+							label={MERCHANT_FIELDS.phone}
+							type="tel"
+							inputMode="tel"
+							autoComplete="tel"
+							value={form.phone}
+							onChange={(e) => handlePhoneChange(e.currentTarget.value)}
+							error={errors.phone}
+							readOnly={readOnly}
+							maxLength={40}
+						/>
+					</div>
+				</SettingRow>
+			) : (
+				<div className="grid grid-cols-[minmax(7.5rem,9.5rem)_1fr] items-start gap-3" data-cell data-wide>
+					<Select
+						label={MERCHANT_FIELDS.callingCode}
+						value={callingCode}
+						options={CALLING_CODE_CHOICES}
+						onChange={(e) => setCallingCode(e.currentTarget.value)}
+						disabled={readOnly}
+					/>
+					<Input
+						label={MERCHANT_FIELDS.phone}
+						type="tel"
+						inputMode="tel"
+						autoComplete="tel"
+						help={MERCHANT_FIELDS.phoneHelp}
+						value={form.phone}
+						onChange={(e) => handlePhoneChange(e.currentTarget.value)}
+						error={errors.phone}
+						readOnly={readOnly}
+						maxLength={40}
+					/>
+				</div>
+			)}
 			<FormError problem={problem} fields={['name', 'ownerName', 'email', 'phone']} />
 			{readOnly ? null : (
 				<Button type="submit" loading={busy}>

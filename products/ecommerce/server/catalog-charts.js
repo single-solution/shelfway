@@ -7,7 +7,7 @@
  */
 import { createId } from '@shelfway/contracts';
 import { created, defineRoute, problem } from '@shelfway/app-kit';
-import { NO_KEYS } from '../adapters/catalog-store.js';
+import { NO_KEYS } from './adapters/catalog-store.js';
 import { COLLECTIONS, ID_PREFIX } from '../core/model.js';
 import { withoutStamps } from '../core/catalog-taxonomy.js';
 import { checkSizeChart } from '../core/size-charts.js';

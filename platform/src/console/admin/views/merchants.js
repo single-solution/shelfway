@@ -39,9 +39,19 @@ import { ADMIN, BILLING, MERCHANT_FIELDS, MORE, TWO_STEP, WEBSITE } from '../../
 import { Link } from '../../link.js';
 import { api, withCursor } from '../../paths.js';
 import { DaysLeft } from '../../views/billing.js';
-import { MerchantFieldsForm } from '../../views/account.js';
+import { CALLING_CODE_CHOICES, MerchantFieldsForm, combinePhone } from '../../views/account.js';
+import { callingCodeOf, countryOfPhone } from '@shelfway/contracts/phone';
 import { COUNTRY_NAMES } from '../../../modules/identity/core/countries.js';
 import { ConfirmChange } from '../../views/common.js';
+
+const SUSPEND_REASONS = [
+	{ value: '', label: 'Select a reason preset or enter custom reason...' },
+	{ value: 'Payment default / negative balance', label: 'Payment default / negative balance' },
+	{ value: 'Terms of service violation', label: 'Terms of service violation' },
+	{ value: 'Suspected fraudulent activity', label: 'Suspected fraudulent activity' },
+	{ value: 'Merchant requested temporary freeze', label: 'Merchant requested temporary freeze' },
+	{ value: 'Administrative compliance audit', label: 'Administrative compliance audit' },
+];
 import { ActivityTable } from '../../views/login-settings.js';
 import { AddWebsiteDialog, MerchantUsageDialog, dailyCostOf, websiteDot } from '../../views/website.js';
 import { WebsitePageView } from '../../views/website-page.js';
@@ -173,10 +183,12 @@ function CopyLinkDialog({ link, onClose }) {
 export function AddMerchantDialog({ open, onClose, onCreated }) {
 	const toast = useToast();
 	const [form, setForm] = useState({ name: '', ownerName: '', email: '', phone: '' });
+	const [callingCode, setCallingCode] = useState('+1');
 	const [clientErrors, setClientErrors] = useState(/** @type {Record<string, string>} */ ({}));
 	const [busy, setBusy] = useState(false);
 	const [problem, setProblem] = useState(/** @type {Problem | null} */ (null));
 	const [unmailedLink, setUnmailedLink] = useState(/** @type {string | null} */ (null));
+	const [createdMerchant, setCreatedMerchant] = useState(/** @type {any} */ (null));
 
 	const validate = () => {
 		/** @type {Record<string, string>} */
@@ -184,8 +196,8 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 		const name = form.name.trim();
 		const ownerName = form.ownerName.trim();
 		const email = form.email.trim();
-		if (!name) errs.name = 'Business name is required.';
-		else if (name.length > 120) errs.name = 'Business name cannot exceed 120 characters.';
+		if (!name) errs.name = 'Company name is required.';
+		else if (name.length > 120) errs.name = 'Company name cannot exceed 120 characters.';
 		if (!ownerName) errs.ownerName = 'Contact name is required.';
 		else if (ownerName.length > 120) errs.ownerName = 'Contact name cannot exceed 120 characters.';
 		if (!email) errs.email = 'Email address is required.';
@@ -204,6 +216,26 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 			});
 		}
 	};
+
+	const handlePhoneChange = (/** @type {any} */ e) => {
+		const val = e.currentTarget.value;
+		setForm((f) => ({ ...f, phone: val }));
+		if (clientErrors.phone) {
+			setClientErrors((prev) => {
+				const next = { ...prev };
+				delete next.phone;
+				return next;
+			});
+		}
+		if (val.startsWith('+') || val.startsWith('00')) {
+			const detected = countryOfPhone(val);
+			if (detected) {
+				const code = callingCodeOf(detected);
+				if (code) setCallingCode(code);
+			}
+		}
+	};
+
 	const submit = async () => {
 		const errs = validate();
 		if (Object.keys(errs).length > 0) {
@@ -213,9 +245,10 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 		setClientErrors({});
 		setBusy(true);
 		setProblem(null);
+		const finalPhone = combinePhone(form.phone, callingCode);
 		/** @type {Record<string, string>} */
 		const body = { name: form.name.trim(), ownerName: form.ownerName.trim(), email: form.email.trim() };
-		if (form.phone.trim()) body.phone = form.phone.trim();
+		if (finalPhone) body.phone = finalPhone;
 		const result = await apiFetch(adminApi.createMerchant(), { method: 'POST', body });
 		setBusy(false);
 		if (!result.ok) {
@@ -227,13 +260,15 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 			description: result.data?.setup?.mailed ? ADMIN.setupMailed : ADMIN.setupNotMailed,
 		});
 		setForm({ name: '', ownerName: '', email: '', phone: '' });
+		setCallingCode('+1');
 		setClientErrors({});
 		if (!result.data?.setup?.mailed && result.data?.setup?.link) {
+			setCreatedMerchant(result.data?.merchant ?? null);
 			setUnmailedLink(result.data.setup.link);
 		} else {
 			onClose();
+			onCreated(result.data?.merchant);
 		}
-		onCreated(result.data?.merchant);
 	};
 	const serverErrors = fieldErrors(problem);
 	const errors = { ...serverErrors, ...clientErrors };
@@ -244,18 +279,19 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 				placement="center"
 				open={open && !unmailedLink}
 				onClose={onClose}
-				title={ADMIN.addMerchant}
+				title={ADMIN.createMerchantTitle}
+				description={ADMIN.createMerchantSubtitle}
 				footer={
 					<>
 						<Button variant="secondary" onClick={onClose}>
 							{MORE.cancel}
 						</Button>
 						<Button type="submit" form={formId} loading={busy}>
-							{ADMIN.addMerchant}
+							{ADMIN.createMerchantSubmit}
 						</Button>
 					</>
 				}>
-				<Form id={formId} onSubmit={submit} busy={busy} aria-label={ADMIN.addMerchant}>
+				<Form id={formId} onSubmit={submit} busy={busy} aria-label={ADMIN.createMerchantTitle}>
 					<Input
 						name="name"
 						label={MERCHANT_FIELDS.name}
@@ -265,6 +301,7 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 						error={errors.name}
 						required
 						maxLength={120}
+						wide
 					/>
 					<Input
 						name="ownerName"
@@ -275,6 +312,7 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 						error={errors.ownerName}
 						required
 						maxLength={120}
+						wide
 					/>
 					<Input
 						name="email"
@@ -286,19 +324,29 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 						onChange={handleInput}
 						error={errors.email}
 						required
+						wide
 					/>
-					<Input
-						name="phone"
-						label={MERCHANT_FIELDS.phone}
-						type="tel"
-						inputMode="tel"
-						autoComplete="tel"
-						help={MERCHANT_FIELDS.phoneHelp}
-						value={form.phone}
-						onChange={handleInput}
-						error={errors.phone}
-						maxLength={40}
-					/>
+					<div className="grid grid-cols-[minmax(7.5rem,9.5rem)_1fr] items-start gap-3" data-cell data-wide>
+						<Select
+							name="callingCode"
+							label={MERCHANT_FIELDS.callingCode}
+							value={callingCode}
+							options={CALLING_CODE_CHOICES}
+							onChange={(e) => setCallingCode(e.currentTarget.value)}
+						/>
+						<Input
+							name="phone"
+							label={MERCHANT_FIELDS.phone}
+							type="tel"
+							inputMode="tel"
+							autoComplete="tel"
+							help={MERCHANT_FIELDS.phoneHelp}
+							value={form.phone}
+							onChange={handlePhoneChange}
+							error={errors.phone}
+							maxLength={40}
+						/>
+					</div>
 					<FormError problem={problem} fields={['name', 'ownerName', 'email', 'phone']} />
 				</Form>
 			</Dialog>
@@ -306,8 +354,11 @@ export function AddMerchantDialog({ open, onClose, onCreated }) {
 				<CopyLinkDialog
 					link={unmailedLink}
 					onClose={() => {
+						const m = createdMerchant;
 						setUnmailedLink(null);
+						setCreatedMerchant(null);
 						onClose();
+						onCreated(m);
 					}}
 				/>
 			) : null}
@@ -680,12 +731,22 @@ function MerchantPageView({ detail, admin, list, onAddMerchant }) {
 				{dialog === 'suspend' ? (
 					<div className="space-y-3">
 						<p className="text-sm text-muted">{ADMIN.suspendHelp}</p>
+						<Select
+							label="Reason preset"
+							value={SUSPEND_REASONS.some((r) => r.value === reason) ? reason : ''}
+							options={SUSPEND_REASONS}
+							onChange={(e) => {
+								if (e.currentTarget.value) setReason(e.currentTarget.value);
+							}}
+						/>
 						<TextArea
 							label={ADMIN.reason}
 							value={reason}
 							onChange={(e) => setReason(e.currentTarget.value)}
+							placeholder="Enter detailed reason for suspension..."
 							required
 							maxLength={500}
+							wide
 						/>
 					</div>
 				) : (
@@ -706,7 +767,9 @@ function MerchantPageView({ detail, admin, list, onAddMerchant }) {
 						? ADMIN.copySetupLinkHelp
 						: dialog === 'twoStep'
 							? ADMIN.turnOffTwoStepHelp
-							: ADMIN.deleteHelp(typeof balance === 'number' ? formatCredits(balance) : '—')
+							: rows.length > 0
+								? `Cannot delete while this merchant has ${rows.length} website(s). Remove all websites first. ${ADMIN.deleteHelp(typeof balance === 'number' ? formatCredits(balance) : '-')}`
+								: ADMIN.deleteHelp(typeof balance === 'number' ? formatCredits(balance) : '-')
 				}
 				confirmLabel={
 					dialog === 'copyLink' ? ADMIN.copySetupLink : dialog === 'twoStep' ? ADMIN.turnOffTwoStep : ADMIN.deleteMerchant
@@ -761,7 +824,10 @@ function MerchantsScreen({ list, detail, merchantId, fromList = false, admin }) 
 	const [bulk, setBulk] = useState(/** @type {null | 'suspend' | 'resume' | 'resend_setup_link'} */ (null));
 	const closeAdding = () => setAdding(false);
 	const openAdding = () => setAdding(true);
-	const closeBulk = () => setBulk(null);
+	const closeBulk = () => {
+		setBulk(null);
+		setReason('');
+	};
 	const [reason, setReason] = useState('');
 	const [busy, setBusy] = useState(false);
 	const [problem, setProblem] = useState(/** @type {Problem | null} */ (null));
@@ -901,12 +967,22 @@ function MerchantsScreen({ list, detail, merchantId, fromList = false, admin }) 
 			{bulk === 'suspend' ? (
 				<div className="space-y-3">
 					<p className="text-sm text-muted">{ADMIN.suspendHelp}</p>
+					<Select
+						label="Reason preset"
+						value={SUSPEND_REASONS.some((r) => r.value === reason) ? reason : ''}
+						options={SUSPEND_REASONS}
+						onChange={(e) => {
+							if (e.currentTarget.value) setReason(e.currentTarget.value);
+						}}
+					/>
 					<TextArea
 						label={ADMIN.reason}
 						value={reason}
 						onChange={(e) => setReason(e.currentTarget.value)}
+						placeholder="Enter detailed reason for suspension..."
 						required
 						maxLength={500}
+						wide
 					/>
 				</div>
 			) : bulk === 'resume' ? (

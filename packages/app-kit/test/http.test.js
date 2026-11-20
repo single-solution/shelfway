@@ -1,6 +1,6 @@
 import { KIT_PERMISSIONS } from '../src/staff.js';
 import { describe, expect, it } from 'vitest';
-import { created, defineRoute, noContent, ok, paginate, problem, toNextRoute } from '../src/index.js';
+import { createProductApiRoute, created, defineRoute, noContent, ok, paginate, problem, toNextRoute } from '../src/index.js';
 import { collectionPrefix, isKitError, kitError, omit } from '../src/util.js';
 import { createMemoryStore } from '../src/testing.js';
 import { BASE, productRoutes, setup } from './helpers.js';
@@ -238,6 +238,33 @@ describe('handler results and the Next.js adapter', () => {
 		for (const task of later) await task();
 		// only a whole first segment is stripped
 		expect((await next.GET(new Request(`${BASE}/apidocs`))).status).toBe(404);
+	});
+
+	it('createProductApiRoute wires environment config, logger, product and routes into Next handlers', async () => {
+		const routes = [
+			defineRoute({
+				method: 'GET',
+				path: '/v1/hello',
+				auth: 'none',
+				handler: () => ok({ hello: 'world' }),
+			}),
+		];
+		const handlers = createProductApiRoute({
+			createProductInstance: () => ({
+				handler: () => (/** @type {Request} */ request) => {
+					const url = new URL(request.url);
+					if (url.pathname === '/v1/hello') {
+						return Promise.resolve(new Response(JSON.stringify({ hello: 'world' }), { status: 200 }));
+					}
+					return Promise.resolve(new Response('Not Found', { status: 404 }));
+				},
+			}),
+			createRoutes: () => routes,
+		});
+		expect(Object.keys(handlers).sort()).toEqual(['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT']);
+		const res = await handlers.GET(new Request('http://localhost/api/v1/hello'));
+		expect(res.status).toBe(200);
+		expect(await res.json()).toEqual({ hello: 'world' });
 	});
 
 	it('runs work that after-work adds, before the Portal fetch of an old status copy', async () => {

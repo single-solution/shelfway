@@ -2,8 +2,8 @@ import { connection } from 'next/server';
 import { platformApi as consoleApi, platformBranding as consoleBranding, platformSession, one } from '../_lib/server.js';
 import { loadDocsHub, loadDocsProduct } from '../../src/console/loaders.js';
 import { DocsHubView } from '../../src/console/views/docs.js';
+import { COMPANY_NAME, PRODUCT_BRAND } from '../../src/texts/console.js';
 import { SiteFooter, SiteHeader } from '../_components/SiteNav.js';
-import { COMPANY_NAME, PRODUCT_BRAND } from '../_components/brand.js';
 
 export const dynamic = 'force-dynamic';
 

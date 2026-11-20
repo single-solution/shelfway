@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { REFRESH_BEFORE_MS, adminCall, createTicketSource, requestJson } from '../src/widget.js';
+import { REFRESH_BEFORE_MS, adminCall, codeOf, createTicketSource, requestJson } from '../src/widget.js';
 
 const BASE = 'https://product.example.dev';
 const NOW = Date.parse('2026-10-15T10:00:00.000Z');
@@ -212,5 +212,22 @@ describe('adminCall', () => {
 			data: null,
 		});
 		expect(fetch).not.toHaveBeenCalled();
+	});
+});
+
+describe('codeOf', () => {
+	it('extracts the last segment of the problem type', () => {
+		expect(codeOf({ data: { type: 'https://shop.example/problems/not_found' } })).toBe('not_found');
+		expect(codeOf({ data: { type: 'https://shop.example/problems/slot_taken' } })).toBe('slot_taken');
+	});
+
+	it('returns offline when status is 0', () => {
+		expect(codeOf({ status: 0, data: null })).toBe('offline');
+	});
+
+	it('returns empty string for missing or non-string type', () => {
+		expect(codeOf({ status: 500, data: null })).toBe('');
+		expect(codeOf({ status: 200, data: {} })).toBe('');
+		expect(codeOf(null)).toBe('');
 	});
 });

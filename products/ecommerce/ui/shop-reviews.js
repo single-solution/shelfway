@@ -7,9 +7,8 @@
  * says so instead of showing a form the server would refuse.
  * @module
  */
-import { field as kitField, segmented } from '@shelfway/app-kit/widget';
+import { codeOf, field as kitField, segmented } from '@shelfway/app-kit/widget';
 import { button, field, formatsOf, h, problemText, select, settingsOf } from './shop-common.js';
-import { codeOf } from './problem-code.js';
 
 /** @typedef {import('./shop-common.js').Texts} Texts */
 /** @typedef {import('./widget.js').Shop} Shop */

@@ -7,6 +7,7 @@ import {
 	supportChannelProblem,
 	supportChannelUrl,
 	supportContactLine,
+	ticketSnippets,
 	widgetScriptTag,
 } from '../src/text.js';
 
@@ -175,5 +176,37 @@ describe('support contact channels', () => {
 			]),
 		).toBe('help@acme.test (Email), https://wa.me/12125550111 (WhatsApp)');
 		expect(supportContactLine([])).toBe('');
+	});
+});
+
+describe('ticketSnippets', () => {
+	it('builds standard Node.js and cURL ticket snippets for admin widgets', () => {
+		const { ticketNode, ticketCurl, ticketBody } = ticketSnippets({
+			base: 'https://chat.example.com',
+			permissions: ['chat.manage', 'inbox.read'],
+		});
+		expect(ticketNode).toContain("fetch('https://chat.example.com/v1/tickets'");
+		expect(ticketNode).toContain('["chat.manage","inbox.read"]');
+		expect(ticketNode).toContain('process.env.SHELFWAY_SERVER_TOKEN');
+		expect(ticketCurl).toContain("curl -X POST 'https://chat.example.com/v1/tickets'");
+		expect(ticketCurl).toContain('"chat.manage"');
+		expect(ticketBody).toEqual({
+			user: { id: 'usr_1', name: 'Sam Staff', email: 'sam@example.com' },
+			permissions: ['chat.manage', 'inbox.read'],
+			origin: 'https://admin.example.com',
+		});
+	});
+
+	it('accepts custom user and origin parameters', () => {
+		const { ticketNode, ticketCurl, ticketBody } = ticketSnippets({
+			base: 'https://growth.example.com',
+			permissions: ['analytics.read'],
+			user: { id: 'u_custom', name: 'Alex', email: 'alex@test.com' },
+			origin: 'https://portal.test.com',
+		});
+		expect(ticketNode).toContain('https://portal.test.com');
+		expect(ticketCurl).toContain('u_custom');
+		expect(ticketBody.user.id).toBe('u_custom');
+		expect(ticketBody.origin).toBe('https://portal.test.com');
 	});
 });

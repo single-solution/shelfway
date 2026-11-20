@@ -287,7 +287,7 @@ export const inputs = Object.freeze({
 				country: { optional: merchantSpec.country },
 			})
 	),
-	merchantCreate: /** @type {(b: unknown) => Parsed<MerchantFields>} */ (
+	merchantCreate: /** @type {(b: unknown) => Parsed<MerchantFields & { copy?: boolean }>} */ (
 		(b) => {
 			const parsed = object(b, {
 				name: merchantSpec.name,
@@ -296,6 +296,7 @@ export const inputs = Object.freeze({
 				phone: { optional: merchantSpec.phone },
 				address: { optional: merchantSpec.address },
 				country: { optional: merchantSpec.country },
+				copy: { optional: bool },
 			});
 			if (!parsed.ok) return parsed;
 			const v = /** @type {Record<string, any>} */ (parsed.value);

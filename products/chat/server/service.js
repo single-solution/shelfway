@@ -51,10 +51,10 @@ import { plainOf } from '../core/markdown.js';
 import { compileRedactionPatterns } from '../core/moderation.js';
 import { ROUTED, inTeam, pickAssignee, teamFor } from '../core/routing.js';
 import { GUEST_HEADER, GUEST_KEY, attachmentKind } from '../core/widgets.js';
-import { createStore } from '../adapters/store.js';
+import { createStore } from './adapters/store.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
-/** @typedef {import('../adapters/store.js').Store} Store */
+/** @typedef {import('./adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/store.js').Store} Store */
 /** @typedef {import('../core/conversation.js').ConversationRecord} ConversationRecord */
 /** @typedef {import('../core/conversation.js').MessageRecord} MessageRecord */
 /** @typedef {import('../core/conversation.js').Author} Author */
@@ -70,7 +70,7 @@ import { createStore } from '../adapters/store.js';
  * @property {() => Promise<{ name: string, email?: string, phone?: string, address?: string, country?: string | null, timeZone: string }>} business
  * @property {() => Promise<Look>} format the website's Format and business time zone, with the formatters of text the
  *   server makes (K7)
- * @property {(name: import('../adapters/lists.js').ListName) => Promise<any[]>} list
+ * @property {(name: import('./adapters/lists.js').ListName) => Promise<any[]>} list
  * @property {() => Promise<SignIn | null>} signIn the visitor's Accounts sign-in, verified on this request (signed-in chat on)
  */
 /**

@@ -12,6 +12,7 @@ import {
 	ActionMenu,
 	Badge,
 	Button,
+	ButtonLink,
 	Callout,
 	Card,
 	CodeBlock,
@@ -26,7 +27,6 @@ import {
 	TypedConfirmDialog,
 	copyText,
 	describeProblem,
-	formatCredits,
 	useToast,
 } from '@shelfway/ui';
 import { MORE, SETUP, WEBSITE, WEBSITE_SETTINGS as T } from '../../texts/console.js';
@@ -40,7 +40,7 @@ import { openDashboard } from './common.js';
 import { ConfirmOtp } from './common.js';
 import { SetupView, useSetupSheet } from './setup.js';
 import { SettingsSectionBody, contextOf, readinessLines, useWebsiteSettings } from './website-settings.js';
-import { AddProductDrawer, dailyCostOf, launchStepUpOf, twoStepOnOf, useOnce, websiteDot } from './website.js';
+import { AddProductDrawer, launchStepUpOf, twoStepOnOf, useOnce, websiteDot } from './website.js';
 
 /** @typedef {import('./website.js').ProductCard} ProductCard */
 /**
@@ -84,11 +84,11 @@ function ProductRow({ card, can, opening, onOpen, onRemove }) {
 			lead={<IconBadge product={card.productId} size="sm" />}
 			title={card.name}
 			status={{ tone: productTone(card), label: productStatusLabel(card) }}
-			help={WEBSITE.productHelp(card.featuresOn, WEBSITE.perDay(formatCredits(card.dailyCost)))}
+			help={card.featuresOn && card.featuresOn.length > 0 ? card.featuresOn.join(', ') : 'No features on'}
 			{...(can.open || can.manage
 				? {
 						actions: (
-							<>
+							<div className="flex flex-wrap items-center gap-2">
 								{can.open ? (
 									<Button
 										variant="secondary"
@@ -100,22 +100,34 @@ function ProductRow({ card, can, opening, onOpen, onRemove }) {
 										{WEBSITE.openDashboard}
 									</Button>
 								) : null}
-								<a
+								<ButtonLink
+									as="a"
 									href={routes.docsProduct(card.productId)}
 									target="_blank"
 									rel="noopener noreferrer"
-									className="shelfway-motion shelfway-press inline-flex h-8 items-center gap-1.5 rounded-control border border-line bg-surface/90 px-2.5 text-xs font-medium text-fg/80 hover:bg-surface-2 hover:text-fg focus-visible:outline-2 focus-visible:outline-focus"
+									variant="secondary"
+									size="sm"
 									title={`View ${card.name} API & Swagger Specs`}>
-									<Icon name="code" size={14} className="text-muted" />
+									<Icon name="code" size={14} />
 									<span>API Reference</span>
-								</a>
+								</ButtonLink>
+								{can.manage ? (
+									<Button
+										variant="ghost"
+										size="sm"
+										className="text-danger hover:bg-danger/10"
+										title={WEBSITE.remove}
+										onClick={onRemove}>
+										{WEBSITE.remove}
+									</Button>
+								) : null}
 								{can.manage ? (
 									<ActionMenu
 										label={WEBSITE.productActions(card.name)}
 										items={[{ label: WEBSITE.remove, danger: true, onSelect: onRemove }]}
 									/>
 								) : null}
-							</>
+							</div>
 						),
 					}
 				: {})}
@@ -341,9 +353,7 @@ export function WebsitePageView({
 	};
 
 	const dot = websiteDot(cards);
-	const dailyCost = WEBSITE.perDay(formatCredits(dailyCostOf(cards)));
 	const facts = [
-		{ label: WEBSITE.dailyCost, value: dailyCost },
 		{ label: WEBSITE.productsTitle, value: cards.length },
 		...(kind === 'settings' && state.settings
 			? [
@@ -542,56 +552,6 @@ export function WebsitePageView({
 							: 'Connect the Ecommerce micro-product to process store orders, issue invoices, track delivery stages, and handle returns.'}
 					</p>
 				</Card>
-
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-					<div className="p-3.5 rounded-lg border border-line bg-surface space-y-1">
-						<span className="text-[11px] font-mono uppercase tracking-wider text-muted">Awaiting Payment</span>
-						<p className="text-lg font-bold text-fg">Manual Slips</p>
-						<p className="text-[11px] text-muted">Bank &amp; wallet transfer slips awaiting staff review</p>
-					</div>
-					<div className="p-3.5 rounded-lg border border-line bg-surface space-y-1">
-						<span className="text-[11px] font-mono uppercase tracking-wider text-muted">Processing &amp; Packing</span>
-						<p className="text-lg font-bold text-fg">Fulfillment</p>
-						<p className="text-[11px] text-muted">Serialized IMEIs &amp; fabric meter cuts</p>
-					</div>
-					<div className="p-3.5 rounded-lg border border-line bg-surface space-y-1">
-						<span className="text-[11px] font-mono uppercase tracking-wider text-muted">Dispatched</span>
-						<p className="text-lg font-bold text-fg">In Transit</p>
-						<p className="text-[11px] text-muted">Courier tracking numbers linked</p>
-					</div>
-					<div className="p-3.5 rounded-lg border border-line bg-surface space-y-1">
-						<span className="text-[11px] font-mono uppercase tracking-wider text-muted">Completed</span>
-						<p className="text-lg font-bold text-fg">Delivered</p>
-						<p className="text-[11px] text-muted">Return window active per policy</p>
-					</div>
-				</div>
-
-				<Card
-					title="Order Lifecycle Protocol"
-					subtitle="Standardized state machine transitions enforced across headless checkouts and APIs.">
-					<div className="grid grid-cols-1 md:grid-cols-5 gap-2 pt-1 text-xs">
-						<div className="p-2.5 rounded border border-line bg-surface-2/40 space-y-1">
-							<Badge tone="warning">1. Placed</Badge>
-							<p className="text-[11px] text-muted">Shopper checkout created, stock reserved</p>
-						</div>
-						<div className="p-2.5 rounded border border-line bg-surface-2/40 space-y-1">
-							<Badge tone="success">2. Paid</Badge>
-							<p className="text-[11px] text-muted">Payment verified or COD confirmed</p>
-						</div>
-						<div className="p-2.5 rounded border border-line bg-surface-2/40 space-y-1">
-							<Badge tone="neutral">3. Packed</Badge>
-							<p className="text-[11px] text-muted">IMEIs assigned or meters cut</p>
-						</div>
-						<div className="p-2.5 rounded border border-line bg-surface-2/40 space-y-1">
-							<Badge tone="neutral">4. Shipped</Badge>
-							<p className="text-[11px] text-muted">Consignment dispatched with courier</p>
-						</div>
-						<div className="p-2.5 rounded border border-line bg-surface-2/40 space-y-1">
-							<Badge tone="success">5. Delivered</Badge>
-							<p className="text-[11px] text-muted">Delivery confirmed, invoice issued</p>
-						</div>
-					</div>
-				</Card>
 			</div>
 		);
 	} else if (!error && own === 'customers') {
@@ -624,24 +584,6 @@ export function WebsitePageView({
 							: 'Connect the Accounts micro-product to allow customers to register, save addresses, sign in via OTP or passkeys, and request wholesale membership.'}
 					</p>
 				</Card>
-
-				<div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-					<div className="p-3.5 rounded-lg border border-line bg-surface space-y-1">
-						<span className="text-[11px] font-mono uppercase tracking-wider text-muted">Retail Shoppers</span>
-						<p className="text-lg font-bold text-fg">Direct Customers</p>
-						<p className="text-[11px] text-muted">Phone or email sign-in with OTP verification</p>
-					</div>
-					<div className="p-3.5 rounded-lg border border-line bg-surface space-y-1">
-						<span className="text-[11px] font-mono uppercase tracking-wider text-muted">VIP &amp; Wholesale</span>
-						<p className="text-lg font-bold text-fg">Approved Tiers</p>
-						<p className="text-[11px] text-muted">B2B wholesale pricing and volume discounts</p>
-					</div>
-					<div className="p-3.5 rounded-lg border border-line bg-surface space-y-1">
-						<span className="text-[11px] font-mono uppercase tracking-wider text-muted">Guest Checkouts</span>
-						<p className="text-lg font-bold text-fg">Instant Buyers</p>
-						<p className="text-[11px] text-muted">Fast checkout converted to accounts on order completion</p>
-					</div>
-				</div>
 			</div>
 		);
 	} else if (onHome || parsed?.kind === 'products') {
@@ -652,6 +594,45 @@ export function WebsitePageView({
 				icon: 'box',
 				body: (
 					<>
+						{cards.length > 0 ? (
+							<div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-surface p-3 sm:p-4">
+								<div className="flex items-center gap-2.5">
+									<span className="flex size-9 shrink-0 items-center justify-center rounded-control bg-surface-2 text-primary">
+										<Icon name="globe" size={18} />
+									</span>
+									<div>
+										<div className="flex items-center gap-2">
+											<span className="font-semibold text-fg">{website.domain}</span>
+											<a
+												href={`https://${website.domain}`}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="text-muted hover:text-fg"
+												title={`Open https://${website.domain}`}>
+												<Icon name="external" size={13} />
+											</a>
+										</div>
+										<p className="text-micro text-muted">
+											{cards.length} {cards.length === 1 ? 'capability' : 'capabilities'} connected
+										</p>
+									</div>
+								</div>
+								<div className="flex flex-wrap items-center gap-2">
+									{hasSettings ? (
+										<ButtonLink as={Link} href={hrefOf('settings')} variant="secondary" size="sm">
+											<Icon name="sliders" size={14} />
+											<span>Settings</span>
+										</ButtonLink>
+									) : null}
+									{can.tokens ? (
+										<ButtonLink as={Link} href={hrefOf('setup')} variant="secondary" size="sm">
+											<Icon name="code" size={14} />
+											<span>View Developer Credentials (.env)</span>
+										</ButtonLink>
+									) : null}
+								</div>
+							</div>
+						) : null}
 						{cards.length === 0 ? (
 							<EmptyState
 								compact
@@ -753,6 +734,7 @@ export function WebsitePageView({
 				placement="center"
 				open={Boolean(revealedPack)}
 				onClose={() => setRevealedPack(null)}
+				size="xl"
 				title="Website Setup & Credentials"
 				description={`Access link and environment credentials for ${website.domain}. Scoped to active products only.`}>
 				{revealedPack
@@ -837,109 +819,113 @@ export function WebsitePageView({
 										</div>
 									</div>
 
-									{activeProducts.length > 0 ? (
-										<div className="space-y-2">
-											<span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted">
-												Active Product Endpoints &amp; Credentials
-											</span>
-											<div className="space-y-2 max-h-56 overflow-y-auto pr-1">
-												{activeProducts.map((/** @type {any} */ p) => {
-													const ep = p.endpoint || `${originUrl}/v1/${p.id}`;
-													const productDocs = `${originUrl}/docs?website=${encodeURIComponent(website.domain)}&product=${p.id}${p.browserToken ? `&token=${encodeURIComponent(p.browserToken)}` : ''}`;
-													return (
-														<div
-															key={p.id}
-															className="rounded-control border border-line bg-surface/60 p-2.5 space-y-1.5 text-xs">
-															<div className="flex items-center justify-between gap-2">
-																<div className="flex items-center gap-2">
-																	<IconBadge product={p.id} size="xs" />
-																	<span className="font-semibold text-fg">{p.name}</span>
-																	<span className="font-mono text-[11px] text-muted">({p.id})</span>
+									<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+										<div className="space-y-4">
+											{activeProducts.length > 0 ? (
+												<div className="space-y-2">
+													<span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted">
+														Active Product Endpoints &amp; Credentials
+													</span>
+													<div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+														{activeProducts.map((/** @type {any} */ p) => {
+															const ep = p.endpoint || `${originUrl}/v1/${p.id}`;
+															const productDocs = `${originUrl}/docs?website=${encodeURIComponent(website.domain)}&product=${p.id}${p.browserToken ? `&token=${encodeURIComponent(p.browserToken)}` : ''}`;
+															return (
+																<div
+																	key={p.id}
+																	className="rounded-control border border-line bg-surface/60 p-2.5 space-y-1.5 text-xs">
+																	<div className="flex items-center justify-between gap-2">
+																		<div className="flex items-center gap-2">
+																			<IconBadge product={p.id} size="xs" />
+																			<span className="font-semibold text-fg">{p.name}</span>
+																			<span className="font-mono text-[11px] text-muted">({p.id})</span>
+																		</div>
+																		<a
+																			href={productDocs}
+																			target="_blank"
+																			rel="noopener noreferrer"
+																			className="font-medium text-primary hover:underline text-[11px]">
+																			Docs &amp; Swagger
+																		</a>
+																	</div>
+																	<div className="space-y-1 font-mono text-[11px] text-muted">
+																		<div className="truncate">Endpoint: {ep}</div>
+																		{p.serverToken ? (
+																			<div className="flex items-center justify-between gap-2">
+																				<span className="truncate">
+																					Server: {p.serverToken.slice(0, 10)}...{p.serverToken.slice(-6)}
+																				</span>
+																				<Button
+																					size="sm"
+																					variant="ghost"
+																					onClick={() => {
+																						copyText(p.serverToken);
+																						toast.show({ title: `${p.name} server token copied` });
+																					}}>
+																					Copy Server
+																				</Button>
+																			</div>
+																		) : null}
+																		{p.browserToken ? (
+																			<div className="flex items-center justify-between gap-2">
+																				<span className="truncate">
+																					Client: {p.browserToken.slice(0, 10)}...{p.browserToken.slice(-6)}
+																				</span>
+																				<Button
+																					size="sm"
+																					variant="ghost"
+																					onClick={() => {
+																						copyText(p.browserToken);
+																						toast.show({ title: `${p.name} client token copied` });
+																					}}>
+																					Copy Client
+																				</Button>
+																			</div>
+																		) : null}
+																	</div>
 																</div>
-																<a
-																	href={productDocs}
-																	target="_blank"
-																	rel="noopener noreferrer"
-																	className="font-medium text-primary hover:underline text-[11px]">
-																	Docs &amp; Swagger
-																</a>
-															</div>
-															<div className="space-y-1 font-mono text-[11px] text-muted">
-																<div className="truncate">Endpoint: {ep}</div>
-																{p.serverToken ? (
-																	<div className="flex items-center justify-between gap-2">
-																		<span className="truncate">
-																			Server: {p.serverToken.slice(0, 10)}...{p.serverToken.slice(-6)}
-																		</span>
-																		<Button
-																			size="sm"
-																			variant="ghost"
-																			onClick={() => {
-																				copyText(p.serverToken);
-																				toast.show({ title: `${p.name} server token copied` });
-																			}}>
-																			Copy Server
-																		</Button>
-																	</div>
-																) : null}
-																{p.browserToken ? (
-																	<div className="flex items-center justify-between gap-2">
-																		<span className="truncate">
-																			Client: {p.browserToken.slice(0, 10)}...{p.browserToken.slice(-6)}
-																		</span>
-																		<Button
-																			size="sm"
-																			variant="ghost"
-																			onClick={() => {
-																				copyText(p.browserToken);
-																				toast.show({ title: `${p.name} client token copied` });
-																			}}>
-																			Copy Client
-																		</Button>
-																	</div>
-																) : null}
-															</div>
-														</div>
-													);
-												})}
+															);
+														})}
+													</div>
+												</div>
+											) : null}
+
+											<div className="space-y-1.5">
+												<div className="flex items-center justify-between">
+													<span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted">
+														Storefront Quickstart (Fetch &amp; cURL)
+													</span>
+													<Button
+														size="sm"
+														variant="ghost"
+														onClick={() => {
+															copyText(quickstartSnippet);
+															toast.show({ title: 'Quickstart code copied' });
+														}}>
+														Copy Quickstart
+													</Button>
+												</div>
+												<CodeBlock code={quickstartSnippet} label="Storefront Quickstart" wrap />
 											</div>
 										</div>
-									) : null}
 
-									<div className="space-y-1.5">
-										<div className="flex items-center justify-between">
-											<span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted">
-												Environment Variables (.env)
-											</span>
-											<Button
-												size="sm"
-												variant="ghost"
-												onClick={() => {
-													copyText(envSnippet);
-													toast.show({ title: 'Config copied to clipboard' });
-												}}>
-												Copy .env
-											</Button>
+										<div className="space-y-1.5">
+											<div className="flex items-center justify-between">
+												<span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted">
+													Environment Variables (.env)
+												</span>
+												<Button
+													size="sm"
+													variant="ghost"
+													onClick={() => {
+														copyText(envSnippet);
+														toast.show({ title: 'Config copied to clipboard' });
+													}}>
+													Copy .env
+												</Button>
+											</div>
+											<CodeBlock code={envSnippet} label="Environment Variables" wrap />
 										</div>
-										<CodeBlock code={envSnippet} label="Environment Variables" wrap />
-									</div>
-
-									<div className="space-y-1.5">
-										<div className="flex items-center justify-between">
-											<span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted">
-												Storefront Quickstart (Fetch &amp; cURL)
-											</span>
-											<Button
-												size="sm"
-												variant="ghost"
-												onClick={() => {
-													copyText(quickstartSnippet);
-													toast.show({ title: 'Quickstart code copied' });
-												}}>
-												Copy Quickstart
-											</Button>
-										</div>
-										<CodeBlock code={quickstartSnippet} label="Storefront Quickstart" wrap />
 									</div>
 
 									<div className="flex items-center justify-between border-t border-line pt-3">
@@ -984,7 +970,12 @@ export function WebsitePageView({
 				confirmLabel={WEBSITE.remove}
 				title={WEBSITE.removeTitle(removing?.name ?? '')}
 				error={problem ? describeProblem(problem) : null}>
-				<p className="text-sm text-muted">{WEBSITE.removeHelp}</p>
+				<div className="space-y-3 text-sm text-muted">
+					<p>{WEBSITE.removeHelp}</p>
+					<Callout tone="danger" title="Security Impact">
+						Disconnects {removing?.name} from {website.domain}. Product client and server tokens are revoked immediately.
+					</Callout>
+				</div>
 			</TypedConfirmDialog>
 			<TypedConfirmDialog
 				open={dialog === 'removeWebsite'}
@@ -996,7 +987,21 @@ export function WebsitePageView({
 				confirmLabel={WEBSITE.removeWebsite}
 				title={WEBSITE.removeWebsiteTitle(website.domain)}
 				error={problem ? describeProblem(problem) : null}>
-				<p className="text-sm text-muted">{WEBSITE.removeWebsiteHelp}</p>
+				<div className="space-y-3 text-sm text-muted">
+					<p>{WEBSITE.removeWebsiteHelp}</p>
+					{cards.length > 0 ? (
+						<Callout tone="warning" title="Active Products Connected">
+							This website currently has {cards.length} connected product{cards.length === 1 ? '' : 's'} (
+							{cards.map((c) => c.name).join(', ')}). You must remove all connected products before this website can be
+							removed.
+						</Callout>
+					) : (
+						<Callout tone="danger" title="Security & Domain Release">
+							All API credentials for {website.domain} will be permanently revoked. The domain will be released
+							immediately.
+						</Callout>
+					)}
+				</div>
 			</TypedConfirmDialog>
 		</>
 	);

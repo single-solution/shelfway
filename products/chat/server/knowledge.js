@@ -12,8 +12,8 @@ import { isHttpsUrl } from '../core/text.js';
 import { actorOf } from './inbox.js';
 import { bodyOf, invalid } from './service.js';
 
-/** @typedef {import('../adapters/store.js').EntryRecord} EntryRecord */
-/** @typedef {import('../adapters/store.js').PageRecord} PageRecord */
+/** @typedef {import('./adapters/store.js').EntryRecord} EntryRecord */
+/** @typedef {import('./adapters/store.js').PageRecord} PageRecord */
 
 /** Largest page fetched (bytes) and its deadline (ms). */
 const PAGE_MAX_BYTES = 2 * 1024 * 1024;
@@ -59,7 +59,7 @@ const pageView = (p) => ({
 });
 
 /**
- * @param {import('../adapters/product.js').Product} product
+ * @param {import('./adapters/product.js').Product} product
  * @param {import('./service.js').Service} service
  */
 export const createKnowledge = (product, service) => {

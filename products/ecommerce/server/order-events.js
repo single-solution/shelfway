@@ -20,7 +20,7 @@
  * @module
  */
 import { defineRoute } from '@shelfway/app-kit';
-import { productTypes } from '../adapters/catalog-store.js';
+import { productTypes } from './adapters/catalog-store.js';
 import { countsForStock, stockEventOf } from '../core/catalog-query.js';
 import { STAFF_ALERT_MAX_RECIPIENTS } from '../core/limits.js';
 import { levelOf } from '../core/measure.js';
@@ -30,7 +30,7 @@ import { createOrderMessages, messageWords } from './order-messages.js';
 import { SERVER_LIMITS } from './service.js';
 import { ALL_STAFF_PERMISSIONS, STAFF_ALERT_PHONE } from './staff-alerts.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('../core/model.js').OrderRecord} OrderRecord */
@@ -286,7 +286,7 @@ export const createOrderEvents = (product, service) => {
 	service.on('stock.taken', async (s, { lines }) => {
 		if (!s.has('events') || !Array.isArray(lines) || lines.length === 0) return;
 		const level = await lowStockOf(s);
-		const taken = /** @type {import('../adapters/ledger.js').TakenStock[]} */ (lines);
+		const taken = /** @type {import('./adapters/ledger.js').TakenStock[]} */ (lines);
 		const data = await s.data();
 		const products = (await s.list('item_types')).some((/** @type {any} */ type) => type.elements.measure)
 			? await data

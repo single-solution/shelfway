@@ -5,7 +5,7 @@
  * where a retired product's address leads (E13, SEO audit G9).
  * @module
  */
-import { NO_KEYS } from '../adapters/catalog-store.js';
+import { NO_KEYS } from './adapters/catalog-store.js';
 import { COLLECTIONS } from '../core/model.js';
 
 /** @typedef {import('./service.js').Site} Site */

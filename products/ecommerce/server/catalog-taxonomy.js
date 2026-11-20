@@ -24,7 +24,7 @@ import {
 	slugTaken,
 	stockedUnits,
 	unitRulesOf,
-} from '../adapters/catalog-store.js';
+} from './adapters/catalog-store.js';
 import { cleanText } from '../core/catalog.js';
 import { FIELD_LIMITS, checkUnit, sharedKeys } from '../core/fields.js';
 import { typeByKey, typeOf, typeTree } from '../core/item-types.js';
@@ -47,7 +47,7 @@ import { refuse } from './catalog-common.js';
 import { pageTitlesOf } from './seo-reads.js';
 import { SERVER_LIMITS, bodyOf } from './service.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./catalog-common.js').CatalogCommon} CatalogCommon */

@@ -13,7 +13,7 @@ import openapi from '../openapi.json' with { type: 'json' };
 import { escapeHtml } from '@shelfway/contracts/text';
 import { GATEWAYS, GATEWAY_CURRENCIES, GATEWAY_FEATURES } from '../core/gateways.js';
 import { createSnippets, gatewayAddresses } from '../core/snippets.js';
-import { manifest } from '../adapters/product.js';
+import { manifest } from './adapters/product.js';
 
 /** The documented operations (the same for every request). */
 const ROWS = docsOperations(openapi);

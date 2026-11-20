@@ -43,7 +43,7 @@ import {
 	textsOf,
 	warrantyText,
 } from './shop-common.js';
-import { codeOf } from './problem-code.js';
+import { codeOf } from '@shelfway/app-kit/widget';
 import { compareIds, onCompareChange, toggleCompare } from './shop-compare-store.js';
 import {
 	alertsOf,

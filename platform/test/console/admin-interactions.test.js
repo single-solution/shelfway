@@ -266,11 +266,11 @@ describe('admin console interactions (jsdom)', () => {
 		await pressInDialog('Resume');
 		await until(() => ownerBrowser.calls.filter((c) => c.path === adminApi.bulk() && c.status === 200).length >= 2);
 		await press('Add merchant');
-		fillDialog('Business name', 'Ops Made Ltd');
-		fillDialog('Owner name', 'Olga');
-		fillDialog('Owner email (login)', 'ops-owner@made.test');
-		fillDialog('Phone', '+44 7700 900111');
-		await pressInDialog('Add merchant');
+		fillDialog('Company name', 'Ops Made Ltd');
+		fillDialog('Primary contact', 'Olga');
+		fillDialog('Work email address', 'ops-owner@made.test');
+		fillDialog('Phone number', '+44 7700 900111');
+		await pressInDialog('Create & send invite');
 		const made = /** @type {any} */ (
 			await until(
 				() =>
@@ -340,7 +340,7 @@ describe('admin console interactions (jsdom)', () => {
 		);
 		// Edit merchant: the fields in a dialog, the login email until the password is set
 		await press('Edit merchant');
-		fillDialog('Owner email (login)', 'olga@made.test');
+		fillDialog('Work email address', 'olga@made.test');
 		await pressInDialog('Save');
 		await until(() =>
 			ownerBrowser.calls.some((c) => c.method === 'PATCH' && c.path === adminApi.merchant(madeId) && c.status === 200),

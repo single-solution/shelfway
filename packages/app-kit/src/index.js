@@ -7,7 +7,7 @@ export { activityFilter } from './activity.js';
 export { verifyIdentityToken } from './identity.js';
 export { defineRoute } from './http/routes.js';
 export { ok, created, noContent, problem, paginate } from './http/results.js';
-export { toNextRoute } from './http/next.js';
+export { createProductApiRoute, toNextRoute } from './http/next.js';
 export { createLogger } from '@shelfway/net';
 export { createMongoStore } from './stores/mongo.js';
 export { createMemoryStore } from './stores/memory.js';

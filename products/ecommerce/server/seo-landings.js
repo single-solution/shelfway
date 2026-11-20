@@ -20,7 +20,7 @@
  */
 import { createId } from '@shelfway/contracts';
 import { created, defineRoute, problem } from '@shelfway/app-kit';
-import { NO_KEYS, attributesOf, brandsOf, categoriesOf, findBySlugHistory } from '../adapters/catalog-store.js';
+import { NO_KEYS, attributesOf, brandsOf, categoriesOf, findBySlugHistory } from './adapters/catalog-store.js';
 import { checkLandingAiRequest, landingPrompt, readSuggestions } from '../core/catalog-ai.js';
 import { siteAddress } from '../core/catalog-content.js';
 import {
@@ -85,7 +85,7 @@ import { hiddenFor } from './catalog-visibility.js';
 import { SEO_LIMITS, SERVER_LIMITS } from './service.js';
 import { defaultImageOf, newestOf, seoSettingsOf, storeNameOf, trailOf } from './seo-reads.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./catalog-media.js').Media} Media */

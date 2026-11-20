@@ -1,8 +1,7 @@
 /**
  * Reports (widget and server API), the dashboard's own routes (the tool signing secret; the kit serves the lists), the
  * data-rights hooks (export and delete one person's conversations, messages, attachments and leads) and the widget
- * settings the kit's widget config routes answer. Our admins see setup only: nothing here returns business data to a
- * dashboard session.
+ * settings the kit's widget config routes answer.
  * @module
  */
 import { problem } from '@shelfway/app-kit';
@@ -12,12 +11,12 @@ import { reportRange, summarize } from '../core/reports.js';
 import { dayStart } from '../core/time.js';
 import { aiLabelShown } from '../core/widgets.js';
 import { uploadRules } from './visitor.js';
-import { createStore } from '../adapters/store.js';
+import { createStore } from './adapters/store.js';
 import { deleteConversations } from './inbox.js';
 import { invalid, labelListsOf } from './service.js';
 
 /**
- * @param {import('../adapters/product.js').Product} product
+ * @param {import('./adapters/product.js').Product} product
  * @param {import('./service.js').Service} service
  */
 export const createAdmin = (product, service) => {

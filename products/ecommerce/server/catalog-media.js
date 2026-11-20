@@ -9,11 +9,11 @@
  * @module
  */
 
-import { mediaSignature } from '../adapters/crypto.js';
+import { mediaSignature } from './adapters/crypto.js';
 import { categoryLink, productLink, variantQueryOf, withQuery } from '../core/links.js';
 import { COLLECTIONS } from '../core/model.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('../core/links.js').LinkContext} LinkContext */
 

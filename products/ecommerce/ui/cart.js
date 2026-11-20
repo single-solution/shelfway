@@ -39,7 +39,7 @@ import {
 	settingsOf,
 	textsOf,
 } from './shop-common.js';
-import { codeOf } from './problem-code.js';
+import { codeOf } from '@shelfway/app-kit/widget';
 import { addressForm, guestForm, renderSuccess, returnUrlOf } from './shop-checkout.js';
 import { checkoutFieldsForm } from './shop-fields.js';
 import { payDetailsBox } from './shop-payment.js';

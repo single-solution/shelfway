@@ -33,10 +33,10 @@ import {
 } from '../core/redirects.js';
 import { shiftDay } from '../core/analytics.js';
 import { dayOf } from '../core/events.js';
-import { createRedirectStore } from '../adapters/redirects.js';
-import { createStore } from '../adapters/store.js';
+import { createRedirectStore } from './adapters/redirects.js';
+import { createStore } from './adapters/store.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('../core/redirects.js').Rule} Rule */
 /** @typedef {import('../core/redirects.js').RuleInput} RuleInput */
 /** @typedef {import('../core/redirects.js').SetProblem} SetProblem */

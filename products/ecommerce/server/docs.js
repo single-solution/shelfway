@@ -33,7 +33,7 @@ import { DEFAULT_FLOW } from '../core/flow.js';
 import { SEARCH_INDEX_DEFINITION } from '../core/search.js';
 import { SITE_ROUTES, WIDGET_ATTRIBUTES, createSnippets } from '../core/snippets.js';
 import { ADD_TO_CART_EVENT, WIDGET_ATTRIBUTE } from '../core/widgets.js';
-import { manifest } from '../adapters/product.js';
+import { manifest } from './adapters/product.js';
 import { ORDER_MESSAGE_VALUES, ORDER_TEMPLATES } from './order-messages.js';
 import { BUSINESS_VALUE } from './service.js';
 import { STAFF_ALERT_EVENTS, STAFF_ALERT_LINK, STAFF_ALERT_PHONE, STAFF_ALERT_VALUES } from './staff-alerts.js';

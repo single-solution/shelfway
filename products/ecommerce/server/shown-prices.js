@@ -4,7 +4,7 @@
  * the same price as the cart (`core/promotions.js` `shownPrice`).
  * @module
  */
-import { categoryPaths, loadOffers } from '../adapters/promotions-store.js';
+import { categoryPaths, loadOffers } from './adapters/promotions-store.js';
 import { dealRulesOf, holdsAllDay } from '../core/deals.js';
 import { listShown, shownPrice } from '../core/promotions.js';
 

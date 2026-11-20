@@ -38,7 +38,12 @@ describe('merchants (PLAN 0.2 Merchants, 0.5.9)', () => {
 		expect(h.mailer.sent.at(-1)).toMatchObject({
 			to: 'sam@shop.test',
 			template: 'merchant_setup',
-			data: { merchantName: 'Shop & Co' },
+			data: {
+				merchantName: 'Shop & Co',
+				contactName: 'Sam Seller',
+				email: 'sam@shop.test',
+				link: expect.any(String),
+			},
 		});
 		// optional fields may be left out; required ones may not; lengths and the country are checked
 		expect(
@@ -66,7 +71,10 @@ describe('merchants (PLAN 0.2 Merchants, 0.5.9)', () => {
 		const h = await boot({ mail: false });
 		const o = await h.owner();
 		const created = await o.client.post('/v1/admin/merchants', { name: 'Shop', ownerName: 'Sam', email: 'sam@shop.test' });
-		expect(created.json.setup).toMatchObject({ mailed: false, link: null });
+		expect(created.json.setup).toMatchObject({
+			mailed: false,
+			link: expect.stringMatching(/^https:\/\/portal\.test\/\?auth=setup#token=/),
+		});
 		const copied = await o.client.post(`/v1/admin/merchants/${created.json.merchant.merchantId}/setup-link`, {
 			copy: true,
 			password: PASSWORD,
@@ -75,6 +83,19 @@ describe('merchants (PLAN 0.2 Merchants, 0.5.9)', () => {
 		expect(await h.activity('merchant.setup_link_copied')).toHaveLength(1);
 		const token = decodeURIComponent(copied.json.link.split('#token=')[1]);
 		expect((await h.client().post('/v1/auth/set-password', { token, password: PASSWORD })).json.console).toBe('merchant');
+
+		// create accepting optional copy: true
+		const withCopy = await o.client.post('/v1/admin/merchants', {
+			name: 'Copy Org',
+			ownerName: 'Casey',
+			email: 'casey@copy.test',
+			copy: true,
+		});
+		expect(withCopy.status).toBe(201);
+		expect(withCopy.json.setup).toMatchObject({
+			mailed: false,
+			link: expect.stringMatching(/^https:\/\/portal\.test\/\?auth=setup#token=/),
+		});
 	});
 
 	it('Details: admins edit the fields, the login email only until the password is set', async () => {

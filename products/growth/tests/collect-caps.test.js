@@ -5,7 +5,7 @@
  * events still count in the totals), and a page path must be one of the site's own relative paths.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { fieldOf } from '../adapters/store.js';
+import { fieldOf } from '../server/adapters/store.js';
 import { MAX_DAY_EVENTS, MAX_DAY_KEYS } from '../core/events.js';
 import { ALL, dailyRows, setup } from './helpers.js';
 

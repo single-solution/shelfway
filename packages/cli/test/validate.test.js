@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { initApp } from '../src/init.js';
 import { formatValidation, layerOf, packageOf, resolveImport, serverEntries, validateProject } from '../src/validate/index.js';
@@ -64,6 +64,15 @@ describe('shelfway app validate', () => {
 			'docs/',
 		]);
 		expect(formatValidation(report)).toMatch(/✖ \d+ errors, 0 warnings/);
+	});
+
+	it('accepts adapters folder located under server/adapters', async () => {
+		const dir = await project();
+		await mkdir(path.join(dir, 'server/adapters'), { recursive: true });
+		await rename(path.join(dir, 'adapters/product.js'), path.join(dir, 'server/adapters/product.js'));
+		await rm(path.join(dir, 'adapters'), { recursive: true });
+		const report = await validateProject(dir);
+		expect(report.problems.filter((p) => p.rule === 'anatomy.missing' && p.file === 'adapters/')).toEqual([]);
 	});
 
 	it('checks the manifest with @shelfway/contracts, $refs included', async () => {
@@ -263,6 +272,14 @@ describe('shelfway app validate', () => {
 		expect(byRule('core.dom')).toEqual(['core/notes.js:6']);
 		expect(byRule('package.missing')).toEqual(['server/docs.js:2']);
 		expect(messages(report, 'imports.direction')[0]).toMatch(/adapters\/ must not import from server\/.*JSON data/);
+	});
+
+	it('allows app layer to import from ui layer', async () => {
+		const dir = await project();
+		await edit(dir, 'app/dashboard/page.js', (text) => `import { WIDGET_CSS } from '../../ui/styles.js';\n${text}`);
+		const report = await validateProject(dir);
+		const importProblems = report.problems.filter((p) => p.rule === 'imports.direction');
+		expect(importProblems).toEqual([]);
 	});
 
 	it('checks the package wiring', async () => {

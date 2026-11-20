@@ -609,7 +609,7 @@ export const themeOf = (settings) => {
 export const ADDRESS_REQUIRED_PARTS = Object.freeze([...PLACE_PARTS, 'country']);
 
 /** The parts every address needs while the merchant ticked none (each country's own format adds what it needs). */
-export const DEFAULT_ADDRESS_REQUIRED = Object.freeze(['line1', 'city']);
+const DEFAULT_ADDRESS_REQUIRED = Object.freeze(['line1', 'city']);
 
 /**
  * The address parts a website requires of an address: the ones the Portal lists (Region and format › Address rules), the

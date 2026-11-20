@@ -278,3 +278,53 @@ export const luhnValid = (digits) => {
 	}
 	return sum % 10 === 0;
 };
+
+// ------------------------------------------------------------------------------------------------- ticket snippets
+
+/**
+ * Standard developer ticket code snippets for Node.js and cURL (PLAN 0.4.5).
+ * Shows how the merchant's server requests an admin ticket from the product's /v1/tickets route.
+ * @param {{
+ *   base: string,
+ *   permissions: readonly string[],
+ *   user?: { id?: string, name?: string, email?: string },
+ *   origin?: string,
+ * }} options
+ * @returns {{
+ *   ticketNode: string,
+ *   ticketCurl: string,
+ *   ticketBody: { user: { id: string, name: string, email: string }, permissions: readonly string[], origin: string }
+ * }}
+ */
+export const ticketSnippets = ({
+	base,
+	permissions,
+	user = { id: 'usr_1', name: 'Sam Staff', email: 'sam@example.com' },
+	origin = 'https://admin.example.com',
+}) => {
+	const ticketBody = {
+		user: { id: user?.id ?? 'usr_1', name: user?.name ?? 'Sam Staff', email: user?.email ?? 'sam@example.com' },
+		permissions,
+		origin,
+	};
+	const ticketNode = [
+		"// your server, after checking the user's sign-in and role (Node.js 18+, also inside a Next.js route handler)",
+		`const response = await fetch('${base}/v1/tickets', {`,
+		"  method: 'POST',",
+		"  headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}`, 'content-type': 'application/json' },",
+		'  body: JSON.stringify({',
+		'    user: { id: user.id, name: user.name, email: user.email },',
+		`    permissions: ${JSON.stringify(permissions)},`,
+		`    origin: '${origin}', // the address of your admin page`,
+		'  }),',
+		'});',
+		'const { ticket, expiresAt } = await response.json(); // answer this to getTicket()',
+	].join('\n');
+	const ticketCurl = [
+		`curl -X POST '${base}/v1/tickets' \\`,
+		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN" \\',
+		"  -H 'Content-Type: application/json' \\",
+		`  -d '${JSON.stringify(ticketBody)}'`,
+	].join('\n');
+	return { ticketNode, ticketCurl, ticketBody };
+};

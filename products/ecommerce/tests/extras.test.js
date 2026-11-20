@@ -5,8 +5,8 @@
  */
 import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { givePoints, loyaltyAccount, placeOrder } from '../adapters/ledger.js';
-import { INDEXES } from '../adapters/product.js';
+import { givePoints, loyaltyAccount, placeOrder } from '../server/adapters/ledger.js';
+import { INDEXES } from '../server/adapters/product.js';
 import { createAlerts } from '../server/extras-alerts.js';
 import { createCards } from '../server/extras-cards.js';
 import { createExtras } from '../server/extras.js';

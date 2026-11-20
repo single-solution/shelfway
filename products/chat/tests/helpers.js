@@ -19,7 +19,7 @@ import {
 } from '@shelfway/app-kit/testing';
 import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import apiJson from '../schemas/api.json' with { type: 'json' };
-import { createProductInstance, manifest } from '../adapters/product.js';
+import { createProductInstance, manifest } from '../server/adapters/product.js';
 import { createRoutes } from '../server/routes.js';
 
 /** The API description every answer is checked against (tests that send their own requests check with it too). */

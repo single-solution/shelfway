@@ -18,9 +18,9 @@
  */
 import { createId } from '@shelfway/contracts';
 import { created, defineRoute, noContent, problem } from '@shelfway/app-kit';
-import { newOrderKey, orderKeyHash } from '../adapters/crypto.js';
-import { userIdsOf } from '../adapters/extras-store.js';
-import { createOrdersStore } from '../adapters/orders-store.js';
+import { newOrderKey, orderKeyHash } from './adapters/crypto.js';
+import { userIdsOf } from './adapters/extras-store.js';
+import { createOrdersStore } from './adapters/orders-store.js';
 import {
 	MAX_ALERTS,
 	SEND_BATCH,
@@ -37,7 +37,7 @@ import { COLLECTIONS, ID_PREFIX, NO_ID, isDuplicate } from '../core/model.js';
 import { phoneRulesOf } from './guests.js';
 import { VISITOR_LIMITS, VISITOR_WRITE_LIMITS } from './service.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./extras-cards.js').Cards} Cards */

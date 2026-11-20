@@ -22,7 +22,7 @@ import { query } from './admin-kit.js';
 import { fieldsCard, fieldsDialog } from './admin-field-values.js';
 import { card, detailHead, tagsDialog } from './admin-screen.js';
 import { serialForm, serialLines, shipForm, typedLine, unitsMissing, warrantyOf } from './admin-order-forms.js';
-import { codeOf } from './problem-code.js';
+import { codeOf } from '@shelfway/app-kit/widget';
 import { variantLabel } from './admin-taxonomy.js';
 
 /** @typedef {import('./admin-kit.js').Kit} Kit */

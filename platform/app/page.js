@@ -1,5 +1,5 @@
 import { platformSession } from './_lib/server.js';
-import { COMPANY_NAME, PRODUCT_BRAND } from './_components/brand.js';
+import { COMPANY_NAME, PRODUCT_BRAND } from '../src/texts/console.js';
 import { SiteHome } from './_components/SiteHome.js';
 
 export const dynamic = 'force-dynamic';

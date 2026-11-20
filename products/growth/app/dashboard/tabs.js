@@ -12,6 +12,7 @@ import {
 	DevelopersTab,
 	OverviewTab,
 	SettingsTab,
+	createAdminTab,
 	fill,
 	isFilled,
 	useLoad,
@@ -21,6 +22,9 @@ import manifest from '../../manifest.json' with { type: 'json' };
 import { searchParamsOf, tagsReady } from '../../core/config.js';
 import { createSnippets } from '../../core/snippets.js';
 import { BROWSER_EVENTS, SITE_EVENTS } from '../../core/widgets.js';
+import { mountAnalyticsDashboard } from '../../ui/analytics-dashboard.js';
+import { mountRedirects } from '../../ui/redirects.js';
+import { mountSeoChecklist } from '../../ui/seo-checklist.js';
 import { listExtras } from './lists.js';
 import { settingsNotice } from './setup.js';
 import { TEXTS } from './texts.js';
@@ -260,10 +264,33 @@ function GrowthDevelopers(props) {
 }
 
 /**
- * Growth's tabs in place of the shared ones; Features and Prices are the shared ones as they are. Growth keeps no provider
- * key, and its database and links are the Portal's, so its Developers tab has no connections part.
+ * Growth's tabs in place of the shared ones, plus operational admin tabs.
  */
 export const TABS = Object.freeze({
+	analytics: {
+		component: createAdminTab('analytics', mountAnalyticsDashboard, {
+			emptyTitle: 'Pick a website',
+			emptyDescription: 'Pick a website from the switcher to view visitor analytics and conversion metrics.',
+		}),
+		icon: /** @type {const} */ ('activity'),
+		kind: /** @type {const} */ ('activity'),
+	},
+	seo: {
+		component: createAdminTab('seo', mountSeoChecklist, {
+			emptyTitle: 'Pick a website',
+			emptyDescription: 'Pick a website from the switcher to inspect search engine optimization and IndexNow status.',
+		}),
+		icon: /** @type {const} */ ('search'),
+		kind: /** @type {const} */ ('activity'),
+	},
+	redirects: {
+		component: createAdminTab('redirects', mountRedirects, {
+			emptyTitle: 'Pick a website',
+			emptyDescription: 'Pick a website from the switcher to manage URL redirects and suggestions.',
+		}),
+		icon: /** @type {const} */ ('globe'),
+		kind: /** @type {const} */ ('activity'),
+	},
 	overview: GrowthOverview,
 	settings: GrowthSettings,
 	developers: GrowthDevelopers,

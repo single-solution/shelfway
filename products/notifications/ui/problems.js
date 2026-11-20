@@ -6,20 +6,10 @@
  * @module
  */
 
-import { formatText } from '@shelfway/app-kit/widget';
+import { codeOf, formatText } from '@shelfway/app-kit/widget';
 import { SKIP_REASONS } from '../core/gateway.js';
 
-/**
- * The problem code of an answer that is not ok: the last segment of its problem type, `offline` when nothing
- * answered, else ''.
- * @param {{ status: number, data: any }} answer an `adminCall` answer
- * @returns {string}
- */
-export const codeOf = (answer) => {
-	if (answer.status === 0) return 'offline';
-	const type = answer.data?.type;
-	return typeof type === 'string' ? type.slice(type.lastIndexOf('/') + 1) : '';
-};
+export { codeOf };
 
 /**
  * The website's words for a refused admin call.

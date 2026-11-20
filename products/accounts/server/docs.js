@@ -15,7 +15,7 @@ import guide from '../docs/guide.json' with { type: 'json' };
 import messages from '../schemas/messages.json' with { type: 'json' };
 import openapi from '../openapi.json' with { type: 'json' };
 import { createSnippets } from '../core/snippets.js';
-import { manifest } from '../adapters/product.js';
+import { manifest } from './adapters/product.js';
 
 /** The operations of the API reference (the same for every request). */
 const ROWS = docsOperations(openapi);

@@ -36,12 +36,12 @@ import {
 	signJwt,
 	totpUri,
 	verifyPassword,
-} from '../adapters/crypto.js';
-import { createStore } from '../adapters/store.js';
+} from './adapters/crypto.js';
+import { createStore } from './adapters/store.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('../core/profile.js').UserRecord} UserRecord */
-/** @typedef {import('../adapters/store.js').Store} Store */
+/** @typedef {import('./adapters/store.js').Store} Store */
 /**
  * @typedef {object} Site
  * @property {string} websiteId
@@ -451,7 +451,7 @@ export const createService = (product) => {
 
 	/**
 	 * Take a single-use record by its secret (`<id>.<secret>`), of one kind; null when unknown, used or expired.
-	 * @param {Site} s @param {unknown} value @param {import('../adapters/store.js').CodeRecord['kind']} kind
+	 * @param {Site} s @param {unknown} value @param {import('./adapters/store.js').CodeRecord['kind']} kind
 	 * @param {{ field?: 'hash' | 'linkHash', keep?: boolean }} [options] `keep`: do not use it up yet
 	 */
 	const takeSecret = async (s, value, kind, { field = 'hash', keep = false } = {}) => {
@@ -710,8 +710,8 @@ export const createService = (product) => {
 	 * Complete a role request (A5): its user set a password with its setup link, or already had one. When its role is
 	 * given at completion (the request's invite says so; for a request invited before that was kept, the website's
 	 * `giveRoleAt`), the user gets the role now, if it still exists and they do not hold it yet.
-	 * @param {Site} s @param {import('../adapters/store.js').RequestRecord} request @param {UserRecord} user
-	 * @returns {Promise<{ user: UserRecord, request: import('../adapters/store.js').RequestRecord }>}
+	 * @param {Site} s @param {import('./adapters/store.js').RequestRecord} request @param {UserRecord} user
+	 * @returns {Promise<{ user: UserRecord, request: import('./adapters/store.js').RequestRecord }>}
 	 */
 	const completeRequest = async (s, request, user) => {
 		const at = request.grant?.at ?? (await settings(s, 'role_requests')).giveRoleAt;

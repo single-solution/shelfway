@@ -4,6 +4,7 @@ import { MongoClient } from 'mongodb';
 import { describe, expect, it } from 'vitest';
 import { createEslintConfig } from '../eslint.js';
 import * as mongoSetup from '../mongo-setup.js';
+import { defineProductNextConfig } from '../next.js';
 import { defineUnitConfig } from '../vitest.js';
 
 const DIR = path.resolve('/repo/unit');
@@ -118,4 +119,33 @@ describe('mongo global setup', () => {
 			process.env.TEST_MONGODB_URI = outer;
 		}
 	}, 120_000);
+});
+
+describe('next config preset', () => {
+	it('defines standard next configuration with frame denial and rewrites', async () => {
+		const config = defineProductNextConfig({
+			here: import.meta.url,
+			extraRewrites: ['/custom/:path*'],
+		});
+		expect(config.poweredByHeader).toBe(false);
+		expect(config.reactStrictMode).toBe(true);
+		expect(config.serverExternalPackages).toEqual(['mongodb']);
+		expect(config.transpilePackages).toEqual(['@shelfway/ui']);
+
+		const headers = await config.headers?.();
+		expect(headers?.find((/** @type {{ source: string }} */ h) => h.source === '/dashboard/:path*')).toBeDefined();
+
+		const rewrites = await config.rewrites?.();
+		expect(rewrites).toEqual(
+			expect.arrayContaining([
+				{ source: '/.well-known/:path*', destination: '/api/.well-known/:path*' },
+				{ source: '/sso', destination: '/api/sso' },
+				{ source: '/widget.js', destination: '/api/widget.js' },
+				{ source: '/docs', destination: '/api/docs' },
+				{ source: '/openapi.json', destination: '/api/openapi.json' },
+				{ source: '/custom/:path*', destination: '/api/custom/:path*' },
+				{ source: '/v1/:path*', destination: '/api/v1/:path*' },
+			]),
+		);
+	});
 });

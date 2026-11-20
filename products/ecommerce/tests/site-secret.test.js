@@ -5,7 +5,7 @@
  */
 import { createMemoryStore } from '@shelfway/app-kit';
 import { describe, expect, it } from 'vitest';
-import { createSealer, createSiteSecrets } from '../adapters/site-secret.js';
+import { createSealer, createSiteSecrets } from '../server/adapters/site-secret.js';
 import { setup } from './helpers.js';
 
 const A = 'a'.repeat(32);

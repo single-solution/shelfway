@@ -119,6 +119,20 @@ describe('sso and sessions', () => {
 		const fresh = portal.addWebsite({ domain: 'new.example.org' });
 		expect((await dash(support, 'GET', `/v1/dashboard/websites/${fresh}/settings`)).status).toBe(503);
 	});
+
+	it('issues operational admin tickets for the website session', async () => {
+		const { session, dash, websiteId } = await setup();
+		const cookie = await session({ kind: 'merchant' });
+		const issued = await (
+			await dash(cookie, 'POST', `/v1/dashboard/websites/${websiteId}/tickets`, {
+				origin: 'http://localhost:3000',
+			})
+		).json();
+		expect(typeof issued.ticket).toBe('string');
+		expect(typeof issued.expiresAt).toBe('string');
+		const getIssued = await (await dash(cookie, 'GET', `/v1/dashboard/websites/${websiteId}/tickets`)).json();
+		expect(typeof getIssued.ticket).toBe('string');
+	});
 });
 
 describe('features and prices', () => {

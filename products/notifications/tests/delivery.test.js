@@ -5,7 +5,7 @@
  */
 import { createHmac } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createSealer, messageAadOf, resealWebsite } from '../adapters/crypto.js';
+import { createSealer, messageAadOf, resealWebsite } from '../server/adapters/crypto.js';
 import { checkValueNames, hideValues, hiddenNamesOf } from '../core/templates.js';
 import { ADMIN_ORIGIN, HOOK_URL, setup } from './helpers.js';
 

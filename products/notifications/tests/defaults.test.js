@@ -6,7 +6,7 @@
  */
 import { TEMPLATE_CHANNELS } from '@shelfway/contracts/templates';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { DEFAULTS_TTL_MS } from '../adapters/defaults.js';
+import { DEFAULTS_TTL_MS } from '../server/adapters/defaults.js';
 import { CHANNELS } from '../core/channels.js';
 import { checkDefaults, productOfKey, templateRows } from '../core/templates.js';
 import { SWITCHED_OFF } from '../server/sending.js';

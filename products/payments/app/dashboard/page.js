@@ -1,8 +1,8 @@
 'use client';
 /**
  * The product dashboard (PLAN 0.4.3): the shared dashboard of every product (`@shelfway/ui/dashboard`), opened from the
- * Portal (`/sso` → `/dashboard?websiteId=…`), with Payments' words and its own parts of the Overview, Connections and
- * Developers tabs (`tabs.js`). Setup only: it calls the kit's dashboard API and shows no business data.
+ * Portal (`/sso` -> `/dashboard?websiteId=...`), with Payments' own operational tabs (`tabs.js`): payments transactions,
+ * payment links, subscriptions, and ways to pay and developers sections.
  * @module
  */
 import { ProductDashboard } from '@shelfway/ui/dashboard';

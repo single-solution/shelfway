@@ -9,17 +9,18 @@
  * - Merchants reach only the websites of their launch; admins any website that has this product (not removed).
  * - Rights: features on/off → `portal_owner` or `portal_support`; prices, global defaults and Re-seal → `portal_owner`;
  *   settings, texts and connections → the merchant (settings of switched-on features only) and Portal admins. Launch JWT
- *   still says `owner`/`support`; SSO maps them so they never collide with Accounts staff "Owner". Configure sessions
- *   never mint tickets or edit live records (operate is staff widgets). The theme and Format are the Portal's.
+ *   still says `owner`/`support`; SSO maps them so they never collide with Accounts staff "Owner". Operational dashboard
+ *   sessions mint tickets scoped to the website to operate live widgets. The theme and Format are the Portal's.
  * - Writes are refused unless their Origin is the product's own address; dashboard responses are never framed.
  * @module
  */
-import { canonicalOrigin, isProtocolError, randomToken, sha256Hex, verifyLaunch } from '@shelfway/protocol';
+import { canonicalOrigin, isProtocolError, randomToken, sha256Hex, ticketOriginAllowed, verifyLaunch } from '@shelfway/protocol';
 import { isObject } from '@shelfway/contracts/util';
 import { missingWebsiteSettings } from '@shelfway/contracts/website-settings';
 import { currentFeatures } from './connection.js';
 import { defineRoute } from './http/routes.js';
 import { noContent, problem } from './http/results.js';
+import { KIT_PERMISSIONS } from './staff.js';
 import { effectiveStatus } from './status.js';
 
 /** @typedef {import('./http/handler.js').RequestContext} RequestContext */
@@ -493,6 +494,63 @@ export const createDashboard = (kit) => {
 			handler: async (ctx) => {
 				await kit.business.refresh(website(ctx));
 				return noContent();
+			},
+		}),
+		defineRoute({
+			method: 'POST',
+			path: `${W}/tickets`,
+			auth: 'dashboard',
+			handler: async (ctx) => {
+				const id = website(ctx);
+				const session = sessionOf(ctx);
+				const originHeader = ctx.headers.get('origin');
+				const defaultOrigin = kit.connection.connected()
+					? canonicalOrigin(new URL(kit.connection.active().baseUrl).origin)
+					: 'http://localhost:3000';
+				const requestedOrigin = isObject(ctx.body) && typeof ctx.body.origin === 'string' ? ctx.body.origin : originHeader;
+				let origin = requestedOrigin ? canonicalOrigin(requestedOrigin) : defaultOrigin;
+				if (!ticketOriginAllowed(origin)) origin = defaultOrigin;
+				const permissions = [...manifest.permissions.map((p) => p.key), ...KIT_PERMISSIONS.map((p) => p.key)];
+				const user = {
+					id: session.subject,
+					name: session.name || 'Admin',
+					email: session.subject.includes('@') ? session.subject : `${session.subject}@shelfway.internal`,
+				};
+				return await kit.tickets.issue({
+					websiteId: id,
+					user,
+					origin: String(origin),
+					permissions,
+					tokenId: `dash-${id}-${now()}`,
+				});
+			},
+		}),
+		defineRoute({
+			method: 'GET',
+			path: `${W}/tickets`,
+			auth: 'dashboard',
+			handler: async (ctx) => {
+				const id = website(ctx);
+				const session = sessionOf(ctx);
+				const originHeader = ctx.headers.get('origin');
+				const defaultOrigin = kit.connection.connected()
+					? canonicalOrigin(new URL(kit.connection.active().baseUrl).origin)
+					: 'http://localhost:3000';
+				let origin = originHeader ? canonicalOrigin(originHeader) : defaultOrigin;
+				if (!ticketOriginAllowed(origin)) origin = defaultOrigin;
+				const permissions = [...manifest.permissions.map((p) => p.key), ...KIT_PERMISSIONS.map((p) => p.key)];
+				const user = {
+					id: session.subject,
+					name: session.name || 'Admin',
+					email: session.subject.includes('@') ? session.subject : `${session.subject}@shelfway.internal`,
+				};
+				return await kit.tickets.issue({
+					websiteId: id,
+					user,
+					origin: String(origin),
+					permissions,
+					tokenId: `dash-${id}-${now()}`,
+				});
 			},
 		}),
 		defineRoute({

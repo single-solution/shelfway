@@ -5,7 +5,7 @@
  */
 import { PRODUCT_DATABASE_OPTIONS } from '@shelfway/app-kit';
 import { afterAll, expect, it, vi } from 'vitest';
-import { createProductInstance } from '../adapters/product.js';
+import { createProductInstance } from '../server/adapters/product.js';
 import { createRoutes } from '../server/routes.js';
 
 /** Clients the product opened, with the options it gave them. */

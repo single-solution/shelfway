@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import guide from '../docs/guide.json' with { type: 'json' };
 import nextConfig from '../next.config.js';
 import openapi from '../openapi.json' with { type: 'json' };
-import { manifest } from '../adapters/product.js';
+import { manifest } from '../server/adapters/product.js';
 import { BASE, setup } from './helpers.js';
 
 /** @param {Awaited<ReturnType<typeof setup>>} env */

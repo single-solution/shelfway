@@ -18,7 +18,9 @@ export const MAIL_TEXTS = Object.freeze({
 	merchant_setup: {
 		subject: (d) => `Your ${d.merchantName ?? 'merchant'} account on ${d.brand}`,
 		lines: (d) => [
+			`Hello ${d.contactName || d.merchantName || 'there'},`,
 			`An account for ${d.merchantName ?? 'your business'} was created for you on ${d.brand}.`,
+			...(d.email ? [`Your login email is: ${d.email}`] : []),
 			'Choose a password to sign in.',
 		],
 		action: 'Set your password',

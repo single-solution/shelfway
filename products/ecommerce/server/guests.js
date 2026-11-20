@@ -10,13 +10,13 @@
  * @module
  */
 import { addressRequiredOf } from '@shelfway/contracts/website-settings';
-import { mergeLoyalty } from '../adapters/ledger.js';
-import { createOrdersStore } from '../adapters/orders-store.js';
+import { mergeLoyalty } from './adapters/ledger.js';
+import { createOrdersStore } from './adapters/orders-store.js';
 import { phoneRules, savedAddresses } from '../core/guests.js';
 import { COLLECTIONS } from '../core/model.js';
 import { MAX_STAFF_NOTE } from '../core/orders.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./service.js').Shopper} Shopper */
 

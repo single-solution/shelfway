@@ -6,7 +6,7 @@
 	"private": true,
 	"license": "UNLICENSED",
 	"exports": {
-		"./product": "./adapters/product.js",
+		"./product": "./server/adapters/product.js",
 		"./routes": "./server/routes.js",
 		"./package.json": "./package.json"
 	},

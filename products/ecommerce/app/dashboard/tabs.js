@@ -12,6 +12,7 @@ import {
 	DefaultsTab,
 	DevelopersTab,
 	OverviewTab,
+	createAdminTab,
 	fill,
 	settingSectionOf,
 	useLoad,
@@ -25,6 +26,10 @@ import { SITE_ROUTES, createSnippets } from '../../core/snippets.js';
 import { ConnectionForm, formOf } from './forms.js';
 import { SettingsTab, settingsNotice } from './settings.js';
 import { TEXTS } from './texts.js';
+import { mountCatalogAdmin } from '../../ui/catalog-admin.js';
+import { mountOrdersAdmin } from '../../ui/orders-admin.js';
+import { mountCustomersAdmin } from '../../ui/customers-admin.js';
+import { mountPromotionsAdmin } from '../../ui/promotions-admin.js';
 
 /** @param {unknown} value */
 const asList = (value) => (Array.isArray(value) ? value : []);
@@ -150,7 +155,7 @@ const settingOf = (answer, feature, key) => {
 };
 
 /**
- * Ecommerce's part of the Overview (PLAN 0.6 "Overviews talk"), judged from setup only (no business data): with
+ * Ecommerce's part of the Overview (PLAN 0.6 "Overviews talk"): with
  * checkout, Payments (recommended) and Notifications (optional, when no feature needs it), payment methods paid by hand
  * with no instructions or account details for shoppers; with the catalog, the Atlas Search index while the shop or Chat searches with Atlas;
  * with Staff alerts, someone to alert and the admin page they
@@ -423,6 +428,38 @@ const Defaults = (props) => <DefaultsTab {...props} notice={settingsNotice} />;
 
 /** Ecommerce's tabs in place of the standard ones (Features and Prices are the standard tabs). */
 export const TABS = Object.freeze({
+	products: {
+		component: createAdminTab('products', mountCatalogAdmin, {
+			emptyTitle: 'Pick a website to manage products',
+			emptyDescription: 'Select a website to view and manage its catalog, categories, and inventory.',
+		}),
+		icon: /** @type {const} */ ('box'),
+		kind: /** @type {const} */ ('activity'),
+	},
+	orders: {
+		component: createAdminTab('orders', mountOrdersAdmin, {
+			emptyTitle: 'Pick a website to manage orders',
+			emptyDescription: 'Select a website to view orders, handle fulfillment, and process returns.',
+		}),
+		icon: /** @type {const} */ ('receipt'),
+		kind: /** @type {const} */ ('activity'),
+	},
+	customers: {
+		component: createAdminTab('customers', mountCustomersAdmin, {
+			emptyTitle: 'Pick a website to manage customers',
+			emptyDescription: 'Select a website to view shoppers, addresses, and customer reviews.',
+		}),
+		icon: /** @type {const} */ ('users'),
+		kind: /** @type {const} */ ('activity'),
+	},
+	offers: {
+		component: createAdminTab('offers', mountPromotionsAdmin, {
+			emptyTitle: 'Pick a website to manage offers',
+			emptyDescription: 'Select a website to create coupons, deals, bundles, and loyalty rewards.',
+		}),
+		icon: /** @type {const} */ ('coins'),
+		kind: /** @type {const} */ ('activity'),
+	},
 	overview: Overview,
 	settings: SettingsTab,
 	developers: Developers,

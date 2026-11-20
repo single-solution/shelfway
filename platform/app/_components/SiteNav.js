@@ -4,12 +4,11 @@ import { useEffect, useState } from 'react';
 import NextLink from 'next/link.js';
 import { usePathname } from 'next/navigation.js';
 import { Button, ButtonLink } from '@shelfway/ui';
+import { COMPANY_NAME, PRODUCT_BRAND } from '../../src/texts/console.js';
 import { SignInModal } from './SignInModal.js';
 import { apiFetch } from '../../src/console/client.js';
 
 const Link = /** @type {any} */ (NextLink);
-
-import { COMPANY_NAME, PRODUCT_BRAND } from './brand.js';
 
 export { COMPANY_NAME, PRODUCT_BRAND };
 

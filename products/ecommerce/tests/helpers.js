@@ -22,7 +22,7 @@ import {
 } from '@shelfway/app-kit/testing';
 import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import apiJson from '../schemas/api.json' with { type: 'json' };
-import { createProductInstance, manifest } from '../adapters/product.js';
+import { createProductInstance, manifest } from '../server/adapters/product.js';
 import { createRoutes } from '../server/routes.js';
 import { summarize } from '../core/catalog.js';
 import { EMPTY_SEO } from '../core/catalog-content.js';

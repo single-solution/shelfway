@@ -17,7 +17,7 @@ import { CHANNELS, CHANNEL_FEATURES, checkRecipient, isChannelActive, normalizeP
 import { gatewayRepliesOf, isOptOut, repliesOf } from '../core/inbound.js';
 import { isOwnLink } from '../core/links.js';
 import { logFilters } from '../core/log.js';
-import { verifyMeta, verifyTwilio } from '../adapters/signatures.js';
+import { verifyMeta, verifyTwilio } from './adapters/signatures.js';
 import {
 	checkDefaults,
 	checkTemplate,
@@ -31,15 +31,15 @@ import {
 import { MAX_DELAY_DAYS, MAX_TEMPLATES, MAX_VISITOR_SUBSCRIPTIONS } from '../core/limits.js';
 import { checkSendAt } from '../core/timing.js';
 import { checkForwardedEvent } from '../core/webhooks.js';
-import { strings } from '../adapters/product.js';
-import { createStore } from '../adapters/store.js';
-import { checkSubscription } from '../adapters/webpush.js';
+import { strings } from './adapters/product.js';
+import { createStore } from './adapters/store.js';
+import { checkSubscription } from './adapters/webpush.js';
 import { renderDocs } from './docs.js';
 import { PAGE_HEADERS, renderUnsubscribePage } from './pages.js';
 import { createSending, messageView } from './sending.js';
 import { WIDGET_SCRIPT } from './widget-script.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('../core/channels.js').Channel} Channel */
 
 /** Rate limits of the send routes (code constants protecting our hosting). */

@@ -89,7 +89,7 @@
 			"description": "Who your store is, read from the website's settings in the Portal (set once for every product): its name and tagline, logo, dark logo, icon, favicon and dark favicon, contact email, phones (the main one and more, each with a name) and WhatsApp, address, opening hours with dated exceptions and social links, shown by the shop read GET /v1/shop/store and made into your business.json (GET /v1/shop/store/business-json) for a headless website to serve.",
 			"dependsOn": [],
 			"settings": {
-				"$ref": "schemas/store_details.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -332,7 +332,7 @@
 			"description": "Change prices, stock, status, category, brand, tags, item type, compare-at price or any field of many products at once, and move many orders at once.",
 			"dependsOn": ["catalog"],
 			"settings": {
-				"$ref": "schemas/bulk_actions.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -341,7 +341,7 @@
 			"description": "Sales by any grouping (product, category, brand, tags, place, zone, courier, payment method, period or any field), a summary by day, week or month, stock age, return rate and margin.",
 			"dependsOn": ["checkout"],
 			"settings": {
-				"$ref": "schemas/reports.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -350,7 +350,7 @@
 			"description": "Order, return, review, catalog and stock events for your server: listed by the API and sent to your webhooks through Notifications.",
 			"dependsOn": ["catalog"],
 			"settings": {
-				"$ref": "schemas/events.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -420,7 +420,7 @@
 			"dependsOn": [],
 			"recommendFor": ["moving.yes"],
 			"settings": {
-				"$ref": "schemas/import.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		}
 	],

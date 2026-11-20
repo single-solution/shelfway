@@ -12,9 +12,9 @@
 import { aiPrompt, glossaryPrompt, readSuggestions } from '../core/catalog-ai.js';
 import { specsOf } from '../core/catalog-views.js';
 import { COLLECTIONS } from '../core/model.js';
-import { NO_KEYS, attributesOf } from '../adapters/catalog-store.js';
+import { NO_KEYS, attributesOf } from './adapters/catalog-store.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('../core/model.js').ProductRecord} ProductRecord */

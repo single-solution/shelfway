@@ -21,7 +21,7 @@ import {
 	productsByIds,
 	rewriteProduct,
 	stockedUnits,
-} from '../adapters/catalog-store.js';
+} from './adapters/catalog-store.js';
 import { LIMITS, changedPrice, changedStock, checkPriceChange, checkProduct, productType, summarize } from '../core/catalog.js';
 import { checkTags } from '../core/customer-segments.js';
 import { fieldApplies } from '../core/fields.js';
@@ -52,12 +52,12 @@ import { nextPreviousSlugs } from '../core/links.js';
 import { COLLECTIONS, ID_PREFIX } from '../core/model.js';
 import { orderFilters, orderQuery } from '../core/orders.js';
 import { phoneSearchOf } from '../core/guests.js';
-import { createFulfillmentStore } from '../adapters/fulfillment-store.js';
+import { createFulfillmentStore } from './adapters/fulfillment-store.js';
 import { refuse } from './catalog-common.js';
 import { phoneRulesOf } from './guests.js';
 import { SERVER_LIMITS, bodyOf } from './service.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./catalog-common.js').CatalogCommon} CatalogCommon */

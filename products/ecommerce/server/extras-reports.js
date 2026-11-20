@@ -11,8 +11,8 @@
  */
 import { defineRoute } from '@shelfway/app-kit';
 import { toCsv } from '@shelfway/contracts/csv';
-import { measuredScope } from '../adapters/catalog-store.js';
-import { attributesOf, productTypes } from '../adapters/catalog-store.js';
+import { measuredScope } from './adapters/catalog-store.js';
+import { attributesOf, productTypes } from './adapters/catalog-store.js';
 import { valueLabel } from '../core/catalog.js';
 import { COLLECTIONS } from '../core/model.js';
 import { statusLabel } from '../core/orders.js';
@@ -54,7 +54,7 @@ const MAX_REGROUPED = 20_000;
 /** The kinds of fields a sales report groups by (E12). */
 const GROUPED_FIELDS = Object.freeze(['product', 'variant', 'order']);
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */

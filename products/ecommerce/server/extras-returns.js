@@ -22,10 +22,10 @@
 import { randomBytes } from 'node:crypto';
 import { createId } from '@shelfway/contracts';
 import { allows as staffAllows, countHandlers, created, defineRoute, paginate, problem } from '@shelfway/app-kit';
-import { categoriesOf } from '../adapters/catalog-store.js';
-import { applyTransition, isPointsChanged, restockClaimLines } from '../adapters/ledger.js';
-import { userIdsOf } from '../adapters/extras-store.js';
-import { insertOffers } from '../adapters/promotions-store.js';
+import { categoriesOf } from './adapters/catalog-store.js';
+import { applyTransition, isPointsChanged, restockClaimLines } from './adapters/ledger.js';
+import { userIdsOf } from './adapters/extras-store.js';
+import { insertOffers } from './adapters/promotions-store.js';
 import { checkCouponInput, drawCode } from '../core/coupons.js';
 import { labelIn } from '../core/named-lists.js';
 import { lineageOf } from '../core/catalog-taxonomy.js';
@@ -75,7 +75,7 @@ export const RETURN_MESSAGE_VALUES = Object.freeze(
 	/** @type {const} */ (['number', 'claim', 'kind', 'status', 'reason', 'amount', 'credit', 'creditCode', 'name']),
 );
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */

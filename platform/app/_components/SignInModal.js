@@ -41,6 +41,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = '/da
 	const [name, setName] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
+	const [confirmPassword, setConfirmPassword] = useState('');
 	const [busy, setBusy] = useState(false);
 	const busyRef = useRef(false);
 	const [problem, setProblem] = useState(/** @type {any | null} */ (null));
@@ -82,6 +83,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = '/da
 			setName('');
 			setEmail('');
 			setPassword('');
+			setConfirmPassword('');
 			setProblem(null);
 			setErrors({});
 			setChallenge(null);
@@ -371,6 +373,9 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = '/da
 		} else if (password.length < PASSWORD_MIN) {
 			localErrors.password = `Password must be at least ${PASSWORD_MIN} characters.`;
 		}
+		if (!confirmPassword || (password && password !== confirmPassword)) {
+			localErrors.confirmPassword = 'Passwords do not match.';
+		}
 		if (!linkToken) {
 			localErrors.password = 'Setup token is missing or invalid.';
 		}
@@ -593,6 +598,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = '/da
 								onChange={(e) => {
 									setPassword(e.currentTarget.value);
 									if (errors.password) setErrors((prev) => ({ ...prev, password: '' }));
+									if (errors.confirmPassword) setErrors((prev) => ({ ...prev, confirmPassword: '' }));
 								}}
 								error={errors.password}
 								autoFocus
@@ -648,6 +654,7 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = '/da
 								onChange={(e) => {
 									setPassword(e.currentTarget.value);
 									if (errors.password) setErrors((prev) => ({ ...prev, password: '' }));
+									if (errors.confirmPassword) setErrors((prev) => ({ ...prev, confirmPassword: '' }));
 								}}
 								error={errors.password}
 								autoFocus={!setupInfo?.needsName}
@@ -655,7 +662,23 @@ export function SignInModal({ open, onClose, brandName = 'Shelfway', next = '/da
 								hideRequiredMark
 								className="h-10 text-sm"
 							/>
-							<FormError problem={problem} fields={['name', 'password']} />
+							<Input
+								label="Confirm password"
+								type="password"
+								name="confirmPassword"
+								autoComplete="new-password"
+								placeholder="Re-enter your password"
+								value={confirmPassword}
+								onChange={(e) => {
+									setConfirmPassword(e.currentTarget.value);
+									if (errors.confirmPassword) setErrors((prev) => ({ ...prev, confirmPassword: '' }));
+								}}
+								error={errors.confirmPassword}
+								required
+								hideRequiredMark
+								className="h-10 text-sm"
+							/>
+							<FormError problem={problem} fields={['name', 'password', 'confirmPassword']} />
 							<Button type="submit" block loading={busy} variant="primary" size="md" className="h-10 font-semibold">
 								Activate account
 							</Button>

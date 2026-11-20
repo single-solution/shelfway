@@ -25,7 +25,7 @@ import {
 	textsOf,
 	warrantyText,
 } from './shop-common.js';
-import { codeOf } from './problem-code.js';
+import { codeOf } from '@shelfway/app-kit/widget';
 import { returnUrlOf } from './shop-checkout.js';
 import { renderClaimForm, renderClaims } from './shop-returns.js';
 import { transferParts } from './shop-payment.js';

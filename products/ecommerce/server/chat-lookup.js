@@ -12,11 +12,11 @@
  */
 import { addressFormat } from '@shelfway/contracts/address';
 import { defineRoute, problem } from '@shelfway/app-kit';
-import { categoriesOf, locationsOf, productTypes } from '../adapters/catalog-store.js';
+import { categoriesOf, locationsOf, productTypes } from './adapters/catalog-store.js';
 import { ADDRESS_LIMITS } from '../core/address.js';
-import { ownerOrders } from '../adapters/fulfillment-store.js';
-import { loyaltyAccount } from '../adapters/ledger.js';
-import { dealsLiveNow, loadOffers } from '../adapters/promotions-store.js';
+import { ownerOrders } from './adapters/fulfillment-store.js';
+import { loyaltyAccount } from './adapters/ledger.js';
+import { dealsLiveNow, loadOffers } from './adapters/promotions-store.js';
 import { htmlToText } from '../core/catalog-content.js';
 import { CART_MAX_QUANTITY, TOP_FIELD } from '../core/limits.js';
 import { lineageOf } from '../core/catalog-taxonomy.js';
@@ -59,7 +59,7 @@ import { SERVER_LIMITS, invalid } from './service.js';
 import { activeProduct, brandNames } from './seo-reads.js';
 import { createShownPrices } from './shown-prices.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./catalog-media.js').Media} Media */

@@ -562,8 +562,11 @@ export const createRequestHandler = (kit, routes, options = {}) => {
 				}
 			} else if (r.auth === 'ticket') {
 				const ticket = bearerOf(request.headers.get('authorization')) ?? '';
+				const ticketOrigin =
+					rawOrigin ??
+					(request.headers.get('referer') ? new URL(/** @type {string} */ (request.headers.get('referer'))).origin : null);
 				try {
-					ctx.ticket = await kit.tickets.verify({ ticket, origin: rawOrigin, isRevoked: kit.status.isRevoked });
+					ctx.ticket = await kit.tickets.verify({ ticket, origin: ticketOrigin, isRevoked: kit.status.isRevoked });
 				} catch (error) {
 					if (!isProtocolError(error)) throw error;
 					return fail(problem('invalid_token', 'The token is not valid.'));

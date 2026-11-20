@@ -9,9 +9,12 @@
  * @module
  */
 import { Button, Card, CodeBlock, EmptyState, Row, RowListSkeleton, Section, Stat } from '@shelfway/ui';
-import { DevelopersTab, OverviewTab, SettingsTab, useLoad, useSetupSteps } from '@shelfway/ui/dashboard';
+import { DevelopersTab, OverviewTab, SettingsTab, createAdminTab, useLoad, useSetupSteps } from '@shelfway/ui/dashboard';
 import manifest from '../../manifest.json' with { type: 'json' };
 import { createSnippets } from '../../core/snippets.js';
+import { mountDeliveryLog } from '../../ui/delivery-log.js';
+import { mountSendMessage } from '../../ui/send-message.js';
+import { mountTemplateEditor } from '../../ui/template-editor.js';
 import { PROVIDER_FORMS, ProviderForm } from './providers.js';
 import { TemplatesSection } from './templates.js';
 import { TEXTS } from './texts.js';
@@ -249,8 +252,32 @@ function NotificationsDevelopers(props) {
 	);
 }
 
-/** Notifications' tabs in place of the standard ones (the others are the shared tabs as they are). */
+/** Notifications' tabs in place of the standard ones, plus operational admin tabs. */
 export const TABS = Object.freeze({
+	delivery: {
+		component: createAdminTab('delivery', mountDeliveryLog, {
+			emptyTitle: 'Pick a website',
+			emptyDescription: 'Pick a website from the switcher to view delivery logs and notification status.',
+		}),
+		icon: /** @type {const} */ ('activity'),
+		kind: /** @type {const} */ ('activity'),
+	},
+	send: {
+		component: createAdminTab('send', mountSendMessage, {
+			emptyTitle: 'Pick a website',
+			emptyDescription: 'Pick a website from the switcher to send test notifications or one-off messages.',
+		}),
+		icon: /** @type {const} */ ('bell'),
+		kind: /** @type {const} */ ('activity'),
+	},
+	templates: {
+		component: createAdminTab('templates', mountTemplateEditor, {
+			emptyTitle: 'Pick a website',
+			emptyDescription: 'Pick a website from the switcher to edit email, SMS, and push notification templates.',
+		}),
+		icon: /** @type {const} */ ('code'),
+		kind: /** @type {const} */ ('settings'),
+	},
 	overview: NotificationsOverview,
 	settings: NotificationsSettings,
 	developers: NotificationsDevelopers,

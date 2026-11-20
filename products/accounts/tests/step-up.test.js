@@ -5,7 +5,7 @@
  * current passwords count toward the lock like wrong sign-in passwords.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { totpCode } from '../adapters/crypto.js';
+import { totpCode } from '../server/adapters/crypto.js';
 import { ALL, setup } from './helpers.js';
 
 /** @type {Awaited<ReturnType<typeof setup>>} */

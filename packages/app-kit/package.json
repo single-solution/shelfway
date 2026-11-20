@@ -11,6 +11,7 @@
 		"./api": "./src/api.js",
 		"./widget": "./src/widget.js",
 		"./headers": "./src/http/headers.js",
+		"./next": "./src/next.js",
 		"./package.json": "./package.json"
 	},
 	"files": [
@@ -47,6 +48,9 @@
 			"./headers": {
 				"types": "./types/src/http/headers.d.ts",
 				"default": "./src/http/headers.js"
+			},
+			"./next": {
+				"default": "./src/next.js"
 			},
 			"./package.json": "./package.json"
 		}

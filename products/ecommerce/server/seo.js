@@ -9,8 +9,8 @@
  * @module
  */
 import { defineRoute, problem } from '@shelfway/app-kit';
-import { attributesOf, findBySlugHistory, productTypes } from '../adapters/catalog-store.js';
-import { mediaSignatureOk } from '../adapters/crypto.js';
+import { attributesOf, findBySlugHistory, productTypes } from './adapters/catalog-store.js';
+import { mediaSignatureOk } from './adapters/crypto.js';
 import { valueLabel } from '../core/catalog.js';
 import { toDecimal } from '@shelfway/contracts/format';
 import { htmlToText, siteAddress } from '../core/catalog-content.js';
@@ -80,7 +80,7 @@ import {
 	trailOf,
 } from './seo-reads.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('../core/model.js').ProductRecord} ProductRecord */

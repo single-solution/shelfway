@@ -9,6 +9,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Button } from './Button.js';
 import { Input, OtpInput, TextArea } from './fields.js';
+import { Form } from './Form.js';
 import { Dialog } from './overlay.js';
 
 /** @typedef {import('react').ReactNode} ReactNode */
@@ -307,14 +308,7 @@ export function TypedConfirmDialog({
 					</Button>
 				</>
 			}>
-			<form
-				id={formId}
-				noValidate
-				className="space-y-4"
-				onSubmit={(event) => {
-					event.preventDefault();
-					submit();
-				}}>
+			<Form id={formId} busy={busy} onSubmit={submit}>
 				{children}
 				{reason ? (
 					<TextArea
@@ -344,7 +338,7 @@ export function TypedConfirmDialog({
 						{error}
 					</p>
 				) : null}
-			</form>
+			</Form>
 		</Dialog>
 	);
 }

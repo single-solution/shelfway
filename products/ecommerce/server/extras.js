@@ -14,7 +14,7 @@ import { createReturns } from './extras-returns.js';
 import { createReviews } from './extras-reviews.js';
 import { createShopperLists } from './extras-shopper.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./routes.js').Person} Person */

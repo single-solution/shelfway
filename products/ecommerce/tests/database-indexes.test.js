@@ -6,7 +6,7 @@
  */
 import { MongoClient } from 'mongodb';
 import { afterAll, describe, expect, it } from 'vitest';
-import { INDEXES } from '../adapters/product.js';
+import { INDEXES } from '../server/adapters/product.js';
 import { ALL, setup } from './helpers.js';
 
 /** The shop's collections in the merchant database. */

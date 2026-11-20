@@ -4,7 +4,7 @@
  */
 import { createHash } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { totpCode } from '../adapters/crypto.js';
+import { totpCode } from '../server/adapters/crypto.js';
 import { ADDRESSES_PER_USER, CODE_ATTEMPTS, CODE_COOLDOWN_SECONDS, CODE_MINUTES, CODES_PER_HOUR } from '../core/limits.js';
 import { ALL, setup } from './helpers.js';
 

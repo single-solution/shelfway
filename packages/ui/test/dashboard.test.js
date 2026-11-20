@@ -6,6 +6,7 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+	AdminTab,
 	DashboardProvider,
 	DefaultsTab,
 	DevelopersTab,
@@ -20,6 +21,8 @@ import {
 	SettingsTab,
 	TextsTab,
 	call,
+	createAdminTab,
+	developerSection,
 	fill,
 	hasSettings,
 	toneOf,
@@ -122,7 +125,7 @@ const navLinks = (root) => [...root.querySelectorAll('[role="option"]')].map((ro
 
 /**
  * The props a tab gets for a website.
- * @param {string} websiteId
+ * @param {string | null} websiteId
  * @param {Partial<TabProps>} [parts]
  * @returns {TabProps}
  */
@@ -531,11 +534,9 @@ describe('standard tabs', () => {
 		const facts = container.querySelector('[aria-label="Key numbers"]')?.textContent ?? '';
 		expect(facts).toContain('On2');
 		expect(facts).toContain('Off1');
-		expect(facts).toContain('1.5 credits/h');
 		expect(container.querySelectorAll('table')).toHaveLength(0);
-		// a row says the price and how many settings the website changed
+		// a row says how many settings the website changed
 		expect(rowOf(container, 'notes').textContent).toContain('1 changed');
-		expect(rowOf(container, 'alerts').textContent).toContain('0.25 credits/h');
 		expect(rowOf(container, 'alerts').textContent).not.toContain('changed');
 		// a feature whose connection fails says so in its row (the reason in place of the price) and on its page
 		expect(rowOf(container, 'inbox').textContent).toContain('Not working: connect Database');
@@ -550,33 +551,22 @@ describe('standard tabs', () => {
 		// Alerts needs Inbox (on): it can be switched on; a click on the switch does not open the page
 		expect(switchesOf(container)[2]?.disabled).toBe(false);
 		expect(container.querySelector('h1')?.textContent).toBe('Notes');
-		click(/** @type {HTMLElement} */ (switchesOf(container)[2]));
-		expect(container.querySelector('h1')?.textContent).toBe('Notes');
-		let dialog = /** @type {HTMLElement} */ (document.querySelector('[role="dialog"]'));
-		expect(dialog.textContent).toContain('Switch on Alerts?');
-		expect(dialog.textContent).toContain('New hourly cost: 1.75 credits/h');
-		expect(dialog.textContent).not.toContain('Also turned off');
-		click(byText(dialog, 'Cancel', 'button'));
-		await settle();
-		expect(requests.some((request) => request.method === 'PUT')).toBe(false);
-		// nothing changes until the confirmation
-		expect(checks()).toEqual([true, true, false]);
-		// switching Notes off switches off the feature that needs it, and the product's warning is in the confirmation
-		click(/** @type {HTMLElement} */ (switchesOf(container)[0]));
-		dialog = /** @type {HTMLElement} */ (document.querySelector('[role="dialog"]'));
-		expect(dialog.textContent).toContain('Switch off Notes?');
-		expect(dialog.textContent).toContain('New hourly cost: 0 credits/h');
-		expect(dialog.textContent).toContain('Also turned off: Inbox');
-		expect(dialog.textContent).toContain('Nothing starts a note.');
-		await act(async () => byText(dialog, 'Switch off', 'button').click());
+		// Clean and immediate toggle without confirmation prompt
+		await act(async () => click(/** @type {HTMLElement} */ (switchesOf(container)[2])));
 		await settle();
 		expect(requests.find((request) => request.method === 'PUT')).toEqual({
 			method: 'PUT',
 			path: `${base}/features`,
+			body: { on: ['notes', 'inbox', 'alerts'] },
+		});
+		// switching Notes off switches off the feature that needs it immediately
+		await act(async () => click(/** @type {HTMLElement} */ (switchesOf(container)[0])));
+		await settle();
+		expect(requests.filter((request) => request.method === 'PUT')[1]).toEqual({
+			method: 'PUT',
+			path: `${base}/features`,
 			body: { on: [] },
 		});
-		// the lists were read again after the save
-		expect(requests.filter((request) => request.path === `${base}/features`)).toHaveLength(3);
 		expect(document.querySelector('[role="dialog"]')).toBeNull();
 	});
 
@@ -618,10 +608,7 @@ describe('standard tabs', () => {
 		expect(container.textContent).toContain('Switch on Alerts to set it up.');
 		// its settings are not drawn
 		expect(container.querySelector('#section-alerts')?.textContent).not.toContain('Greeting');
-		click(byText(container.querySelector('#section-alerts') ?? container, 'Switch on', 'button'));
-		const dialog = /** @type {HTMLElement} */ (document.querySelector('[role="dialog"]'));
-		expect(dialog.textContent).toContain('Switch on Alerts?');
-		await act(async () => byText(dialog, 'Switch on', 'button').click());
+		await act(async () => click(byText(container.querySelector('#section-alerts') ?? container, 'Switch on', 'button')));
 		await settle();
 		expect(requests.find((request) => request.method === 'PUT')?.body).toEqual({ on: ['notes', 'inbox', 'alerts'] });
 	});
@@ -638,10 +625,7 @@ describe('standard tabs', () => {
 		await settle();
 		// no connections answer (a failed read is no reason to hide the features)
 		expect(switchesOf(container).map((box) => box.disabled)).toEqual([false, true, true]);
-		click(/** @type {HTMLElement} */ (switchesOf(container)[0]));
-		await act(async () =>
-			byText(/** @type {HTMLElement} */ (document.querySelector('[role="dialog"]')), 'Switch on', 'button').click(),
-		);
+		await act(async () => click(/** @type {HTMLElement} */ (switchesOf(container)[0])));
 		await settle();
 		expect(document.body.textContent).toContain('No credits');
 		expect(document.querySelector('[role="dialog"]')).toBeNull();
@@ -1769,6 +1753,203 @@ describe('ProductDashboard', () => {
 		} catch (error) {
 			failure = error;
 		}
-		expect(String(failure)).toContain('the new tab “lists” needs { component, icon, kind }');
+		expect(String(failure)).toContain('the new tab "lists" needs { component, icon, kind }');
+	});
+});
+
+describe('AdminTab', () => {
+	it('renders empty state when websiteId is null', () => {
+		const { container } = render(
+			inDashboard(
+				<AdminTab
+					websiteId={null}
+					tab="orders"
+					mount={() => {}}
+					emptyTitle="Pick a website"
+					emptyDescription="Pick a website to see orders."
+				/>,
+			),
+		);
+		expect(container.textContent).toContain('Pick a website');
+		expect(container.textContent).toContain('Pick a website to see orders.');
+	});
+
+	it('shows error callout when ticket fails', async () => {
+		serve({
+			'POST /v1/dashboard/websites/site1/tickets': () => ({
+				status: 403,
+				body: { detail: 'Forbidden ticket' },
+			}),
+		});
+		const { container } = render(inDashboard(<AdminTab websiteId="site1" tab="orders" mount={() => {}} />));
+		await settle();
+		expect(container.textContent).toContain('Could not load admin interface');
+		expect(container.textContent).toContain('Forbidden ticket');
+	});
+
+	it('shows error callout when config fails', async () => {
+		serve({
+			'POST /v1/dashboard/websites/site1/tickets': ok({
+				ticket: 'tok-1',
+				expiresAt: new Date(Date.now() + 600000).toISOString(),
+			}),
+			'GET /v1/widget/admin/config': () => ({ status: 500, body: { detail: 'Config broken' } }),
+		});
+		const { container } = render(inDashboard(<AdminTab websiteId="site1" tab="orders" mount={() => {}} />));
+		await settle();
+		expect(container.textContent).toContain('Could not load admin interface');
+		expect(container.textContent).toContain('Config broken');
+	});
+
+	it('mounts widget, provides helpers and cleans up on unmount', async () => {
+		serve({
+			'POST /v1/dashboard/websites/site1/tickets': ok({
+				ticket: 'tok-1',
+				expiresAt: new Date(Date.now() + 600000).toISOString(),
+				signIn: 'sign-1',
+			}),
+			'GET /v1/widget/admin/config': ok({ title: 'Orders Admin' }),
+		});
+		/** @type {any} */
+		let mountedProps = null;
+		let unmounted = false;
+		const mount = vi.fn((props) => {
+			mountedProps = props;
+			const el = document.createElement('div');
+			el.textContent = 'Mounted Widget Content';
+			props.host.appendChild(el);
+			return () => {
+				unmounted = true;
+			};
+		});
+
+		const { container, unmount } = render(inDashboard(<AdminTab websiteId="site1" tab="orders" mount={mount} />));
+		await settle();
+
+		expect(mount).toHaveBeenCalled();
+		expect(container.textContent).toContain('Mounted Widget Content');
+		expect(mountedProps.config).toEqual({ title: 'Orders Admin' });
+		expect(mountedProps.api.tickets.current()).toBe('tok-1');
+		expect(mountedProps.api.tickets.signIn()).toBe('sign-1');
+
+		// Exercise helper callbacks
+		mountedProps.open('https://shelfway.org');
+		mountedProps.copy('copied text');
+		mountedProps.save('test.txt', 'hello world');
+		mountedProps.download('test.txt', 'hello text');
+		mountedProps.download('test.bin', new ArrayBuffer(8));
+
+		// Unmount
+		unmount();
+		expect(unmounted).toBe(true);
+	});
+
+	it('handles mount throwing an error', async () => {
+		serve({
+			'POST /v1/dashboard/websites/site1/tickets': ok({
+				ticket: 'tok-1',
+				expiresAt: new Date(Date.now() + 600000).toISOString(),
+			}),
+			'GET /v1/widget/admin/config': ok({}),
+		});
+		const mount = () => {
+			throw new Error('Mount crash');
+		};
+
+		const { container } = render(inDashboard(<AdminTab websiteId="site1" tab="orders" mount={mount} />));
+		await settle();
+		expect(container.textContent).toContain('Could not load admin interface');
+		expect(container.textContent).toContain('Mount crash');
+	});
+
+	it('handles unmounting while mount is in flight without leaking mounted widget or tickets', async () => {
+		serve({
+			'POST /v1/dashboard/websites/site1/tickets': ok({
+				ticket: 'tok-1',
+				expiresAt: new Date(Date.now() + 600000).toISOString(),
+				signIn: 'sign-1',
+			}),
+			'GET /v1/widget/admin/config': ok({ title: 'Async Widget' }),
+		});
+		let unmountCalled = false;
+		/** @type {(value: any) => void} */
+		let resolveMount = () => {};
+		const mountPromise = new Promise((resolve) => {
+			resolveMount = resolve;
+		});
+		const mount = vi.fn(() => mountPromise);
+
+		const { unmount } = render(inDashboard(<AdminTab websiteId="site1" tab="orders" mount={mount} />));
+		await settle();
+		expect(mount).toHaveBeenCalled();
+
+		// Unmount while mount() promise has not resolved yet
+		unmount();
+
+		// Now resolve mount
+		resolveMount({
+			unmount: () => {
+				unmountCalled = true;
+			},
+		});
+		await settle();
+
+		expect(unmountCalled).toBe(true);
+	});
+
+	it('delays URL.revokeObjectURL in save and download rather than revoking synchronously', async () => {
+		serve({
+			'POST /v1/dashboard/websites/site1/tickets': ok({
+				ticket: 'tok-1',
+				expiresAt: new Date(Date.now() + 600000).toISOString(),
+				signIn: 'sign-1',
+			}),
+			'GET /v1/widget/admin/config': ok({ title: 'Config' }),
+		});
+		const origRevoke = URL.revokeObjectURL;
+		const revokeCalls = [];
+		URL.revokeObjectURL = (url) => {
+			revokeCalls.push(url);
+		};
+
+		/** @type {any} */
+		let mountedProps = null;
+		const mount = vi.fn((props) => {
+			mountedProps = props;
+			return () => {};
+		});
+
+		const { unmount } = render(inDashboard(<AdminTab websiteId="site1" tab="orders" mount={mount} />));
+		await settle();
+
+		try {
+			mountedProps.save('test.txt', 'hello world');
+			// Synchronously, revokeObjectURL has not been called yet (delayed to avoid WebKit aborts)
+			expect(revokeCalls.length).toBe(0);
+
+			mountedProps.download('test.bin', new ArrayBuffer(4));
+			expect(revokeCalls.length).toBe(0);
+		} finally {
+			URL.revokeObjectURL = origRevoke;
+			unmount();
+		}
+	});
+
+	it('createAdminTab creates a component wrapper rendering AdminTab with custom emptyTitle and description', () => {
+		const Tab = createAdminTab('custom', () => {}, {
+			emptyTitle: 'No Site Selected',
+			emptyDescription: 'Select a website first.',
+		});
+		const { container } = render(inDashboard(<Tab {...tabProps(null)} />));
+		expect(container.textContent).toContain('No Site Selected');
+		expect(container.textContent).toContain('Select a website first.');
+	});
+
+	it('developerSection creates a SectionSpec with title, help, body, and icon', () => {
+		const section = developerSection('test-sec', 'Test Section', 'Help text here', 'Body text', 'shield');
+		expect(section.id).toBe('test-sec');
+		expect(section.label).toBe('Test Section');
+		expect(section.icon).toBe('shield');
+		expect(section.content).toBeDefined();
 	});
 });

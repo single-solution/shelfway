@@ -8,10 +8,12 @@
  * @module
  */
 import { Button, Card, CodeBlock, Row, Section, Stat } from '@shelfway/ui';
-import { DevelopersTab, OverviewTab, SettingsTab, useLoad, useSetupSteps } from '@shelfway/ui/dashboard';
+import { DevelopersTab, OverviewTab, SettingsTab, createAdminTab, useLoad, useSetupSteps } from '@shelfway/ui/dashboard';
 import manifest from '../../manifest.json' with { type: 'json' };
 import messages from '../../schemas/messages.json' with { type: 'json' };
 import { createSnippets } from '../../core/snippets.js';
+import { mountRolesAdmin } from '../../ui/roles-admin.js';
+import { mountUsersAdmin } from '../../ui/users-admin.js';
 import { ConsentsSection } from './consents.js';
 import { FieldsSection } from './fields.js';
 import { KEY_FORMS, KeyForm } from './forms.js';
@@ -226,8 +228,24 @@ function AccountsDevelopers(props) {
 	);
 }
 
-/** Accounts' tabs in place of the standard ones (the others are the shared tabs as they are). */
+/** Accounts' tabs in place of the standard ones, plus operational admin tabs. */
 export const TABS = Object.freeze({
+	users: {
+		component: createAdminTab('users', mountUsersAdmin, {
+			emptyTitle: 'Pick a website',
+			emptyDescription: 'Pick a website from the switcher to view and manage its users.',
+		}),
+		icon: /** @type {const} */ ('users'),
+		kind: /** @type {const} */ ('activity'),
+	},
+	roles: {
+		component: createAdminTab('roles', mountRolesAdmin, {
+			emptyTitle: 'Pick a website',
+			emptyDescription: 'Pick a website from the switcher to manage its roles and permissions.',
+		}),
+		icon: /** @type {const} */ ('shield'),
+		kind: /** @type {const} */ ('settings'),
+	},
 	overview: AccountsOverview,
 	settings: AccountsSettings,
 	developers: AccountsDevelopers,

@@ -17,7 +17,7 @@ import { createService } from './service.js';
 import { createVisitorApi } from './visitor.js';
 import { WIDGET_SCRIPT } from './widget-script.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 
 /** Rate limits of visitor routes (code constants protecting our hosting). */
 const CHECK_LIMITS = [

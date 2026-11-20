@@ -11,7 +11,7 @@
 import { createId } from '@shelfway/contracts';
 import { defineRoute, problem } from '@shelfway/app-kit';
 import { isObject } from '@shelfway/contracts/util';
-import { NO_KEYS } from '../adapters/catalog-store.js';
+import { NO_KEYS } from './adapters/catalog-store.js';
 import { LIMITS, cleanText, heldKeys } from '../core/catalog.js';
 import { IMAGE_TYPES, VIDEO_TYPES, mediaExtras } from '../core/catalog-content.js';
 import { IMAGE_MAX_BYTES, VIDEO_MAX_BYTES } from '../core/limits.js';
@@ -19,7 +19,7 @@ import { COLLECTIONS } from '../core/model.js';
 import { refuse } from './catalog-common.js';
 import { SERVER_LIMITS, UPLOAD_SECONDS, bodyOf } from './service.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./catalog-common.js').CatalogCommon} CatalogCommon */

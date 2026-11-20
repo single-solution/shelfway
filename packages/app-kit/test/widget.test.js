@@ -3,12 +3,14 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
 	DEFAULT_FORMAT,
+	chipGroup,
 	formatDate,
 	formatMoney,
 	formatText,
 	fromDecimal,
 	isCurrency,
 	mountWidget,
+	rankList,
 	themeCss,
 	toCsv,
 	toDecimal,
@@ -146,5 +148,50 @@ describe('formatting in widgets (K7)', () => {
 		});
 		expect(viewerOf(window)).not.toHaveProperty('timeZone');
 		zone.mockRestore();
+	});
+});
+
+describe('chipGroup and rankList', () => {
+	it('renders filter chip group and handles picking', () => {
+		let picked = 'all';
+		const onPick = (/** @type {string} */ val) => {
+			picked = val;
+		};
+		const chips = [
+			{ value: 'all', label: 'All', count: 12 },
+			{ value: 'active', label: 'Active', count: 5 },
+		];
+		const group = chipGroup(document, 'Filters', chips, 'all', onPick);
+		expect(group.getAttribute('role')).toBe('group');
+		expect(group.getAttribute('aria-label')).toBe('Filters');
+		const buttons = group.querySelectorAll('.chip');
+		expect(buttons).toHaveLength(2);
+		const btn0 = /** @type {HTMLButtonElement} */ (buttons[0]);
+		const btn1 = /** @type {HTMLButtonElement} */ (buttons[1]);
+		expect(btn0.getAttribute('aria-pressed')).toBe('true');
+		expect(btn1.getAttribute('aria-pressed')).toBe('false');
+
+		btn1.click();
+		expect(picked).toBe('active');
+		expect(btn0.getAttribute('aria-pressed')).toBe('false');
+		expect(btn1.getAttribute('aria-pressed')).toBe('true');
+	});
+
+	it('renders ranked list with share percentage bars and empty fallback', () => {
+		const empty = rankList(document, [], 'No items yet');
+		expect(empty.querySelector('.empty')?.textContent).toBe('No items yet');
+
+		const rows = [
+			{ name: 'Direct', count: 100, figure: '100 visits' },
+			{ name: 'Google', count: 50, figure: '50 visits', meta: 'organic' },
+		];
+		const list = rankList(document, rows, 'None');
+		const items = list.querySelectorAll('li');
+		expect(items).toHaveLength(2);
+		const item0 = /** @type {HTMLLIElement} */ (items[0]);
+		const item1 = /** @type {HTMLLIElement} */ (items[1]);
+		expect(item0.querySelector('.name')?.textContent).toBe('Direct');
+		expect(item0.querySelector('.figure')?.textContent).toBe('100 visits');
+		expect(item1.querySelector('.meta')?.textContent).toBe('organic');
 	});
 });

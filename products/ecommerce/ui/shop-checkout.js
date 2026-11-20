@@ -17,7 +17,7 @@ import {
 	regionsFor,
 } from '../core/address.js';
 import { button, currencyOf, field, formatsOf, h, problemText, quantityShown, select } from './shop-common.js';
-import { codeOf } from './problem-code.js';
+import { codeOf } from '@shelfway/app-kit/widget';
 import { transferParts } from './shop-payment.js';
 
 /** @typedef {import('../core/address.js').AddressField} AddressField */

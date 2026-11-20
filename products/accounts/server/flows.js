@@ -42,14 +42,14 @@ import {
 	matchRecoveryCode,
 	randomBytes,
 	verifyTotp,
-} from '../adapters/crypto.js';
+} from './adapters/crypto.js';
 import { bodyOf, parseSecret } from './service.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('../core/profile.js').UserRecord} UserRecord */
-/** @typedef {import('../adapters/store.js').SessionRecord} SessionRecord */
+/** @typedef {import('./adapters/store.js').SessionRecord} SessionRecord */
 
 /** Fixed windows of the reset emails per address (ST-12) and of the hourly code caps (A7). */
 const RESET_WINDOW_MS = 15 * 60_000;
@@ -856,7 +856,7 @@ export const createFlows = (product, service) => {
 		const code = params.get('code');
 		const key = await product.connections.value(websiteId, provider);
 		if (!code || typeof key !== 'object' || key === null) return back(`${LINK_PARAMS.error}=canceled`);
-		/** @type {import('../adapters/providers.js').ProviderIdentity | null} */
+		/** @type {import('./adapters/providers.js').ProviderIdentity | null} */
 		let identity = null;
 		try {
 			identity = await providers.identify(provider, key, {

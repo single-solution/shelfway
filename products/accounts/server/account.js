@@ -8,11 +8,11 @@ import { problem } from '@shelfway/app-kit';
 import { constantTimeEqual, randomToken, sha256Hex } from '@shelfway/protocol';
 import { checkCustomValues, checkName, selfView } from '../core/profile.js';
 import { CODE_ATTEMPTS, CODE_MINUTES } from '../core/limits.js';
-import { generateRecoveryCodes, generateTotpSecret, matchRecoveryCode, totpUri, verifyTotp } from '../adapters/crypto.js';
+import { generateRecoveryCodes, generateTotpSecret, matchRecoveryCode, totpUri, verifyTotp } from './adapters/crypto.js';
 import { invalid } from './flows.js';
 import { bodyOf, parseSecret } from './service.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./flows.js').Flows} Flows */
 

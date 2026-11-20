@@ -8,7 +8,7 @@
  */
 import { paidByHand, payFirstDetails } from '../core/payment-methods.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('../core/payment-methods.js').PaymentMethodRecord} PaymentMethodRecord */
 /** @typedef {import('../core/payment-methods.js').Account} Account */

@@ -4,7 +4,7 @@
  */
 import { csvRecords, parseCsv } from '@shelfway/contracts/csv';
 import { describe, expect, it } from 'vitest';
-import { createAi } from '../adapters/ai.js';
+import { createAi } from '../server/adapters/ai.js';
 import { createCatalogCommon } from '../server/catalog-common.js';
 import {
 	changedPrice,

@@ -132,8 +132,7 @@ describe('merchant console smoke', () => {
 			expect(selectedText).toContain('Notes');
 			expect(selectedText).toContain('Chatty');
 			expect(selectedText).toContain('No features on');
-			for (const word of ['Settings', 'Share with developer', 'Add product', 'Daily cost', 'Open'])
-				expect(selectedText).toContain(word);
+			for (const word of ['Settings', 'Share with developer', 'Add product', 'Open']) expect(selectedText).toContain(word);
 			expect(selectedRaw).toContain(`href="/dashboard/websites/${site.websiteId}"`); // its row in the list
 			expect(selectedRaw).toContain('id="product-notes"');
 			expect(selectedRaw).not.toContain('role="tab"');

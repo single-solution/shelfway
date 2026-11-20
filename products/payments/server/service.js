@@ -30,16 +30,16 @@ import {
 	statusAfterRefund,
 	subscriptionView,
 } from '../core/payments.js';
-import { genericCurrencies } from '../adapters/gateways/index.js';
-import { createStore } from '../adapters/store.js';
+import { genericCurrencies } from './adapters/gateways/index.js';
+import { createStore } from './adapters/store.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
-/** @typedef {import('../adapters/store.js').Store} Store */
-/** @typedef {import('../adapters/store.js').PaymentRecord} PaymentRecord */
-/** @typedef {import('../adapters/store.js').SubscriptionRecord} SubscriptionRecord */
+/** @typedef {import('./adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/store.js').Store} Store */
+/** @typedef {import('./adapters/store.js').PaymentRecord} PaymentRecord */
+/** @typedef {import('./adapters/store.js').SubscriptionRecord} SubscriptionRecord */
 /** @typedef {import('../core/gateways.js').Gateway} Gateway */
-/** @typedef {import('../adapters/gateways/types.js').News} News */
-/** @typedef {import('../adapters/gateways/types.js').Started} Started */
+/** @typedef {import('./adapters/gateways/types.js').News} News */
+/** @typedef {import('./adapters/gateways/types.js').Started} Started */
 /**
  * A website while serving it: its store, switched-on features, domain, the product's own address, and the request's
  * `after()` (events are forwarded right after it).
@@ -348,7 +348,7 @@ export const createService = (product) => {
 	 * recorded once: a history entry (the payment answers `duplicatePayment: true`: refund the extra money) and the
 	 * `payment.duplicate` event (SR-3-4). Nothing else changes.
 	 * @param {Site} s @param {string} paymentId @param {string} gateway
-	 * @param {import('../adapters/gateways/types.js').PaymentNews} news
+	 * @param {import('./adapters/gateways/types.js').PaymentNews} news
 	 * @returns {Promise<PaymentRecord | null>} the payment as it is now
 	 */
 	const noteDuplicate = async (s, paymentId, gateway, news) => {
@@ -374,7 +374,7 @@ export const createService = (product) => {
 	 * currency (a mismatch is recorded and changes nothing); a confirmation that arrives twice changes nothing. Money for
 	 * a payment the merchant canceled is recorded too (the payer paid), with a history entry saying it is to be refunded:
 	 * the payment answers `refundDue: true`, also in its `payment.paid` event, and never verifies an order (K-13).
-	 * @param {Site} s @param {string} gateway @param {import('../adapters/gateways/types.js').PaymentNews} news @param {string} via
+	 * @param {Site} s @param {string} gateway @param {import('./adapters/gateways/types.js').PaymentNews} news @param {string} via
 	 * @returns {Promise<PaymentRecord | null>} the payment after it, or null when it is not this website's
 	 */
 	const applyPayment = async (s, gateway, news, via) => {
@@ -424,7 +424,7 @@ export const createService = (product) => {
 
 	/**
 	 * Apply what a gateway says about a subscription (its status, mirrored).
-	 * @param {Site} s @param {'stripe' | 'paypal'} gateway @param {import('../adapters/gateways/types.js').SubscriptionNews} news
+	 * @param {Site} s @param {'stripe' | 'paypal'} gateway @param {import('./adapters/gateways/types.js').SubscriptionNews} news
 	 * @returns {Promise<SubscriptionRecord | null>}
 	 */
 	const applySubscription = async (s, gateway, news) => {
@@ -547,7 +547,7 @@ export const createService = (product) => {
 			new Date(now() - REFUND_RESERVATION_MS),
 		);
 		if (!reserved) throw problem('conflict', 'The payment changed meanwhile or another refund is on its way; read it again.');
-		/** @type {import('../adapters/gateways/types.js').Refunded} */
+		/** @type {import('./adapters/gateways/types.js').Refunded} */
 		let done = { ok: true, manual: true };
 		try {
 			if (isGateway(gateway) && keys)

@@ -10,13 +10,13 @@
 import { actorOf, problem } from '@shelfway/app-kit';
 import { zonedParts } from '@shelfway/contracts/format';
 import { isObject } from '@shelfway/contracts/util';
-import { createOrdersStore } from '../adapters/orders-store.js';
-import { KEEP_MS, createOutbox } from '../adapters/outbox.js';
+import { createOrdersStore } from './adapters/orders-store.js';
+import { KEEP_MS, createOutbox } from './adapters/outbox.js';
 import { DEFAULT_CURRENCY } from '../core/limits.js';
 import { unitOf } from '../core/money.js';
 import { createPaymentMethods } from './payment-methods.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/model.js').OrderRecord} OrderRecord */
 /** @typedef {import('../core/model.js').OrderFlow} OrderFlow */
@@ -152,8 +152,8 @@ export const BUSINESS_VALUE = 'business';
  *   refunds: Array<{ id: string, amount: number, manual: boolean }> }} PaymentFacts
  */
 
-/** @typedef {import('../adapters/outbox.js').OutboxMessage} OutboxMessage */
-/** @typedef {import('../adapters/outbox.js').OutboxEntry} OutboxEntry */
+/** @typedef {import('./adapters/outbox.js').OutboxMessage} OutboxMessage */
+/** @typedef {import('./adapters/outbox.js').OutboxEntry} OutboxEntry */
 /** What became of a message. @typedef {'sent' | 'queued' | 'not_connected' | 'failed' | 'skipped'} SendResult */
 
 /** The Notifications route of each outbox channel (a staff push goes to `staff-push`). */
@@ -469,7 +469,7 @@ export const createService = (product) => {
 	/**
 	 * Try a saved message: removed once Notifications took it (or refused it for good), else tried again later, until a
 	 * day after it was saved.
-	 * @param {Site} s @param {import('../adapters/outbox.js').Outbox} outbox @param {OutboxEntry} entry
+	 * @param {Site} s @param {import('./adapters/outbox.js').Outbox} outbox @param {OutboxEntry} entry
 	 * @returns {Promise<SendResult>}
 	 */
 	const attempt = async (s, outbox, entry) => {

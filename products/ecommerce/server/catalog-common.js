@@ -4,14 +4,14 @@
  * @module
  */
 import { problem } from '@shelfway/app-kit';
-import { categoriesOf, loadRules } from '../adapters/catalog-store.js';
+import { categoriesOf, loadRules } from './adapters/catalog-store.js';
 import { COLLECTIONS } from '../core/model.js';
 import { contentChanged } from '../core/catalog.js';
 import { gradeTypes, gradesByKey } from '../core/grades.js';
 import { createMedia } from './catalog-media.js';
 import { hiddenFor } from './catalog-visibility.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('../core/model.js').ProductRecord} ProductRecord */

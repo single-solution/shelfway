@@ -6,7 +6,7 @@
 import { createHash, pbkdf2Sync, randomBytes } from 'node:crypto';
 import bcrypt from 'bcryptjs';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { isPasswordHash, totpCode } from '../adapters/crypto.js';
+import { isPasswordHash, totpCode } from '../server/adapters/crypto.js';
 import {
 	checkImportedCopy,
 	checkImportedField,

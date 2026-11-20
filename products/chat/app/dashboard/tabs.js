@@ -6,10 +6,24 @@
  * storage and the main AI key are the Portal's), and the AI label warning in Defaults.
  * @module
  */
-import { Button, CodeBlock, Section } from '@shelfway/ui';
-import { DefaultsTab, DevelopersTab, OverviewTab, useLoad, useSetupSteps, wantsSettings } from '@shelfway/ui/dashboard';
+import { Button, CodeBlock } from '@shelfway/ui';
+import {
+	DefaultsTab,
+	DevelopersTab,
+	OverviewTab,
+	createAdminTab,
+	developerSection,
+	useLoad,
+	useSetupSteps,
+	wantsSettings,
+} from '@shelfway/ui/dashboard';
+import { mountWidget } from '@shelfway/app-kit/widget';
 import manifest from '../../manifest.json' with { type: 'json' };
 import { createSnippets } from '../../core/snippets.js';
+import { fieldMaker, textsOf, whenOf } from '../../ui/common.js';
+import { mountInbox } from '../../ui/inbox.js';
+import { leadsPart } from '../../ui/inbox-parts.js';
+import { WIDGET_CSS } from '../../ui/styles.js';
 import { AiForm, FORMS } from './forms.js';
 import { SettingsTab, aiLabelNotice } from './settings.js';
 import { TEXTS } from './texts.js';
@@ -122,25 +136,14 @@ function Developers(props) {
 		permissions: manifest.permissions.map((permission) => permission.key),
 	});
 	const D = TEXTS.developers;
-	/** @param {string} id @param {string} title @param {string} help @param {import('react').ReactNode} body @param {import('@shelfway/ui').IconName} icon */
-	const part = (id, title, help, body, icon) => ({
-		id,
-		label: title,
-		icon,
-		content: (
-			<Section title={title} description={help}>
-				{body}
-			</Section>
-		),
-	});
 	return (
 		<DevelopersTab
 			{...props}
 			connections={{ hint: connectionHint, form: connectionForm }}
 			sections={[
-				part('visitor', D.visitor, D.visitorHelp, <CodeBlock code={snippets.visitor} />, 'users'),
-				part('admin', D.admin, D.adminHelp, <CodeBlock code={snippets.admin} />, 'box'),
-				part(
+				developerSection('visitor', D.visitor, D.visitorHelp, <CodeBlock code={snippets.visitor} />, 'users'),
+				developerSection('admin', D.admin, D.adminHelp, <CodeBlock code={snippets.admin} />, 'box'),
+				developerSection(
 					'ticket',
 					D.ticket,
 					D.ticketHelp,
@@ -150,7 +153,7 @@ function Developers(props) {
 					</>,
 					'key',
 				),
-				part('tools', D.tools, D.toolsHelp, <CodeBlock code={snippets.toolCheck} />, 'shield'),
+				developerSection('tools', D.tools, D.toolsHelp, <CodeBlock code={snippets.toolCheck} />, 'shield'),
 			]}
 		/>
 	);
@@ -161,8 +164,78 @@ function Defaults(props) {
 	return <DefaultsTab {...props} notice={aiLabelNotice} />;
 }
 
-/** Chat's tabs in place of the standard ones (Prices is the standard tab). */
+/** @param {{ host: HTMLElement, api: import('@shelfway/app-kit/widget').AdminApi, config: any, win: Window }} input */
+const mountInboxAdmin = async ({ host, api, config, win }) => {
+	/** @type {Omit<import('../../ui/transport.js').Clock, 'win'>} */
+	const clock = {
+		now: () => Date.now(),
+		schedule: (task, ms) => win.setTimeout(task, ms),
+		cancel: (id) => win.clearTimeout(id),
+	};
+	return mountInbox({
+		host,
+		win,
+		api,
+		config,
+		clock,
+		onUnread: () => {},
+	});
+};
+
+/** @param {{ host: HTMLElement, api: import('@shelfway/app-kit/widget').AdminApi, config: any, win: Window }} input */
+const mountLeadsAdmin = async ({ host, api, config, win }) => {
+	const t = textsOf(config);
+	const when = whenOf(config, win);
+	const make = fieldMaker(win.document, 'shelfway-leads');
+	/** @param {any} answer @param {string} [invalid] */
+	const failure = (answer, invalid = 'common.error') => {
+		if (answer.status === 0 && !api.tickets.current()) return t('inbox.signedOut');
+		if (answer.status === 403) return t('inbox.noAccess');
+		return t(invalid);
+	};
+	return mountWidget({
+		host,
+		theme: config.theme,
+		customCss: config.customCss,
+		css: WIDGET_CSS,
+		render: (root) => {
+			const box = win.document.createElement('section');
+			box.className = 'box inbox admin';
+			const { part, load } = leadsPart({
+				doc: win.document,
+				t,
+				make,
+				api,
+				failure,
+				when,
+				open: () => {},
+			});
+			box.append(part);
+			root.append(box);
+			void load(true);
+			return () => {};
+		},
+	});
+};
+
+/** Chat's tabs in place of the standard ones, plus operational admin tabs. */
 export const TABS = Object.freeze({
+	inbox: {
+		component: createAdminTab('inbox', mountInboxAdmin, {
+			emptyTitle: 'Pick a website',
+			emptyDescription: 'Pick a website from the switcher to view conversations and reply.',
+		}),
+		icon: /** @type {const} */ ('message'),
+		kind: /** @type {const} */ ('activity'),
+	},
+	leads: {
+		component: createAdminTab('leads', mountLeadsAdmin, {
+			emptyTitle: 'Pick a website',
+			emptyDescription: 'Pick a website from the switcher to view and manage captured leads.',
+		}),
+		icon: /** @type {const} */ ('users'),
+		kind: /** @type {const} */ ('activity'),
+	},
 	overview: Overview,
 	settings: Settings,
 	developers: Developers,

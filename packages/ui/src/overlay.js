@@ -11,7 +11,7 @@ import { useEffect, useId, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from './Button.js';
 import { cx } from './cx.js';
-import { FieldLayoutContext } from './fields.js';
+import { FieldGrid, FieldLayoutContext } from './fields.js';
 import { StatusPill } from './display.js';
 import { Icon } from './icons.js';
 import { DRAWER, DRAWER_WIDTH } from './layout-metrics.js';
@@ -116,7 +116,7 @@ export const useFocusTrap = (ref, open, onClose) => {
 
 /**
  * @typedef {{ open: boolean, onClose: () => void, title: ReactNode, eyebrow?: ReactNode, description?: ReactNode, children?: ReactNode,
- *   footer?: ReactNode, size?: 'sm' | 'md' | 'lg', closeLabel?: string, dismissible?: boolean,
+ *   footer?: ReactNode, size?: 'sm' | 'md' | 'lg' | 'xl', closeLabel?: string, dismissible?: boolean,
  *   placement?: 'right' | 'center', icon?: ReactNode, status?: import('./Page.js').PageStatus[],
  *   actions?: import('./Page.js').PageActions, loading?: boolean, skeleton?: ReactNode }} OverlayProps
  */
@@ -297,7 +297,7 @@ function CenterDialog({
 				className={cx(
 					'flex max-h-[92vh] w-full flex-col rounded-t-card border border-line bg-surface text-fg focus:outline-none sm:rounded-card',
 					'animate-shelfway-sheet group-data-[state=closed]:animate-shelfway-sheet-out sm:animate-shelfway-pop sm:group-data-[state=closed]:animate-shelfway-pop-out',
-					size === 'sm' ? 'max-w-md' : size === 'lg' ? 'max-w-3xl' : 'max-w-xl',
+					size === 'sm' ? 'max-w-md' : size === 'lg' ? 'max-w-3xl' : size === 'xl' ? 'max-w-5xl' : 'max-w-xl',
 				)}>
 				<div className="flex items-start justify-between gap-4 px-6 pt-6 pb-2">
 					<div className="flex items-start gap-3 min-w-0">
@@ -362,7 +362,7 @@ function CenterDialog({
  */
 export function Dialog({ placement, size = 'md', ...rest }) {
 	if ((placement ?? (size === 'sm' ? 'center' : 'right')) === 'right') {
-		return <Drawer {...rest} size={size === 'lg' ? 'lg' : 'md'} />;
+		return <Drawer {...rest} size={size === 'lg' || size === 'xl' ? 'lg' : 'md'} />;
 	}
 	return <CenterDialog {...rest} size={size} />;
 }
@@ -408,7 +408,7 @@ export function ConfirmDialog({
 					</Button>
 				</>
 			}>
-			{children}
+			{children ? <FieldGrid className="space-y-3">{children}</FieldGrid> : null}
 			{error ? (
 				<p role="alert" className="animate-shelfway-shake text-sm font-medium text-danger">
 					{error}

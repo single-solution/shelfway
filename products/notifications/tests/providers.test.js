@@ -1,9 +1,9 @@
 import { createECDH } from 'node:crypto';
 import { createOutboundPolicy, netError } from '@shelfway/net';
 import { describe, expect, it } from 'vitest';
-import { createProviders, providerViolation } from '../adapters/providers.js';
-import { verifyMeta, verifyTwilio } from '../adapters/signatures.js';
-import { checkSubscription, createWebPush, encryptPayload, pushKeysOf } from '../adapters/webpush.js';
+import { createProviders, providerViolation } from '../server/adapters/providers.js';
+import { verifyMeta, verifyTwilio } from '../server/adapters/signatures.js';
+import { checkSubscription, createWebPush, encryptPayload, pushKeysOf } from '../server/adapters/webpush.js';
 
 const NOW = Date.parse('2026-10-01T10:00:00Z');
 const policy = createOutboundPolicy({ resolve: async () => [{ address: '93.184.215.14', family: 4 }] });
@@ -15,7 +15,7 @@ const policy = createOutboundPolicy({ resolve: async () => [{ address: '93.184.2
 const fakeSend = (answer = () => ({ status: 200, body: '{"id":"x1"}', headers: { 'x-message-id': 'x1' } })) => {
 	/** @type {Array<{ url: string, init: any }>} */
 	const calls = [];
-	/** @type {import('../adapters/providers.js').OutboundSend} */
+	/** @type {import('../server/adapters/providers.js').OutboundSend} */
 	const send = async (url, init = {}) => {
 		calls.push({ url, init });
 		const out = answer(url, init);

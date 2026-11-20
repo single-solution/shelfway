@@ -8,8 +8,8 @@
  */
 import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { newOrderKey, orderKeyHash } from '../adapters/crypto.js';
-import { INDEXES } from '../adapters/product.js';
+import { newOrderKey, orderKeyHash } from '../server/adapters/crypto.js';
+import { INDEXES } from '../server/adapters/product.js';
 import { DEFAULT_FLOW } from '../core/flow.js';
 import { COLLECTIONS } from '../core/model.js';
 import { ALL, DOMAIN, ORIGIN, readyShop, storedOrder } from './helpers.js';

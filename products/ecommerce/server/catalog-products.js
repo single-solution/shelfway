@@ -28,7 +28,7 @@ import {
 	skusTaken,
 	slugTaken,
 	stockedUnits,
-} from '../adapters/catalog-store.js';
+} from './adapters/catalog-store.js';
 import {
 	LIMITS,
 	checkProduct,
@@ -61,7 +61,7 @@ import { refuse } from './catalog-common.js';
 import { pageTitlesOf } from './seo-reads.js';
 import { SERVER_LIMITS, bodyOf } from './service.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./catalog-common.js').CatalogCommon} CatalogCommon */

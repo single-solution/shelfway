@@ -4,7 +4,7 @@
  * and the tool signature check on the merchant's server. Plain text; no I/O.
  * @module
  */
-import { widgetScriptTag } from '@shelfway/contracts/text';
+import { ticketSnippets, widgetScriptTag } from '@shelfway/contracts/text';
 import { TOOL_SIGNATURE_HEADER } from './tools.js';
 import { WIDGET_ATTRIBUTE, WIDGET_GLOBAL } from './widgets.js';
 
@@ -37,30 +37,7 @@ export const createSnippets = ({ base, widgets, permissions }) => {
 		`  window.${WIDGET_GLOBAL}.onUnread((count) => { /* the unread count of the inbox, for your own menu */ });`,
 		'</script>',
 	].join('\n');
-	const ticketBody = {
-		user: { id: 'usr_1', name: 'Sam Staff', email: 'sam@example.com' },
-		permissions,
-		origin: 'https://admin.example.com',
-	};
-	const ticketNode = [
-		"// your server, after checking the user's sign-in and role (Node.js 18+, also inside a Next.js route handler)",
-		`const response = await fetch('${base}/v1/tickets', {`,
-		"  method: 'POST',",
-		"  headers: { authorization: `Bearer ${process.env.SHELFWAY_SERVER_TOKEN}`, 'content-type': 'application/json' },",
-		'  body: JSON.stringify({',
-		'    user: { id: user.id, name: user.name, email: user.email },',
-		`    permissions: ${JSON.stringify(permissions)},`,
-		"    origin: 'https://admin.example.com', // the address of your admin page",
-		'  }),',
-		'});',
-		'const { ticket, expiresAt } = await response.json(); // answer this to getTicket()',
-	].join('\n');
-	const ticketCurl = [
-		`curl -X POST '${base}/v1/tickets' \\`,
-		'  -H "Authorization: Bearer $SHELFWAY_SERVER_TOKEN" \\',
-		"  -H 'Content-Type: application/json' \\",
-		`  -d '${JSON.stringify(ticketBody)}'`,
-	].join('\n');
+	const { ticketNode, ticketCurl } = ticketSnippets({ base, permissions });
 	const toolCheck = [
 		'// your tool or booking endpoint: check that the call comes from Chat (Node.js)',
 		"import { createHmac, timingSafeEqual } from 'node:crypto';",

@@ -1,38 +1,8 @@
 /**
- * Next.js config. The product has two functions: the API route `app/api/[...path]/route.js`, which serves every kit
- * and product route through these rewrites (`/.well-known/*`, `/sso`, `/widget.js`, `/docs`, `/openapi.json`,
- * `/v1/*`), and the dashboard page.
+ * Next.js config for Ecommerce. The product serves its API through standard rewrites and the dashboard page.
  */
-import { existsSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { dashboardHeaders } from '@shelfway/app-kit/headers';
+import { defineProductNextConfig } from '@shelfway/config/next';
 
-const here = dirname(fileURLToPath(import.meta.url));
-// inside the Shelfway monorepo the workspace packages are linked from its root; split off, the project is the root
-const monorepo = resolve(here, '../..');
-const root = existsSync(resolve(monorepo, 'pnpm-workspace.yaml')) ? monorepo : here;
-
-/** @type {import('next').NextConfig} */
-const config = {
-	poweredByHeader: false,
-	reactStrictMode: true,
-	images: { unoptimized: true },
-	// `next dev` would write AGENTS.md / CLAUDE.md into the project when it detects a coding agent
-	agentRules: false,
-	outputFileTracingRoot: root,
-	turbopack: { root },
-	serverExternalPackages: ['mongodb'],
-	// the UI library ships untranspiled JSX in .js files
-	transpilePackages: ['@shelfway/ui'],
-	// the dashboard page refuses every frame and gets the static security headers (PLAN 0.4.3)
-	headers: async () => dashboardHeaders(),
-	async rewrites() {
-		return ['/.well-known/:path*', '/sso', '/widget.js', '/docs', '/openapi.json', '/v1/:path*'].map((source) => ({
-			source,
-			destination: `/api${source}`,
-		}));
-	},
-};
-
-export default config;
+export default defineProductNextConfig({
+	here: import.meta.url,
+});

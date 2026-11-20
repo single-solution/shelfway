@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { feeBaseOf, priceLines, roleDiscountOf } from '../core/checkout.js';
 import { conditionsHold, DEAL_RULES, dealLineDiscount, dealRulesOf, dealUnitDiscount, inWindow } from '../core/deals.js';
-import { keyOpens, newOrderKey, orderKeyHash, readLock, signLock } from '../adapters/crypto.js';
+import { keyOpens, newOrderKey, orderKeyHash, readLock, signLock } from '../server/adapters/crypto.js';
 import {
 	checkGuest,
 	guestKeyOf,

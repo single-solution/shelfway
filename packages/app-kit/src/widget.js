@@ -38,6 +38,7 @@ import { formatText } from './util.js';
 export { DEFAULT_FORMAT, formatDate, formatMoney, formatText, fromDecimal, isCurrency, normalizeFormat, toCsv, toDecimal };
 export {
 	badge,
+	chipGroup,
 	dot,
 	emptyState,
 	errorState,
@@ -45,6 +46,7 @@ export {
 	loadingState,
 	moreMenu,
 	openDialog,
+	rankList,
 	splitView,
 	stateSlot,
 } from './widget/admin.js';
@@ -64,7 +66,7 @@ export {
 	toggle,
 } from './widget/controls.js';
 export { element } from './widget/dom.js';
-export { REFRESH_BEFORE_MS, adminCall, createTicketSource, requestJson } from './widget/tickets.js';
+export { REFRESH_BEFORE_MS, adminCall, codeOf, createTicketSource, requestJson } from './widget/tickets.js';
 
 /** @typedef {import('./widget/tickets.js').Answer} Answer */
 /** @typedef {import('./widget/tickets.js').Ticket} Ticket */

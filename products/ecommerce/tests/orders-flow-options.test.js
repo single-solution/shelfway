@@ -7,7 +7,7 @@
  * the settings the flow replaced.
  */
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { givePoints, loyaltyAccount } from '../adapters/ledger.js';
+import { givePoints, loyaltyAccount } from '../server/adapters/ledger.js';
 import { ORDER_BURST_WINDOW_MINUTES } from '../core/limits.js';
 import { ORIGIN, readyShop } from './helpers.js';
 import { orderRecords } from './order-records.js';

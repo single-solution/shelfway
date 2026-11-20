@@ -362,4 +362,59 @@ describe("Payments's dashboard Developers tab", () => {
 		expect(container.textContent).toContain('Stripe: https://p.example/v1/gateways/stripe/web_9');
 		expect(container.textContent).toContain('JazzCash (Pakistan): https://p.example/return/jazzcash/web_9/<paymentId>');
 	});
+
+	it('Payments, Links, and Subscriptions tabs are registered and render empty state when no website is picked', () => {
+		expect(TABS.payments).toBeDefined();
+		expect(TABS.links).toBeDefined();
+		expect(TABS.subscriptions).toBeDefined();
+		expect(TABS.payments.icon).toBe('receipt');
+		expect(TABS.links.icon).toBe('link');
+		expect(TABS.subscriptions.icon).toBe('clock');
+
+		const PaymentsComponent = TABS.payments.component;
+		const LinksComponent = TABS.links.component;
+		const SubscriptionsComponent = TABS.subscriptions.component;
+
+		const { container: paymentsContainer } = render(
+			<DashboardProvider manifest={manifest} texts={TEXTS}>
+				<PaymentsComponent
+					websiteId={null}
+					domain="shop.example.com"
+					who={{ kind: 'merchant', id: 'm_1', name: 'M' }}
+					support={{ channels: [] }}
+					portal="https://portal.example.com"
+					open={() => {}}
+				/>
+			</DashboardProvider>,
+		);
+		expect(paymentsContainer.textContent).toContain('Pick a website');
+
+		const { container: linksContainer } = render(
+			<DashboardProvider manifest={manifest} texts={TEXTS}>
+				<LinksComponent
+					websiteId={null}
+					domain="shop.example.com"
+					who={{ kind: 'merchant', id: 'm_1', name: 'M' }}
+					support={{ channels: [] }}
+					portal="https://portal.example.com"
+					open={() => {}}
+				/>
+			</DashboardProvider>,
+		);
+		expect(linksContainer.textContent).toContain('Pick a website');
+
+		const { container: subscriptionsContainer } = render(
+			<DashboardProvider manifest={manifest} texts={TEXTS}>
+				<SubscriptionsComponent
+					websiteId={null}
+					domain="shop.example.com"
+					who={{ kind: 'merchant', id: 'm_1', name: 'M' }}
+					support={{ channels: [] }}
+					portal="https://portal.example.com"
+					open={() => {}}
+				/>
+			</DashboardProvider>,
+		);
+		expect(subscriptionsContainer.textContent).toContain('Pick a website');
+	});
 });

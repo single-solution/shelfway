@@ -7,8 +7,8 @@
  */
 import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { placeOrder } from '../adapters/ledger.js';
-import { INDEXES } from '../adapters/product.js';
+import { placeOrder } from '../server/adapters/ledger.js';
+import { INDEXES } from '../server/adapters/product.js';
 import { COLLECTIONS } from '../core/model.js';
 import { DEFAULT_CLAIM_KINDS } from '../core/returns.js';
 import { readyShop, storedOrder } from './helpers.js';

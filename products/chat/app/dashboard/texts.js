@@ -8,6 +8,10 @@ import { dashboardTexts } from '@shelfway/ui';
 
 export const TEXTS = dashboardTexts({
 	title: 'Chat',
+	tabs: {
+		inbox: 'Inbox',
+		leads: 'Leads',
+	},
 	overview: {
 		noBooking: {
 			title: 'The Book-a-slot tool is on, but no booking address is set',

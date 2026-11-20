@@ -17,7 +17,7 @@ import openapi from '../openapi.json' with { type: 'json' };
 import declaration from '../schemas/messages.json' with { type: 'json' };
 import { CONTEXT_ENDPOINT, SHOP_ANSWERS, SHOP_ENDPOINTS, STORE_CONTEXT_ENDPOINT } from '../core/shop.js';
 import { createSnippets } from '../core/snippets.js';
-import { manifest } from '../adapters/product.js';
+import { manifest } from './adapters/product.js';
 
 /** Every documented operation, read once. */
 const rows = docsOperations(openapi);

@@ -92,7 +92,7 @@
 			"dependsOn": ["ai_replies"],
 			"recommendFor": ["chat.ai"],
 			"settings": {
-				"$ref": "schemas/knowledge_base.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -101,7 +101,7 @@
 			"description": "Tools the AI can call on your own server, signed with your tool signing secret.",
 			"dependsOn": ["ai_replies"],
 			"settings": {
-				"$ref": "schemas/webhook_tools.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -170,7 +170,7 @@
 			"description": "The reports widget: conversations, AI and staff answers, reply times, ratings, leads and AI tokens.",
 			"dependsOn": [],
 			"settings": {
-				"$ref": "schemas/reports.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -180,7 +180,7 @@
 			"dependsOn": [],
 			"recommendFor": ["moving.yes"],
 			"settings": {
-				"$ref": "schemas/import.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		}
 	],

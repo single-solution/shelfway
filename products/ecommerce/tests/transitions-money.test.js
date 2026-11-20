@@ -7,7 +7,7 @@
  */
 import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { givePoints, loyaltyAccount } from '../adapters/ledger.js';
+import { givePoints, loyaltyAccount } from '../server/adapters/ledger.js';
 import { DEFAULT_FLOW } from '../core/flow.js';
 import { COLLECTIONS } from '../core/model.js';
 import { createCheckout } from '../server/checkout.js';

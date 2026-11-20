@@ -182,7 +182,7 @@ describe('fuller Portal screens (jsdom)', () => {
 			await until(() => shows('Add credits · Shop & Co'));
 			keydown(document, 'Escape');
 			await press('Add merchant');
-			expect(dialog().textContent).toContain('Add merchant');
+			expect(dialog().textContent).toContain('Create merchant account');
 			cleanup();
 
 			// ---------------------------------------------------------------- Merchants: Setup pending, the merchant page

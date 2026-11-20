@@ -76,7 +76,7 @@
 			"dependsOn": [],
 			"recommendFor": ["pays.online", "sells.subscriptions"],
 			"settings": {
-				"$ref": "schemas/stripe.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -86,7 +86,7 @@
 			"dependsOn": [],
 			"recommendFor": ["pays.online", "sells.subscriptions"],
 			"settings": {
-				"$ref": "schemas/paypal.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -96,7 +96,7 @@
 			"dependsOn": [],
 			"recommendFor": ["pays.online+countries.za"],
 			"settings": {
-				"$ref": "schemas/payfast.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -106,7 +106,7 @@
 			"dependsOn": [],
 			"recommendFor": ["pays.online+countries.pk"],
 			"settings": {
-				"$ref": "schemas/payfast_pk.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -116,7 +116,7 @@
 			"dependsOn": [],
 			"recommendFor": ["pays.online+countries.pk"],
 			"settings": {
-				"$ref": "schemas/jazzcash.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -126,7 +126,7 @@
 			"dependsOn": [],
 			"recommendFor": ["pays.online+countries.pk"],
 			"settings": {
-				"$ref": "schemas/easypaisa.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -136,7 +136,7 @@
 			"dependsOn": [],
 			"recommendFor": ["pays.online+countries.pk"],
 			"settings": {
-				"$ref": "schemas/rapid.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -146,7 +146,7 @@
 			"dependsOn": [],
 			"recommendFor": ["pays.bank_transfer"],
 			"settings": {
-				"$ref": "schemas/manual_payments.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -155,7 +155,7 @@
 			"description": "Up to 5 gateways of the merchant's own (generic:<key>), each in its own connection: the payer is sent to its checkout address with signed fields and it confirms with a signed notice.",
 			"dependsOn": [],
 			"settings": {
-				"$ref": "schemas/generic_gateway.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -165,7 +165,7 @@
 			"dependsOn": [],
 			"recommendFor": ["pays.link"],
 			"settings": {
-				"$ref": "schemas/payment_links.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -185,7 +185,7 @@
 			"dependsOn": [],
 			"recommendFor": ["sells.subscriptions"],
 			"settings": {
-				"$ref": "schemas/subscriptions.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -195,7 +195,7 @@
 			"dependsOn": [],
 			"recommendFor": ["pays.online"],
 			"settings": {
-				"$ref": "schemas/refunds.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		}
 	],

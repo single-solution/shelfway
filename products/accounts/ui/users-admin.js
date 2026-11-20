@@ -553,11 +553,44 @@ export const mountUsersAdmin = ({ host, api, config }) => {
 				);
 				items.push({ label: t('users.delete'), onSelect: () => deleteDialog(user, done), danger: true });
 
+				const directButtons = [];
+				if (on('approval') && user.status === 'pending') {
+					const approveBtn = button(t('users.approve'));
+					approveBtn.addEventListener('click', () => act('/approve', t('users.approved')));
+					const declineBtn = button(t('users.decline'), { class: 'secondary' });
+					declineBtn.addEventListener('click', () => act('/decline', t('users.declined')));
+					directButtons.push(approveBtn, declineBtn);
+				}
+				if (user.blocked) {
+					const unblockBtn = button(t('users.unblock'), { class: 'secondary' });
+					unblockBtn.addEventListener('click', async () => {
+						const answer = await call('PATCH', `/v1/admin/users/${encodeURIComponent(user.id)}`, {
+							blocked: false,
+						});
+						if (answer.ok) await done(t('users.unblocked'));
+						else panelNote.textContent = failure(answer);
+					});
+					directButtons.push(unblockBtn);
+				} else if (on('staff_links')) {
+					const setupLinkBtn = button(t('users.setupLink'), { class: 'secondary' });
+					setupLinkBtn.addEventListener('click', async () => {
+						const answer = await call('POST', `/v1/admin/users/${encodeURIComponent(user.id)}/setup-link`);
+						if (!answer.ok) panelNote.textContent = failure(answer);
+						else
+							handOver(
+								t('users.setupLinkTitle'),
+								formatText(t('users.setupLinkHelp'), { name: nameOf(user), time: when(answer.data.expiresAt) }),
+								String(answer.data.url),
+							);
+					});
+					directButtons.push(setupLinkBtn);
+				}
+
 				const header = element(doc, 'div', { class: 'head' });
 				const title = element(doc, 'div');
 				title.append(element(doc, 'h3', {}, nameOf(user)), badge(doc, t(`status.${statusOf(user)}`), toneOf(user)));
 				const actions = element(doc, 'div', { class: 'actions' });
-				actions.append(edit, moreMenu(doc, t('users.moreActions'), items));
+				actions.append(edit, ...directButtons, moreMenu(doc, t('users.moreActions'), items));
 				header.append(title, actions);
 
 				/** @param {unknown} value */
@@ -1007,7 +1040,20 @@ export const mountUsersAdmin = ({ host, api, config }) => {
 						label: t('requests.reopen'),
 						onSelect: async () => void (await move('/reopen', t('requests.reopened'))),
 					});
-				item.append(badge(doc, t(`requests.${request.status}`), tone), who, moreMenu(doc, t('users.moreActions'), items));
+				const directReqButtons = [];
+				if (request.status === 'pending') {
+					const inv = button(t('requests.invite'));
+					inv.addEventListener('click', () => linkOf('/invite', 'requests.inviteTitle'));
+					const dec = button(t('requests.decline'), { class: 'secondary' });
+					dec.addEventListener('click', async () => void (await move('/decline', t('requests.declinedDone'))));
+					directReqButtons.push(inv, dec);
+				}
+				item.append(
+					badge(doc, t(`requests.${request.status}`), tone),
+					who,
+					...directReqButtons,
+					moreMenu(doc, t('users.moreActions'), items),
+				);
 				return item;
 			};
 

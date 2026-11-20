@@ -51,15 +51,15 @@ import {
 } from '../core/seo-checks.js';
 import { scanHtml, sitemapOf, sitemapsIn } from '../core/seo-scan.js';
 import { checksActivity, pathOfUrl, robotsPresetsOf, siteUrlOf } from '../core/seo.js';
-import { createRedirectStore } from '../adapters/redirects.js';
-import { createReportStore } from '../adapters/seo-reports.js';
-import { createStore } from '../adapters/store.js';
-import { SITEMAP_MAX_BYTES } from '../adapters/web.js';
+import { createRedirectStore } from './adapters/redirects.js';
+import { createReportStore } from './adapters/seo-reports.js';
+import { createStore } from './adapters/store.js';
+import { SITEMAP_MAX_BYTES } from './adapters/web.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('../core/seo-checks.js').Check} Check */
 /** @typedef {import('../core/seo-checks.js').Fetched} Fetched */
-/** @typedef {import('../adapters/seo-reports.js').KeptReport} KeptReport */
+/** @typedef {import('./adapters/seo-reports.js').KeptReport} KeptReport */
 /** @typedef {(ctx: any, entry: { action: string, target: string, label: string, detail: string }) => Promise<unknown>} Log */
 
 /** The time one run may take, all its reads together. */

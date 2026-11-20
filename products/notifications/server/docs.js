@@ -14,7 +14,7 @@ import openapi from '../openapi.json' with { type: 'json' };
 import { createSnippets } from '../core/snippets.js';
 import { SERVICE_WORKER_PATH, SERVICE_WORKER_SOURCE } from '../core/widgets.js';
 import { SIGNATURE_HEADER, WEBHOOK_EVENTS } from '../core/webhooks.js';
-import { manifest } from '../adapters/product.js';
+import { manifest } from './adapters/product.js';
 
 /** Every documented operation (the feature sections list each feature's routes). */
 const ROWS = docsOperations(openapi);

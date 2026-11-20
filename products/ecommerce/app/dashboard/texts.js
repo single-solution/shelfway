@@ -8,6 +8,12 @@ import { dashboardTexts } from '@shelfway/ui';
 
 export const TEXTS = dashboardTexts({
 	title: 'Ecommerce',
+	tabs: {
+		products: 'Products',
+		orders: 'Orders',
+		customers: 'Customers',
+		offers: 'Offers',
+	},
 	overview: {
 		connectionsReady: 'Connections ready',
 		ofTotal: '{count} of {total}',

@@ -242,4 +242,20 @@ describe('Developers: the AI provider connections', () => {
 		expect([...backup.querySelectorAll('input, select')].length).toBeGreaterThanOrEqual(3);
 		expect(byText(backup, TEXTS.connections.save, 'button')).toBeTruthy();
 	});
+
+	it('Inbox and Leads tabs are registered and render empty state when no website is picked', () => {
+		expect(TABS.inbox).toBeDefined();
+		expect(TABS.leads).toBeDefined();
+		expect(TABS.inbox.icon).toBe('message');
+		expect(TABS.leads.icon).toBe('users');
+
+		const InboxComponent = TABS.inbox.component;
+		const LeadsComponent = TABS.leads.component;
+
+		const { container: inboxContainer } = render(inDashboard(<InboxComponent {...props()} websiteId={null} />));
+		expect(inboxContainer.textContent).toContain('Pick a website');
+
+		const { container: leadsContainer } = render(inDashboard(<LeadsComponent {...props()} websiteId={null} />));
+		expect(leadsContainer.textContent).toContain('Pick a website');
+	});
 });

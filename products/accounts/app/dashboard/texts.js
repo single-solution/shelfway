@@ -7,6 +7,10 @@ import { dashboardTexts } from '@shelfway/ui';
 
 export const TEXTS = dashboardTexts({
 	title: 'Accounts',
+	tabs: {
+		users: 'Users',
+		roles: 'Roles',
+	},
 	overview: {
 		fields: 'Custom fields',
 		fieldsNone: 'Connect the database first',

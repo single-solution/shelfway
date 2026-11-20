@@ -9,6 +9,7 @@
  */
 import { useState } from 'react';
 import {
+	Badge,
 	BarChart,
 	Button,
 	ButtonLink,
@@ -16,6 +17,7 @@ import {
 	EmptyState,
 	Icon,
 	IconBadge,
+	IconButton,
 	ListColumn,
 	LocalTime,
 	NeedsList,
@@ -39,7 +41,7 @@ import { PageProblem, openDashboard } from './common.js';
 import { ConfirmOtp } from './common.js';
 import { ActivityTimeline } from './login-settings.js';
 import { contactLine } from './sign-in.js';
-import { AddWebsiteDialog, dailyCostOf, launchStepUpOf, twoStepOnOf, websiteDot } from './website.js';
+import { AddWebsiteDialog, launchStepUpOf, twoStepOnOf, websiteDot } from './website.js';
 import { WebsitePageView } from './website-page.js';
 
 /** @typedef {import('./website.js').ProductCard} ProductCard */
@@ -179,10 +181,7 @@ export function OverviewView(props) {
 				{rows.length === 0 ? (
 					<Welcome branding={props.branding} />
 				) : (
-					<div className="space-y-4">
-						<Card title={MERCHANT.needs.title} subtitle={needs.length > 0 ? MERCHANT.needs.intro : undefined}>
-							<NeedsList items={needs} none={MERCHANT.needs.none} />
-						</Card>
+					<div className="space-y-6">
 						<StatGrid>
 							{billing ? (
 								<>
@@ -194,12 +193,7 @@ export function OverviewView(props) {
 										icon="trendingUp"
 										kind="credit"
 									/>
-									<Stat
-										label={BILLING.spentThisMonth}
-										value={formatCredits(billing.spentThisMonth)}
-										icon="calendar"
-										kind="credit"
-									/>
+									<Stat label={MERCHANT.tiles.websites} value={rows.length} icon="globe" kind="website" />
 								</>
 							) : (
 								<>
@@ -208,83 +202,230 @@ export function OverviewView(props) {
 								</>
 							)}
 						</StatGrid>
-						<Card title={MERCHANT.spendChart} subtitle={props.usage ? formatCredits(props.usage.total ?? 0) : undefined}>
-							<BarChart
-								label={MERCHANT.spendChart}
-								data={creditDayBars(props.usage?.days)}
-								format={formatChartCredits}
-								height={132}
-							/>
-						</Card>
-						<Card
-							padded={false}
-							title={MERCHANT.websitesTitle}
-							actions={
-								<ButtonLink as={Link} href={routes.websites()} variant="secondary" size="sm">
-									{MORE.viewAll}
-								</ButtonLink>
-							}>
-							{productRows.length === 0 ? (
-								<p className="p-4 text-sm text-muted">{WEBSITE.noProductsMerchant}</p>
-							) : (
-								<div className="divide-y divide-line-soft">
-									{productRows.map((r) => (
-										<Row
-											key={r.key}
-											lead={{ icon: 'globe' }}
-											href={routes.website(r.website.websiteId)}
-											title={r.website.domain}
-											meta={r.card ? [r.card.name] : [WEBSITE.noProductsMerchant]}
-											status={
-												r.card
-													? {
-															tone: r.card.status === 'active' ? 'success' : 'neutral',
-															label: productStatusLabel(r.card),
-														}
-													: undefined
-											}
-											trailing={r.card ? openButton(r.website, r.card) : null}
-										/>
-									))}
-								</div>
-							)}
-						</Card>
-						<Card
-							flow
-							title={MORE.recentActivity}
-							actions={
-								<ButtonLink as={Link} href={routes.account()} variant="secondary" size="sm">
-									{MORE.viewAll}
-								</ButtonLink>
-							}>
-							<ActivityTimeline items={props.activity ?? []} empty={MORE.noActivity} showMerchant={false} />
-						</Card>
-						<Card
-							flow
-							padded={false}
-							title={MORE.latestReceipts}
-							actions={
-								<ButtonLink as={Link} href={routes.creditsReceipts()} variant="secondary" size="sm">
-									{MORE.viewAll}
-								</ButtonLink>
-							}>
-							{(props.receipts ?? []).length === 0 ? (
-								<EmptyState compact icon="receipt" kind="credit" title={BILLING.noReceipts} />
-							) : (
-								<div className="divide-y divide-line-soft">
-									{(props.receipts ?? []).map((/** @type {any} */ r) => (
-										<Row
-											key={r.receiptId}
-											lead={{ icon: 'receipt' }}
-											title={r.method ?? BILLING.receiptsTitle}
-											meta={[r.reference].filter(Boolean)}
-											value={formatCredits(r.credits)}
-											time={<LocalTime value={r.at} />}
-										/>
-									))}
-								</div>
-							)}
-						</Card>
+
+						{needs.length > 0 ? (
+							<Card title={MERCHANT.needs.title} subtitle={MERCHANT.needs.intro}>
+								<NeedsList items={needs} none={MERCHANT.needs.none} />
+							</Card>
+						) : null}
+
+						<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+							{/* Left / Main Column: Storefronts and Operational Shortcuts */}
+							<div className="lg:col-span-2 space-y-6">
+								<Card
+									title={MERCHANT.websitesTitle}
+									subtitle="Storefronts and active headless capabilities."
+									actions={
+										<ButtonLink as={Link} href={routes.websites()} variant="secondary" size="sm">
+											{MORE.viewAll}
+										</ButtonLink>
+									}>
+									<div className="space-y-4">
+										{rows.map(({ website, cards }) => {
+											const hasEcommerce = cards.some((c) => c.productId === 'ecommerce');
+											const hasAccounts = cards.some((c) => c.productId === 'accounts' || c.productId === 'ecommerce');
+											const websiteHref = routes.website(website.websiteId);
+											return (
+												<div
+													key={website.websiteId}
+													className="rounded-lg border border-line bg-surface p-4 shelfway-motion space-y-3">
+													<div className="flex flex-wrap items-center justify-between gap-2">
+														<div className="flex items-center gap-2 min-w-0">
+															<span className="flex size-8 shrink-0 items-center justify-center rounded-control bg-surface-2 text-primary">
+																<Icon name="globe" size={16} />
+															</span>
+															<div className="min-w-0">
+																<div className="flex items-center gap-2">
+																	<Link
+																		href={websiteHref}
+																		className="font-medium text-fg hover:underline truncate">
+																		{website.domain}
+																	</Link>
+																	<a
+																		href={`https://${website.domain}`}
+																		target="_blank"
+																		rel="noopener noreferrer"
+																		className="text-muted hover:text-fg"
+																		title={`Open https://${website.domain}`}>
+																		<Icon name="external" size={13} />
+																	</a>
+																</div>
+																<p className="text-xs text-muted">
+																	{cards.length} {cards.length === 1 ? 'product' : 'products'} active
+																</p>
+															</div>
+														</div>
+														<div className="flex items-center gap-2">
+															<ButtonLink as={Link} href={websiteHref} size="sm">
+																Manage Store
+															</ButtonLink>
+														</div>
+													</div>
+
+													{cards.length > 0 ? (
+														<div className="flex flex-wrap items-center gap-2 pt-1 border-t border-line-soft">
+															{cards.map((card) => (
+																<div
+																	key={card.productId}
+																	className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-2/60 px-2.5 py-1 text-xs">
+																	<IconBadge product={card.productId} size="xs" />
+																	<span className="font-medium text-fg">{card.name}</span>
+																	<span className="text-[10px] text-muted capitalize">
+																		({productStatusLabel(card)})
+																	</span>
+																	<IconButton
+																		size="sm"
+																		variant="ghost"
+																		onClick={() => void handleOpen(website, card)}
+																		className="size-5 p-0 text-muted hover:text-fg"
+																		label={WEBSITE.openLabel(card.name)}>
+																		<Icon name="external" size={11} />
+																	</IconButton>
+																</div>
+															))}
+														</div>
+													) : (
+														<p className="text-xs text-muted pt-1 border-t border-line-soft">
+															{WEBSITE.noProductsMerchant}
+														</p>
+													)}
+
+													<div className="flex flex-wrap items-center gap-2 pt-1">
+														{hasEcommerce ? (
+															<ButtonLink as={Link} href={`${websiteHref}/orders`} variant="ghost" size="sm">
+																<Icon name="receipt" size={13} />
+																<span>Orders</span>
+															</ButtonLink>
+														) : null}
+														{hasAccounts ? (
+															<ButtonLink as={Link} href={`${websiteHref}/customers`} variant="ghost" size="sm">
+																<Icon name="users" size={13} />
+																<span>Customers</span>
+															</ButtonLink>
+														) : null}
+														<ButtonLink as={Link} href={`${websiteHref}/setup`} variant="ghost" size="sm">
+															<Icon name="code" size={13} />
+															<span>Developer Setup</span>
+														</ButtonLink>
+														<ButtonLink as={Link} href={`${websiteHref}/settings`} variant="ghost" size="sm">
+															<Icon name="sliders" size={13} />
+															<span>Settings</span>
+														</ButtonLink>
+													</div>
+												</div>
+											);
+										})}
+									</div>
+								</Card>
+
+								{/* Simple Website Connection Card */}
+								{rows.length > 0 && rows[0]?.website?.websiteId ? (
+									<Card
+										title="Connect Your Website to Shelfway"
+										subtitle="Everything needed to point your storefront or migration tools to our platform.">
+										<div className="space-y-3 pt-1">
+											<div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+												<div className="rounded border border-line bg-surface p-3 space-y-1">
+													<p className="font-semibold text-fg">1. Add Capabilities</p>
+													<p className="text-muted leading-relaxed">
+														Attach the products your website needs (like Ecommerce or Accounts).
+													</p>
+												</div>
+												<div className="rounded border border-line bg-surface p-3 space-y-1">
+													<p className="font-semibold text-fg">2. Grab Credentials</p>
+													<p className="text-muted leading-relaxed">
+														Get your Website ID and API tokens from Developer Setup.
+													</p>
+												</div>
+												<div className="rounded border border-line bg-surface p-3 space-y-1">
+													<p className="font-semibold text-fg">3. Point Your Frontend</p>
+													<p className="text-muted leading-relaxed">
+														Set your environment keys to start receiving live traffic.
+													</p>
+												</div>
+											</div>
+											<div className="flex items-center gap-2 pt-2">
+												<ButtonLink
+													as={Link}
+													href={`${routes.website(rows[0].website.websiteId)}/setup`}
+													variant="primary"
+													size="sm">
+													View Developer Credentials &amp; Keys
+												</ButtonLink>
+												<ButtonLink
+													as={Link}
+													href={routes.website(rows[0].website.websiteId)}
+													variant="secondary"
+													size="sm">
+													Manage Website Capabilities
+												</ButtonLink>
+											</div>
+										</div>
+									</Card>
+								) : null}
+							</div>
+
+							{/* Right / Sidebar Column */}
+							<div className="lg:col-span-1 space-y-6">
+								<Card
+									title={MERCHANT.spendChart}
+									subtitle={props.usage ? formatCredits(props.usage.total ?? 0) : undefined}
+									actions={
+										<ButtonLink as={Link} href={routes.credits()} variant="secondary" size="sm">
+											{MORE.viewAll}
+										</ButtonLink>
+									}>
+									<BarChart
+										label={MERCHANT.spendChart}
+										data={creditDayBars(props.usage?.days)}
+										format={formatChartCredits}
+										height={132}
+									/>
+								</Card>
+
+								<Card
+									flow
+									padded={false}
+									title={MORE.latestReceipts}
+									actions={
+										<ButtonLink as={Link} href={routes.creditsReceipts()} variant="secondary" size="sm">
+											{MORE.viewAll}
+										</ButtonLink>
+									}>
+									{(props.receipts ?? []).length === 0 ? (
+										<EmptyState compact icon="receipt" kind="credit" title={BILLING.noReceipts} />
+									) : (
+										<div className="divide-y divide-line-soft">
+											{(props.receipts ?? []).slice(0, 5).map((/** @type {any} */ r) => (
+												<Row
+													key={r.receiptId}
+													lead={{ icon: 'receipt' }}
+													title={r.method ?? BILLING.receiptsTitle}
+													meta={[r.reference].filter(Boolean)}
+													value={formatCredits(r.credits)}
+													time={<LocalTime value={r.at} />}
+												/>
+											))}
+										</div>
+									)}
+								</Card>
+
+								<Card
+									flow
+									title={MORE.recentActivity}
+									actions={
+										<ButtonLink as={Link} href={routes.account()} variant="secondary" size="sm">
+											{MORE.viewAll}
+										</ButtonLink>
+									}>
+									<ActivityTimeline
+										items={(props.activity ?? []).slice(0, 5)}
+										empty={MORE.noActivity}
+										showMerchant={false}
+									/>
+								</Card>
+							</div>
+						</div>
 					</div>
 				)}
 			</Page>
@@ -378,7 +519,6 @@ function WebsitesScreen({
 					title: entry.domain,
 					status: { tone: entry.dot, label: SITE_PILLS[entry.dot].label },
 					...(trouble ? { warning: trouble } : { meta: entry.cards.map((card) => card.name) }),
-					value: WEBSITE.perDay(formatCredits(dailyCostOf(entry.cards))),
 					href: routes.website(entry.id),
 					linkAs: Link,
 				};

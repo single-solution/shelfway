@@ -8,6 +8,8 @@
  * `/widget.js` while rewrites send them to `/api/...`.
  * @module
  */
+import { createLogger } from '@shelfway/net';
+import { configFromEnv } from '../config.js';
 import { rememberScheduler } from './handler.js';
 
 /** The prefix Next.js rewrites put before every kit and product route. */
@@ -45,4 +47,19 @@ export const toNextRoute = (handler, { after } = {}) => {
 		return handler(target);
 	};
 	return Object.freeze({ GET: route, POST: route, PUT: route, PATCH: route, DELETE: route, HEAD: route, OPTIONS: route });
+};
+
+/**
+ * Creates Next.js App Router route handlers for a product instance.
+ * @param {{
+ *   createProductInstance: (options: { config: any, problems: any, logger: any }) => any,
+ *   createRoutes: (product: any) => any,
+ *   after?: (task: () => Promise<unknown>) => void,
+ * }} options
+ * @returns {Record<'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS', (request: Request, context?: unknown) => Promise<Response>>}
+ */
+export const createProductApiRoute = ({ createProductInstance, createRoutes, after }) => {
+	const { config, problems } = configFromEnv();
+	const product = createProductInstance({ config, problems, logger: createLogger() });
+	return toNextRoute(product.handler(createRoutes(product)), { after });
 };

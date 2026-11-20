@@ -4,8 +4,8 @@
  */
 import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { givePoints } from '../adapters/ledger.js';
-import { insertOffers, loadOffers } from '../adapters/promotions-store.js';
+import { givePoints } from '../server/adapters/ledger.js';
+import { insertOffers, loadOffers } from '../server/adapters/promotions-store.js';
 import { COLLECTIONS, isDuplicate } from '../core/model.js';
 import { readyShop } from './helpers.js';
 
@@ -21,7 +21,7 @@ let cover;
 beforeAll(async () => {
 	shop = await readyShop();
 	data = await shop.db();
-	await data.ensureIndexes((await import('../adapters/product.js')).INDEXES);
+	await data.ensureIndexes((await import('../server/adapters/product.js')).INDEXES);
 	await data.collection(COLLECTIONS.categories).insertMany([
 		{ id: 'cat_parent', slug: 'phones', name: 'Phones', parentId: null, path: [], status: 'active' },
 		{ id: 'cat_child', slug: 'android', name: 'Android', parentId: 'cat_parent', path: ['cat_parent'], status: 'active' },

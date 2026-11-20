@@ -100,6 +100,13 @@ describe('mail templates (PLAN 0.5.10)', () => {
 		expect(renderMail('merchant_setup', { link: LINK, merchantName: 'Shop' }, CONTEXT).subject).toBe(
 			'Your Shop account on Acme Portal',
 		);
+		const setupMail = renderMail(
+			'merchant_setup',
+			{ link: LINK, merchantName: 'Shop', contactName: 'Alice', email: 'alice@shop.test' },
+			CONTEXT,
+		);
+		expect(setupMail.text).toContain('Hello Alice,');
+		expect(setupMail.text).toContain('Your login email is: alice@shop.test');
 		expect(renderMail('admin_invite', { link: LINK, role: 'Support' }, DEFAULTS).text).toContain('Shelfway as Support');
 		expect(renderMail('email_change_notice', { newEmail: 'new@shop.test' }, DEFAULTS).text).toContain('new@shop.test');
 		// without a support contact there is no support line

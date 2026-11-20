@@ -273,4 +273,32 @@ describe('Ecommerce’s Overview', () => {
 			'settings#checkout',
 		]);
 	});
+
+	it('Products, Orders, Customers, and Offers tabs are registered and render empty state when no website is picked', () => {
+		expect(TABS.products).toBeDefined();
+		expect(TABS.orders).toBeDefined();
+		expect(TABS.customers).toBeDefined();
+		expect(TABS.offers).toBeDefined();
+		expect(TABS.products.icon).toBe('box');
+		expect(TABS.orders.icon).toBe('receipt');
+		expect(TABS.customers.icon).toBe('users');
+		expect(TABS.offers.icon).toBe('coins');
+
+		const Products = TABS.products.component;
+		const Orders = TABS.orders.component;
+		const Customers = TABS.customers.component;
+		const Offers = TABS.offers.component;
+
+		const { container: p } = render(inDashboard(<Products {...props} websiteId={null} />));
+		expect(p.textContent).toContain('manage products');
+
+		const { container: o } = render(inDashboard(<Orders {...props} websiteId={null} />));
+		expect(o.textContent).toContain('manage orders');
+
+		const { container: c } = render(inDashboard(<Customers {...props} websiteId={null} />));
+		expect(c.textContent).toContain('manage customers');
+
+		const { container: of } = render(inDashboard(<Offers {...props} websiteId={null} />));
+		expect(of.textContent).toContain('manage offers');
+	});
 });

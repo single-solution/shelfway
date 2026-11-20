@@ -24,7 +24,7 @@ import { createService } from './service.js';
 import { createStoreDetails } from './store-details.js';
 import { WIDGET_SCRIPT } from './widget-script.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {{ id?: string, email?: string, phone?: string }} Person who a data-rights request is about */
 

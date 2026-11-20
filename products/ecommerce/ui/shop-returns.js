@@ -9,7 +9,7 @@
 import { quantityText } from '../core/measure.js';
 import { PHOTO_TYPES } from '../core/returns.js';
 import { button, field, formatsOf, h, problemText, select } from './shop-common.js';
-import { codeOf } from './problem-code.js';
+import { codeOf } from '@shelfway/app-kit/widget';
 
 /** A measured line offers at most this many amounts (its steps) to claim. */
 const MEASURED_CHOICES = 200;

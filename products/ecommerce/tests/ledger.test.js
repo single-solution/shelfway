@@ -16,8 +16,8 @@ import {
 	spendPoints,
 	swapOrderStock,
 	takePoints,
-} from '../adapters/ledger.js';
-import { createOrdersStore } from '../adapters/orders-store.js';
+} from '../server/adapters/ledger.js';
+import { createOrdersStore } from '../server/adapters/orders-store.js';
 import { DEFAULT_FLOW } from '../core/flow.js';
 import { COLLECTIONS } from '../core/model.js';
 import { planTransition } from '../core/transitions.js';
@@ -34,7 +34,7 @@ beforeAll(async () => {
 	await shop.switchOn(['catalog', 'checkout']);
 	await shop.connectDatabase();
 	data = await shop.db();
-	await data.ensureIndexes((await import('../adapters/product.js')).INDEXES);
+	await data.ensureIndexes((await import('../server/adapters/product.js')).INDEXES);
 });
 afterAll(async () => shop.product.close());
 
@@ -46,7 +46,7 @@ const CUSTOMER_ID = createId('cus');
  * @param {{ productId: string, variantId: string, quantity: number, kind?: 'physical' | 'digital' | 'service' }[]} lines
  * @param {Partial<import('../core/model.js').OrderRecord['promotions']>} [promotions]
  * @param {string} [key]
- * @returns {import('../adapters/ledger.js').Placement['order']}
+ * @returns {import('../server/adapters/ledger.js').Placement['order']}
  */
 const orderOf = (lines, promotions = {}, key = createId('key')) =>
 	storedOrder({

@@ -102,12 +102,16 @@ const pressNth = async (label, at = 0) => {
  * @param {boolean} [bad]
  */
 const fillOtp = async (x, bad = false) => {
+	const prev = x.w.lastOtp('owner@shop.test');
 	await x.b.api.post('/v1/me/step-up-otp', {});
 	if (bad) {
 		fillDialog('Two-step or recovery code', '000000');
 		return;
 	}
-	const code = await until(() => x.w.lastOtp('owner@shop.test'));
+	const code = await until(() => {
+		const curr = x.w.lastOtp('owner@shop.test');
+		return curr && curr !== prev ? curr : null;
+	});
 	fillDialog('Two-step or recovery code', String(code));
 };
 

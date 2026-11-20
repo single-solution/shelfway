@@ -295,8 +295,17 @@ export const createProducts = ({ ctx, repo, deps, billing }) => {
 						errors.push({ path: `/on/${index}`, message: `${key} needs ${dependency}, which is off` });
 		});
 		if (errors.length > 0) throw problem('validation_failed', 'The feature report is refused.', { errors });
-		const admin = await deps.dashboardAdmin(report.adminId);
 		const merchantId = String(doc.merchantId);
+		/** @type {{ type: import('../../../infra/rbac.js').ActorType, id: string, name: string }} */
+		let actor;
+		if (report.adminId === merchantId) {
+			const merchant = await deps.getMerchantRecord(merchantId);
+			if (merchant.status === 'suspended') throw problem('forbidden', 'Suspended merchants cannot switch features.');
+			actor = { type: 'merchant', id: merchant.merchantId, name: merchant.name };
+		} else {
+			const admin = await deps.dashboardAdmin(report.adminId);
+			actor = { type: 'admin', id: admin.adminId, name: admin.name };
+		}
 		const keys = [...on].sort();
 		// the switches and their money history in one transaction
 		await ctx.withTransaction(async (session) => {
@@ -307,7 +316,7 @@ export const createProducts = ({ ctx, repo, deps, billing }) => {
 						on: keys,
 						featuresVersion: report.version,
 						reportedAt: new Date(ctx.now()),
-						reportedBy: admin.adminId,
+						reportedBy: actor.id,
 					},
 				},
 				{ session },
@@ -316,7 +325,7 @@ export const createProducts = ({ ctx, repo, deps, billing }) => {
 			await billing.recordSwitches({ merchantId, websiteId, productId, on: keys }, session);
 		});
 		await audit(
-			{ type: 'admin', id: admin.adminId, name: admin.name },
+			{ type: actor.type, id: actor.id, name: actor.name },
 			'product.features_changed',
 			{ merchantId, websiteId, productId },
 			{ before: { on: doc.on ?? [] }, after: { version: report.version, on: keys }, requestId, ip },
@@ -339,11 +348,13 @@ export const createProducts = ({ ctx, repo, deps, billing }) => {
 		const { checked, status: merchantStatus } = await billing.statusOf(merchantId);
 		const status = productStatusOf({ added: doc.status === 'added', merchantStatus });
 		const { run, cut, now } = checked;
-		const todayMillicredits = run.charges
-			.filter((c) => c.hour >= cut && c.websiteId === websiteId && c.productId === productId)
-			.reduce((sum, c) => sum + c.amount, 0);
-		const graceEnd = status === 'grace' ? run.phase.graceEnd : null;
-		const validUntil = Math.min(now + STATUS_TTL_MS, graceEnd ?? Number.POSITIVE_INFINITY);
+		const todayMillicredits = run?.charges
+			? run.charges
+					.filter((c) => c.hour >= cut && c.websiteId === websiteId && c.productId === productId)
+					.reduce((sum, c) => sum + c.amount, 0)
+			: 0;
+		const graceEnd = status === 'grace' ? (run?.phase?.graceEnd ?? null) : null;
+		const validUntil = Math.min((now ?? ctx.now()) + STATUS_TTL_MS, graceEnd ?? Number.POSITIVE_INFINITY);
 		const merchant = await deps.getMerchantRecord(merchantId);
 		return {
 			websiteId,

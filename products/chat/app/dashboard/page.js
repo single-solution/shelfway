@@ -1,8 +1,8 @@
 'use client';
 /**
- * The product dashboard (PLAN 0.4.3): `@shelfway/ui`'s ProductDashboard, opened from the Portal (`/sso` →
- * `/dashboard?websiteId=…`), with Chat's words and its own parts of the tabs (`tabs.js`). Setup only: it calls the
- * kit's dashboard API and shows no business data (no conversations, no leads).
+ * The product dashboard (PLAN 0.4.3): `@shelfway/ui`'s ProductDashboard, opened from the Portal (`/sso` ->
+ * `/dashboard?websiteId=...`), with Chat's words and its own operational tabs (`tabs.js`): full conversation inbox
+ * and leads directory, assistant settings, and developer tools.
  * @module
  */
 import { ProductDashboard } from '@shelfway/ui/dashboard';

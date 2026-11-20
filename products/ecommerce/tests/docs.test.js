@@ -7,7 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import manifest from '../manifest.json' with { type: 'json' };
 import guide from '../docs/guide.json' with { type: 'json' };
 import openapi from '../openapi.json' with { type: 'json' };
-import { createProductInstance } from '../adapters/product.js';
+import { createProductInstance } from '../server/adapters/product.js';
 import staffAlertSettings from '../schemas/staff_alerts.settings.json' with { type: 'json' };
 import { operationOf, renderDocs } from '../server/docs.js';
 import { ORDER_MESSAGE_VALUES, ORDER_TEMPLATES } from '../server/order-messages.js';

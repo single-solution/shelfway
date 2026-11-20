@@ -15,7 +15,7 @@
  * @module
  */
 import { createId } from '@shelfway/contracts';
-import { createOrdersStore } from '../adapters/orders-store.js';
+import { createOrdersStore } from './adapters/orders-store.js';
 import { canMove, statusOf } from '../core/flow.js';
 import { COLLECTIONS, ID_PREFIX } from '../core/model.js';
 import { paymentStateOf, serverNote } from '../core/orders.js';
@@ -23,7 +23,7 @@ import { VIA_PAYMENTS } from '../core/payment-methods.js';
 import { planTransition } from '../core/transitions.js';
 import { createTransitions, rulesOf } from './transitions.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./service.js').PaymentFacts} PaymentFacts */

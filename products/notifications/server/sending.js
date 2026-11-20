@@ -52,13 +52,13 @@ import {
 } from '../core/limits.js';
 import { DRAIN_BATCH, LEASE_MS, nextAttemptAt, quietUntil, withinLimits } from '../core/timing.js';
 import { SIGNATURE_HEADER, urlsFor } from '../core/webhooks.js';
-import { messageAadOf } from '../adapters/crypto.js';
-import { createStore } from '../adapters/store.js';
+import { messageAadOf } from './adapters/crypto.js';
+import { createStore } from './adapters/store.js';
 import { failed } from '../core/gateway.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
-/** @typedef {import('../adapters/store.js').MessageRecord} MessageRecord */
-/** @typedef {import('../adapters/store.js').Store} Store */
+/** @typedef {import('./adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/store.js').MessageRecord} MessageRecord */
+/** @typedef {import('./adapters/store.js').Store} Store */
 /** @typedef {import('../core/channels.js').Channel} Channel */
 /** @typedef {import('../core/channels.js').Recipient} Recipient */
 /**
@@ -414,9 +414,9 @@ export const createSending = (product) => {
 				? [await s.store.subscriptions.get(message.address)].filter((sub) => sub !== null)
 				: await s.store.subscriptions.ofStaff(message.address);
 		if (subscriptions.length === 0) return { ...failed('no_subscription'), provider: 'webpush' };
-		/** @type {import('../adapters/webpush.js').PushOutcome[]} */
+		/** @type {import('./adapters/webpush.js').PushOutcome[]} */
 		const results = [];
-		for (const subscription of /** @type {import('../adapters/store.js').SubscriptionRecord[]} */ (subscriptions)) {
+		for (const subscription of /** @type {import('./adapters/store.js').SubscriptionRecord[]} */ (subscriptions)) {
 			const result = await product.webpush.push(value, subscription, payload);
 			if (!result.ok && result.gone) await s.store.subscriptions.remove(subscription.id);
 			if (result.ok && subscription.kind === 'visitor') await s.store.subscriptions.seen(subscription.id);
@@ -569,7 +569,7 @@ export const createSending = (product) => {
 			: real
 				? await deliver(s, real).catch(() => ({ ...failed('interrupted', { retryable: true }), provider: 'none' }))
 				: { ...failed('sealed_unreadable'), provider: 'none' };
-		/** @type {import('../adapters/store.js').Attempt} */
+		/** @type {import('./adapters/store.js').Attempt} */
 		const tried = {
 			channel: message.channel,
 			provider: result.provider,
@@ -855,7 +855,7 @@ export const createSending = (product) => {
 	/**
 	 * Deliver one outgoing webhook event (signed); a failure is retried on later uses.
 	 * @param {Site} s
-	 * @param {import('../adapters/store.js').WebhookEventRecord} event
+	 * @param {import('./adapters/store.js').WebhookEventRecord} event
 	 */
 	const deliverEvent = async (s, event) => {
 		const secret = await product.connections.value(s.websiteId, 'webhook_secret');

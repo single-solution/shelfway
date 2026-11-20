@@ -7,7 +7,7 @@
  */
 import { readFileSync } from 'node:fs';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { FINISH_PAGE } from '../adapters/imports.js';
+import { FINISH_PAGE } from '../server/adapters/imports.js';
 import { ALL, GROWTH, NOTIFY, STORAGE, UNIT_TYPES, readyShop } from './helpers.js';
 
 /** @type {Awaited<ReturnType<typeof readyShop>>} */

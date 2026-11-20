@@ -4,7 +4,7 @@
  * record, claim and product's stock read back, a move through the API, and Payments' refunds answered as a test says.
  */
 import { createId } from '@shelfway/contracts';
-import { givePoints } from '../adapters/ledger.js';
+import { givePoints } from '../server/adapters/ledger.js';
 import { COLLECTIONS } from '../core/model.js';
 import { PAYMENTS, storedOrder } from './helpers.js';
 

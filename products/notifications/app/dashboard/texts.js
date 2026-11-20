@@ -7,6 +7,11 @@ import { dashboardTexts } from '@shelfway/ui';
 
 export const TEXTS = dashboardTexts({
 	title: 'Notifications',
+	tabs: {
+		delivery: 'Delivery',
+		send: 'Send',
+		templates: 'Templates',
+	},
 	overview: {
 		templates: 'Templates',
 		templatesNone: 'Connect the database first',

@@ -34,9 +34,9 @@ import {
 	subscriptionView,
 } from '../core/payments.js';
 import { PROOF_TYPES } from '../core/widgets.js';
-import { manifest, strings } from '../adapters/product.js';
-import { createStore } from '../adapters/store.js';
-import { formFields } from '../adapters/util.js';
+import { manifest, strings } from './adapters/product.js';
+import { createStore } from './adapters/store.js';
+import { formFields } from './adapters/util.js';
 import { renderDocs } from './docs.js';
 import {
 	PAGE_HEADERS,
@@ -51,7 +51,7 @@ import {
 import { SERVER_ACTOR, createService } from './service.js';
 import { WIDGET_SCRIPT } from './widget-script.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('../core/gateways.js').Gateway} Gateway */
 
@@ -208,7 +208,7 @@ export const createRoutes = (product) => {
 	 * The payments list's filters (`?status=&q=`), shared by the list and its counts; an unknown status or an empty
 	 * search filters nothing.
 	 * @param {any} ctx
-	 * @returns {import('../adapters/store.js').PaymentQuery}
+	 * @returns {import('./adapters/store.js').PaymentQuery}
 	 */
 	const paymentQuery = (ctx) => ({
 		status: /** @type {readonly string[]} */ (PAYMENT_STATUSES).includes(ctx.query.status) ? ctx.query.status : undefined,
@@ -249,7 +249,7 @@ export const createRoutes = (product) => {
 		const s = await siteOf(ctx);
 		const body = typeof ctx.body === 'object' && ctx.body !== null ? ctx.body : {};
 		const refunded = await service.refund(s, await paymentOf(s, ctx.params.id), body, who(ctx));
-		const refund = /** @type {import('../adapters/store.js').PaymentRecord['refunds'][number]} */ (refunded.refunds.at(-1));
+		const refund = /** @type {import('./adapters/store.js').PaymentRecord['refunds'][number]} */ (refunded.refunds.at(-1));
 		const { money } = await product.format(s.websiteId);
 		const texts = await product.settings.texts(s.websiteId);
 		// the detail is data and the website's own words (P11): the amount, a manual refund's mark, the reason
@@ -468,11 +468,11 @@ export const createRoutes = (product) => {
 	/**
 	 * A payment from a link, with what the payer entered.
 	 * @param {Site} s
-	 * @param {import('../adapters/store.js').LinkRecord} link
+	 * @param {import('./adapters/store.js').LinkRecord} link
 	 * @param {{ amount: number | null, gateway: unknown, name: unknown, email: unknown, phone: unknown, answers: unknown }} input
 	 *   `amount`: what the payer entered, in minor units (null when it is not an amount); `phone` and `answers` what the
 	 *   link asks (P3)
-	 * @returns {Promise<{ ok: true, payment: import('../adapters/store.js').PaymentRecord } |
+	 * @returns {Promise<{ ok: true, payment: import('./adapters/store.js').PaymentRecord } |
 	 *   { ok: false, field: string, key: string, label?: string }>}
 	 */
 	const payLink = async (s, link, input) => {
@@ -683,7 +683,7 @@ export const createRoutes = (product) => {
 				if (answer.news) await service.applyPayment(s, gateway, answer.news, 'payer returned');
 			}
 		}
-		const after = /** @type {import('../adapters/store.js').PaymentRecord} */ (await s.store.payments.get(payment.id));
+		const after = /** @type {import('./adapters/store.js').PaymentRecord} */ (await s.store.payments.get(payment.id));
 		if (after.returnUrl && after.status !== 'failed') return seeOther(withParam(after.returnUrl, 'shelfway_payment', after.id));
 		return seeOther(`/pay/${websiteId}/${after.id}`);
 	};

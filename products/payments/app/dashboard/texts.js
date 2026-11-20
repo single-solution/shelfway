@@ -7,6 +7,11 @@ import { dashboardTexts } from '@shelfway/ui';
 
 export const TEXTS = dashboardTexts({
 	title: 'Payments',
+	tabs: {
+		payments: 'Payments',
+		links: 'Payment links',
+		subscriptions: 'Subscriptions',
+	},
 	overview: {
 		gateways: 'Ways to pay ready',
 		gatewaysHelp:

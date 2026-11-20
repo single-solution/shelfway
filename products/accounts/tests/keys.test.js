@@ -4,8 +4,8 @@
  * new key, and then the previous key can be removed.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createSealer, keyAadOf, outboxAadOf, resealWebsite, totpAadOf, totpCode } from '../adapters/crypto.js';
-import { INDEXES } from '../adapters/store.js';
+import { createSealer, keyAadOf, outboxAadOf, resealWebsite, totpAadOf, totpCode } from '../server/adapters/crypto.js';
+import { INDEXES } from '../server/adapters/store.js';
 import { setup } from './helpers.js';
 
 /** The harness's `ENCRYPTION_KEY`. */

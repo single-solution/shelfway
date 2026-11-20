@@ -9,8 +9,8 @@
  */
 import { problem } from '@shelfway/app-kit';
 import { createId } from '@shelfway/contracts';
-import { productTypes } from '../adapters/catalog-store.js';
-import { createOrdersStore } from '../adapters/orders-store.js';
+import { productTypes } from './adapters/catalog-store.js';
+import { createOrdersStore } from './adapters/orders-store.js';
 import {
 	DOWNLOAD_SECONDS,
 	MAX_FILE_BYTES,
@@ -27,7 +27,7 @@ import { ID_PREFIX } from '../core/model.js';
 import { serverNote } from '../core/orders.js';
 import { UPLOAD_SECONDS } from './service.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('../core/model.js').OrderRecord} OrderRecord */

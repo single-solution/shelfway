@@ -147,6 +147,7 @@ function ConnectDialog({ open, title, description, submitLabel, urlRequired, pat
 			onClose={onClose}
 			title={title}
 			description={description}
+			size="md"
 			footer={
 				<>
 					<Button variant="secondary" onClick={onClose}>
@@ -170,6 +171,7 @@ function ConnectDialog({ open, title, description, submitLabel, urlRequired, pat
 					onChange={(e) => setUrl(e.currentTarget.value)}
 					error={errors.url ?? fields.url}
 					required={urlRequired}
+					wide
 				/>
 				<Input
 					name="product_connect_secret"
@@ -181,6 +183,7 @@ function ConnectDialog({ open, title, description, submitLabel, urlRequired, pat
 					onChange={(e) => setSecret(e.currentTarget.value)}
 					error={errors.secret ?? fields.secret}
 					required
+					wide
 				/>
 				{refused ? (
 					<p role="alert" className="text-sm font-medium text-danger">

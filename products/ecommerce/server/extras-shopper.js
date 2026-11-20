@@ -6,13 +6,13 @@
  * @module
  */
 import { defineRoute, problem } from '@shelfway/app-kit';
-import { categoriesOf } from '../adapters/catalog-store.js';
-import { userIdsOf } from '../adapters/extras-store.js';
+import { categoriesOf } from './adapters/catalog-store.js';
+import { userIdsOf } from './adapters/extras-store.js';
 import { compareRows, gradeLabels, parseCompareIds } from '../core/compare.js';
 import { COLLECTIONS, MAX_COMPARE, MAX_WISHLIST, NO_ID } from '../core/model.js';
 import { VISITOR_LIMITS, VISITOR_WRITE_LIMITS } from './service.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./extras-cards.js').Cards} Cards */

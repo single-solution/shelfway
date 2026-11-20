@@ -1,8 +1,8 @@
 'use client';
 /**
  * The product dashboard (PLAN 0.4.3): the shared dashboard of every product (`@shelfway/ui/dashboard`), opened from the
- * Portal (`/sso` → `/dashboard?websiteId=…`), with Growth's words and its own parts of the Overview, Settings,
- * Developers and Defaults tabs (`tabs.js`). Setup only: it calls the kit's dashboard API and shows no business data.
+ * Portal (`/sso` -> `/dashboard?websiteId=...`), with Growth's operational tabs (`tabs.js`): visitor analytics, SEO
+ * checklist, redirects management, and parts of the Overview, Settings, Developers and Defaults tabs.
  * @module
  */
 import { ProductDashboard } from '@shelfway/ui/dashboard';

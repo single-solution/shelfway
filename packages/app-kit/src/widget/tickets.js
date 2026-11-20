@@ -38,6 +38,18 @@ export const requestJson = async (fetch, url, { method = 'GET', headers = {}, bo
 };
 
 /**
+ * The problem code of an answer: the last segment of its problem type, `offline` when the call could not reach the
+ * website (status 0), else ''.
+ * @param {{ status?: number, data?: any } | null | undefined} answer
+ * @returns {string}
+ */
+export const codeOf = (answer) => {
+	if (answer?.status === 0) return 'offline';
+	const type = answer?.data?.type;
+	return typeof type === 'string' ? type.slice(type.lastIndexOf('/') + 1) : '';
+};
+
+/**
  * The ticket source of the admin widgets. A ticket whose `expiresAt` is not a time cannot be renewed in time, so it
  * counts as no ticket (signed out).
  * @param {{ first: Ticket, getTicket: GetTicket, schedule: (task: () => void, ms: number) => number,

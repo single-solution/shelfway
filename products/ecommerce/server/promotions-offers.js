@@ -12,7 +12,7 @@
 import { randomBytes } from 'node:crypto';
 import { created, defineRoute, paginate, problem } from '@shelfway/app-kit';
 import { createId } from '@shelfway/contracts';
-import { attributesOf, productTypes } from '../adapters/catalog-store.js';
+import { attributesOf, productTypes } from './adapters/catalog-store.js';
 import { bundleView, checkBundleInput } from '../core/bundles.js';
 import { IMAGE_TYPES } from '../core/catalog-content.js';
 import { checkBatchInput, checkCouponInput, couponView, drawCode } from '../core/coupons.js';
@@ -20,11 +20,11 @@ import { checkDealInput, dealView } from '../core/deals.js';
 import { IMAGE_MAX_BYTES } from '../core/limits.js';
 import { dealScore } from '../core/seo-score.js';
 import { COLLECTIONS, ID_PREFIX, isDuplicate } from '../core/model.js';
-import { deleteOffer, getOffer, insertOffers, listOffers, missingRefs, updateOffer } from '../adapters/promotions-store.js';
+import { deleteOffer, getOffer, insertOffers, listOffers, missingRefs, updateOffer } from './adapters/promotions-store.js';
 import { SERVER_LIMITS, UPLOAD_SECONDS } from './service.js';
 
 /** @typedef {import('./service.js').Service} Service */
-/** @typedef {import('../adapters/promotions-store.js').OfferCollection} OfferCollection */
+/** @typedef {import('./adapters/promotions-store.js').OfferCollection} OfferCollection */
 
 /**
  * How each kind of offer is checked, shown, named in the log and given an id.

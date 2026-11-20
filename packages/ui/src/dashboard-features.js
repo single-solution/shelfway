@@ -11,11 +11,9 @@ import { useState } from 'react';
 import { TextLink } from './display.js';
 import { Switch } from './fields.js';
 import { NextStep } from './blocks.js';
-import { ConfirmDialog } from './overlay.js';
 import { call, fill } from './dashboard-api.js';
-import { formatCreditsPerHour, supportContact } from './format.js';
-import { useDashboard, websiteSettingsUrl, withDependents } from './dashboard-parts.js';
-import { useDisplayLocale } from './time.js';
+import { supportContact } from './format.js';
+import { websiteSettingsUrl, withDependents } from './dashboard-parts.js';
 
 /** @typedef {import('./dashboard-api.js').Answer} Answer */
 /** @typedef {import('./dashboard-tabs.js').Feature} Feature */
@@ -34,55 +32,29 @@ import { useDisplayLocale } from './time.js';
  *   `reload`: reads the features and their settings again after a save
  */
 export function useFeatureSwitches({ base, catalog, warnings, reload }) {
-	const { texts, namesOf } = useDashboard();
-	const locale = useDisplayLocale();
-	const F = texts.features;
-	const [asked, setAsked] = useState(
-		/** @type {{ feature: Feature, checked: boolean, on: string[], alsoOff: string[] } | null} */ (null),
-	);
-	const [open, setOpen] = useState(false);
 	const [busy, setBusy] = useState(false);
 	const [result, setResult] = useState(/** @type {Answer | null} */ (null));
 	const saved = catalog.filter((feature) => feature.on).map((feature) => feature.key);
-	/** @param {string[]} on */
-	const costOf = (on) => catalog.reduce((sum, feature) => sum + (on.includes(feature.key) ? feature.millicreditsPerHour : 0), 0);
+
 	/** @param {Feature} feature @param {boolean} checked */
-	const ask = (feature, checked) => {
+	const ask = async (feature, checked) => {
 		const off = withDependents(catalog, saved, feature.key);
 		const on = checked ? [...saved, feature.key] : saved.filter((key) => !off.has(key));
-		setAsked({
-			feature,
-			checked,
-			on,
-			alsoOff: saved.filter((key) => key !== feature.key && !on.includes(key)),
-		});
-		setOpen(true);
+		setBusy(true);
+		const next = await call('PUT', `${base}/features`, { on });
+		setBusy(false);
+		setResult(next);
+		if (next.ok) reload();
 	};
-	const picked = asked ? (warnings ? warnings(asked.on) : []) : [];
-	const dialog = asked ? (
-		<ConfirmDialog
-			open={open}
-			busy={busy}
-			title={fill(asked.checked ? F.switchOnTitle : F.switchOffTitle, { name: asked.feature.name })}
-			confirmLabel={asked.checked ? F.switchOn : F.switchOff}
-			cancelLabel={texts.cancel}
-			onClose={() => setOpen(false)}
-			onConfirm={async () => {
-				setBusy(true);
-				const next = await call('PUT', `${base}/features`, { on: asked.on });
-				setBusy(false);
-				setOpen(false);
-				setResult(next);
-				if (next.ok) reload();
-			}}>
-			<p>{fill(F.confirmCost, { cost: formatCreditsPerHour(costOf(asked.on), { locale }) })}</p>
-			{asked.alsoOff.length > 0 ? <p>{fill(F.alsoOff, { features: namesOf(asked.alsoOff) })}</p> : null}
-			{picked.map((warning) => (
-				<p key={warning}>{warning}</p>
-			))}
-		</ConfirmDialog>
-	) : null;
-	return { ask, dialog, result, warned: warnings ? warnings(saved) : [], cost: costOf(saved) };
+
+	return {
+		ask,
+		dialog: null,
+		result,
+		busy,
+		warned: warnings ? warnings(saved) : [],
+		cost: 0,
+	};
 }
 
 /**
@@ -102,7 +74,6 @@ export function featureLooks({
 	connectionsRetry,
 	who,
 	dash,
-	locale,
 	ask,
 	support,
 	portal,
@@ -145,14 +116,11 @@ export function featureLooks({
 					checked={on}
 					locked={!admin}
 					lockedLabel={F.locked}
-					disabled={blocked}
+					disabled={!admin || blocked}
 					onChange={(next) => ask(feature, next)}
 				/>
 			),
-			meta: [
-				formatCreditsPerHour(feature.millicreditsPerHour, { locale }),
-				...(changed > 0 ? [fill(texts.settings.changed, { count: changed })] : []),
-			],
+			meta: changed > 0 ? [fill(texts.settings.changed, { count: changed })] : [],
 			...(failed || broken.length > 0
 				? { status: /** @type {const} */ ('attention'), statusLabel: F.needsSetup, warning: { text: problem } }
 				: blocked

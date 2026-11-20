@@ -8,8 +8,8 @@
  */
 import { describe, expect, it } from 'vitest';
 import { createMemoryStore } from '@shelfway/app-kit';
-import { createFileSigner, createSealer } from '../adapters/crypto.js';
-import { createLists } from '../adapters/lists.js';
+import { createFileSigner, createSealer } from '../server/adapters/crypto.js';
+import { createLists } from '../server/adapters/lists.js';
 import { detectLanguage, markerSetsOf, replyMatchesLanguage, translationOf } from '../core/language.js';
 import { LANGUAGE_MIN_MARKERS } from '../core/limits.js';
 import { splitBubbles } from '../core/markdown.js';

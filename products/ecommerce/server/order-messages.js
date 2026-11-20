@@ -21,7 +21,7 @@
  * @module
  */
 
-import { documentFieldsOf } from '../adapters/catalog-store.js';
+import { documentFieldsOf } from './adapters/catalog-store.js';
 import { fieldMessageValues } from '../core/fields.js';
 import { orderPlaceholders } from '../core/invoice.js';
 

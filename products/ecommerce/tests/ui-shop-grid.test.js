@@ -19,7 +19,7 @@ import {
 	textsOf,
 	warrantyText,
 } from '../ui/shop-common.js';
-import { codeOf } from '../ui/problem-code.js';
+import { codeOf } from '@shelfway/app-kit/widget';
 import {
 	COMPARE_EVENT,
 	clearCompare,

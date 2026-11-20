@@ -10,7 +10,7 @@
  */
 import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { givePoints, loyaltyAccount, placeOrder } from '../adapters/ledger.js';
+import { givePoints, loyaltyAccount, placeOrder } from '../server/adapters/ledger.js';
 import { PLACED_FACTS, factsOf } from '../core/facts.js';
 import { moveOf, nextStatuses } from '../core/flow.js';
 import { COLLECTIONS } from '../core/model.js';

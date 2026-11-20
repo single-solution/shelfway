@@ -6,8 +6,8 @@
  */
 import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { placeOrder } from '../adapters/ledger.js';
-import { createOrdersStore } from '../adapters/orders-store.js';
+import { placeOrder } from '../server/adapters/ledger.js';
+import { createOrdersStore } from '../server/adapters/orders-store.js';
 import { createCheckout } from '../server/checkout.js';
 import { createOrders } from '../server/orders.js';
 import { createService } from '../server/service.js';
@@ -28,7 +28,7 @@ beforeAll(async () => {
 	shop = await readyShop();
 	await shop.list('item_types', UNIT_TYPES);
 	data = await shop.db();
-	await data.ensureIndexes((await import('../adapters/product.js')).INDEXES);
+	await data.ensureIndexes((await import('../server/adapters/product.js')).INDEXES);
 	ticket = await shop.ticket();
 	await shop.list('couriers', [
 		{ key: 'swift', name: 'Swift Post', trackingUrl: 'https://track.example.org/t?n={tracking}' },

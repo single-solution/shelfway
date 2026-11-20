@@ -10,7 +10,7 @@
  */
 import { PROOF_MAX_BYTES, PROOF_TYPES } from '../core/orders.js';
 import { field, formatsOf, h, problemText } from './shop-common.js';
-import { codeOf } from './problem-code.js';
+import { codeOf } from '@shelfway/app-kit/widget';
 
 /** @typedef {import('./shop-common.js').Texts} Texts */
 /** @typedef {import('./widget.js').Shop} Shop */

@@ -6,8 +6,8 @@
  * @module
  */
 import { defineRoute, problem } from '@shelfway/app-kit';
-import { productTypes } from '../adapters/catalog-store.js';
-import { createOrdersStore } from '../adapters/orders-store.js';
+import { productTypes } from './adapters/catalog-store.js';
+import { createOrdersStore } from './adapters/orders-store.js';
 import { elementsOf } from '../core/item-types.js';
 import { OPTIONAL_ADDRESS_FIELDS } from '../core/address.js';
 import { zoneCities } from '../core/delivery.js';
@@ -20,7 +20,7 @@ import { policiesOf } from './policies.js';
 import { SERVER_LIMITS, VISITOR_LIMITS, VISITOR_WRITE_LIMITS } from './service.js';
 import { DAY_MS } from '../core/durations.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 

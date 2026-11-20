@@ -11,7 +11,7 @@ import { businessJsonOf, publicStoreDetails, storeDetailsFromWebsite } from '../
 import { conditional } from './http-cache.js';
 import { VISITOR_LIMITS } from './service.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 
 /**

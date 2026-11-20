@@ -97,10 +97,10 @@ export const createMerchants = (deps, hooks) => {
 		const mailed = await sendLater(deps, {
 			to: merchant.email,
 			template: 'merchant_setup',
-			data: { link: setup.link, merchantName: merchant.name },
+			data: { link: setup.link, merchantName: merchant.name, contactName: merchant.ownerName, email: merchant.email },
 		});
 		await audit(actor, 'merchant.setup_link_sent', target, { after: { mailed }, meta });
-		return { link: null, expiresAt: setup.expiresAt, mailed };
+		return { link: mailed ? null : setup.link, expiresAt: setup.expiresAt, mailed };
 	};
 
 	/**
@@ -153,9 +153,9 @@ export const createMerchants = (deps, hooks) => {
 		/**
 		 * Create a merchant (Owner, Support): the login email is claimed (unique across the Portal) and a 72-hour setup
 		 * link is emailed when email sending is set (else the admin copies it).
-		 * @param {MerchantFields & { actor: Actor, meta?: Meta }} input
+		 * @param {MerchantFields & { copy?: boolean, actor: Actor, meta?: Meta }} input
 		 */
-		create: async ({ name, ownerName, email, phone, country = null, actor, meta = {} }) => {
+		create: async ({ name, ownerName, email, phone, country = null, copy = false, actor, meta = {} }) => {
 			const merchantId = repo.id('mer');
 			await repo.claimLogin(email, 'merchant', merchantId);
 			const derivedCountry = (phone ? countryOfPhone(phone) : null) ?? country ?? null;
@@ -184,7 +184,7 @@ export const createMerchants = (deps, hooks) => {
 				throw error;
 			}
 			await audit(actor, 'merchant.created', { type: 'merchant', id: merchantId, merchantId }, { after: { name }, meta });
-			const setup = await deliver(doc, { actor, meta });
+			const setup = await deliver(doc, { copy, actor, meta });
 			return { merchant: presentMerchant({ ...doc, createdAt: new Date(ctx.now()) }), setup };
 		},
 

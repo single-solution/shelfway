@@ -10,7 +10,7 @@ import { createMedia } from './catalog-media.js';
 import { hiddenFor, visibleMatch } from './catalog-visibility.js';
 import { createShownPrices } from './shown-prices.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('../core/model.js').ProductRecord} ProductRecord */

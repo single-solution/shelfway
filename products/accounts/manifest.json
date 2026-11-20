@@ -171,7 +171,7 @@
 			"dependsOn": [],
 			"recommendFor": ["signIn.social"],
 			"settings": {
-				"$ref": "schemas/google.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -181,7 +181,7 @@
 			"dependsOn": [],
 			"recommendFor": ["signIn.social"],
 			"settings": {
-				"$ref": "schemas/apple.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -191,7 +191,7 @@
 			"dependsOn": [],
 			"recommendFor": ["signIn.social"],
 			"settings": {
-				"$ref": "schemas/facebook.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -201,7 +201,7 @@
 			"dependsOn": [],
 			"recommendFor": ["signIn.*", "offers.member_prices"],
 			"settings": {
-				"$ref": "schemas/roles.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -210,7 +210,7 @@
 			"description": "The merchant's own profile fields (text, number, date, choice), shown at sign-up and in My account.",
 			"dependsOn": [],
 			"settings": {
-				"$ref": "schemas/custom_fields.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -219,7 +219,7 @@
 			"description": "A 6-digit authenticator-app code after the first step, with 10 recovery codes; optional, or required per role.",
 			"dependsOn": [],
 			"settings": {
-				"$ref": "schemas/two_step.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -246,7 +246,7 @@
 			"description": "The merchant's consent list (terms, privacy policy, marketing …): sign-up and sign-in ask the required agreements again when their version changes; marketing consent stays apart, given or withdrawn by the user in My account; each answer is recorded on the user with its version and time.",
 			"dependsOn": [],
 			"settings": {
-				"$ref": "schemas/consents.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -265,7 +265,7 @@
 			"description": "Keeps a copy of the activity log of every other product on the website.",
 			"dependsOn": [],
 			"settings": {
-				"$ref": "schemas/activity_copies.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -275,7 +275,7 @@
 			"dependsOn": [],
 			"recommendFor": ["signIn.*+sells.*"],
 			"settings": {
-				"$ref": "schemas/orders_tab.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -304,7 +304,7 @@
 			"dependsOn": [],
 			"recommendFor": ["moving.yes"],
 			"settings": {
-				"$ref": "schemas/import.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		}
 	],

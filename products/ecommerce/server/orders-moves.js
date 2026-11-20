@@ -36,8 +36,8 @@
  * @module
  */
 import { allows, problem } from '@shelfway/app-kit';
-import { fieldsOn, productTypes, unitRulesOf } from '../adapters/catalog-store.js';
-import { heldStockBefore } from '../adapters/ledger.js';
+import { fieldsOn, productTypes, unitRulesOf } from './adapters/catalog-store.js';
+import { heldStockBefore } from './adapters/ledger.js';
 import { checkUnit, missingOrderFields, sharedKeys, unitKeys } from '../core/fields.js';
 import { bookingCourier, courierNamed, trackingLink } from '../core/couriers.js';
 import { BEFORE_DELIVERY_ROLES, WAITING_ROLES as WAITING, canMove, confirmedStatus, moveOf, statusOf } from '../core/flow.js';
@@ -71,7 +71,7 @@ import {
 	statusLabel,
 } from '../core/orders.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('../core/model.js').OrderRecord} OrderRecord */

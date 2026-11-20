@@ -5,7 +5,7 @@
  * @module
  */
 import { problem } from '@shelfway/app-kit';
-import { SEO_DEFAULTS } from '../adapters/product.js';
+import { SEO_DEFAULTS } from './adapters/product.js';
 import { siteAddress } from '../core/catalog-content.js';
 import { absolute } from '../core/links.js';
 import { COLLECTIONS } from '../core/model.js';

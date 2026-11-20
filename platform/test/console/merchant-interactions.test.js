@@ -161,7 +161,7 @@ describe('merchant console interactions (jsdom): sign-in, Account, Overview, web
 		expect(
 			shows('Business details') && shows('Email and password') && shows('Two-step sign-in') && shows('Your activity'),
 		).toBe(true);
-		fill('Phone', '+1 212 555 0187');
+		fill('Phone number', '+1 212 555 0187');
 		await press('Save');
 		await a.waitCall('PATCH', '/v1/me', (st) => st === 200);
 		await until(() => shows('Business details saved.'));

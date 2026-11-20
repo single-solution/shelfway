@@ -29,7 +29,7 @@ export const BUSINESS_JSON_TEMPLATE = Object.freeze({
 });
 
 /** The most currencies a business lists. */
-export const MAX_CURRENCIES = 20;
+const MAX_CURRENCIES = 20;
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE = /^\+?[0-9 ().-]{3,40}$/;

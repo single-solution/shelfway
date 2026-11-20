@@ -359,7 +359,8 @@ describe('rights: products on websites, switching features, credits, receipts an
 				support: async (x) => expect((await x.report(SUPPORT_ADMIN)).status).toBe(200),
 				finance: async (x) => expect((await x.report(FINANCE_ADMIN)).status).toBe(403),
 				merchant: async (x) => {
-					expect((await x.report(M1)).status).toBe(422); // a merchant is never an admin
+					expect((await x.report(M1)).status).toBe(200); // the website's owning merchant is allowed
+					expect((await x.report(M2)).status).toBe(422); // another merchant is not an admin
 					expect(
 						(
 							await x.as(x.merchant, 'PUT', `/v1/product/websites/${W1}/features`, {

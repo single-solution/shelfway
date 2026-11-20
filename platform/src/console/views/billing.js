@@ -38,7 +38,7 @@ export const merchantPill = (status) => ({
  * Merchant status (Active green, Low balance and In grace amber, Stopped and Suspended red).
  * @param {{ status: string }} props
  */
-export function MerchantStatusBadge({ status }) {
+function MerchantStatusBadge({ status }) {
 	return (
 		<Badge tone={MERCHANT_TONES[status] ?? 'neutral'} dot>
 			{BILLING.merchantStatus[/** @type {MerchantStatus} */ (status)] ?? status}

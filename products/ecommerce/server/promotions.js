@@ -8,8 +8,8 @@
  * @module
  */
 import { defineRoute, problem } from '@shelfway/app-kit';
-import { givePoints, loyaltyAccount, takePoints } from '../adapters/ledger.js';
-import { dealsLiveNow, deletePerson, pendingPoints, personRecords } from '../adapters/promotions-store.js';
+import { givePoints, loyaltyAccount, takePoints } from './adapters/ledger.js';
+import { dealsLiveNow, deletePerson, pendingPoints, personRecords } from './adapters/promotions-store.js';
 import { byShowOrder, publicDeal } from '../core/deals.js';
 import { COLLECTIONS } from '../core/model.js';
 import { isCustomerId } from '../core/orders.js';
@@ -27,7 +27,7 @@ import { createMedia } from './catalog-media.js';
 import { createOfferRoutes } from './promotions-offers.js';
 import { SERVER_LIMITS, VISITOR_LIMITS } from './service.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('../core/model.js').LoyaltyRecord} LoyaltyRecord */

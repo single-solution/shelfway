@@ -11,7 +11,7 @@
  *   `t('key')` used in the code exists (`strings.*`);
  * - `.env.example` lists exactly `MONGODB_URI`, `CONNECT_SECRET`, `ENCRYPTION_KEY`, and may list the optional
  *   `ENCRYPTION_KEY_PREVIOUS` (`env.example`), and `vercel.json` declares no crons (`vercel.crons`);
- * - import direction: server → core | adapters, adapters → core, ui → core, app → server | adapters | core | strings, never
+ * - import direction: server -> core | adapters, adapters -> core, ui -> core, app -> server | adapters | core | ui | strings, never
  *   the reverse; core stays pure and DOM-free; no import leaves the product folder (`imports.*`, `core.dom`);
  * - package wiring: the kit and the tooling are dependencies, the standard scripts exist, and every imported package
  *   is listed in package.json (`package.*`);
@@ -84,7 +84,7 @@ const IMPORT_POLICY = Object.freeze({
 	server: { layers: ['server', 'core', 'adapters'], data: true, packages: null },
 	adapters: { layers: ['adapters', 'core'], data: true, packages: null },
 	ui: { layers: ['ui', 'core'], data: false, packages: ['@shelfway/app-kit/widget', '@shelfway/ui/seo-preview'] },
-	app: { layers: ['app', 'server', 'adapters', 'core'], data: true, packages: null },
+	app: { layers: ['app', 'server', 'adapters', 'core', 'ui'], data: true, packages: null },
 });
 
 /** Auth modes of `defineRoute`. */
@@ -166,8 +166,12 @@ export const packageOf = (specifier) => {
  * @param {string} entry `dir/` or a file
  * @returns {boolean}
  */
-const present = (files, entry) =>
-	entry.endsWith('/') ? files.list.some((file) => file.startsWith(entry)) : files.set.has(entry);
+const present = (files, entry) => {
+	if (entry === 'adapters/') {
+		return files.list.some((file) => file.startsWith('adapters/') || file.startsWith('server/adapters/'));
+	}
+	return entry.endsWith('/') ? files.list.some((file) => file.startsWith(entry)) : files.set.has(entry);
+};
 
 /**
  * The layout every product has.

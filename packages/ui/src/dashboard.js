@@ -32,7 +32,17 @@ import { DisplayLocale } from './time.js';
 import { DashboardProvider, useDashboard } from './dashboard-parts.js';
 import { FrameContext } from './dashboard-page.js';
 import { settingSectionOf } from './dashboard-settings.js';
-import { DefaultsTab, DevelopersTab, OverviewTab, PricesTab, SettingsTab, TextsTab } from './dashboard-tabs.js';
+import {
+	AdminTab,
+	DefaultsTab,
+	DevelopersTab,
+	OverviewTab,
+	PricesTab,
+	SettingsTab,
+	TextsTab,
+	createAdminTab,
+	developerSection,
+} from './dashboard-tabs.js';
 
 export { call, fill, useLoad } from './dashboard-api.js';
 export {
@@ -60,7 +70,7 @@ export {
 	useTextsEditor,
 } from './dashboard-settings.js';
 export { FrameContext, SectionsPage, pageState, useCrumbs } from './dashboard-page.js';
-export { DefaultsTab, DevelopersTab, OverviewTab, PricesTab, SettingsTab, TextsTab };
+export { AdminTab, DefaultsTab, DevelopersTab, OverviewTab, PricesTab, SettingsTab, TextsTab, createAdminTab, developerSection };
 
 /** @typedef {import('./dashboard-api.js').Answer} Answer */
 /** @typedef {import('./dashboard-parts.js').DashboardManifest} DashboardManifest */
@@ -272,7 +282,6 @@ const STANDARD_TABS = [
 	['texts', { component: TextsTab, icon: 'type', kind: 'settings' }],
 	['developers', { component: DevelopersTab, icon: 'code', kind: 'developer' }],
 	['defaults', { component: DefaultsTab, icon: 'layers', kind: 'default', global: true }],
-	['prices', { component: PricesTab, icon: 'coins', kind: 'price', global: true }],
 ];
 
 /**
@@ -284,12 +293,13 @@ const STANDARD_TABS = [
 const tabsOf = (own) => {
 	const found = new Map(STANDARD_TABS);
 	for (const [key, value] of Object.entries(own)) {
-		const standard = found.get(key);
+		const standard =
+			found.get(key) ?? (key === 'prices' ? { component: PricesTab, icon: 'coins', kind: 'price', global: true } : undefined);
 		if (value === null) {
-			if (!standard) throw new Error(`ProductDashboard: there is no standard tab “${key}” to leave out`);
+			if (!standard) throw new Error(`ProductDashboard: there is no standard tab "${key}" to leave out`);
 			found.delete(key);
 		} else if (typeof value === 'function') {
-			if (!standard) throw new Error(`ProductDashboard: the new tab “${key}” needs { component, icon, kind }`);
+			if (!standard) throw new Error(`ProductDashboard: the new tab "${key}" needs { component, icon, kind }`);
 			found.set(key, { ...standard, component: value });
 		} else found.set(key, value);
 	}

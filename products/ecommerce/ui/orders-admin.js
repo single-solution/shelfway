@@ -285,6 +285,8 @@ const ordersTab = (kit, panel) => {
 		empty: t('ordersAdmin.noOrders'),
 		nothing: t('ordersAdmin.nothing'),
 		actions: [
+			has('csv') ? kit.button(t('ordersAdmin.exportCsv'), exportCsv) : null,
+			kit.button(t('ordersAdmin.restatus'), restatus),
 			kit.moreMenu([
 				has('csv') ? { label: t('ordersAdmin.exportCsv'), onSelect: exportCsv } : null,
 				{ label: t('ordersAdmin.restatus'), onSelect: restatus },

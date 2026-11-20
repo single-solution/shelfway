@@ -9,8 +9,8 @@
  */
 import { createId } from '@shelfway/contracts';
 import { countHandlers, created, defineRoute, noContent, ok, paginate, problem } from '@shelfway/app-kit';
-import { keyOpens } from '../adapters/crypto.js';
-import { answerCounts, refreshRating, reviewSummary, userIdsOf } from '../adapters/extras-store.js';
+import { keyOpens } from './adapters/crypto.js';
+import { answerCounts, refreshRating, reviewSummary, userIdsOf } from './adapters/extras-store.js';
 import { afterFilter, keyOf, sortOf } from '../core/extras-pages.js';
 import { COLLECTIONS, ID_PREFIX, NO_ID, isDuplicate } from '../core/model.js';
 import {

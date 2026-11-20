@@ -19,8 +19,8 @@ import {
 	staffCaller,
 } from '@shelfway/app-kit/testing';
 import apiJson from '../schemas/api.json' with { type: 'json' };
-import { createProductInstance, manifest } from '../adapters/product.js';
-import { keyOf } from '../adapters/store.js';
+import { createProductInstance, manifest } from '../server/adapters/product.js';
+import { keyOf } from '../server/adapters/store.js';
 import { createRoutes } from '../server/routes.js';
 
 export const BASE = 'https://growth.example.dev';

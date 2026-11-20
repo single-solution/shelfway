@@ -9,10 +9,10 @@
  */
 import { countHandlers, created, paginate, problem } from '@shelfway/app-kit';
 import { createId } from '@shelfway/contracts';
-import { fieldsOn } from '../adapters/catalog-store.js';
-import { createFulfillmentStore, customerFilter, markSeenBy } from '../adapters/fulfillment-store.js';
-import { givePoints } from '../adapters/ledger.js';
-import { createOrdersStore } from '../adapters/orders-store.js';
+import { fieldsOn } from './adapters/catalog-store.js';
+import { createFulfillmentStore, customerFilter, markSeenBy } from './adapters/fulfillment-store.js';
+import { givePoints } from './adapters/ledger.js';
+import { createOrdersStore } from './adapters/orders-store.js';
 import { checkAddress } from '../core/checkout.js';
 import { checkFieldValues } from '../core/fields.js';
 import { MAX_ADDRESSES, checkNewCustomer, guestRules, phoneDigitsOf, phoneSearchOf } from '../core/guests.js';

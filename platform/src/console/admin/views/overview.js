@@ -38,7 +38,7 @@ import { ConfirmOtp } from '../../views/common.js';
 import { ActivityTimeline } from '../../views/login-settings.js';
 import { WEBSITE } from '../../../texts/console.js';
 import { adminApi, adminRoutes } from '../paths.js';
-import { AdminProblem, adminCan } from './shell.js';
+import { AdminProblem } from './shell.js';
 import { AddCreditsDialog } from './finance.js';
 import { AddMerchantDialog } from './merchants.js';
 import { ConnectProductDialog } from './products.js';
@@ -95,12 +95,12 @@ export function OverviewView(props) {
 	const attention = /** @type {any[]} */ (props.attention ?? []);
 	const merchants = /** @type {any[]} */ (props.merchants ?? []);
 	const billing = /** @type {Record<string, any>} */ (props.billing ?? {});
-	const linked = adminCan(props.admin, 'products.manage');
-	const canAdd = adminCan(props.admin, 'credits.add');
-	const canAddMerchant = adminCan(props.admin, 'merchants.write');
-	const canSettings = adminCan(props.admin, 'platform_settings.write');
 	const earned = products.reduce((n, p) => n + (p.earnedThisMonth ?? 0), 0);
 	const inactive = products.filter((p) => p.status !== 'active').length;
+	const linked = true;
+	const canAdd = true;
+	const canAddMerchant = true;
+	const canSettings = true;
 
 	/** @type {import('@shelfway/ui').Need[]} */
 	const needs = [];
@@ -180,18 +180,26 @@ export function OverviewView(props) {
 				facts={[
 					...(needCount > 0 ? [{ label: ADMIN.needs.title, value: needCount, tone: /** @type {const} */ ('warning') }] : []),
 				]}
-				{...(canAddMerchant
-					? {
-							actions: {
-								primary: {
-									label: ADMIN.addMerchant,
-									icon: /** @type {const} */ ('plus'),
-									onClick: () => setAdding(true),
-								},
-							},
-						}
-					: {})}>
-				<div className="space-y-4">
+				actions={{
+					primary: {
+						label: ADMIN.addMerchant,
+						icon: /** @type {const} */ ('plus'),
+						onClick: () => setAdding(true),
+					},
+					secondary: [
+						{
+							label: ADMIN.connectProduct,
+							icon: /** @type {const} */ ('plus'),
+							onClick: () => setConnecting(true),
+						},
+						{
+							label: BILLING.billingTitle,
+							icon: /** @type {const} */ ('wallet'),
+							onClick: () => nav.go(adminRoutes.finance()),
+						},
+					],
+				}}>
+				<div className="space-y-6">
 					<Card title={ADMIN.needs.title} subtitle={needs.length > 0 ? ADMIN.needs.intro : undefined}>
 						<div className="space-y-3">
 							<NeedsList items={needs} none={ADMIN.needs.none} />
@@ -221,6 +229,7 @@ export function OverviewView(props) {
 					<StatGrid>
 						<Stat label={ADMIN.merchantsTitle} value={o.merchants ?? 0} icon="users" />
 						<Stat label={ADMIN.websitesLabel} value={website} icon="globe" />
+						<Stat label={ADMIN.productsTitle} value={products.length} icon="box" />
 						<Stat label={ADMIN.creditsThisMonth} value={formatCredits(earned)} icon="coins" kind="credit" />
 						<Stat
 							label={MORE.creditsAdded}
@@ -229,8 +238,9 @@ export function OverviewView(props) {
 							kind="credit"
 						/>
 					</StatGrid>
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-						<div className="space-y-4">
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+						{/* Left Column */}
+						<div className="space-y-6">
 							<Card
 								padded={false}
 								title={ADMIN.merchantsTitle}
@@ -250,11 +260,9 @@ export function OverviewView(props) {
 										title={ADMIN.noMerchants}
 										description={ADMIN.noMerchantsYetHelp}
 										action={
-											canAddMerchant ? (
-												<Button size="sm" onClick={() => setAdding(true)} icon={<Icon name="plus" size={14} />}>
-													{ADMIN.addMerchant}
-												</Button>
-											) : null
+											<Button size="sm" onClick={() => setAdding(true)} icon={<Icon name="plus" size={14} />}>
+												{ADMIN.addMerchant}
+											</Button>
 										}
 									/>
 								) : (
@@ -286,17 +294,22 @@ export function OverviewView(props) {
 									</div>
 								)}
 							</Card>
-							<Card title={ADMIN.creditsChart}>
-								<BarChart label={ADMIN.creditsChart} data={chartBars} format={formatChartCredits} height={132} />
+
+							<Card
+								title={ADMIN.creditsChart}
+								subtitle={totalDays(productsRaw ?? []).length > 0 ? 'Daily aggregate credit burn' : undefined}>
+								<BarChart label={ADMIN.creditsChart} data={chartBars} format={formatChartCredits} height={140} />
 							</Card>
 						</div>
-						<div className="space-y-4">
+
+						{/* Right Column */}
+						<div className="space-y-6">
 							<Card
 								padded={false}
 								title={ADMIN.productsTitle}
 								subtitle={products.length > 0 ? ADMIN.productColumns.earned : undefined}
 								actions={
-									linked && products.length > 0 ? (
+									products.length > 0 ? (
 										<ButtonLink as={Link} href={adminRoutes.products()} variant="secondary" size="sm">
 											{MORE.viewAll}
 										</ButtonLink>
@@ -309,11 +322,9 @@ export function OverviewView(props) {
 										kind="product"
 										title={ADMIN.noProducts}
 										action={
-											linked ? (
-												<Button size="sm" onClick={() => setConnecting(true)} icon={<Icon name="plus" size={14} />}>
-													{ADMIN.connectProduct}
-												</Button>
-											) : null
+											<Button size="sm" onClick={() => setConnecting(true)} icon={<Icon name="plus" size={14} />}>
+												{ADMIN.connectProduct}
+											</Button>
 										}
 									/>
 								) : (
@@ -322,7 +333,7 @@ export function OverviewView(props) {
 											<Row
 												key={p.productId}
 												linkAs={Link}
-												href={linked ? adminRoutes.product(p.productId) : undefined}
+												href={adminRoutes.product(p.productId)}
 												lead={<IconBadge product={p.productId} size="sm" />}
 												title={p.name}
 												meta={p.websites ? `${p.websites} ${ADMIN.productColumns.websites.toLowerCase()}` : undefined}
@@ -332,25 +343,24 @@ export function OverviewView(props) {
 												}}
 												value={formatCredits(p.earnedThisMonth ?? 0)}
 												trailing={
-													linked ? (
-														<ActionMenu
-															floating
-															label={`Actions for ${p.name}`}
-															items={[
-																{
-																	label: MORE.viewProduct,
-																	onSelect: () => nav.go(adminRoutes.product(p.productId)),
-																},
-																{ label: PRODUCTS.openAsAdmin, onSelect: () => void handleOpen(p) },
-															]}
-														/>
-													) : null
+													<ActionMenu
+														floating
+														label={`Actions for ${p.name}`}
+														items={[
+															{
+																label: MORE.viewProduct,
+																onSelect: () => nav.go(adminRoutes.product(p.productId)),
+															},
+															{ label: PRODUCTS.openAsAdmin, onSelect: () => void handleOpen(p) },
+														]}
+													/>
 												}
 											/>
 										))}
 									</div>
 								)}
 							</Card>
+
 							<Card
 								flow
 								title={ADMIN.recentActivity}

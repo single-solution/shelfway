@@ -18,8 +18,8 @@ import {
 } from '@shelfway/app-kit/testing';
 import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import apiJson from '../schemas/api.json' with { type: 'json' };
-import { createProductInstance, manifest } from '../adapters/product.js';
-import { createStore } from '../adapters/store.js';
+import { createProductInstance, manifest } from '../server/adapters/product.js';
+import { createStore } from '../server/adapters/store.js';
 import { createRoutes } from '../server/routes.js';
 import { staffSignIns } from '../testing.js';
 

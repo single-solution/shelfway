@@ -144,7 +144,7 @@ const askFor = (ask) =>
 		.join(', ')}, then book again.`;
 
 /**
- * @param {import('../adapters/product.js').Product} product
+ * @param {import('./adapters/product.js').Product} product
  * @param {Service} service
  */
 export const createReply = (product, service) => {

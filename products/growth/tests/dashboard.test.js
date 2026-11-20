@@ -12,7 +12,7 @@ import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DashboardProvider } from '@shelfway/ui/dashboard';
 import { byText, cleanup, click, render } from '@shelfway/ui/testing';
-import { manifest, SHARED_SETTINGS } from '../adapters/product.js';
+import { manifest, SHARED_SETTINGS } from '../server/adapters/product.js';
 import { TABS } from '../app/dashboard/tabs.js';
 import { TEXTS } from '../app/dashboard/texts.js';
 import { LISTS } from '../core/lists.js';
@@ -362,5 +362,60 @@ describe('the dashboard (setup only)', () => {
 		expect(text).toContain(TEXTS.settings.consentWarning);
 		expect(text).not.toContain(TEXTS.setup.keyPathBad);
 		expect(text).not.toContain('(GET /v1/robots.txt)');
+	});
+
+	it('Analytics, SEO, and Redirects tabs are registered and render empty state when no website is picked', () => {
+		expect(TABS.analytics).toBeDefined();
+		expect(TABS.seo).toBeDefined();
+		expect(TABS.redirects).toBeDefined();
+		expect(TABS.analytics.icon).toBe('activity');
+		expect(TABS.seo.icon).toBe('search');
+		expect(TABS.redirects.icon).toBe('globe');
+
+		const AnalyticsComponent = TABS.analytics.component;
+		const SeoComponent = TABS.seo.component;
+		const RedirectsComponent = TABS.redirects.component;
+
+		const { container: analyticsContainer } = render(
+			<DashboardProvider manifest={manifest} texts={TEXTS}>
+				<AnalyticsComponent
+					websiteId={null}
+					domain="shop.example.com"
+					who={{ kind: 'merchant', id: 'm_1', name: 'M' }}
+					support={{ channels: [] }}
+					portal="https://portal.example.com"
+					open={() => {}}
+				/>
+			</DashboardProvider>,
+		);
+		expect(analyticsContainer.textContent).toContain('Pick a website');
+
+		const { container: seoContainer } = render(
+			<DashboardProvider manifest={manifest} texts={TEXTS}>
+				<SeoComponent
+					websiteId={null}
+					domain="shop.example.com"
+					who={{ kind: 'merchant', id: 'm_1', name: 'M' }}
+					support={{ channels: [] }}
+					portal="https://portal.example.com"
+					open={() => {}}
+				/>
+			</DashboardProvider>,
+		);
+		expect(seoContainer.textContent).toContain('Pick a website');
+
+		const { container: redirectsContainer } = render(
+			<DashboardProvider manifest={manifest} texts={TEXTS}>
+				<RedirectsComponent
+					websiteId={null}
+					domain="shop.example.com"
+					who={{ kind: 'merchant', id: 'm_1', name: 'M' }}
+					support={{ channels: [] }}
+					portal="https://portal.example.com"
+					open={() => {}}
+				/>
+			</DashboardProvider>,
+		);
+		expect(redirectsContainer.textContent).toContain('Pick a website');
 	});
 });

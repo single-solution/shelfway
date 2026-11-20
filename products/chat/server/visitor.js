@@ -104,7 +104,7 @@ const newConversation = (visitor, { page, device, now }) => ({
 });
 
 /**
- * @param {import('../adapters/product.js').Product} product
+ * @param {import('./adapters/product.js').Product} product
  * @param {import('./service.js').Service} service
  * @param {import('./reply.js').Reply} reply
  */
@@ -599,7 +599,7 @@ export const checkUpload = (a, settings, who = 'visitor') => {
 
 /**
  * A presigned upload into the merchant's storage that fixes the type and size; Chat keeps only the object key.
- * @param {import('../adapters/product.js').Product} product
+ * @param {import('./adapters/product.js').Product} product
  * @param {Site} s
  * @param {string} folder
  * @param {unknown} body

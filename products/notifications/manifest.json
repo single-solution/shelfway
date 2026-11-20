@@ -66,7 +66,7 @@
 			"dependsOn": [],
 			"recommendFor": ["messages.email", "signIn.email"],
 			"settings": {
-				"$ref": "schemas/email.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -76,7 +76,7 @@
 			"dependsOn": [],
 			"recommendFor": ["messages.sms"],
 			"settings": {
-				"$ref": "schemas/sms.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -96,7 +96,7 @@
 			"dependsOn": [],
 			"recommendFor": ["messages.push"],
 			"settings": {
-				"$ref": "schemas/browser_push.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -106,7 +106,7 @@
 			"dependsOn": [],
 			"recommendFor": ["messages.push"],
 			"settings": {
-				"$ref": "schemas/staff_push.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -115,7 +115,7 @@
 			"description": "Sends signed events (message sent, message failed, recipient unsubscribed) to the merchant's own URLs, retried on failure.",
 			"dependsOn": [],
 			"settings": {
-				"$ref": "schemas/webhooks.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -125,7 +125,7 @@
 			"dependsOn": [],
 			"recommendFor": ["messages.whatsapp+messages.sms", "messages.whatsapp+messages.email", "messages.sms+messages.email"],
 			"settings": {
-				"$ref": "schemas/fallback.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -134,7 +134,7 @@
 			"description": "Messages that are not urgent wait for the end of the quiet hours in the recipient's time zone: windows per weekday, with minutes, for the channels each one names.",
 			"dependsOn": [],
 			"settings": {
-				"$ref": "schemas/quiet_hours.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -152,7 +152,7 @@
 			"description": "A send can name a later time; the message goes out on the first use of the website after it, so it can be late on a quiet site.",
 			"dependsOn": [],
 			"settings": {
-				"$ref": "schemas/delayed_send.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -162,7 +162,7 @@
 			"dependsOn": [],
 			"recommendFor": ["languages.many+messages.*"],
 			"settings": {
-				"$ref": "schemas/multi_language.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		},
 		{
@@ -171,7 +171,7 @@
 			"description": "The merchant's own server sends with its own template keys, and the admin widgets: delivery log, template editor and send a message.",
 			"dependsOn": [],
 			"settings": {
-				"$ref": "schemas/send_api.settings.json"
+				"$ref": "schemas/empty.settings.json"
 			}
 		}
 	],

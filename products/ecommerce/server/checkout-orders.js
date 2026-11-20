@@ -31,10 +31,10 @@ import { createId } from '@shelfway/contracts';
 import { isEmailAddress } from '@shelfway/contracts/email';
 import { normalizePhone } from '@shelfway/contracts/phone';
 import { originAllowed } from '@shelfway/protocol';
-import { fieldsOn, unitsOfOrders } from '../adapters/catalog-store.js';
-import { keyOpens, newOrderKey, orderKeyHash } from '../adapters/crypto.js';
-import { heldStockBefore, placeOrder, swapOrderStock } from '../adapters/ledger.js';
-import { createOrdersStore } from '../adapters/orders-store.js';
+import { fieldsOn, unitsOfOrders } from './adapters/catalog-store.js';
+import { keyOpens, newOrderKey, orderKeyHash } from './adapters/crypto.js';
+import { heldStockBefore, placeOrder, swapOrderStock } from './adapters/ledger.js';
+import { createOrdersStore } from './adapters/orders-store.js';
 import { STOCK_PROBLEMS, checkAddress, checkCart, checkOrderExtras } from '../core/checkout.js';
 import { OPEN_ORDER_CAP, ORDER_BURST_LIMIT, ORDER_BURST_WINDOW_MINUTES } from '../core/limits.js';
 import { PAY_LATER_KINDS } from '../core/payment-methods.js';
@@ -59,7 +59,7 @@ import { DROPPED, RECHECK_MS, createOrderPayments, expectedOf } from './order-pa
 import { createMoves } from './orders-moves.js';
 import { createTransitions, rulesOf } from './transitions.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./service.js').Shopper} Shopper */

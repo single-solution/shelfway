@@ -6,7 +6,7 @@
  * refunded again, its units and points counted once.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { loyaltyAccount } from '../adapters/ledger.js';
+import { loyaltyAccount } from '../server/adapters/ledger.js';
 import { ORIGIN, readyShop } from './helpers.js';
 import { orderRecords } from './order-records.js';
 

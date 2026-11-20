@@ -18,7 +18,7 @@ import {
 	PageTypesEditor,
 	UploadTypesEditor,
 } from '../app/dashboard/lists.js';
-import { LISTS } from '../adapters/lists.js';
+import { LISTS } from '../server/adapters/lists.js';
 import { closeEditor, editorOf, factsOf, inDashboard, openRow, rowMenu, rowNames, rowOf, rowsOf } from './dashboard-provider.js';
 
 const WEBSITE = 'web_1';

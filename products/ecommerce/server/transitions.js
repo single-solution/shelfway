@@ -24,12 +24,12 @@
  * @module
  */
 import { problem } from '@shelfway/app-kit';
-import { applyTransition, isPointsChanged, unitRefusalOf } from '../adapters/ledger.js';
+import { applyTransition, isPointsChanged, unitRefusalOf } from './adapters/ledger.js';
 import { COLLECTIONS } from '../core/model.js';
 import { refundSplit, refundable, stateAfterRefund } from '../core/orders.js';
 import { paymentsRefundEntry } from '../core/transitions.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('../core/model.js').OrderRecord} OrderRecord */

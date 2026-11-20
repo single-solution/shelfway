@@ -7,6 +7,11 @@ import { dashboardTexts } from '@shelfway/ui';
 
 export const TEXTS = dashboardTexts({
 	title: 'Growth',
+	tabs: {
+		analytics: 'Analytics',
+		seo: 'SEO',
+		redirects: 'Redirects',
+	},
 	overview: {
 		tags: 'Tags ready',
 		tagsHelp: 'Switched-on tag features with a well-formed id or a script set (Settings).',

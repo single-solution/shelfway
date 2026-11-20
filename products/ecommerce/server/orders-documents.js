@@ -7,14 +7,14 @@
  * @module
  */
 import { defineRoute, problem } from '@shelfway/app-kit';
-import { unitRulesOf } from '../adapters/catalog-store.js';
+import { unitRulesOf } from './adapters/catalog-store.js';
 import { packingSlipsHtml, pickListHtml } from '../core/invoice.js';
 import { COLLECTIONS } from '../core/model.js';
 import { ORDER_ID } from '../core/orders.js';
 import { DOCUMENT_HEADERS, documentContextOf } from './orders.js';
 import { SERVER_LIMITS } from './service.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('../core/model.js').OrderRecord} OrderRecord */

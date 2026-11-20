@@ -18,8 +18,8 @@ import {
 	categoryGroups,
 	findBySlugHistory,
 	productTypes,
-} from '../adapters/catalog-store.js';
-import { dealsLiveNow } from '../adapters/promotions-store.js';
+} from './adapters/catalog-store.js';
+import { dealsLiveNow } from './adapters/promotions-store.js';
 import {
 	afterFilter,
 	cursorKey,
@@ -51,7 +51,7 @@ import { conditional } from './http-cache.js';
 import { hiddenFor, retiredMove, visible } from './catalog-visibility.js';
 import { VISITOR_LIMITS } from './service.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./catalog-common.js').CatalogCommon} CatalogCommon */

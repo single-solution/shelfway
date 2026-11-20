@@ -71,7 +71,7 @@ const counted = (count, noun) => `${count} ${noun}${count === 1 ? '' : 's'}`;
 const conversationLabel = (c) => c.name || (c.visitor.kind === 'guest' ? 'Guest' : 'Signed-in visitor');
 
 /**
- * @param {import('../adapters/product.js').Product} product
+ * @param {import('./adapters/product.js').Product} product
  * @param {import('./service.js').Service} service
  * @param {import('./reply.js').Reply} reply
  */
@@ -565,7 +565,7 @@ export const createInbox = (product, service, reply) => {
 		const me = actor.kind === SERVER.kind ? null : actor.id;
 		const seen = await s.store.staff.list();
 		const known = new Set(seen.map((m) => m.id));
-		/** @type {import('../adapters/store.js').StaffRecord[]} */
+		/** @type {import('./adapters/store.js').StaffRecord[]} */
 		const accounts =
 			s.on.includes('assignment') || s.on.includes('inbox')
 				? (await service.staffOfAccounts(s.websiteId))
@@ -726,7 +726,7 @@ export const createInbox = (product, service, reply) => {
 
 /**
  * A lead as the API answers it (the stored record's own fields only).
- * @param {import('../adapters/store.js').LeadRecord} lead
+ * @param {import('./adapters/store.js').LeadRecord} lead
  */
 const leadView = (lead) => ({
 	id: lead.id,
@@ -768,7 +768,7 @@ const pauseDetail = (paused, c) =>
  * Delete conversations with their messages, attachments (from the website's storage, a few at a time; one storage
  * cannot delete now is left there), guest records and the staff alerts still waiting to be sent about them (they carry
  * the visitor's name and words, K-17) — for the API, delete-all and data rights; answers how many of each went.
- * @param {import('../adapters/product.js').Product} product
+ * @param {import('./adapters/product.js').Product} product
  * @param {Pick<Site, 'websiteId' | 'merchantId' | 'store'>} s
  * @param {ConversationRecord[]} conversations
  */

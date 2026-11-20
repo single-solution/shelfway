@@ -157,7 +157,7 @@ describe('order list rows', () => {
 	});
 
 	it('read a page with a projection: no history, payments or refunds come from the database', async () => {
-		const { createFulfillmentStore } = await import('../adapters/fulfillment-store.js');
+		const { createFulfillmentStore } = await import('../server/adapters/fulfillment-store.js');
 		const store = createFulfillmentStore(await shop.db());
 		const rows = await store.orders.list({ filter: {}, after: null, limit: 5 });
 		expect(rows.length).toBeGreaterThan(0);

@@ -12,11 +12,11 @@
  * (`bookings`).
  * @module
  */
-import { attributesOf, productTypes } from '../adapters/catalog-store.js';
-import { readLock, signLock } from '../adapters/crypto.js';
-import { loyaltyAccount } from '../adapters/ledger.js';
-import { createOrdersStore } from '../adapters/orders-store.js';
-import { loadOffers } from '../adapters/promotions-store.js';
+import { attributesOf, productTypes } from './adapters/catalog-store.js';
+import { readLock, signLock } from './adapters/crypto.js';
+import { loyaltyAccount } from './adapters/ledger.js';
+import { createOrdersStore } from './adapters/orders-store.js';
+import { loadOffers } from './adapters/promotions-store.js';
 import { MAX_SLOT_DAYS, scheduleOf, slotAt, slotsBetween } from '../core/bookings.js';
 import { CART_MAX_QUANTITY } from '../core/limits.js';
 import { MAX_QUANTITY, afterOffers, feeBaseOf, grossOf, priceLines, resolveLines, roleDiscounts } from '../core/checkout.js';
@@ -46,7 +46,7 @@ import { paymentOptions } from '../core/payment-methods.js';
 import { createMedia } from './catalog-media.js';
 import { DAY_MS } from '../core/durations.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('./service.js').Shopper} Shopper */

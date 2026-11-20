@@ -32,7 +32,7 @@ import {
 	settingsOf,
 	textsOf,
 } from './shop-common.js';
-import { codeOf } from './problem-code.js';
+import { codeOf } from '@shelfway/app-kit/widget';
 import { compareIds, onCompareChange, toggleCompare } from './shop-compare-store.js';
 import { activeCount, emptyKnown, filterControls, flattenCategories, listOf, remember } from './shop-filters.js';
 import { savedOf } from './shop-saved.js';

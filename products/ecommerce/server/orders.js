@@ -12,11 +12,11 @@
  */
 import { createId } from '@shelfway/contracts';
 import { countHandlers, created, defineRoute, paginate, problem } from '@shelfway/app-kit';
-import { documentFieldsOf, fieldsOn, unitsOfOrders } from '../adapters/catalog-store.js';
-import { createFulfillmentStore, markSeenBy } from '../adapters/fulfillment-store.js';
-import { setOrderCounter } from '../adapters/ledger.js';
-import { createOrdersStore } from '../adapters/orders-store.js';
-import { createOutbox } from '../adapters/outbox.js';
+import { documentFieldsOf, fieldsOn, unitsOfOrders } from './adapters/catalog-store.js';
+import { createFulfillmentStore, markSeenBy } from './adapters/fulfillment-store.js';
+import { setOrderCounter } from './adapters/ledger.js';
+import { createOrdersStore } from './adapters/orders-store.js';
+import { createOutbox } from './adapters/outbox.js';
 import { attachmentsOf } from '../core/attachments.js';
 import { checkAddress } from '../core/checkout.js';
 import { phoneSearchOf } from '../core/guests.js';
@@ -60,7 +60,7 @@ import { createMoves } from './orders-moves.js';
 import { openAtPayments } from './order-payments.js';
 import { SERVER_LIMITS, VISITOR_LIMITS } from './service.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('../core/model.js').OrderRecord} OrderRecord */

@@ -26,14 +26,14 @@ import {
 } from '../core/events.js';
 import { indexNowActivity, indexNowSubmission, robotsTxtOf, verificationOf } from '../core/seo.js';
 import { zonedDayStart } from '@shelfway/contracts/format';
-import { createDayCaps } from '../adapters/day-caps.js';
-import { createStore } from '../adapters/store.js';
+import { createDayCaps } from './adapters/day-caps.js';
+import { createStore } from './adapters/store.js';
 import { renderDocs } from './docs.js';
 import { redirectRoutes } from './redirects.js';
 import { invalid, robotsInputOf, seoCheckRoutes } from './seo-checks.js';
 import { WIDGET_SCRIPT } from './widget-script.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 
 /** Rate limits of the page script's events (code constants protecting our hosting). */
 const COLLECT_LIMITS = [

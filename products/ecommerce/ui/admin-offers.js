@@ -149,6 +149,7 @@ export const offersTab = (kit, panel, searches, kind) => {
 		nothing: t(`promotionsAdmin.nothing.${kind}`),
 		actions: [
 			kit.button(t(`promotionsAdmin.new.${kind}`), () => editor(null, true, created), { primary: true }),
+			kind === 'coupons' ? kit.button(t('promotionsAdmin.batch'), () => batch()) : null,
 			kind === 'coupons' ? kit.moreMenu([{ label: t('promotionsAdmin.batch'), onSelect: () => batch() }]) : null,
 		],
 		filters: [form, chips.node],

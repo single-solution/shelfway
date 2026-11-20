@@ -7,11 +7,14 @@
  * @module
  */
 import { Button, CodeBlock, Section, Stat } from '@shelfway/ui';
-import { DevelopersTab, OverviewTab, SettingsTab, fill, useLoad, useSetupSteps } from '@shelfway/ui/dashboard';
+import { DevelopersTab, OverviewTab, SettingsTab, createAdminTab, fill, useLoad, useSetupSteps } from '@shelfway/ui/dashboard';
 import manifest from '../../manifest.json' with { type: 'json' };
 import { CUSTOM_GATEWAY_CONNECTIONS, GATEWAY_CONNECTIONS, GATEWAY_FEATURES, GATEWAYS } from '../../core/gateways.js';
 import { methodReady } from '../../core/methods.js';
 import { createSnippets } from '../../core/snippets.js';
+import { mountLinksAdmin } from '../../ui/links-admin.js';
+import { mountPaymentsAdmin } from '../../ui/payments-admin.js';
+import { mountSubscriptionsAdmin } from '../../ui/subscriptions-admin.js';
 import { ConnectionForm, FORMS } from './forms.js';
 import { MethodsEditor } from './methods.js';
 import { TEXTS } from './texts.js';
@@ -261,8 +264,32 @@ function PaymentsDevelopers(props) {
 	);
 }
 
-/** Payments' sections in place of the shared Overview, Settings and Developers. */
+/** Payments' tabs in place of the standard ones, plus operational admin tabs. */
 export const TABS = Object.freeze({
+	payments: {
+		component: createAdminTab('payments', mountPaymentsAdmin, {
+			emptyTitle: 'Pick a website',
+			emptyDescription: 'Pick a website from the switcher to view transaction history and refund payments.',
+		}),
+		icon: /** @type {const} */ ('receipt'),
+		kind: /** @type {const} */ ('activity'),
+	},
+	links: {
+		component: createAdminTab('links', mountLinksAdmin, {
+			emptyTitle: 'Pick a website',
+			emptyDescription: 'Pick a website from the switcher to create and share payment links.',
+		}),
+		icon: /** @type {const} */ ('link'),
+		kind: /** @type {const} */ ('activity'),
+	},
+	subscriptions: {
+		component: createAdminTab('subscriptions', mountSubscriptionsAdmin, {
+			emptyTitle: 'Pick a website',
+			emptyDescription: 'Pick a website from the switcher to manage recurring plans and subscriptions.',
+		}),
+		icon: /** @type {const} */ ('clock'),
+		kind: /** @type {const} */ ('activity'),
+	},
 	overview: PaymentsOverview,
 	settings: PaymentsSettings,
 	developers: PaymentsDevelopers,

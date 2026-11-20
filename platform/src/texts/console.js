@@ -4,6 +4,11 @@
  * @module
  */
 
+/** Product brand and suite name. */
+export const PRODUCT_BRAND = 'Shelfway';
+/** Company behind the suite. */
+export const COMPANY_NAME = 'Shelfway';
+
 /** Page errors of both consoles. */
 export const CONSOLE = Object.freeze({
 	signIn: 'Sign in',
@@ -134,10 +139,11 @@ export const LOGIN = Object.freeze({
 
 /** Merchant fields (PLAN 0.2 Merchants). */
 export const MERCHANT_FIELDS = Object.freeze({
-	name: 'Business name',
-	ownerName: 'Owner name',
-	email: 'Owner email (login)',
-	phone: 'Phone',
+	name: 'Company name',
+	ownerName: 'Primary contact',
+	email: 'Work email address',
+	callingCode: 'Calling code',
+	phone: 'Phone number',
 	phoneHelp: 'With the country code, for example +1 212 555 0123.',
 	address: 'Address',
 	country: 'Country',
@@ -785,6 +791,9 @@ export const ADMIN = Object.freeze({
 	productsIntro: 'For each connected product: the websites using it and the credits it earned this month.',
 	merchantsTitle: 'Merchants',
 	addMerchant: 'Add merchant',
+	createMerchantTitle: 'Create merchant account',
+	createMerchantSubtitle: 'Register a new merchant organization and dispatch activation instructions.',
+	createMerchantSubmit: 'Create & send invite',
 	searchMerchants: 'Search name, email or domain',
 	allStatuses: 'All statuses',
 	status: Object.freeze({

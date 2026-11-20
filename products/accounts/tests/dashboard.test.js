@@ -480,4 +480,42 @@ describe('Settings → Consents (A2)', () => {
 		await type(byLabel(editorOf(container), C.label), 'Privacy policy');
 		expect(editorButton(container, TEXTS.save).disabled).toBe(false);
 	});
+
+	it('Users and Roles tabs are registered and render empty state when no website is picked', () => {
+		expect(TABS.users).toBeDefined();
+		expect(TABS.roles).toBeDefined();
+		expect(TABS.users.icon).toBe('users');
+		expect(TABS.roles.icon).toBe('shield');
+
+		const UsersComponent = TABS.users.component;
+		const RolesComponent = TABS.roles.component;
+
+		const { container: usersContainer } = render(
+			<DashboardProvider manifest={manifest} texts={TEXTS}>
+				<UsersComponent
+					websiteId={null}
+					domain="shop.example.com"
+					who={{ kind: 'merchant', id: 'm_1', name: 'M' }}
+					support={{ channels: [] }}
+					portal="https://portal.example.com"
+					open={() => {}}
+				/>
+			</DashboardProvider>,
+		);
+		expect(usersContainer.textContent).toContain('Pick a website');
+
+		const { container: rolesContainer } = render(
+			<DashboardProvider manifest={manifest} texts={TEXTS}>
+				<RolesComponent
+					websiteId={null}
+					domain="shop.example.com"
+					who={{ kind: 'merchant', id: 'm_1', name: 'M' }}
+					support={{ channels: [] }}
+					portal="https://portal.example.com"
+					open={() => {}}
+				/>
+			</DashboardProvider>,
+		);
+		expect(rolesContainer.textContent).toContain('Pick a website');
+	});
 });

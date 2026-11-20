@@ -7,13 +7,13 @@
  * and the website's search state says the index is missing until a search works again (Overview shows it).
  * @module
  */
-import { brandsOf, categoriesOf } from '../adapters/catalog-store.js';
+import { brandsOf, categoriesOf } from './adapters/catalog-store.js';
 import { sortDocument } from '../core/catalog-query.js';
 import { SEARCH_INDEX } from '../core/limits.js';
 import { COLLECTIONS } from '../core/model.js';
 import { namesMatching, searchStage } from '../core/search.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Site} Site */
 /** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
 /** @typedef {import('../core/catalog-query.js').Sort} Sort */

@@ -4,7 +4,7 @@
  */
 import { gzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
-import { PAGE_MAX_BYTES, READS_AT_ONCE, READ_TIMEOUT_MS, SITEMAP_MAX_BYTES, createWeb } from '../adapters/web.js';
+import { PAGE_MAX_BYTES, READS_AT_ONCE, READ_TIMEOUT_MS, SITEMAP_MAX_BYTES, createWeb } from '../server/adapters/web.js';
 
 /** @param {number} status @param {string} [body] @param {Record<string, string>} [headers] */
 const response = (status, body = '', headers = {}) => ({ status, headers, body: Buffer.from(body), url: '' });

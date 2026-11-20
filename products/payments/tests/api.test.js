@@ -1,11 +1,11 @@
 import { emptyWebsiteSettings } from '@shelfway/contracts/website-settings';
 import { signWebhook } from '@shelfway/protocol';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { formSignature } from '../adapters/gateways/payfast.js';
-import { pakistanTime, secureHash } from '../adapters/gateways/jazzcash.js';
-import { validationHash } from '../adapters/gateways/payfast-pk.js';
-import { webhookSignature } from '../adapters/gateways/rapid.js';
-import { createStore } from '../adapters/store.js';
+import { formSignature } from '../server/adapters/gateways/payfast.js';
+import { pakistanTime, secureHash } from '../server/adapters/gateways/jazzcash.js';
+import { validationHash } from '../server/adapters/gateways/payfast-pk.js';
+import { webhookSignature } from '../server/adapters/gateways/rapid.js';
+import { createStore } from '../server/adapters/store.js';
 import { ADMIN_ORIGIN, ALL, BASE, BUCKET, DOMAIN, NOTIFY_BASE, ORIGIN, setup } from './helpers.js';
 
 /** Today's bank transfer, filled in: paid first, proof on, one account for any currency. */

@@ -5,7 +5,7 @@
  */
 import { createId } from '@shelfway/contracts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { givePoints } from '../adapters/ledger.js';
+import { givePoints } from '../server/adapters/ledger.js';
 import { COLLECTIONS } from '../core/model.js';
 import { ORIGIN, PAYMENTS, readyShop } from './helpers.js';
 

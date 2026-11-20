@@ -31,13 +31,13 @@ import {
 } from '../core/roles.js';
 import { SETUP_TRACE_DAYS, generateCode, returnAddress } from '../core/rules.js';
 import { LINK_PARAMS, SETUP_PARAM } from '../core/widgets.js';
-import { randomBytes } from '../adapters/crypto.js';
-import { manifest } from '../adapters/product.js';
-import { createStore } from '../adapters/store.js';
+import { randomBytes } from './adapters/crypto.js';
+import { manifest } from './adapters/product.js';
+import { createStore } from './adapters/store.js';
 import { STAFF_CODE_LENGTH, invalid } from './flows.js';
 import { bodyOf } from './service.js';
 
-/** @typedef {import('../adapters/product.js').Product} Product */
+/** @typedef {import('./adapters/product.js').Product} Product */
 /** @typedef {import('./service.js').Service} Service */
 /** @typedef {import('./flows.js').Flows} Flows */
 
@@ -59,7 +59,7 @@ const REPEATS_WINDOW_MS = 3_600_000;
 
 /**
  * A role request as the API answers it, its status judged now (`expired` once an invite's setup link has run out).
- * @param {import('../adapters/store.js').RequestRecord} row @param {number} now
+ * @param {import('./adapters/store.js').RequestRecord} row @param {number} now
  */
 const requestView = (row, now) => ({
 	id: row.id,
@@ -85,7 +85,7 @@ const createCodeId = () => createId('cod');
 
 /**
  * An activity-log copy as the API answers it: `label` and `detail` null when absent, `values` {} when none.
- * @param {import('../adapters/store.js').CopyRecord} row
+ * @param {import('./adapters/store.js').CopyRecord} row
  */
 const copyView = (row) => ({
 	id: row.id,
@@ -143,7 +143,7 @@ export const createManage = (product, service, flows) => {
 	 * now, A2: for example the users who want offers). A
 	 * role or status that does not fit is ignored; a phone, permission, consent or time that does not fit answers 422.
 	 * @param {any} ctx @param {import('./service.js').Site} s
-	 * @returns {Promise<import('../adapters/store.js').UserQuery>}
+	 * @returns {Promise<import('./adapters/store.js').UserQuery>}
 	 */
 	const userQuery = async (ctx, s) => {
 		/** The national number of a whole number as typed, else its digits (the end of a number). @param {any} site @param {string} typed */
@@ -905,7 +905,7 @@ export const createManage = (product, service, flows) => {
 		const at = (await service.settings(s, 'role_requests')).giveRoleAt === 'completion' ? 'completion' : 'invite';
 		/** @type {import('../core/profile.js').UserRecord} */
 		let user;
-		/** @type {import('../adapters/store.js').RequestGrant} */
+		/** @type {import('./adapters/store.js').RequestGrant} */
 		let grant;
 		if (existing) {
 			await guard(ctx, s, existing, { role: request.role });

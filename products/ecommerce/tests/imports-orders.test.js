@@ -364,7 +364,7 @@ beforeAll(async () => {
 	// numbers restart each year, as the imported shop's (2026-000002 …)
 	await shop.setting('checkout', 'numberPattern', '{prefix}{year}-{number}');
 	data = await shop.db();
-	await data.ensureIndexes((await import('../adapters/product.js')).INDEXES);
+	await data.ensureIndexes((await import('../server/adapters/product.js')).INDEXES);
 	await shop.list('item_types', UNIT_TYPES);
 	const product = await shop.seedProduct({ id: PRODUCT, slug: 'phone', price: 2500, stock: 5, typeKey: 'numbered' });
 	const other = await shop.seedProduct({ id: OTHER, slug: 'case', price: 1000, stock: 5 });

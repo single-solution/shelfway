@@ -14,10 +14,11 @@
  * here: they are the Portal's Website settings, and what a product needs of them shows on its Overview.
  * @module
  */
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from './Button.js';
 import { CodeBlock } from './CodeBlock.js';
-import { Card, EmptyState, ManagedNote } from './display.js';
+import { Callout, Card, EmptyState, ManagedNote, Section, Spinner } from './display.js';
+import { Page } from './Page.js';
 import { NextStep, SaveBar, SettingList, SettingsCard } from './blocks.js';
 import { Input } from './fields.js';
 import { ConfirmDialog } from './overlay.js';
@@ -25,7 +26,7 @@ import { ChangesTable, OverviewSkeleton, ProductOverview } from './overview.js';
 import { Pagination, usePaged } from './paged.js';
 import { Row } from './Row.js';
 import { Toolbar } from './Toolbar.js';
-import { formatCreditsPerHour, parseCredits } from './format.js';
+import { parseCredits } from './format.js';
 import { useDisplayLocale } from './time.js';
 import { call, fill, useLoad } from './dashboard-api.js';
 import { featureLooks, useFeatureSwitches } from './dashboard-features.js';
@@ -63,7 +64,7 @@ import {
  * @returns {{ answer: Answer | null | undefined, result: Answer | null, dialog: ReactNode,
  *   sections: (list: Connection[]) => Section[] }}
  */
-export function useConnections({ websiteId, merchantId, who, portal, parts }) {
+function useConnections({ websiteId, merchantId, who, portal, parts }) {
 	const { texts, namesOf } = useDashboard();
 	const C = texts.connections;
 	const wanted = parts !== null;
@@ -453,7 +454,6 @@ function SettingsPanel({
 				facts={[
 					{ label: F.on, value: on },
 					{ label: F.off, value: catalog.length - on },
-					{ label: F.cost, value: formatCreditsPerHour(switches.cost, { locale }) },
 				]}
 				{...(switches.warned.length > 0
 					? {
@@ -876,4 +876,379 @@ export function PricesTab() {
 			}}
 		</LoadedPage>
 	);
+}
+
+/** A new ticket is asked for this long before the current one expires. */
+const REFRESH_BEFORE_MS = 60_000;
+
+/**
+ * A JSON call; never throws. A body is sent as JSON; a 204 or a body that is not JSON answers data: null.
+ * @param {typeof globalThis.fetch} fetch
+ * @param {string} url
+ * @param {{ method?: string, headers?: Record<string, string>, body?: unknown }} [init]
+ * @returns {Promise<{ ok: boolean, status: number, data: any }>}
+ */
+const requestJson = async (fetch, url, { method = 'GET', headers = {}, body } = {}) => {
+	try {
+		const response = await fetch(url, {
+			method,
+			headers: { ...headers, ...(body === undefined ? {} : { 'content-type': 'application/json' }) },
+			...(body === undefined ? {} : { body: JSON.stringify(body) }),
+		});
+		const data = response.status === 204 ? null : await response.json().catch(() => null);
+		return { ok: response.ok, status: response.status, data };
+	} catch {
+		return { ok: false, status: 0, data: null };
+	}
+};
+
+/**
+ * The ticket source of the admin widgets.
+ * @param {{
+ *   first: { ticket: string, expiresAt: string, signIn?: string },
+ *   getTicket: () => Promise<any>,
+ *   schedule: (task: () => void, ms: number) => number,
+ *   cancel: (id: number) => void,
+ *   now: () => number,
+ * }} input
+ */
+const createTicketSource = ({ first, getTicket, schedule, cancel, now }) => {
+	/** @type {string | null} */
+	let current = null;
+	/** @type {string | null} */
+	let signIn = null;
+	/** @type {number | null} */
+	let timer = null;
+	let stopped = false;
+	/** @type {Set<(signedIn: boolean) => void>} */
+	const listeners = new Set();
+
+	/** @param {{ ticket?: string, expiresAt?: string, signIn?: string } | null | undefined} got */
+	const keep = (got) => {
+		const expires = Date.parse(String(got?.expiresAt));
+		if (typeof got?.ticket !== 'string' || Number.isNaN(expires)) return false;
+		if (timer !== null) {
+			cancel(timer);
+			timer = null;
+		}
+		current = got.ticket;
+		signIn = typeof got.signIn === 'string' && got.signIn.length > 0 ? got.signIn : null;
+		timer = schedule(() => void renew(), Math.max(0, expires - now() - REFRESH_BEFORE_MS));
+		return true;
+	};
+	const renew = async () => {
+		timer = null;
+		/** @type {any} */
+		let got = null;
+		try {
+			got = await getTicket();
+		} catch {
+			// the page cannot give a ticket: signed out
+		}
+		if (stopped) return;
+		const signedIn = keep(got);
+		if (!signedIn) {
+			current = null;
+			signIn = null;
+		}
+		for (const listener of listeners) listener(signedIn);
+	};
+	keep(first);
+
+	return Object.freeze({
+		current: () => current,
+		signIn: () => signIn,
+		/** @param {(signedIn: boolean) => void} listener */
+		onChange: (listener) => {
+			listeners.add(listener);
+			return () => listeners.delete(listener);
+		},
+		stop: () => {
+			stopped = true;
+			if (timer !== null) cancel(timer);
+			timer = null;
+		},
+	});
+};
+
+/**
+ * Shared host for product operational admin tabs.
+ * Fetches an operational ticket and widget config, wires up tickets source,
+ * and mounts the widget into a clean isolated container with full error/empty states.
+ * @param {{
+ *   websiteId: string | null,
+ *   tab: string,
+ *   mount: (args: any) => any,
+ *   emptyTitle?: string,
+ *   emptyDescription?: string,
+ * }} props
+ */
+export function AdminTab({
+	websiteId,
+	tab,
+	mount,
+	emptyTitle = 'Pick a website',
+	emptyDescription = 'Pick a website from the switcher to manage its records.',
+}) {
+	const crumbs = useCrumbs();
+	const hostRef = useRef(/** @type {HTMLDivElement | null} */ (null));
+	const [loading, setLoading] = useState(Boolean(websiteId));
+	const [error, setError] = useState(/** @type {string | null} */ (null));
+
+	useEffect(() => {
+		if (!websiteId) {
+			setLoading(false);
+			setError(null);
+			return;
+		}
+
+		let active = true;
+		/** @type {() => void} */
+		let cleanup = () => {};
+		setLoading(true);
+		setError(null);
+
+		const run = async () => {
+			try {
+				const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+				const ticketRes = await call('POST', `/v1/dashboard/websites/${websiteId}/tickets`, { origin });
+				if (!ticketRes.ok) {
+					if (active) {
+						setError(ticketRes.problem?.detail || 'Could not obtain admin ticket.');
+						setLoading(false);
+					}
+					return;
+				}
+				const first = ticketRes.data;
+				const configRes = await requestJson(window.fetch, '/v1/widget/admin/config', {
+					headers: { authorization: `Bearer ${first.ticket}` },
+				});
+				if (!configRes.ok) {
+					if (active) {
+						setError(configRes.data?.detail || 'Could not load admin widget configuration.');
+						setLoading(false);
+					}
+					return;
+				}
+				const config = configRes.data;
+
+				if (!active || !hostRef.current) return;
+
+				const tickets = createTicketSource({
+					first,
+					getTicket: async () => {
+						const res = await call('POST', `/v1/dashboard/websites/${websiteId}/tickets`, { origin });
+						return res.ok ? res.data : null;
+					},
+					schedule: (task, ms) => window.setTimeout(task, ms),
+					cancel: (id) => window.clearTimeout(id),
+					now: () => Date.now(),
+				});
+
+				cleanup = () => {
+					tickets.stop();
+					if (hostRef.current?.shadowRoot) hostRef.current.shadowRoot.replaceChildren();
+					hostRef.current?.replaceChildren();
+				};
+
+				const api = { base: '', tickets, fetch: window.fetch.bind(window) };
+
+				/**
+				 * @param {string} name
+				 * @param {string} text
+				 * @param {string} [type]
+				 */
+				const save = (name, text, type = 'text/plain') => {
+					try {
+						const blob = new Blob([text], { type });
+						const url = URL.createObjectURL(blob);
+						const a = window.document.createElement('a');
+						a.href = url;
+						a.download = name;
+						window.document.body.append(a);
+						a.click();
+						a.remove();
+						window.setTimeout(() => {
+							try {
+								URL.revokeObjectURL(url);
+							} catch {
+								// ignore fallback
+							}
+						}, 1000);
+					} catch {
+						// ignore fallback
+					}
+				};
+
+				/**
+				 * @param {string} url
+				 */
+				const open = (url) => {
+					try {
+						window.open(url, '_blank', 'noopener,noreferrer');
+					} catch {
+						// ignore fallback
+					}
+				};
+
+				/**
+				 * @param {string} text
+				 */
+				const copy = async (text) => {
+					try {
+						if (window.navigator?.clipboard?.writeText) {
+							await window.navigator.clipboard.writeText(text);
+						}
+					} catch {
+						// ignore fallback
+					}
+				};
+
+				/**
+				 * @param {string} name
+				 * @param {string | ArrayBuffer} data
+				 * @param {string} [type]
+				 */
+				const download = (name, data, type = 'text/plain') => {
+					if (typeof data === 'string') {
+						save(name, data, type);
+					} else {
+						try {
+							const blob = new Blob([data], { type });
+							const url = URL.createObjectURL(blob);
+							const a = window.document.createElement('a');
+							a.href = url;
+							a.download = name;
+							window.document.body.append(a);
+							a.click();
+							a.remove();
+							window.setTimeout(() => {
+								try {
+									URL.revokeObjectURL(url);
+								} catch {
+									// ignore fallback
+								}
+							}, 1000);
+						} catch {
+							// ignore fallback
+						}
+					}
+				};
+
+				const viewer = {
+					timeZone: typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC',
+					locale: 'en',
+				};
+
+				const mounted = await mount({
+					host: hostRef.current,
+					api,
+					config,
+					win: window,
+					save,
+					open,
+					copy,
+					download,
+					viewer,
+					now: () => Date.now(),
+				});
+
+				if (!active) {
+					tickets.stop();
+					if (typeof mounted === 'function') mounted();
+					else if (mounted && typeof mounted.unmount === 'function') mounted.unmount();
+					if (hostRef.current?.shadowRoot) hostRef.current.shadowRoot.replaceChildren();
+					hostRef.current?.replaceChildren();
+					return;
+				}
+
+				cleanup = () => {
+					tickets.stop();
+					if (typeof mounted === 'function') mounted();
+					else if (mounted && typeof mounted.unmount === 'function') mounted.unmount();
+					if (hostRef.current?.shadowRoot) hostRef.current.shadowRoot.replaceChildren();
+					hostRef.current?.replaceChildren();
+				};
+
+				if (active) setLoading(false);
+			} catch (err) {
+				if (active) {
+					setError(err instanceof Error ? err.message : String(err));
+					setLoading(false);
+				}
+			}
+		};
+
+		void run();
+
+		return () => {
+			active = false;
+			cleanup();
+		};
+	}, [websiteId, mount]);
+
+	if (!websiteId) {
+		return (
+			<Page crumbs={crumbs(tab)}>
+				<EmptyState icon="globe" title={emptyTitle} description={emptyDescription} />
+			</Page>
+		);
+	}
+
+	return (
+		<Page crumbs={crumbs(tab)}>
+			{loading ? (
+				<div className="flex h-64 items-center justify-center">
+					<Spinner size={24} />
+				</div>
+			) : null}
+			{error ? (
+				<Callout tone="danger" title="Could not load admin interface">
+					{error}
+				</Callout>
+			) : null}
+			<div ref={hostRef} className={loading || error ? 'hidden' : 'w-full'} />
+		</Page>
+	);
+}
+
+/**
+ * Factory creating an operational admin tab component.
+ * @param {string} tab
+ * @param {(args: any) => any} mount
+ * @param {{ emptyTitle?: string, emptyDescription?: string }} [options]
+ */
+export function createAdminTab(tab, mount, options = {}) {
+	return function AdminTabComponent(/** @type {Partial<TabProps> & { websiteId?: string | null }} */ props) {
+		return (
+			<AdminTab
+				websiteId={props.websiteId ?? null}
+				tab={tab}
+				mount={mount}
+				emptyTitle={options.emptyTitle}
+				emptyDescription={options.emptyDescription}
+			/>
+		);
+	};
+}
+
+/**
+ * Developer tab section helper.
+ * @param {string} id
+ * @param {string} title
+ * @param {string} help
+ * @param {import('react').ReactNode} body
+ * @param {import('./icons.js').IconName} [icon]
+ */
+export function developerSection(id, title, help, body, icon) {
+	return {
+		id,
+		label: title,
+		icon,
+		content: (
+			<Section title={title} description={help}>
+				{body}
+			</Section>
+		),
+	};
 }

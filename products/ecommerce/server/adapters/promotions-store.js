@@ -1,0 +1,299 @@
+/**
+ * The promotions part's queries in the merchant database: coupons, deals and bundles (read for pricing, written by the
+ * merchant's staff and server), the references their scopes name, and the data-rights reads and deletes of loyalty
+ * accounts and coupon uses. Offer use counters and loyalty points are changed only by the ledger (`adapters/ledger.js`).
+ * @module
+ */
+import { COLLECTIONS, isDuplicate } from '../../core/model.js';
+import { normalizeCode } from '../../core/coupons.js';
+import { dealLive } from '../../core/deals.js';
+
+/** @typedef {import('@shelfway/app-kit').WebsiteData} WebsiteData */
+/** @typedef {import('../../core/model.js').DealRecord} DealRecord */
+/** @typedef {import('../../core/model.js').BundleRecord} BundleRecord */
+/** @typedef {import('../../core/model.js').CouponRecord} CouponRecord */
+/** @typedef {'coupons' | 'deals' | 'bundles'} OfferCollection */
+
+/** Most deals or bundles loaded for one cart. */
+const MAX_LIVE_OFFERS = 500;
+
+/** Merchant database indexes of this part. @type {import('@shelfway/app-kit').IndexDefinition[]} */
+export const INDEXES = [
+	{ collection: COLLECTIONS.coupons, keys: { websiteId: 1, code: 1 }, name: 'by_code', unique: true },
+	{ collection: COLLECTIONS.coupons, keys: { websiteId: 1, id: 1 }, name: 'by_id', unique: true },
+	{ collection: COLLECTIONS.coupons, keys: { websiteId: 1, createdAt: -1, id: -1 }, name: 'newest' },
+	{ collection: COLLECTIONS.deals, keys: { websiteId: 1, id: 1 }, name: 'by_id', unique: true },
+	{ collection: COLLECTIONS.deals, keys: { websiteId: 1, active: 1, startsAt: 1, endsAt: 1 }, name: 'live' },
+	{ collection: COLLECTIONS.deals, keys: { websiteId: 1, createdAt: -1, id: -1 }, name: 'newest' },
+	{ collection: COLLECTIONS.bundles, keys: { websiteId: 1, id: 1 }, name: 'by_id', unique: true },
+	{ collection: COLLECTIONS.bundles, keys: { websiteId: 1, active: 1, startsAt: 1, endsAt: 1 }, name: 'live' },
+	{ collection: COLLECTIONS.bundles, keys: { websiteId: 1, createdAt: -1, id: -1 }, name: 'newest' },
+];
+
+/**
+ * Live offers of a collection: switched on, started, not ended, under their use limit.
+ * @param {WebsiteData} data
+ * @param {'deals' | 'bundles'} collection
+ * @param {number} now
+ */
+const liveOffers = async (data, collection, now) => {
+	const at = new Date(now);
+	return /** @type {Promise<any[]>} */ (
+		data
+			.collection(COLLECTIONS[collection])
+			.find(
+				{
+					websiteId: data.websiteId,
+					active: true,
+					$and: [
+						{ $or: [{ startsAt: null }, { startsAt: { $lte: at } }] },
+						{ $or: [{ endsAt: null }, { endsAt: { $gt: at } }] },
+						{ $or: [{ limit: null }, { $expr: { $lt: ['$used', '$limit'] } }] },
+					],
+				},
+				{ projection: { _id: 0, websiteId: 0, merchantId: 0 } },
+			)
+			.sort({ id: 1 })
+			.limit(MAX_LIVE_OFFERS)
+			.toArray()
+	);
+};
+
+/**
+ * The offers that may apply now: active deals and bundles within their dates and under their limits, and the coupon of
+ * a code (null when the code is empty or unknown; an inactive or expired coupon is returned so pricing can say why it
+ * does not apply). Checkout prices carts with them, and the Chat lookups quote savings with them.
+ * @param {WebsiteData} data
+ * @param {{ now: number, couponCode?: string, deals?: boolean, bundles?: boolean }} options `deals` / `bundles`: whether
+ *   those features are on (off: none are loaded)
+ * @returns {Promise<{ deals: DealRecord[], bundles: BundleRecord[], coupon: CouponRecord | null }>}
+ */
+export const loadOffers = async (data, { now, couponCode = '', deals = false, bundles = false }) => {
+	const code = normalizeCode(couponCode);
+	const [dealList, bundleList, coupon] = await Promise.all([
+		deals ? liveOffers(data, 'deals', now) : [],
+		bundles ? liveOffers(data, 'bundles', now) : [],
+		code
+			? data
+					.collection(COLLECTIONS.coupons)
+					.findOne({ websiteId: data.websiteId, code }, { projection: { _id: 0, websiteId: 0, merchantId: 0 } })
+			: null,
+	]);
+	return { deals: dealList, bundles: bundleList, coupon: /** @type {CouponRecord | null} */ (coupon) };
+};
+
+/**
+ * The deals shoppers may see now (the shop's deal list and deal page, `?deal=` listings, Chat's deals): switched on,
+ * within their dates, under their use limit and inside their weekdays and hours at the business time (`dealLive`, the
+ * check the cart prices with), in id order.
+ * @param {WebsiteData} data
+ * @param {{ now: number, clock: { weekday: number, minutes: number } }} at
+ * @returns {Promise<DealRecord[]>}
+ */
+export const dealsLiveNow = async (data, { now, clock }) =>
+	(await liveOffers(data, 'deals', now)).filter((deal) => dealLive(deal, now, clock));
+
+// -------------------------------------------------------------------------------------------- merchant writes
+
+/**
+ * One page of offers, newest first (`after`: the cursor `[createdAt ISO, id]` of the last one shown).
+ * @param {WebsiteData} data
+ * @param {OfferCollection} collection
+ * @param {{ after: unknown, limit: number, active?: boolean, q?: string }} options `q`: a coupon code or offer name prefix
+ */
+export const listOffers = async (data, collection, { after, limit, active, q }) => {
+	/** @type {Record<string, unknown>} */
+	const filter = { websiteId: data.websiteId };
+	if (active !== undefined) filter.active = active;
+	if (q) {
+		const prefix = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		filter[collection === 'coupons' ? 'code' : 'name'] = {
+			$regex: `^${collection === 'coupons' ? prefix.toUpperCase() : prefix}`,
+			...(collection === 'coupons' ? {} : { $options: 'i' }),
+		};
+	}
+	if (Array.isArray(after) && typeof after[0] === 'string' && typeof after[1] === 'string') {
+		const at = new Date(after[0]);
+		filter.$or = [{ createdAt: { $lt: at } }, { createdAt: at, id: { $lt: after[1] } }];
+	}
+	return /** @type {Promise<any[]>} */ (
+		data
+			.collection(COLLECTIONS[collection])
+			.find(filter, { projection: { _id: 0, websiteId: 0, merchantId: 0 } })
+			.sort({ createdAt: -1, id: -1 })
+			.limit(limit)
+			.toArray()
+	);
+};
+
+/**
+ * @param {WebsiteData} data
+ * @param {OfferCollection} collection
+ * @param {string} id
+ */
+export const getOffer = async (data, collection, id) =>
+	/** @type {Promise<any>} */ (
+		data
+			.collection(COLLECTIONS[collection])
+			.findOne({ websiteId: data.websiteId, id }, { projection: { _id: 0, websiteId: 0, merchantId: 0 } })
+	);
+
+/**
+ * Insert offers (a duplicate coupon code throws the driver's duplicate-key error).
+ * @param {WebsiteData} data
+ * @param {OfferCollection} collection
+ * @param {Array<Record<string, unknown>>} records
+ * @param {{ skipDuplicates?: boolean }} [options] insert the others when some codes are taken (batches)
+ * @returns {Promise<string[]>} ids inserted
+ */
+export const insertOffers = async (data, collection, records, { skipDuplicates = false } = {}) => {
+	if (records.length === 0) return [];
+	try {
+		await data.collection(COLLECTIONS[collection]).insertMany(
+			records.map((record) => ({ ...record })),
+			{ ordered: !skipDuplicates },
+		);
+		return records.map((record) => String(record.id));
+	} catch (error) {
+		if (!skipDuplicates || !isDuplicate(error)) throw error;
+		/** @type {any[]} */
+		const failures = /** @type {any} */ (error).writeErrors ?? [];
+		const failed = new Set(failures.map((item) => item.index ?? item.err?.index));
+		return records.filter((_, index) => !failed.has(index)).map((record) => String(record.id));
+	}
+};
+
+/**
+ * Replace the editable fields of an offer (never `used`).
+ * @param {WebsiteData} data
+ * @param {OfferCollection} collection
+ * @param {string} id
+ * @param {Record<string, unknown>} fields
+ */
+export const updateOffer = async (data, collection, id, fields) => {
+	const rest = Object.fromEntries(Object.entries(fields).filter(([key]) => key !== 'used' && key !== 'id'));
+	return /** @type {Promise<any>} */ (
+		data
+			.collection(COLLECTIONS[collection])
+			.findOneAndUpdate(
+				{ websiteId: data.websiteId, id },
+				{ $set: rest },
+				{ returnDocument: 'after', projection: { _id: 0, websiteId: 0, merchantId: 0 } },
+			)
+	);
+};
+
+/**
+ * @param {WebsiteData} data
+ * @param {OfferCollection} collection
+ * @param {string} id
+ * @returns {Promise<boolean>}
+ */
+export const deleteOffer = async (data, collection, id) =>
+	(await data.collection(COLLECTIONS[collection]).deleteOne({ websiteId: data.websiteId, id })).deletedCount === 1;
+
+/**
+ * The ids a scope names that do not exist (products, categories, brands).
+ * @param {WebsiteData} data
+ * @param {{ productIds: string[], categoryIds: string[], brandIds: string[] }} refs
+ * @returns {Promise<{ productIds: string[], categoryIds: string[], brandIds: string[] }>}
+ */
+export const missingRefs = async (data, refs) => {
+	/** @param {'products' | 'categories' | 'brands'} collection @param {string[]} ids */
+	const missing = async (collection, ids) => {
+		if (ids.length === 0) return [];
+		const found = new Set(
+			(
+				await data
+					.collection(COLLECTIONS[collection])
+					.find({ websiteId: data.websiteId, id: { $in: ids } }, { projection: { _id: 0, id: 1 } })
+					.toArray()
+			).map((doc) => doc.id),
+		);
+		return ids.filter((id) => !found.has(id));
+	};
+	const [productIds, categoryIds, brandIds] = await Promise.all([
+		missing('products', refs.productIds),
+		missing('categories', refs.categoryIds),
+		missing('brands', refs.brandIds),
+	]);
+	return { productIds, categoryIds, brandIds };
+};
+
+// ---------------------------------------------------------------------------------------------- shopper reads
+
+/** At most this many categories are read for their places in the tree. */
+const MAX_CATEGORIES = 5000;
+
+/**
+ * Every category's ancestors (its `path`) by id, read once for a request that prices many products (a deal matches a
+ * product by its categories and those above them).
+ * @param {WebsiteData} data
+ * @returns {Promise<Map<string, string[]>>}
+ */
+export const categoryPaths = async (data) => {
+	const found = await data
+		.collection(COLLECTIONS.categories)
+		.find({ websiteId: data.websiteId }, { projection: { _id: 0, id: 1, path: 1 } })
+		.limit(MAX_CATEGORIES)
+		.toArray();
+	return new Map(found.map((doc) => [String(doc.id), Array.isArray(doc.path) ? doc.path.map(String) : []]));
+};
+
+// ------------------------------------------------------------------------------------------------ data rights
+
+/**
+ * Points a member's orders will earn but have not yet (E20 `pending`): orders not delivered, canceled or given back
+ * whose points are not credited.
+ * @param {WebsiteData} data
+ * @param {string} userId
+ * @returns {Promise<number>}
+ */
+export const pendingPoints = async (data, userId) => {
+	const rows = await data
+		.collection(COLLECTIONS.orders)
+		.find(
+			{
+				websiteId: data.websiteId,
+				'customer.userId': userId,
+				role: { $in: ['awaiting_payment', 'awaiting_confirmation', 'open', 'packed', 'shipped'] },
+				'promotions.pointsCredited': false,
+				'promotions.pointsEarned': { $gt: 0 },
+			},
+			{ projection: { _id: 0, 'promotions.pointsEarned': 1 }, limit: 500 },
+		)
+		.toArray();
+	return rows.reduce((n, row) => n + (Number(/** @type {any} */ (row).promotions?.pointsEarned) || 0), 0);
+};
+
+/**
+ * A person's loyalty account (as stored) and coupon uses.
+ * @param {WebsiteData} data
+ * @param {string} userId
+ */
+export const personRecords = async (data, userId) => {
+	const [loyalty, uses] = await Promise.all([
+		data
+			.collection(COLLECTIONS.loyalty)
+			.findOne({ websiteId: data.websiteId, userId }, { projection: { _id: 0, websiteId: 0, merchantId: 0 } }),
+		data
+			.collection(COLLECTIONS.couponUses)
+			.find({ websiteId: data.websiteId, userId }, { projection: { _id: 0, websiteId: 0, merchantId: 0 } })
+			.toArray(),
+	]);
+	return { loyalty, uses };
+};
+
+/**
+ * Delete a person's loyalty account and coupon-use records (the coupons' `used` counts stay).
+ * @param {WebsiteData} data
+ * @param {string} userId
+ * @returns {Promise<number>} records deleted
+ */
+export const deletePerson = async (data, userId) => {
+	const [loyalty, uses] = await Promise.all([
+		data.collection(COLLECTIONS.loyalty).deleteOne({ websiteId: data.websiteId, userId }),
+		data.collection(COLLECTIONS.couponUses).deleteMany({ websiteId: data.websiteId, userId }),
+	]);
+	return loyalty.deletedCount + uses.deletedCount;
+};

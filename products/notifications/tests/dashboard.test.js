@@ -496,4 +496,59 @@ describe('Overview (PLAN 0.6 "Overviews talk")', () => {
 			expect(html).toContain(words);
 		expect(html).not.toContain('EDT');
 	});
+
+	it('Delivery, Send, and Templates tabs are registered and render empty state when no website is picked', () => {
+		expect(TABS.delivery).toBeDefined();
+		expect(TABS.send).toBeDefined();
+		expect(TABS.templates).toBeDefined();
+		expect(TABS.delivery.icon).toBe('activity');
+		expect(TABS.send.icon).toBe('bell');
+		expect(TABS.templates.icon).toBe('code');
+
+		const DeliveryComponent = TABS.delivery.component;
+		const SendComponent = TABS.send.component;
+		const TemplatesComponent = TABS.templates.component;
+
+		const { container: deliveryContainer } = render(
+			<DashboardProvider manifest={manifest} texts={TEXTS}>
+				<DeliveryComponent
+					websiteId={null}
+					domain="shop.example.com"
+					who={{ kind: 'merchant', id: 'm_1', name: 'M' }}
+					support={{ channels: [] }}
+					portal="https://portal.example.com"
+					open={() => {}}
+				/>
+			</DashboardProvider>,
+		);
+		expect(deliveryContainer.textContent).toContain('Pick a website');
+
+		const { container: sendContainer } = render(
+			<DashboardProvider manifest={manifest} texts={TEXTS}>
+				<SendComponent
+					websiteId={null}
+					domain="shop.example.com"
+					who={{ kind: 'merchant', id: 'm_1', name: 'M' }}
+					support={{ channels: [] }}
+					portal="https://portal.example.com"
+					open={() => {}}
+				/>
+			</DashboardProvider>,
+		);
+		expect(sendContainer.textContent).toContain('Pick a website');
+
+		const { container: templatesContainer } = render(
+			<DashboardProvider manifest={manifest} texts={TEXTS}>
+				<TemplatesComponent
+					websiteId={null}
+					domain="shop.example.com"
+					who={{ kind: 'merchant', id: 'm_1', name: 'M' }}
+					support={{ channels: [] }}
+					portal="https://portal.example.com"
+					open={() => {}}
+				/>
+			</DashboardProvider>,
+		);
+		expect(templatesContainer.textContent).toContain('Pick a website');
+	});
 });

@@ -9,7 +9,7 @@ import { createFlows } from './server/flows.js';
 import { createService } from './server/service.js';
 
 /**
- * @param {import('./adapters/product.js').Product} product
+ * @param {import('./server/adapters/product.js').Product} product
  * @param {{ websiteId: string, merchantId: string, domain: string, base: string }} site
  */
 export const staffSignIns = (product, { websiteId, merchantId, domain, base }) => {
